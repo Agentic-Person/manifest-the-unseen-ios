@@ -440,13 +440,16 @@ From the workbook resources:
 ### 4.2 Tech Stack (CONFIRMED)
 
 **Frontend:**
-- **Framework:** SwiftUI (primary) with UIKit where needed
-- **Language:** Swift 5.9+
-- **State Management:** Combine framework + SwiftUI @State/@Observable
-- **Navigation:** SwiftUI NavigationStack
-- **UI Components:** Native iOS components + custom spiritual-themed designs
-- **Audio:** AVFoundation for playback
-- **Speech Recognition:** OpenAI Whisper (embedded model)
+- **Framework:** React Native (cross-platform ready, iOS primary)
+- **Language:** TypeScript
+- **UI/Styling:** NativeWind (Tailwind CSS for React Native)
+- **State Management:** Zustand (global) + TanStack Query (React Query for server state)
+- **Navigation:** React Navigation 6+
+- **Forms:** React Hook Form + Zod validation
+- **UI Components:** Custom components with NativeWind + spiritual-themed designs
+- **Audio:** react-native-track-player (meditation player)
+- **Voice Recording:** react-native-audio-recorder-player
+- **Speech Recognition:** OpenAI Whisper (on-device via react-native-whisper)
 
 **Backend/Services:**
 - **Backend Platform:** Supabase (PostgreSQL + Real-time + Auth + Storage)
@@ -518,13 +521,15 @@ From the workbook resources:
 - ✅ Cost optimization through intelligent routing
 - ✅ Redundancy if one service has downtime
 
-**Why Native iOS Only?**
-- ✅ Best performance and user experience
-- ✅ Full access to iOS features (SwiftUI, HealthKit, Shortcuts, Widgets)
-- ✅ Faster development for single platform
-- ✅ Higher quality, better App Store positioning
-- ✅ Premium feel aligned with wellness/spiritual market
-- ✅ Easier to maintain and iterate quickly
+**Why React Native (iOS Primary)?**
+- ✅ Fast development with hot reload and 28-week aggressive timeline
+- ✅ Cross-platform ready for Android expansion (Year 2)
+- ✅ 60%+ code reuse with potential web companion app
+- ✅ Rich ecosystem (audio, AI, forms libraries proven at scale)
+- ✅ TypeScript provides strong typing and better tooling
+- ✅ Shared business logic across platforms (monorepo architecture)
+- ✅ iOS-first launch maintains premium positioning
+- ✅ Native modules available when needed (audio, biometrics)
 
 ### 4.4 Data Flow Architecture
 
@@ -862,8 +867,9 @@ All users get 7 days of full access to experience the complete app before choosi
 ### 9.6 Monetization Implementation
 
 **Technical Requirements:**
-- **StoreKit 2:** Native iOS subscription handling
-- **RevenueCat Integration:** Simplifies subscription state management
+- **RevenueCat:** Cross-platform subscription management (primary)
+- **StoreKit 2 Bridge:** Via RevenueCat's React Native SDK
+- **Subscription State:** Managed through RevenueCat entitlements
   - Cross-platform ready (if we expand to Android)
   - Server-side subscription validation
   - Webhook handling
@@ -1436,9 +1442,10 @@ All users get 7 days of full access to experience the complete app before choosi
 ## 15. Decisions Confirmed
 
 ### 15.1 Technical Decisions ✅ CONFIRMED
-- [x] **Platform:** Native iOS only for initial launch
-  - Swift/SwiftUI development
-  - Future Android expansion to be considered post-launch
+- [x] **Platform:** React Native (iOS primary for initial launch)
+  - React Native + TypeScript development
+  - Cross-platform ready for Android expansion (Year 2)
+  - See ADR-001 for detailed rationale
   
 - [x] **AI API Providers:** Dual provider approach
   - Primary: Claude API (Anthropic) - for monk wisdom chat
@@ -1608,7 +1615,7 @@ Detailed breakdown available in Section 3.1.1
 ## Executive Summary of Confirmed Decisions
 
 ### ✅ Technical Stack
-- **Platform:** Native iOS (SwiftUI)
+- **Platform:** React Native + TypeScript (iOS primary, cross-platform ready)
 - **Backend:** Supabase (PostgreSQL, Auth, Storage, Realtime)
 - **AI Providers:** Claude API (primary) + OpenAI GPT-4 (secondary)
 - **Voice Transcription:** OpenAI Whisper (on-device, embedded)

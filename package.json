@@ -1,0 +1,55 @@
+{
+  "name": "manifest-the-unseen",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Manifest the Unseen - Digital Manifestation Workbook",
+  "author": "Manifest Team",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "mobile",
+    "packages/*"
+  ],
+  "scripts": {
+    "mobile": "cd mobile && npm start",
+    "mobile:ios": "cd mobile && npm run ios",
+    "mobile:android": "cd mobile && npm run android",
+    "mobile:clean": "cd mobile && cd ios && pod deintegrate && rm -rf Pods Podfile.lock && pod install",
+    "shared:build": "cd packages/shared && npm run build",
+    "shared:dev": "cd packages/shared && npm run dev",
+    "shared:test": "cd packages/shared && npm test",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "type-check": "npm run type-check --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "rm -rf node_modules mobile/node_modules packages/*/node_modules",
+    "clean:all": "npm run clean && cd mobile/ios && rm -rf Pods Podfile.lock build DerivedData",
+    "install-all": "npm install && cd mobile/ios && pod install",
+    "postinstall": "cd packages/shared && npm run build"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/manifest-the-unseen.git"
+  },
+  "keywords": [
+    "manifestation",
+    "workbook",
+    "meditation",
+    "journal",
+    "ai",
+    "react-native",
+    "ios"
+  ]
+}

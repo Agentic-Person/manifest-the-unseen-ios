@@ -1,0 +1,104 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+*.log
+
+# iOS
+mobile/ios/Pods/
+mobile/ios/build/
+mobile/ios/.xcode.env.local
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+ios/.xcode.env.local
+
+# Android
+mobile/android/app/build/
+mobile/android/.gradle/
+mobile/android/local.properties
+*.apk
+*.aab
+
+# Testing
+coverage/
+.nyc_output/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# MCP config files (contain secrets/tokens)
+.mcp.json
+mcp.json
+mcp*.json
+ui.mcp.json
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Metro
+.metro-health-check*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Supabase
+supabase/.branches
+supabase/.temp
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+Thumbs.db
+
+# Package manager locks (we keep package-lock.json but ignore others)
+yarn.lock
+pnpm-lock.yaml
+
+# React Native
+mobile/.bundle/
+
+# Expo (if used in future)
+.expo/
+.expo-shared/
+
+# Generated types
+**/generated/
+**/database.types.ts
