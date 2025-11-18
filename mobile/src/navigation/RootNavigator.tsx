@@ -12,12 +12,9 @@ import type { RootStackParamList } from '../types/navigation';
 
 // Import navigators and screens
 import { MainTabNavigator } from './MainTabNavigator';
+import { AuthNavigator } from './AuthNavigator';
 import { useAuthStore } from '../stores/authStore';
 import { supabase } from '../services/supabase';
-
-// TODO: Create these auth screens
-// import WelcomeScreen from '../screens/auth/WelcomeScreen';
-// import SignInScreen from '../screens/auth/SignInScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -36,30 +33,41 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  * ```
  */
 export const RootNavigator = () => {
-  const { isAuthenticated, setUser, setSession, setLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, initialize, setUser, setSession, setProfile } = useAuthStore();
 
   /**
    * Initialize Auth State
-   * Listen for auth state changes and update store
+   * Restore session and listen for auth state changes
    */
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // Initialize auth on app launch
+    initialize();
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+
+      // Fetch profile when user signs in
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          setProfile(profile);
+        }
+      } else {
+        setProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, [setUser, setSession, setLoading]);
+  }, [initialize, setUser, setSession, setProfile]);
 
   return (
     <NavigationContainer>
@@ -74,11 +82,7 @@ export const RootNavigator = () => {
           <Stack.Screen name="Main" component={MainTabNavigator} />
         ) : (
           // Not authenticated: Show auth flow
-          // TODO: Uncomment when auth screens are created
-          // <Stack.Screen name="Auth" component={AuthNavigator} />
-
-          // Temporary: Show main app for development
-          <Stack.Screen name="Main" component={MainTabNavigator} />
+          <Stack.Screen name="Auth" component={AuthNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

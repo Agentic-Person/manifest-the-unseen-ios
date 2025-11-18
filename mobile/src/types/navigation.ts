@@ -23,9 +23,8 @@ export type RootStackParamList = {
  * Handles authentication flow screens
  */
 export type AuthStackParamList = {
-  Welcome: undefined;
-  SignIn: undefined;
-  SignUp: undefined;
+  Login: undefined;
+  Signup: undefined;
   ForgotPassword: undefined;
 };
 

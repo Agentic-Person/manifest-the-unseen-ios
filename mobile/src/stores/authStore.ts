@@ -89,6 +89,42 @@ export const useAuthStore = create<AuthState>()(
       },
 
       /**
+       * Initialize Auth
+       * Checks for existing session and restores auth state
+       */
+      initialize: async () => {
+        try {
+          set({ isLoading: true });
+
+          const { data: { session } } = await supabase.auth.getSession();
+
+          if (session) {
+            set({
+              user: session.user,
+              session: session,
+              isAuthenticated: true,
+            });
+
+            // Fetch profile
+            const { data: profile, error } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+
+            if (!error && profile) {
+              set({ profile });
+            }
+          }
+
+          set({ isLoading: false });
+        } catch (error) {
+          console.error('Failed to initialize auth:', error);
+          set({ isLoading: false });
+        }
+      },
+
+      /**
        * Sign Out
        * Clears user session and resets auth state
        */
