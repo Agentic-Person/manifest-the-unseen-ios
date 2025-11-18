@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Email Change</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background: linear-gradient(135deg, #6B46C1 0%, #9333EA 100%); padding: 40px 20px; text-align: center; border-radius: 10px 10px 0 0;">
+        <h1 style="color: #FFFFFF; margin: 0; font-size: 28px;">Confirm Email Change</h1>
+    </div>
+
+    <div style="background: #FFFFFF; padding: 40px 30px; border: 1px solid #E5E7EB; border-radius: 0 0 10px 10px;">
+        <p style="font-size: 16px; margin-bottom: 20px;">Hello,</p>
+
+        <p style="font-size: 16px; margin-bottom: 20px;">
+            We received a request to change the email address associated with your Manifest the Unseen account. To confirm this change, click the button below.
+        </p>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="{{ .ConfirmationURL }}" style="display: inline-block; background: linear-gradient(135deg, #6B46C1 0%, #9333EA 100%); color: #FFFFFF; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">Confirm Email Change</a>
+        </div>
+
+        <p style="font-size: 14px; color: #6B7280; margin-top: 30px;">
+            Or copy and paste this URL into your browser:<br>
+            <a href="{{ .ConfirmationURL }}" style="color: #9333EA; word-break: break-all;">{{ .ConfirmationURL }}</a>
+        </p>
+
+        <p style="font-size: 14px; color: #DC2626; margin-top: 30px; padding: 15px; background: #FEF2F2; border-radius: 8px; border-left: 4px solid #DC2626;">
+            <strong>Security Notice:</strong> If you didn't request this email change, please contact support immediately and secure your account. Someone may be attempting to access your account.
+        </p>
+
+        <p style="font-size: 14px; color: #6B7280; margin-top: 30px; padding-top: 30px; border-top: 1px solid #E5E7EB;">
+            With wisdom and light,<br>
+            <strong style="color: #6B46C1;">The Manifest the Unseen Team</strong>
+        </p>
+    </div>
+</body>
+</html>

@@ -114,9 +114,9 @@ content_path = "./supabase/templates/email_change.html"
 # For local development, these are placeholders
 
 [auth.external.apple]
-enabled = true
-client_id = ""
-secret = ""
+enabled = false
+client_id = "env(SUPABASE_AUTH_EXTERNAL_APPLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"
 # Overrides the default auth redirectUrl.
 redirect_uri = ""
 

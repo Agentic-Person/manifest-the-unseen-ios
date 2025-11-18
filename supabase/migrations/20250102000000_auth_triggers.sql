@@ -33,8 +33,6 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
-COMMENT ON TRIGGER on_auth_user_created ON auth.users IS 'Creates user profile in public.users table on signup';
-
 -- =============================================================================
 -- FUNCTION: handle_user_delete
 -- Cascades user deletion to all related tables (already handled by FK ON DELETE CASCADE)
@@ -55,8 +53,6 @@ COMMENT ON FUNCTION public.handle_user_delete IS 'Handles cleanup when a user is
 CREATE TRIGGER on_auth_user_deleted
   AFTER DELETE ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_user_delete();
-
-COMMENT ON TRIGGER on_auth_user_deleted ON auth.users IS 'Performs cleanup when user account is deleted';
 
 -- =============================================================================
 -- HELPER FUNCTIONS
