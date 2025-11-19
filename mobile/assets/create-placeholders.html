@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head><title>Generate Placeholder Assets</title></head>
+<body>
+<canvas id="icon" width="1024" height="1024"></canvas>
+<canvas id="splash" width="1242" height="2436"></canvas>
+<canvas id="adaptive" width="1024" height="1024"></canvas>
+
+<script>
+// Icon (1024x1024)
+const iconCanvas = document.getElementById('icon');
+const iconCtx = iconCanvas.getContext('2d');
+iconCtx.fillStyle = '#9333ea'; // Purple from brand
+iconCtx.fillRect(0, 0, 1024, 1024);
+iconCtx.fillStyle = 'white';
+iconCtx.font = 'bold 180px Arial';
+iconCtx.textAlign = 'center';
+iconCtx.textBaseline = 'middle';
+iconCtx.fillText('MANIFEST', 512, 450);
+iconCtx.fillText('THE UNSEEN', 512, 650);
+
+// Splash (1242x2436)
+const splashCanvas = document.getElementById('splash');
+const splashCtx = splashCanvas.getContext('2d');
+splashCtx.fillStyle = '#9333ea';
+splashCtx.fillRect(0, 0, 1242, 2436);
+splashCtx.fillStyle = 'white';
+splashCtx.font = 'bold 120px Arial';
+splashCtx.textAlign = 'center';
+splashCtx.textBaseline = 'middle';
+splashCtx.fillText('MANIFEST', 621, 1100);
+splashCtx.fillText('THE UNSEEN', 621, 1250);
+splashCtx.font = '50px Arial';
+splashCtx.fillText('Transform Your Reality', 621, 1400);
+
+// Adaptive Icon (1024x1024)
+const adaptiveCanvas = document.getElementById('adaptive');
+const adaptiveCtx = adaptiveCanvas.getContext('2d');
+adaptiveCtx.fillStyle = '#9333ea';
+adaptiveCtx.fillRect(0, 0, 1024, 1024);
+adaptiveCtx.fillStyle = 'white';
+adaptiveCtx.font = 'bold 200px Arial';
+adaptiveCtx.textAlign = 'center';
+adaptiveCtx.textBaseline = 'middle';
+adaptiveCtx.fillText('M', 512, 512);
+
+console.log('Placeholders rendered. Right-click each canvas and save as PNG:');
+console.log('1. icon.png (top canvas)');
+console.log('2. splash.png (middle canvas)');
+console.log('3. adaptive-icon.png (bottom canvas)');
+</script>
+</body>
+</html>
