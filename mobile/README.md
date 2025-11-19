@@ -1,46 +1,43 @@
 # Manifest the Unseen - Mobile App
 
-React Native mobile application for iOS (with future Android support).
+React Native mobile application with Expo for iOS and Android development.
 
-## Project Structure
+## Quick Start
 
+```bash
+# Install dependencies
+npm install
+
+# Start Expo dev server
+npm start
+
+# Run on Android emulator
+npm run android
+
+# Run on iOS with Expo Go (scan QR code on iPhone)
+# Or: npm run ios (requires macOS)
 ```
-mobile/
-├── src/
-│   ├── navigation/          # React Navigation setup
-│   │   ├── RootNavigator.tsx       # Root navigation with auth flow
-│   │   └── MainTabNavigator.tsx    # Bottom tab navigation
-│   ├── screens/             # Screen components
-│   │   ├── HomeScreen.tsx          # Dashboard/home
-│   │   ├── WorkbookScreen.tsx      # Workbook phases
-│   │   ├── MeditateScreen.tsx      # Meditation player
-│   │   ├── JournalScreen.tsx       # Voice journaling
-│   │   └── ProfileScreen.tsx       # User profile & settings
-│   ├── stores/              # Zustand state management
-│   │   ├── authStore.ts            # Authentication state
-│   │   ├── settingsStore.ts        # App settings
-│   │   └── appStore.ts             # Global app state
-│   ├── services/            # External services
-│   │   ├── supabase.ts             # Supabase client & helpers
-│   │   └── queryClient.ts          # TanStack Query config
-│   ├── hooks/               # Custom React hooks
-│   │   └── useUser.ts              # User query hooks
-│   └── types/               # TypeScript types
-│       ├── navigation.ts           # Navigation types
-│       ├── store.ts                # Store types
-│       └── database.ts             # Supabase types
-├── App.tsx                  # Root component
-├── package.json             # Dependencies
-├── tsconfig.json            # TypeScript config
-└── README.md               # This file
-```
+
+## Development Environment
+
+This project uses **Expo** for streamlined development on Windows with cross-platform testing:
+
+- **Primary Development**: Android emulator on Windows PC (fast iteration)
+- **iOS Testing**: Expo Go app on iPhone/iPad (scan QR code, no macOS needed)
+- **Production Builds**: EAS Build or cloud services (when ready for App Store)
+
+### Platform-Specific Guides
+
+- **[Android Emulator Setup](../docs/android-emulator-setup.md)** - Complete guide for Windows + Android Studio
+- **[iOS Testing with Expo Go](../docs/ios-expo-go-setup.md)** - Test on real iPhone without macOS
 
 ## Tech Stack
 
 ### Core
-- **React Native** - Cross-platform mobile framework
+- **React Native 0.73** - Cross-platform mobile framework
+- **Expo SDK 54** - Development tools and managed workflow
 - **TypeScript** - Type-safe JavaScript
-- **React Navigation** - Navigation library (v6+)
+- **React Navigation 6+** - Navigation library
 
 ### State Management
 - **Zustand** - Lightweight state management
@@ -49,304 +46,133 @@ mobile/
 
 ### Backend
 - **Supabase** - Backend-as-a-Service
-  - PostgreSQL database
+  - PostgreSQL database with pgvector
   - Authentication (Apple Sign-In, email)
   - Real-time subscriptions
   - Storage for media files
 
-## Installation
+## Available Scripts
 
-### Prerequisites
-- Node.js 18+
-- Xcode 14+ (for iOS)
-- CocoaPods (for iOS dependencies)
-
-### Setup
-
-1. **Install dependencies**
-   ```bash
-   cd mobile
-   npm install
-   ```
-
-2. **Install iOS dependencies**
-   ```bash
-   cd ios
-   pod install
-   cd ..
-   ```
-
-3. **Configure environment variables**
-
-   Create a `.env` file in the mobile directory:
-   ```env
-   EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
-   EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-
-4. **Run the app**
-   ```bash
-   # iOS
-   npm run ios
-
-   # Android (future)
-   npm run android
-   ```
-
-## Architecture
-
-### Navigation Structure
-
-The app uses a nested navigation structure:
-
-```
-RootNavigator (Stack)
-├── Auth Flow (when not authenticated)
-│   ├── Welcome
-│   ├── Sign In
-│   └── Sign Up
-└── Main App (when authenticated)
-    └── MainTabNavigator (Bottom Tabs)
-        ├── Home
-        ├── Workbook
-        ├── Meditate
-        ├── Journal
-        └── Profile
-```
-
-### State Management
-
-#### Zustand Stores
-
-1. **Auth Store** (`src/stores/authStore.ts`)
-   - User authentication state
-   - User profile data
-   - Session management
-   - Sign in/out actions
-
-2. **Settings Store** (`src/stores/settingsStore.ts`)
-   - Theme preferences
-   - Notification settings
-   - Meditation preferences (narrator, reminders)
-   - Journal preferences
-   - Accessibility settings
-
-3. **App Store** (`src/stores/appStore.ts`)
-   - Global app state
-   - Network status
-   - Onboarding status
-   - UI state (drawer, tabs)
-
-#### TanStack Query
-
-Used for server state management with Supabase:
-- Automatic caching (5 min stale time)
-- Background refetching
-- Optimistic updates
-- Error handling
-- Retry logic
-
-**Query Keys** (centralized in `queryClient.ts`):
-```typescript
-queryKeys.users.profile(userId)
-queryKeys.workbook.progress(userId)
-queryKeys.journal.entries(userId)
-queryKeys.meditations.list
-// ... etc
-```
-
-### Supabase Integration
-
-The `supabase.ts` service file provides:
-
-**Auth Helpers**:
-- `signInWithEmail(email, password)`
-- `signUpWithEmail(email, password)`
-- `signInWithApple()`
-- `signOut()`
-- `resetPassword(email)`
-
-**Database Helpers**:
-- `getUserProfile(userId)`
-- `updateUserProfile(userId, updates)`
-
-**Storage Helpers**:
-- `uploadFile(bucket, path, file)`
-- `getPublicUrl(bucket, path)`
-- `deleteFile(bucket, path)`
-
-**Real-time Helpers**:
-- `subscribeToTable(table, callback)`
-- `unsubscribe(subscription)`
-
-### TypeScript Types
-
-All TypeScript types are centralized in `src/types/`:
-
-- **Navigation Types** - Type-safe navigation params
-- **Store Types** - Zustand store interfaces
-- **Database Types** - Supabase schema types (generated)
-
-## Key Features
-
-### 1. Type-Safe Navigation
-
-```typescript
-import type { MainTabScreenProps } from '@/types/navigation';
-
-type Props = MainTabScreenProps<'Home'>;
-
-const HomeScreen = ({ navigation, route }: Props) => {
-  // navigation and route are fully typed
-  navigation.navigate('Workbook');
-};
-```
-
-### 2. Optimized Store Selectors
-
-```typescript
-// Only re-renders when user changes
-const user = useUser();
-
-// Only re-renders when profile changes
-const profile = useProfile();
-
-// Access entire store (re-renders on any change)
-const { user, profile, signOut } = useAuthStore();
-```
-
-### 3. Data Fetching with TanStack Query
-
-```typescript
-import { useUserProfile } from '@/hooks/useUser';
-
-const { data: profile, isLoading, error } = useUserProfile();
-```
-
-### 4. Supabase Real-time
-
-```typescript
-useEffect(() => {
-  const subscription = subscribeToTable('journal_entries', (payload) => {
-    console.log('New journal entry:', payload);
-  });
-
-  return () => unsubscribe(subscription);
-}, []);
-```
-
-## Development Guidelines
-
-### File Organization
-
-- **Screens**: Top-level UI components for navigation
-- **Components**: Reusable UI components (to be created)
-- **Hooks**: Custom React hooks for shared logic
-- **Services**: External API integrations
-- **Types**: TypeScript type definitions
-- **Utils**: Helper functions (to be created)
-
-### Code Style
-
-- Use **functional components** with hooks
-- Prefer **named exports** over default exports
-- Always **type your props** with TypeScript
-- Use **const** for everything except in rare cases
-- Follow **React Navigation** best practices for navigation
-
-### State Management Guidelines
-
-**Use Zustand for**:
-- UI state (theme, modal visibility)
-- User preferences (settings)
-- Authentication state
-- App-wide state
-
-**Use TanStack Query for**:
-- Server data (database queries)
-- API calls
-- Cached data with automatic refetching
-- Mutations (create, update, delete)
-
-### Testing Strategy
-
+### Development
 ```bash
-# Run tests
-npm test
+npm start              # Start Expo dev server
+npm run android        # Run on Android emulator
+npm run ios            # Run on iOS (macOS only)
+npm run expo-go        # Start with Expo Go
+```
 
-# Run tests in watch mode
-npm run test:watch
+### Testing & Quality
+```bash
+npm test               # Run Jest tests
+npm run lint           # Run ESLint
+npm run type-check     # Run TypeScript compiler
+```
 
-# Type check
-npm run type-check
+### Building
+```bash
+npm run build:android  # Build Android (EAS Build)
+npm run build:ios      # Build iOS (EAS Build)
+```
 
-# Lint
-npm run lint
+## Development Workflow
+
+### Windows + Android Emulator (Recommended)
+
+1. Start Android emulator: `emulator -avd Pixel_5_API_33`
+2. Start Expo: `npm start`
+3. Press `a` to open on Android
+4. Code → Save → Auto-reload (~2 seconds)
+
+### iPhone + Expo Go
+
+1. Start Expo: `npm start`
+2. Scan QR code with iPhone Camera
+3. App loads in Expo Go
+4. Code → Save → Auto-reload
+
+## Project Structure
+
+```
+mobile/
+├── src/
+│   ├── components/         # UI components (buttons, inputs, etc.)
+│   ├── navigation/         # React Navigation setup
+│   ├── screens/            # Screen components
+│   ├── stores/             # Zustand state management
+│   ├── services/           # External services (Supabase)
+│   ├── hooks/              # Custom React hooks
+│   ├── theme/              # Design system (tokens, colors)
+│   └── types/              # TypeScript types
+├── assets/                 # Images (icon, splash)
+├── App.tsx                 # Root component
+├── index.js                # Expo entry point
+└── app.json                # Expo configuration
 ```
 
 ## Environment Variables
 
-Required environment variables:
+Create `.env` file:
 
 ```env
-# Supabase
-EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-
-# Optional: Development
-DEV_MODE=true
+SUPABASE_URL=http://localhost:54321
+SUPABASE_ANON_KEY=your_supabase_anon_key
+ENABLE_AI_CHAT=false
+ENABLE_VOICE_TRANSCRIPTION=false
+ENABLE_ANALYTICS=false
+DEBUG=true
 ```
 
-## Next Steps
-
-### Immediate (Week 1-2)
-- [ ] Set up React Native project with `npx react-native init`
-- [ ] Install all dependencies from package.json
-- [ ] Configure Supabase environment variables
-- [ ] Test navigation flow
-- [ ] Implement authentication screens
-
-### Short-term (Week 3-8)
-- [ ] Build design system (colors, typography, components)
-- [ ] Implement authentication with Apple Sign-In
-- [ ] Create workbook phase screens
-- [ ] Build voice journaling with Whisper
-- [ ] Add meditation player
-
-### Mid-term (Week 9-20)
-- [ ] Complete all 10 workbook phases
-- [ ] Implement AI chat with RAG
-- [ ] Add vision board feature
-- [ ] Integrate RevenueCat subscriptions
-- [ ] Add analytics and error tracking
+Get local Supabase credentials:
+```bash
+npx supabase status
+```
 
 ## Troubleshooting
 
-### iOS Pod Install Issues
+### Expo Won't Start
 ```bash
-cd ios
-pod deintegrate
-pod install
-cd ..
+npm start -- --clear
 ```
 
-### Metro Bundler Issues
+### Metro Cache Issues
 ```bash
 npm start -- --reset-cache
 ```
 
-### Type Errors
+### Android Emulator Issues
 ```bash
-npm run type-check
+adb devices          # Check connection
+adb kill-server      # Restart adb
+adb start-server
+```
+
+### iOS Expo Go Issues
+See [iOS Expo Go Guide](../docs/ios-expo-go-setup.md#troubleshooting)
+
+### Supabase Connection
+```bash
+npx supabase status  # Verify running
+cat .env             # Check credentials
+```
+
+## Building for Production
+
+### EAS Build (Cloud, No macOS Needed)
+```bash
+npm install -g eas-cli
+eas login
+eas build:configure
+eas build --platform ios
+eas build --platform android
 ```
 
 ## Resources
 
-- [React Navigation Docs](https://reactnavigation.org/)
-- [Zustand Docs](https://docs.pmnd.rs/zustand/)
-- [TanStack Query Docs](https://tanstack.com/query/latest)
-- [Supabase React Native Docs](https://supabase.com/docs/guides/getting-started/tutorials/with-react-native)
-- [React Native Docs](https://reactnative.dev/)
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Navigation](https://reactnavigation.org/)
+- [Supabase React Native](https://supabase.com/docs/guides/getting-started/tutorials/with-react-native)
+- [Android Setup Guide](../docs/android-emulator-setup.md)
+- [iOS Setup Guide](../docs/ios-expo-go-setup.md)
 
 ## License
 
