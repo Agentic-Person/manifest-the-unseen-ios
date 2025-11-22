@@ -33,7 +33,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  * ```
  */
 export const RootNavigator = () => {
-  const { isAuthenticated, isLoading, initialize, setUser, setSession, setProfile } = useAuthStore();
+  const { isAuthenticated, isLoading: _isLoading, initialize, setUser, setSession, setProfile } = useAuthStore();
 
   /**
    * Initialize Auth State

@@ -9,6 +9,7 @@ import { queryKeys } from '../services/queryClient';
 import { getUserProfile, updateUserProfile } from '../services/supabase';
 import { useAuthStore } from '../stores/authStore';
 import type { UserProfile } from '../types/store';
+import type { Database } from '../types/database';
 
 /**
  * Use User Profile Query
@@ -31,13 +32,26 @@ import type { UserProfile } from '../types/store';
 export const useUserProfile = () => {
   const user = useAuthStore((state) => state.user);
 
-  return useQuery({
+  return useQuery<UserProfile, Error>({
     queryKey: queryKeys.users.profile(user?.id || ''),
-    queryFn: () => {
+    queryFn: async (): Promise<UserProfile> => {
       if (!user?.id) {
         throw new Error('No authenticated user');
       }
-      return getUserProfile(user.id);
+      const data = await getUserProfile(user.id);
+      // Transform database row to UserProfile type
+      return {
+        id: data.id,
+        email: data.email,
+        fullName: data.full_name ?? undefined,
+        avatarUrl: data.avatar_url ?? undefined,
+        subscriptionTier: data.subscription_tier,
+        subscriptionStatus: data.subscription_status,
+        trialEndsAt: data.trial_ends_at ?? undefined,
+        currentPhase: data.current_phase,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
     },
     enabled: !!user?.id, // Only run query if user is authenticated
     staleTime: 10 * 60 * 1000, // 10 minutes
@@ -79,15 +93,37 @@ export const useUpdateUserProfile = () => {
   const setProfile = useAuthStore((state) => state.setProfile);
 
   return useMutation({
-    mutationFn: (updates: Partial<UserProfile>) => {
+    mutationFn: async (updates: Partial<UserProfile>): Promise<UserProfile> => {
       if (!user?.id) {
         throw new Error('No authenticated user');
       }
-      return updateUserProfile(user.id, updates);
+      // Transform camelCase UserProfile to snake_case database fields
+      const dbUpdates: Database['public']['Tables']['users']['Update'] = {};
+      if (updates.fullName !== undefined) dbUpdates.full_name = updates.fullName;
+      if (updates.avatarUrl !== undefined) dbUpdates.avatar_url = updates.avatarUrl;
+      if (updates.subscriptionTier !== undefined) dbUpdates.subscription_tier = updates.subscriptionTier;
+      if (updates.subscriptionStatus !== undefined) dbUpdates.subscription_status = updates.subscriptionStatus;
+      if (updates.trialEndsAt !== undefined) dbUpdates.trial_ends_at = updates.trialEndsAt;
+      if (updates.currentPhase !== undefined) dbUpdates.current_phase = updates.currentPhase;
+
+      const data = await updateUserProfile(user.id, dbUpdates);
+      // Transform response back to UserProfile
+      return {
+        id: data.id,
+        email: data.email,
+        fullName: data.full_name ?? undefined,
+        avatarUrl: data.avatar_url ?? undefined,
+        subscriptionTier: data.subscription_tier,
+        subscriptionStatus: data.subscription_status,
+        trialEndsAt: data.trial_ends_at ?? undefined,
+        currentPhase: data.current_phase,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
     },
     onSuccess: (data) => {
       // Update Zustand store
-      setProfile(data as UserProfile);
+      setProfile(data);
 
       // Invalidate and refetch user profile query
       queryClient.invalidateQueries({

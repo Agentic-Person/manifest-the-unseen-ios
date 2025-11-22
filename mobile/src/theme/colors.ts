@@ -147,6 +147,20 @@ export const colors = {
     light: 'rgba(0, 0, 0, 0.5)',
     dark: 'rgba(0, 0, 0, 0.75)',
   },
+
+  // Brand colors (quick access to main brand colors)
+  brand: {
+    purple: '#9333ea',       // primary-600 (main brand color)
+    gold: '#fbbf24',         // secondary-400 (main gold accent)
+  },
+
+  // Status colors (quick access to main semantic colors)
+  status: {
+    success: '#16a34a',      // success-600
+    error: '#dc2626',        // error-600
+    warning: '#ea580c',      // warning-600
+    info: '#2563eb',         // info-600
+  },
 } as const;
 
 /**

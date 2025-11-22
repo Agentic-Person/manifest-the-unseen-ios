@@ -25,7 +25,7 @@ import {
   TextInputProps as RNTextInputProps,
   ViewStyle,
 } from 'react-native';
-import { colors, typography, spacing, borderRadius } from '../theme';
+import { colors, typography, spacing, borderRadius, fontWeights } from '../theme';
 
 export interface TextInputProps extends Omit<RNTextInputProps, 'style'> {
   /** Input label */
@@ -54,6 +54,9 @@ export interface TextInputProps extends Omit<RNTextInputProps, 'style'> {
 
   /** Custom container style */
   containerStyle?: ViewStyle;
+
+  /** Custom input style */
+  style?: ViewStyle;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -159,7 +162,7 @@ const styles = StyleSheet.create({
 
   label: {
     ...typography.bodySmall,
-    fontWeight: typography.fontWeights.semibold as any,
+    fontWeight: fontWeights.semibold as any,
     color: colors.text.primary,
     marginBottom: spacing.xs,
   },

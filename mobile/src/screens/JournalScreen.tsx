@@ -13,7 +13,7 @@ type Props = MainTabScreenProps<'Journal'>;
 /**
  * Journal Screen Component
  */
-const JournalScreen = ({ navigation }: Props) => {
+const JournalScreen = (_props: Props) => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>

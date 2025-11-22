@@ -86,7 +86,7 @@ const defaultSettings: Omit<
  */
 export const useSettingsStore = create<SettingsState>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       ...defaultSettings,
 
       /**

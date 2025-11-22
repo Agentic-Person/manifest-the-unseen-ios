@@ -22,7 +22,7 @@ import { Text } from '../../components/Text';
 import { Card } from '../../components/Card';
 import { authService } from '../../services/auth';
 import { useAuthStore } from '../../stores/authStore';
-import { colors, spacing, typography } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 type AuthStackParamList = {
   Login: undefined;
@@ -204,7 +204,7 @@ export const SignupScreen: React.FC = () => {
 
         {/* Error Message */}
         {errorMessage && (
-          <Card variant="danger" style={styles.messageCard}>
+          <Card elevation="flat" style={styles.messageCard}>
             <Text variant="body" style={styles.errorText}>
               {errorMessage}
             </Text>
@@ -213,7 +213,7 @@ export const SignupScreen: React.FC = () => {
 
         {/* Success Message */}
         {successMessage && (
-          <Card variant="success" style={styles.messageCard}>
+          <Card elevation="flat" style={styles.messageCard}>
             <Text variant="body" style={styles.successText}>
               {successMessage}
             </Text>
@@ -228,7 +228,7 @@ export const SignupScreen: React.FC = () => {
           onChangeText={setFullName}
           autoCapitalize="words"
           editable={!isSubmitting}
-          style={styles.input}
+          containerStyle={styles.input}
         />
 
         {/* Email Input */}
@@ -241,7 +241,7 @@ export const SignupScreen: React.FC = () => {
           autoCapitalize="none"
           autoCorrect={false}
           editable={!isSubmitting}
-          style={styles.input}
+          containerStyle={styles.input}
         />
 
         {/* Password Input */}
@@ -252,7 +252,7 @@ export const SignupScreen: React.FC = () => {
           onChangeText={setPassword}
           secureTextEntry
           editable={!isSubmitting}
-          style={styles.input}
+          containerStyle={styles.input}
           helperText="Must include uppercase, lowercase, and a number"
         />
 
@@ -264,7 +264,7 @@ export const SignupScreen: React.FC = () => {
           onChangeText={setConfirmPassword}
           secureTextEntry
           editable={!isSubmitting}
-          style={styles.input}
+          containerStyle={styles.input}
         />
 
         {/* Terms and Conditions */}
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: spacing.xl,
-    paddingTop: spacing.xxl,
+    paddingTop: spacing['2xl'],
   },
   header: {
     alignItems: 'center',
@@ -353,10 +353,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   errorText: {
-    color: colors.status.error,
+    color: colors.error[600],
   },
   successText: {
-    color: colors.status.success,
+    color: colors.success[600],
   },
   input: {
     marginBottom: spacing.md,
@@ -377,8 +377,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkboxChecked: {
-    backgroundColor: colors.brand.purple,
-    borderColor: colors.brand.purple,
+    backgroundColor: colors.primary[600],
+    borderColor: colors.primary[600],
   },
   checkmark: {
     color: colors.text.inverse,
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   termsLink: {
-    color: colors.brand.purple,
+    color: colors.primary[600],
     fontWeight: '600',
   },
   button: {
@@ -420,7 +420,7 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   footerLink: {
-    color: colors.brand.purple,
+    color: colors.primary[600],
     fontWeight: '600',
   },
 });

@@ -15,7 +15,7 @@ type Props = MainTabScreenProps<'Profile'>;
 /**
  * Profile Screen Component
  */
-const ProfileScreen = ({ navigation }: Props) => {
+const ProfileScreen = (_props: Props) => {
   const user = useUser();
   const profile = useProfile();
   const signOut = useSignOut();

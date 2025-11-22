@@ -22,7 +22,7 @@ import { Text } from '../../components/Text';
 import { Card } from '../../components/Card';
 import { authService } from '../../services/auth';
 import { useAuthStore } from '../../stores/authStore';
-import { colors, spacing, typography } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 type AuthStackParamList = {
   Login: undefined;
@@ -150,7 +150,7 @@ export const LoginScreen: React.FC = () => {
 
         {/* Error Message */}
         {errorMessage && (
-          <Card variant="danger" style={styles.errorCard}>
+          <Card elevation="flat" style={styles.errorCard}>
             <Text variant="body" style={styles.errorText}>
               {errorMessage}
             </Text>
@@ -167,7 +167,7 @@ export const LoginScreen: React.FC = () => {
           autoCapitalize="none"
           autoCorrect={false}
           editable={!isSubmitting}
-          style={styles.input}
+          containerStyle={styles.input}
         />
 
         {/* Password Input */}
@@ -178,7 +178,7 @@ export const LoginScreen: React.FC = () => {
           onChangeText={setPassword}
           secureTextEntry
           editable={!isSubmitting}
-          style={styles.input}
+          containerStyle={styles.input}
         />
 
         {/* Forgot Password Link */}
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   errorText: {
-    color: colors.status.error,
+    color: colors.error[600],
   },
   input: {
     marginBottom: spacing.md,
@@ -273,8 +273,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   forgotPasswordText: {
-    color: colors.brand.purple,
-    ...typography.body,
+    color: colors.primary[600],
   },
   button: {
     marginBottom: spacing.md,
@@ -302,7 +301,7 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   footerLink: {
-    color: colors.brand.purple,
+    color: colors.primary[600],
     fontWeight: '600',
   },
 });

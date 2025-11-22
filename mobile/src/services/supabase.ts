@@ -154,9 +154,14 @@ export const updatePassword = async (newPassword: string) => {
  */
 
 /**
+ * User Row Type
+ */
+type UserRow = Database['public']['Tables']['users']['Row'];
+
+/**
  * Get User Profile
  */
-export const getUserProfile = async (userId: string) => {
+export const getUserProfile = async (userId: string): Promise<UserRow> => {
   const { data, error } = await supabase
     .from('users')
     .select('*')
@@ -164,7 +169,7 @@ export const getUserProfile = async (userId: string) => {
     .single();
 
   if (error) throw error;
-  return data;
+  return data as UserRow;
 };
 
 /**
@@ -172,17 +177,18 @@ export const getUserProfile = async (userId: string) => {
  */
 export const updateUserProfile = async (
   userId: string,
-  updates: Partial<Database['public']['Tables']['users']['Update']>
-) => {
-  const { data, error } = await supabase
-    .from('users')
+  updates: Database['public']['Tables']['users']['Update']
+): Promise<UserRow> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase
+    .from('users') as any)
     .update(updates)
     .eq('id', userId)
     .select()
     .single();
 
   if (error) throw error;
-  return data;
+  return data as UserRow;
 };
 
 /**

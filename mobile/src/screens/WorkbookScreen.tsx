@@ -30,7 +30,7 @@ const PHASES = [
 /**
  * Workbook Screen Component
  */
-const WorkbookScreen = ({ navigation }: Props) => {
+const WorkbookScreen = (_props: Props) => {
   const profile = useProfile();
   const currentPhase = profile?.currentPhase || 1;
 

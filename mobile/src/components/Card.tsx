@@ -23,6 +23,7 @@ import {
 import { colors, spacing, borderRadius, shadows } from '../theme';
 
 export type CardElevation = 'flat' | 'raised' | 'lifted';
+export type CardVariant = 'default' | 'outlined' | 'filled';
 
 export interface CardProps {
   /** Card content */
@@ -30,6 +31,9 @@ export interface CardProps {
 
   /** Elevation level */
   elevation?: CardElevation;
+
+  /** Card variant style */
+  variant?: CardVariant;
 
   /** Optional press handler (makes card pressable) */
   onPress?: () => void;

@@ -13,7 +13,7 @@ type Props = MainTabScreenProps<'Meditate'>;
 /**
  * Meditate Screen Component
  */
-const MeditateScreen = ({ navigation }: Props) => {
+const MeditateScreen = (_props: Props) => {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>

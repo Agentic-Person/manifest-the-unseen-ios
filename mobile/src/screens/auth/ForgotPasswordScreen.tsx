@@ -21,7 +21,7 @@ import { TextInput } from '../../components/TextInput';
 import { Text } from '../../components/Text';
 import { Card } from '../../components/Card';
 import { authService } from '../../services/auth';
-import { colors, spacing, typography } from '../../theme';
+import { colors, spacing } from '../../theme';
 
 type AuthStackParamList = {
   Login: undefined;
@@ -121,7 +121,7 @@ export const ForgotPasswordScreen: React.FC = () => {
 
         {/* Error Message */}
         {errorMessage && (
-          <Card variant="danger" style={styles.messageCard}>
+          <Card elevation="flat" style={styles.messageCard}>
             <Text variant="body" style={styles.errorText}>
               {errorMessage}
             </Text>
@@ -130,7 +130,7 @@ export const ForgotPasswordScreen: React.FC = () => {
 
         {/* Success Message */}
         {successMessage && (
-          <Card variant="success" style={styles.messageCard}>
+          <Card elevation="flat" style={styles.messageCard}>
             <Text variant="body" style={styles.successText}>
               {successMessage}
             </Text>
@@ -147,7 +147,7 @@ export const ForgotPasswordScreen: React.FC = () => {
           autoCapitalize="none"
           autoCorrect={false}
           editable={!isSubmitting}
-          style={styles.input}
+          containerStyle={styles.input}
         />
 
         {/* Send Reset Link Button */}
@@ -161,7 +161,7 @@ export const ForgotPasswordScreen: React.FC = () => {
         />
 
         {/* Info Card */}
-        <Card variant="info" style={styles.infoCard}>
+        <Card elevation="flat" style={styles.infoCard}>
           <Text variant="body" style={styles.infoText}>
             <Text style={styles.infoBold}>Didn't receive the email?</Text>
             {'\n\n'}
@@ -218,10 +218,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   errorText: {
-    color: colors.status.error,
+    color: colors.error[600],
   },
   successText: {
-    color: colors.status.success,
+    color: colors.success[600],
   },
   input: {
     marginBottom: spacing.xl,
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   backButtonText: {
-    color: colors.brand.purple,
+    color: colors.primary[600],
     fontWeight: '600',
   },
 });

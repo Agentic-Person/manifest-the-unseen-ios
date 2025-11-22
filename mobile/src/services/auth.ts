@@ -8,6 +8,9 @@
 import { supabase } from './supabase';
 import type { User, Session, AuthError } from '@supabase/supabase-js';
 import type { UserProfile } from '../types/store';
+import type { Database } from '../types/database';
+
+type UserRow = Database['public']['Tables']['users']['Row'];
 
 /**
  * Authentication Result
@@ -287,8 +290,9 @@ export const authService = {
    *
    * @returns Current user or null
    */
-  getCurrentUser: (): User | null => {
-    return supabase.auth.getUser().then((res) => res.data.user ?? null);
+  getCurrentUser: async (): Promise<User | null> => {
+    const res = await supabase.auth.getUser();
+    return res.data.user ?? null;
   },
 
   /**
@@ -324,18 +328,19 @@ export const authService = {
         return null;
       }
 
+      const row = data as UserRow;
       // Map database fields to UserProfile type
       return {
-        id: data.id,
-        email: data.email,
-        fullName: data.full_name,
-        avatarUrl: data.avatar_url,
-        subscriptionTier: data.subscription_tier,
-        subscriptionStatus: data.subscription_status,
-        trialEndsAt: data.trial_end_date,
-        currentPhase: data.current_phase || 1,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
+        id: row.id,
+        email: row.email,
+        fullName: row.full_name ?? undefined,
+        avatarUrl: row.avatar_url ?? undefined,
+        subscriptionTier: row.subscription_tier,
+        subscriptionStatus: row.subscription_status,
+        trialEndsAt: row.trial_ends_at ?? undefined,
+        currentPhase: row.current_phase || 1,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
       };
     } catch (error) {
       console.error('Error fetching user profile:', error);

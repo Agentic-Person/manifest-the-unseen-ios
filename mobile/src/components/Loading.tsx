@@ -22,7 +22,7 @@ import { colors, spacing, borderRadius } from '../theme';
 
 export type LoadingVariant = 'spinner' | 'skeleton';
 export type SkeletonType = 'text' | 'image' | 'card';
-export type LoadingSize = 'small' | 'medium' | 'large';
+export type LoadingSize = 'small' | 'large';
 
 export interface LoadingProps {
   /** Loading variant */
@@ -47,7 +47,7 @@ export interface LoadingProps {
 export const Loading: React.FC<LoadingProps> = ({
   variant = 'spinner',
   skeletonType = 'text',
-  size = 'medium',
+  size = 'large',
   color = colors.primary[600],
   style,
   accessibilityLabel = 'Loading',
