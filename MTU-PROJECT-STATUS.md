@@ -1,9 +1,9 @@
 # MTU Project Status
 
-**Last Updated**: 2025-11-19 (Today)
+**Last Updated**: 2025-11-21
 **Project**: Manifest the Unseen iOS App
 **Timeline**: Week 3 of 28 (Infrastructure + Authentication Phase)
-**Status**: Active Development
+**Status**: Active Development - Infrastructure Testing Phase
 
 ---
 
@@ -16,24 +16,28 @@
 - **Actual Status**: ✅ Ahead of schedule - Expo setup complete, ready for Week 4
 
 ### Last Activity
-- **Date**: November 19, 2025
-- **Duration**: ~4-5 hours
-- **What Was Done**: Completed Expo SDK 54 configuration for cross-platform development. Android emulator + iOS Expo Go testing now functional. Created 3 comprehensive setup guides (1,850 lines).
-- **Commits**: 4 commits (150c70f, c50aff5, 5ee60ea, 8eb5cbd)
+- **Date**: November 21, 2025
+- **Duration**: Infrastructure testing session (~45 minutes)
+- **What Was Done**: Executed MCP infrastructure tests. Verified all 8 database tables and 23 RLS policies. Tested auth API end-to-end (signup → email confirm → login). Created test user. Discovered TypeScript and Expo web compatibility issues.
+- **Completed**: Infrastructure verified, auth working E2E
+- **Session Log**: `agent-orchestration/logs/sessions/2025-11/session-2025-11-21-infra-test.md`
 
 ### What's Working Right Now
 - ✅ **Auth Screens** - Test: `cd mobile && npm start`, navigate Welcome → Login → Signup
 - ✅ **Design System** - Test: Open any screen, components use brand theme (purple/gold)
-- ✅ **Android Emulator** - Test: `emulator -avd Pixel_5_API_34` then `npm start` → press 'a'
 - ✅ **iOS Expo Go** - Test: `npm start` → scan QR on iPhone → app loads in Expo Go
 - ✅ **Hot Reload** - Test: Edit WelcomeScreen.tsx, save, see changes in ~2 seconds
 - ✅ **Supabase Local** - Test: `npx supabase status` → all services show "Running"
 - ✅ **Navigation** - Root navigator with auth flow + 5-tab main navigator (Home, Workbook, Journal, Meditate, Profile)
-- 🚧 **Database Tables** - Created via migrations, not yet tested with real data
+- ✅ **Database Tables** - Verified: 8 tables exist with correct schema (tested 2025-11-21)
+- ✅ **RLS Policies** - Verified: 23 policies active on 6 user tables (tested 2025-11-21)
+- ✅ **Auth API E2E** - Verified: Signup → Email Confirm → Login all working (test user: test@manifest.app)
 
 ### What's NOT Working Yet
 - ❌ **Android Emulator** - Not installed yet (need to follow docs/android-emulator-setup.md)
-- ❌ **Real Authentication Flow** - Auth service built, but not tested end-to-end with Supabase
+- ❌ **Expo Web Build** - `import.meta` compatibility issue blocks browser testing
+- ❌ **TypeScript Check** - `moduleResolution` config issue in tsconfig.json
+- ❌ **Apple Sign-In** - Requires Apple Developer credentials (placeholder exists)
 - ❌ **Workbook Screens** - Not yet implemented (Week 4-5 priority)
 - ❌ **Voice Journaling** - Planned for Week 7-8
 - ❌ **AI Chat** - Planned for Week 15-18
@@ -236,32 +240,36 @@ cd mobile && npm run type-check
 
 ## Features In Progress
 
-Currently no features in progress. Infrastructure + Authentication phase complete. Ready to begin Week 4 (Workbook Phases 1-3).
+### Current: MCP Infrastructure Testing Preparation
+- **Task**: Verify infrastructure end-to-end before feature development
+- **Method**: Orchestrator + 3 Specialist agents with MCP servers
+- **Handoff**: `agent-orchestration/tasks/active/MCP-INFRA-TEST-HANDOFF.md`
+- **Blockers**: Need MCP-enabled Claude Code session to execute
+
+**After testing**: Ready for Week 4 (Workbook Phases 1-3).
 
 ---
 
 ## Next Steps
 
-### Immediate Priorities (Week 4 - Nov 20-26)
+### Immediate Priority: MCP-Powered Infrastructure Testing
 
-**Option A: Test Current Infrastructure** (Recommended First)
-1. **Install Android Studio** (~60 min)
-   - Follow `docs/android-emulator-setup.md` step-by-step
-   - Create Pixel 5 API 34 AVD
-   - Test `npm run android` → app launches in emulator
+**Status**: Handoff document created, awaiting MCP-enabled Claude Code session
 
-2. **Test iOS Expo Go** (~10 min)
-   - Install Expo Go on iPhone/iPad from App Store
-   - Scan QR code from `npm start`
-   - Verify app loads and hot reload works
+**Execute via MCP Session** (see `agent-orchestration/tasks/active/MCP-INFRA-TEST-HANDOFF.md`):
+1. **Supabase MCP** - Verify database tables, RLS policies, auth config
+2. **Playwright MCP** - Automate E2E auth testing with screenshots
+3. **Document results** - Update this file and create session log
 
-3. **Test Auth Flow End-to-End** (~30 min)
-   - Start Supabase: `npx supabase start`
-   - Launch app in Android emulator or Expo Go
-   - Test Welcome → Signup → Login → Profile tab
-   - Verify database entries in Supabase Studio (http://localhost:54323)
+**Agent Pattern**: Orchestrator + 3 Specialists (Infra Verifier, E2E Tester, Docs Updater)
 
-**Option B: Start Workbook Phases 1-3** (If Testing Complete)
+**Manual Steps** (User):
+1. Install Android Studio (~60 min) - Follow `docs/android-emulator-setup.md`
+2. Configure MCP servers in Claude Code session
+
+---
+
+### After Testing Complete: Start Workbook Phases 1-3
 1. **Phase 1: Self-Evaluation** (Week 4-5)
    - Wheel of Life visualization (8 life areas, 0-10 scale)
    - SWOT Analysis form (Strengths, Weaknesses, Opportunities, Threats)
@@ -420,13 +428,26 @@ Check with: `npx supabase status`
 | Realtime | 54321 | ✅ Running | ws://localhost:54321/realtime/v1 |
 | Auth | 54321 | ✅ Running | http://localhost:54321/auth/v1 |
 
-### MCP Servers Configured
-| MCP Server | Purpose | Status | Notes |
-|------------|---------|--------|-------|
-| Desktop Commander | File operations, processes, search | ✅ Active | Full filesystem access |
-| GitHub | Repository operations, PR management | ✅ Active | Connected to manifest-the-unseen-ios repo |
-| Supabase | Database queries, migrations | ✅ Active | Connected to local instance (port 54321) |
-| Canva | Design asset generation | 🔌 Available | Not yet used |
+### MCP Servers - Utilization Strategy
+
+| MCP Server | Purpose | Status | Current Use | Future Use |
+|------------|---------|--------|-------------|------------|
+| **Supabase** | Database queries, migrations | 🎯 Priority | Verify tables, RLS, auth config | All database operations |
+| **Playwright** | E2E testing, browser automation | 🎯 Priority | Automate auth flow tests | CI/CD testing pipeline |
+| **Canva** | Design asset generation | 📋 Week 25+ | - | App icons, splash screens, UI mockups |
+| Desktop Commander | File operations, processes | ✅ Active | File system access | - |
+| GitHub | Repository operations | ✅ Active | PR management | - |
+
+#### MCP Testing Plan (Immediate)
+```
+Supabase MCP → Verify 8 tables, 27 RLS policies, auth providers
+Playwright MCP → Screenshot auth screens, automate form validation tests
+```
+
+#### MCP Design Plan (Week 25+)
+```
+Canva MCP → Generate 1024x1024 app icon, splash screens, store screenshots
+```
 
 ---
 
