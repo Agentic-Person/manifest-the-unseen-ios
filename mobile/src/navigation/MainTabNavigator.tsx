@@ -11,7 +11,7 @@ import type { MainTabParamList } from '../types/navigation';
 
 // Import screen components
 import HomeScreen from '../screens/HomeScreen';
-import WorkbookScreen from '../screens/WorkbookScreen';
+import { WorkbookNavigator } from './WorkbookNavigator';
 import MeditateScreen from '../screens/MeditateScreen';
 import JournalScreen from '../screens/JournalScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -83,10 +83,11 @@ export const MainTabNavigator = () => {
 
       <Tab.Screen
         name="Workbook"
-        component={WorkbookScreen}
+        component={WorkbookNavigator}
         options={{
           title: 'Workbook',
           tabBarLabel: 'Workbook',
+          headerShown: false, // WorkbookNavigator handles its own headers
           // TODO: Add icon when design system is ready
           // tabBarIcon: ({ color, size }) => (
           //   <BookIcon color={color} size={size} />

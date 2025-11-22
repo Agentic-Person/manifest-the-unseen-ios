@@ -14,3 +14,6 @@ export * from './TextInput';
 export * from './Card';
 export * from './Loading';
 export * from './Text';
+
+// Form components for workbook exercises
+export * from './forms';

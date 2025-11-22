@@ -7,6 +7,9 @@
 
 import { z } from 'zod';
 
+// Export workbook Phase 1 exercise schemas
+export * from './workbook';
+
 /**
  * User validation schemas
  */

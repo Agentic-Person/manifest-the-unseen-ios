@@ -6,10 +6,10 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import type { MainTabScreenProps } from '../types/navigation';
+import type { WorkbookStackScreenProps } from '../types/navigation';
 import { useProfile } from '../stores/authStore';
 
-type Props = MainTabScreenProps<'Workbook'>;
+type Props = WorkbookStackScreenProps<'WorkbookHome'>;
 
 /**
  * Workbook Phase Data
@@ -30,7 +30,7 @@ const PHASES = [
 /**
  * Workbook Screen Component
  */
-const WorkbookScreen = (_props: Props) => {
+const WorkbookScreen = ({ navigation }: Props) => {
   const profile = useProfile();
   const currentPhase = profile?.currentPhase || 1;
 
@@ -77,8 +77,13 @@ const WorkbookScreen = (_props: Props) => {
               ]}
               onPress={() => {
                 if (isUnlocked) {
-                  // TODO: Navigate to phase detail screen
-                  console.log('Navigate to phase:', phase.id);
+                  // Navigate to phase dashboard
+                  if (phase.id === 1) {
+                    navigation.navigate('Phase1Dashboard');
+                  } else {
+                    // TODO: Add navigation for phases 2-10
+                    console.log('Phase', phase.id, 'coming soon');
+                  }
                 }
               }}
               disabled={!isUnlocked}

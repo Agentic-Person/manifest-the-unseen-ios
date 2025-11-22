@@ -52,6 +52,19 @@ export type WorkbookStackParamList = {
     exerciseId: string;
     exerciseName: string
   };
+  // Phase 1: Self-Evaluation screens
+  Phase1Dashboard: undefined;
+  WheelOfLife: undefined;
+  SWOT: undefined;
+  FeelWheel: undefined;
+  HabitTracking: undefined;
+  ABCModel: undefined;
+  PersonalValues: undefined;
+  StrengthsWeaknesses: undefined;
+  ComfortZone: undefined;
+  KnowYourself: undefined;
+  AbilitiesRating: undefined;
+  ThoughtAwareness: undefined;
 };
 
 /**
