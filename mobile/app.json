@@ -34,6 +34,11 @@
         "android.permission.RECORD_AUDIO"
       ]
     },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/icon.png"
+    },
     "plugins": [
       "expo-splash-screen"
     ],

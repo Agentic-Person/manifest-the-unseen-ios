@@ -1,9 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-11-21
+**Last Updated**: 2025-11-22
 **Project**: Manifest the Unseen iOS App
-**Timeline**: Week 3 of 28 (Infrastructure + Authentication Phase)
-**Status**: Active Development - Infrastructure Testing Phase
+**Platform**: Mobile-First (iOS primary, Android future)
+**Timeline**: Week 3 of 28 (Infrastructure + Design Phase)
+**Status**: Active Development - Design Assets Complete
 
 ---
 
@@ -16,13 +17,17 @@
 - **Actual Status**: ✅ Ahead of schedule - Expo setup complete, ready for Week 4
 
 ### Last Activity
-- **Date**: November 21, 2025
-- **Duration**: Infrastructure testing session (~45 minutes)
-- **What Was Done**: Executed MCP infrastructure tests. Verified all 8 database tables and 23 RLS policies. Tested auth API end-to-end (signup → email confirm → login). Created test user. Discovered TypeScript and Expo web compatibility issues.
-- **Completed**: Infrastructure verified, auth working E2E
-- **Session Log**: `agent-orchestration/logs/sessions/2025-11/session-2025-11-21-infra-test.md`
+- **Date**: November 22, 2025
+- **Duration**: Design mockup session (~2 hours)
+- **What Was Done**: Generated and iterated on UI mockups using Canva MCP server. Created dark-theme designs for Wheel of Life, Phase 1 Dashboard, SWOT Analysis. Multiple iterations on app logo (monk + chakras + mandala). Created comprehensive design documentation.
+- **Completed**: All screen mockups approved, **APP LOGO FINALIZED**
+- **Session Log**: `agent-orchestration/logs/sessions/2025-11/session-2025-11-22.md`
+- **Design Doc**: `docs/APP-DESIGN.md` (v1.2)
 
 ### What's Working Right Now
+- ✅ **App Logo** - Final design approved: Monk + Chakras + Mandala wheel ([Canva](https://www.canva.com/design/DAG5fDUuSKw/vrxVe9MlJt0uA7o-oI2BhQ/edit))
+- ✅ **UI Mockups** - Wheel of Life, Dashboard, SWOT Analysis (all approved in Canva)
+- ✅ **Design Spec** - `docs/APP-DESIGN.md` (v1.2) + `docs/color-palette.html` (interactive tool)
 - ✅ **Auth Screens** - Test: `cd mobile && npm start`, navigate Welcome → Login → Signup
 - ✅ **Design System** - Test: Open any screen, components use brand theme (purple/gold)
 - ✅ **iOS Expo Go** - Test: `npm start` → scan QR on iPhone → app loads in Expo Go
@@ -35,13 +40,15 @@
 
 ### What's NOT Working Yet
 - ❌ **Android Emulator** - Not installed yet (need to follow docs/android-emulator-setup.md)
-- ❌ **Expo Web Build** - `import.meta` compatibility issue blocks browser testing
-- ❌ **TypeScript Check** - `moduleResolution` config issue in tsconfig.json
 - ❌ **Apple Sign-In** - Requires Apple Developer credentials (placeholder exists)
 - ❌ **Workbook Screens** - Not yet implemented (Week 4-5 priority)
 - ❌ **Voice Journaling** - Planned for Week 7-8
 - ❌ **AI Chat** - Planned for Week 15-18
 - ❌ **Meditation Player** - Planned for Week 13-14
+
+### Recently Fixed (2025-11-22)
+- ✅ **TypeScript Check** - Fixed `moduleResolution` config (moved `extends` to top of tsconfig.json)
+- ✅ **Expo Web Build** - Fixed: Added web bundler config to app.json, cleaned babel.config.js
 
 ---
 
@@ -434,7 +441,7 @@ Check with: `npx supabase status`
 |------------|---------|--------|-------------|------------|
 | **Supabase** | Database queries, migrations | 🎯 Priority | Verify tables, RLS, auth config | All database operations |
 | **Playwright** | E2E testing, browser automation | 🎯 Priority | Automate auth flow tests | CI/CD testing pipeline |
-| **Canva** | Design asset generation | 📋 Week 25+ | - | App icons, splash screens, UI mockups |
+| **Canva** | Design asset generation | ✅ **Active** | UI mockups, app logo, screen designs | Store screenshots, marketing assets |
 | Desktop Commander | File operations, processes | ✅ Active | File system access | - |
 | GitHub | Repository operations | ✅ Active | PR management | - |
 
@@ -643,6 +650,11 @@ cp agent-orchestration/tasks/templates/implementation-task.md \
 - **[TDD](./docs/manifest-the-unseen-tdd.md)** - Technical Design Document (architecture, API specs, database schema)
 - **[Summary](./docs/manifest-the-unseen-summary.md)** - Quick reference for key decisions and tech stack
 
+### Design Assets (NEW - Nov 22)
+- **[App Design Spec](./docs/APP-DESIGN.md)** - Visual design system, screen mockups, logo, color palette (v1.2)
+- **[Color Palette Tool](./docs/color-palette.html)** - Interactive HTML tool for color preview/editing
+- **[Final Logo](https://www.canva.com/design/DAG5fDUuSKw/vrxVe9MlJt0uA7o-oI2BhQ/edit)** - Approved: Monk + Chakras + Mandala (Canva)
+
 ### Setup Guides (For New Sessions/Context)
 - **[Android Emulator Setup](./docs/android-emulator-setup.md)** (650 lines) - Complete Android Studio installation
 - **[iOS Expo Go Setup](./docs/ios-expo-go-setup.md)** (550 lines) - iPhone/iPad testing workflow
@@ -652,7 +664,10 @@ cp agent-orchestration/tasks/templates/implementation-task.md \
 ### Session Logs (Chronological History)
 - **[Session 2025-11-17](./agent-orchestration/logs/sessions/2025-11/session-2025-11-17.md)** - Day 1 (Infrastructure)
 - **[Session 2025-11-18](./agent-orchestration/logs/sessions/2025-11/session-2025-11-18.md)** - Day 2 (Auth + Design)
-- **[Session 2025-11-19](./agent-orchestration/logs/sessions/2025-11/session-2025-11-19.md)** - Day 3 (Expo) ← TODAY
+- **[Session 2025-11-19](./agent-orchestration/logs/sessions/2025-11/session-2025-11-19.md)** - Day 3 (Expo)
+- **[Session 2025-11-20](./agent-orchestration/logs/sessions/2025-11/session-2025-11-20.md)** - Day 4
+- **[Session 2025-11-21](./agent-orchestration/logs/sessions/2025-11/session-2025-11-21.md)** - Day 5 (Infra Testing)
+- **[Session 2025-11-22](./agent-orchestration/logs/sessions/2025-11/session-2025-11-22.md)** - Day 6 (Design Mockups + Logo) ← TODAY
 - **[Week 1 Summary](./agent-orchestration/logs/sessions/2025-11/WEEK-1-SUMMARY.md)** - Infrastructure week recap
 - **[Week 2 Summary](./agent-orchestration/logs/sessions/2025-11/WEEK-2-SUMMARY.md)** - Design + Auth week recap
 
@@ -669,6 +684,35 @@ cp agent-orchestration/tasks/templates/implementation-task.md \
 ---
 
 ## Change Log
+
+### 2025-11-22 - Design Mockups & Logo Finalization
+**Duration**: ~2 hours
+**Agent**: Canva MCP Server (AI design generation)
+
+**Added**:
+- `docs/APP-DESIGN.md` (v1.2) - Comprehensive design specification
+- `docs/color-palette.html` - Interactive color palette tool
+- `agent-orchestration/logs/sessions/2025-11/session-2025-11-22.md` - Session log
+
+**Design Deliverables** (all in Canva):
+- ✅ Wheel of Life mockups (4 variations, dark theme, target/bullseye style)
+- ✅ Phase 1 Dashboard mockups (4 variations, spiritual aesthetic)
+- ✅ SWOT Analysis mockups (4 variations, organic flower petals NOT corporate grid)
+- ✅ **App Logo APPROVED**: Pencil-sketched monk + 7 colored chakras + mandala wheel
+  - Final: https://www.canva.com/design/DAG5fDUuSKw/vrxVe9MlJt0uA7o-oI2BhQ/edit
+
+**Design Decisions Made**:
+- Dark theme: #1a1a2e primary background (NO bright whites)
+- Cultural aesthetic: Ancient Tibetan/Hindu/Mayan fusion
+- Visual style: Hand-drawn/pencil sketch (NOT flat digital)
+- Color palette: Muted jewel tones (purple #4a1a6b, gold #c9a227, teal #1a5f5f)
+
+**Notes**:
+- Multiple logo iterations based on user feedback
+- Final logo combines: sketch monk + chakra symbols + halo + mandala wheel background
+- Design docs now available for React Native implementation
+
+---
 
 ### 2025-11-19 - Expo SDK 54 Configuration Complete
 **Commits**: 150c70f, c50aff5, 5ee60ea, 8eb5cbd
@@ -812,7 +856,7 @@ npm run type-check
 
 ---
 
-**Last Updated by**: Claude Code (Orchestration Session)
-**Session Date**: November 19, 2025
-**Next Scheduled Review**: On next session start (Week 4, Day 1)
-**Document Version**: 1.0.0
+**Last Updated by**: Claude Code (Design Session)
+**Session Date**: November 22, 2025
+**Next Scheduled Review**: On next session start (Week 4)
+**Document Version**: 1.1.0
