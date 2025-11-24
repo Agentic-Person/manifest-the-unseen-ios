@@ -34,3 +34,15 @@ export {
 } from './queryClient';
 
 export type { Database } from './supabase';
+
+// Workbook service
+export {
+  getWorkbookProgress,
+  getAllWorkbookProgress,
+  getPhaseProgress,
+  upsertWorkbookProgress,
+  markWorksheetComplete,
+  deleteWorkbookProgress,
+  resetPhaseProgress,
+  resetAllProgress,
+} from './workbook';

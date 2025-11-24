@@ -39,3 +39,13 @@ export {
   useActiveTab,
   useOnboarding,
 } from './appStore';
+
+// Workbook store
+export {
+  useWorkbookStore,
+  useCurrentPhase,
+  useCurrentWorksheet,
+  useSaveStatus,
+  useLastSavedAt,
+  useSaveError,
+} from './workbookStore';
