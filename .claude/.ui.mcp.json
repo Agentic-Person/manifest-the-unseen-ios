@@ -1,0 +1,25 @@
+{
+	"$schema": "https://modelcontextprotocol.io/schema/mcp-config.json",
+	"mcpServers": {
+		"playwright": {
+			"command": "npx",
+			"args": ["-y", "@executeautomation/playwright-mcp-server"]
+		},
+		"sequential-thinking": {
+			"command": "npx",
+			"args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+		},
+		"memory": {
+			"command": "npx",
+			"args": ["-y", "@modelcontextprotocol/server-memory"]
+		},
+		"Canva": {
+			"command": "npx",
+			"args": [
+			  "-y",
+			  "mcp-remote@latest",
+			  "https://mcp.canva.com/mcp"
+			]
+		}
+	}
+}
