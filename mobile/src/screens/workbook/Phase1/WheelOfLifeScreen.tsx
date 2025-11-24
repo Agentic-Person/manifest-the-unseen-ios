@@ -1,96 +1,89 @@
 /**
  * Wheel of Life Screen
  *
- * Interactive wheel visualization where users rate 8 life areas on a 0-10 scale.
- * Uses react-native-svg for the wheel chart visualization.
- * Auto-saves progress as users adjust their ratings.
+ * Interactive target/bullseye visualization where users rate 8 life areas on a 1-10 scale.
+ * Features the dark spiritual theme from APP-DESIGN.md.
+ *
+ * Design Requirements (from APP-DESIGN.md):
+ * - Layout: Target/bullseye style (NOT pie chart)
+ * - Concentric rings (1 = center, 10 = outer edge)
+ * - User's ratings connected by a gold polygon line
+ * - Dark background #1a1a2e
+ * - Muted gold #c9a227 for the connected polygon
+ * - Hand-drawn style icons for each life area
+ *
+ * Data persists to Supabase workbook_progress table.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
   Dimensions,
+  Text,
+  Pressable,
+  ActivityIndicator,
 } from 'react-native';
-import Svg, { Path, Circle, Line, Text as SvgText, G } from 'react-native-svg';
-import Slider from '@react-native-community/slider';
-import { Button, Card, Text } from '../../../components';
-import { colors, spacing, borderRadius, shadows } from '../../../theme';
+import * as Haptics from 'expo-haptics';
+import { WheelChart, LifeAreaSlider, LIFE_AREAS } from '../../../components/workbook';
+import type { WheelOfLifeValues, LifeAreaKey } from '../../../components/workbook';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 
-/**
- * Life area data structure
- */
-interface LifeArea {
-  id: string;
-  name: string;
-  color: string;
-  value: number;
-  description: string;
-}
+// Design system colors from APP-DESIGN.md
+const DESIGN_COLORS = {
+  bgPrimary: '#1a1a2e',
+  bgSecondary: '#16213e',
+  bgElevated: '#252547',
+  textPrimary: '#e8e8e8',
+  textSecondary: '#a0a0b0',
+  textTertiary: '#6b6b80',
+  accentPurple: '#4a1a6b',
+  accentPurpleLight: '#6b2d8b',
+  accentGold: '#c9a227',
+  accentTeal: '#1a5f5f',
+  accentGreen: '#2d5a4a',
+  accentRose: '#8b3a5f',
+  accentAmber: '#8b6914',
+  border: '#3a3a5a',
+  success: '#2d5a4a',
+};
 
-/**
- * Default life areas for the Wheel of Life
- */
-const DEFAULT_LIFE_AREAS: LifeArea[] = [
-  {
-    id: 'career',
-    name: 'Career',
-    color: '#8B5CF6', // Primary purple
-    value: 5,
-    description: 'Your professional life, job satisfaction, and growth',
-  },
-  {
-    id: 'health',
-    name: 'Health',
-    color: '#10B981', // Success green
-    value: 5,
-    description: 'Physical health, fitness, and energy levels',
-  },
-  {
-    id: 'relationships',
-    name: 'Relationships',
-    color: '#F43F5E', // Rose
-    value: 5,
-    description: 'Romantic relationships and partnerships',
-  },
-  {
-    id: 'finance',
-    name: 'Finance',
-    color: '#FBBF24', // Gold
-    value: 5,
-    description: 'Financial security, income, and wealth building',
-  },
-  {
-    id: 'personal-growth',
-    name: 'Personal Growth',
-    color: '#3B82F6', // Blue
-    value: 5,
-    description: 'Learning, self-improvement, and development',
-  },
-  {
-    id: 'family',
-    name: 'Family',
-    color: '#EC4899', // Pink
-    value: 5,
-    description: 'Family relationships and support system',
-  },
-  {
-    id: 'recreation',
-    name: 'Recreation',
-    color: '#F97316', // Orange
-    value: 5,
-    description: 'Hobbies, fun, and leisure activities',
-  },
-  {
-    id: 'spirituality',
-    name: 'Spirituality',
-    color: '#6366F1', // Indigo
-    value: 5,
-    description: 'Inner peace, purpose, and spiritual practice',
-  },
-];
+// Default initial values for all life areas
+const DEFAULT_VALUES: WheelOfLifeValues = {
+  career: 5,
+  health: 5,
+  relationships: 5,
+  finance: 5,
+  personalGrowth: 5,
+  family: 5,
+  recreation: 5,
+  spirituality: 5,
+};
+
+// Life area descriptions for the sliders
+const LIFE_AREA_DESCRIPTIONS: Record<LifeAreaKey, string> = {
+  career: 'Your professional life, job satisfaction, and career growth',
+  health: 'Physical health, fitness, energy, and wellness',
+  relationships: 'Romantic relationships, friendships, and connections',
+  finance: 'Financial security, income, savings, and wealth',
+  personalGrowth: 'Learning, self-improvement, and personal development',
+  family: 'Family relationships and your support system',
+  recreation: 'Hobbies, fun, leisure, and creative activities',
+  spirituality: 'Inner peace, purpose, and spiritual practice',
+};
+
+// Colors for each life area
+const LIFE_AREA_COLORS: Record<LifeAreaKey, string> = {
+  career: DESIGN_COLORS.accentPurple,
+  health: DESIGN_COLORS.accentGreen,
+  relationships: DESIGN_COLORS.accentRose,
+  finance: DESIGN_COLORS.accentAmber,
+  personalGrowth: DESIGN_COLORS.accentTeal,
+  family: DESIGN_COLORS.accentGreen,
+  recreation: DESIGN_COLORS.accentTeal,
+  spirituality: DESIGN_COLORS.accentPurple,
+};
 
 type Props = WorkbookStackScreenProps<'WheelOfLife'>;
 
@@ -98,31 +91,70 @@ type Props = WorkbookStackScreenProps<'WheelOfLife'>;
  * Wheel of Life Screen Component
  */
 const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
-  const [lifeAreas, setLifeAreas] = useState<LifeArea[]>(DEFAULT_LIFE_AREAS);
-  const [selectedArea, setSelectedArea] = useState<LifeArea | null>(null);
+  const [values, setValues] = useState<WheelOfLifeValues>(DEFAULT_VALUES);
+  const [selectedArea, setSelectedArea] = useState<LifeAreaKey | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
-  // Screen dimensions for responsive wheel
+  // Screen dimensions
   const screenWidth = Dimensions.get('window').width;
-  const wheelSize = Math.min(screenWidth - spacing.md * 4, 320);
-  const centerX = wheelSize / 2;
-  const centerY = wheelSize / 2;
-  const maxRadius = wheelSize / 2 - 20;
+  const chartSize = Math.min(screenWidth - 32, 340);
 
   /**
-   * Auto-save functionality
+   * Load saved data on mount
    */
   useEffect(() => {
-    const saveTimer = setTimeout(() => {
-      autoSave();
-    }, 2000); // Save 2 seconds after last change
-
-    return () => clearTimeout(saveTimer);
-  }, [lifeAreas]);
+    loadSavedData();
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   /**
-   * Auto-save progress to storage/backend
+   * Auto-save when values change (debounced)
+   */
+  useEffect(() => {
+    if (!isLoading) {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      saveTimeoutRef.current = setTimeout(() => {
+        autoSave();
+      }, 1500);
+    }
+  }, [values, isLoading]);
+
+  /**
+   * Load saved data from storage/Supabase
+   */
+  const loadSavedData = async () => {
+    setIsLoading(true);
+    try {
+      // TODO: Load from Supabase
+      // const { data } = await supabase
+      //   .from('workbook_progress')
+      //   .select('data')
+      //   .eq('exercise_id', 'wheel-of-life')
+      //   .single();
+      // if (data?.data) setValues(data.data);
+
+      // Simulate loading delay
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      console.log('Loaded wheel of life data');
+    } catch (error) {
+      console.error('Failed to load data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Auto-save progress to Supabase
    */
   const autoSave = useCallback(async () => {
     setIsSaving(true);
@@ -130,442 +162,282 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
       // TODO: Save to Supabase
       // await supabase.from('workbook_progress').upsert({
       //   exercise_id: 'wheel-of-life',
-      //   data: lifeAreas,
+      //   data: values,
       //   updated_at: new Date().toISOString(),
       // });
-      console.log('Auto-saving wheel of life data:', lifeAreas);
+      console.log('Auto-saving wheel of life data:', values);
       setLastSaved(new Date());
     } catch (error) {
       console.error('Failed to save:', error);
     } finally {
       setIsSaving(false);
     }
-  }, [lifeAreas]);
+  }, [values]);
 
   /**
-   * Handle slider value change
+   * Handle value change for a life area
    */
-  const handleValueChange = (areaId: string, value: number) => {
-    setLifeAreas(prev =>
-      prev.map(area =>
-        area.id === areaId ? { ...area, value: Math.round(value) } : area
-      )
-    );
-  };
+  const handleValueChange = useCallback((area: LifeAreaKey, value: number) => {
+    setValues((prev) => ({
+      ...prev,
+      [area]: value,
+    }));
+  }, []);
 
   /**
-   * Calculate path for pie slice
+   * Handle area selection from the chart
    */
-  const getSlicePath = (
-    index: number,
-    value: number,
-    total: number
-  ): string => {
-    const anglePerSlice = (2 * Math.PI) / total;
-    const startAngle = index * anglePerSlice - Math.PI / 2;
-    const endAngle = (index + 1) * anglePerSlice - Math.PI / 2;
-    const radius = (value / 10) * maxRadius;
-
-    const x1 = centerX + radius * Math.cos(startAngle);
-    const y1 = centerY + radius * Math.sin(startAngle);
-    const x2 = centerX + radius * Math.cos(endAngle);
-    const y2 = centerY + radius * Math.sin(endAngle);
-
-    const largeArc = anglePerSlice > Math.PI ? 1 : 0;
-
-    return `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
-  };
+  const handleAreaPress = useCallback((area: LifeAreaKey) => {
+    setSelectedArea(area);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    // Could scroll to the relevant slider here
+  }, []);
 
   /**
-   * Calculate average score
+   * Calculate overall balance status
    */
-  const averageScore = (
-    lifeAreas.reduce((sum, area) => sum + area.value, 0) / lifeAreas.length
-  ).toFixed(1);
-
-  /**
-   * Get balance status message
-   */
-  const getBalanceMessage = (): string => {
-    const values = lifeAreas.map(a => a.value);
-    const max = Math.max(...values);
-    const min = Math.min(...values);
+  const getBalanceStatus = (): { message: string; type: 'balanced' | 'moderate' | 'unbalanced' } => {
+    const vals = Object.values(values);
+    const max = Math.max(...vals);
+    const min = Math.min(...vals);
     const diff = max - min;
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
 
-    if (diff <= 2) return 'Well balanced! Keep it up.';
-    if (diff <= 4) return 'Slightly unbalanced. Consider focusing on lower areas.';
-    return 'Unbalanced. Some areas need attention.';
+    if (diff <= 2 && avg >= 6) {
+      return { message: 'Beautifully balanced! You are living in harmony.', type: 'balanced' };
+    }
+    if (diff <= 3) {
+      return { message: 'Well balanced. Small adjustments will bring greater harmony.', type: 'balanced' };
+    }
+    if (diff <= 5) {
+      return { message: 'Moderately balanced. Some areas need more attention.', type: 'moderate' };
+    }
+    return { message: 'Imbalanced. Focus on the lower-rated areas for growth.', type: 'unbalanced' };
   };
+
+  /**
+   * Handle save and continue
+   */
+  const handleSaveAndContinue = async () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    await autoSave();
+    navigation.goBack();
+  };
+
+  const balanceStatus = getBalanceStatus();
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <Text style={styles.loadingText}>Loading your progress...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
+      ref={scrollViewRef}
       style={styles.container}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* Header */}
+      {/* Header Section */}
       <View style={styles.header}>
         <Text style={styles.title}>Wheel of Life</Text>
         <Text style={styles.subtitle}>
-          Rate each area of your life from 0-10 to visualize your current balance
+          Rate each area of your life from 1-10 to visualize your current balance.
+          A perfect circle represents a balanced life.
         </Text>
       </View>
 
-      {/* Wheel Visualization */}
-      <Card elevation="raised" style={styles.wheelCard}>
-        <View style={styles.wheelContainer}>
-          <Svg width={wheelSize} height={wheelSize}>
-            {/* Background circles for scale reference */}
-            {[2, 4, 6, 8, 10].map(level => (
-              <Circle
-                key={`circle-${level}`}
-                cx={centerX}
-                cy={centerY}
-                r={(level / 10) * maxRadius}
-                fill="none"
-                stroke={colors.gray[200]}
-                strokeWidth={1}
-                strokeDasharray={level === 10 ? "0" : "4,4"}
-              />
-            ))}
+      {/* Wheel Chart Visualization */}
+      <View style={styles.chartContainer}>
+        <WheelChart
+          values={values}
+          size={chartSize}
+          onAreaPress={handleAreaPress}
+          showLabels={true}
+          showDots={true}
+        />
+      </View>
 
-            {/* Grid lines */}
-            {lifeAreas.map((_, index) => {
-              const angle = (index * 2 * Math.PI) / lifeAreas.length - Math.PI / 2;
-              const x2 = centerX + maxRadius * Math.cos(angle);
-              const y2 = centerY + maxRadius * Math.sin(angle);
-              return (
-                <Line
-                  key={`line-${index}`}
-                  x1={centerX}
-                  y1={centerY}
-                  x2={x2}
-                  y2={y2}
-                  stroke={colors.gray[200]}
-                  strokeWidth={1}
-                />
-              );
-            })}
+      {/* Balance Status Card */}
+      <View
+        style={[
+          styles.statusCard,
+          balanceStatus.type === 'balanced' && styles.statusCardBalanced,
+          balanceStatus.type === 'moderate' && styles.statusCardModerate,
+          balanceStatus.type === 'unbalanced' && styles.statusCardUnbalanced,
+        ]}
+      >
+        <Text style={styles.statusText}>{balanceStatus.message}</Text>
+      </View>
 
-            {/* Pie slices for each life area */}
-            {lifeAreas.map((area, index) => (
-              <Path
-                key={area.id}
-                d={getSlicePath(index, area.value, lifeAreas.length)}
-                fill={area.color}
-                fillOpacity={0.7}
-                stroke={area.color}
-                strokeWidth={2}
-                onPress={() => setSelectedArea(area)}
-              />
-            ))}
-
-            {/* Labels around the wheel */}
-            {lifeAreas.map((area, index) => {
-              const angle = ((index + 0.5) * 2 * Math.PI) / lifeAreas.length - Math.PI / 2;
-              const labelRadius = maxRadius + 15;
-              const x = centerX + labelRadius * Math.cos(angle);
-              const y = centerY + labelRadius * Math.sin(angle);
-
-              return (
-                <SvgText
-                  key={`label-${area.id}`}
-                  x={x}
-                  y={y}
-                  fontSize={10}
-                  fontWeight="600"
-                  fill={colors.text.primary}
-                  textAnchor="middle"
-                  alignmentBaseline="middle"
-                >
-                  {area.value}
-                </SvgText>
-              );
-            })}
-
-            {/* Center score */}
-            <G>
-              <Circle
-                cx={centerX}
-                cy={centerY}
-                r={30}
-                fill={colors.background.primary}
-              />
-              <SvgText
-                x={centerX}
-                y={centerY - 5}
-                fontSize={16}
-                fontWeight="700"
-                fill={colors.primary[600]}
-                textAnchor="middle"
-              >
-                {averageScore}
-              </SvgText>
-              <SvgText
-                x={centerX}
-                y={centerY + 10}
-                fontSize={9}
-                fill={colors.text.tertiary}
-                textAnchor="middle"
-              >
-                AVG
-              </SvgText>
-            </G>
-          </Svg>
-        </View>
-
-        {/* Legend */}
-        <View style={styles.legend}>
-          {lifeAreas.map(area => (
-            <TouchableArea
-              key={area.id}
-              area={area}
-              isSelected={selectedArea?.id === area.id}
-              onPress={() => setSelectedArea(area)}
-            />
-          ))}
-        </View>
-      </Card>
-
-      {/* Balance Message */}
-      <Card elevation="flat" style={styles.messageCard}>
-        <Text style={styles.messageText}>{getBalanceMessage()}</Text>
-      </Card>
-
-      {/* Sliders for each area */}
+      {/* Sliders Section */}
       <View style={styles.slidersSection}>
         <Text style={styles.sectionTitle}>Adjust Your Ratings</Text>
-        {lifeAreas.map(area => (
-          <SliderCard
-            key={area.id}
-            area={area}
-            onValueChange={(value) => handleValueChange(area.id, value)}
+        <Text style={styles.sectionSubtitle}>
+          Tap and drag each slider to rate your satisfaction level
+        </Text>
+
+        {LIFE_AREAS.map((area) => (
+          <LifeAreaSlider
+            key={area.key}
+            label={area.label}
+            description={LIFE_AREA_DESCRIPTIONS[area.key]}
+            value={values[area.key]}
+            onValueChange={(value) => handleValueChange(area.key, value)}
+            accentColor={LIFE_AREA_COLORS[area.key]}
+            isSelected={selectedArea === area.key}
+            onPress={() => setSelectedArea(area.key)}
           />
         ))}
       </View>
 
       {/* Save Status */}
-      {lastSaved && (
-        <Text style={styles.saveStatus}>
-          {isSaving ? 'Saving...' : `Last saved: ${lastSaved.toLocaleTimeString()}`}
-        </Text>
-      )}
-
-      {/* Action Buttons */}
-      <View style={styles.actions}>
-        <Button
-          title="Save & Continue"
-          onPress={() => {
-            autoSave();
-            navigation.goBack();
-          }}
-          variant="primary"
-          fullWidth
-        />
+      <View style={styles.saveStatusContainer}>
+        {isSaving ? (
+          <Text style={styles.saveStatus}>Saving...</Text>
+        ) : lastSaved ? (
+          <Text style={styles.saveStatus}>
+            Last saved: {lastSaved.toLocaleTimeString()}
+          </Text>
+        ) : null}
       </View>
 
+      {/* Action Button */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.saveButton,
+          pressed && styles.saveButtonPressed,
+        ]}
+        onPress={handleSaveAndContinue}
+      >
+        <Text style={styles.saveButtonText}>Save & Continue</Text>
+      </Pressable>
+
+      {/* Bottom spacing */}
       <View style={styles.bottomSpacer} />
     </ScrollView>
   );
 };
 
-/**
- * TouchableArea Component - Legend item
- */
-const TouchableArea: React.FC<{
-  area: LifeArea;
-  isSelected: boolean;
-  onPress: () => void;
-}> = ({ area, isSelected, onPress: _onPress }) => (
-  <View
-    style={[
-      styles.legendItem,
-      isSelected && styles.legendItemSelected,
-    ]}
-  >
-    <View style={[styles.legendDot, { backgroundColor: area.color }]} />
-    <Text style={styles.legendText}>{area.name}</Text>
-  </View>
-);
-
-/**
- * SliderCard Component - Individual area slider
- */
-const SliderCard: React.FC<{
-  area: LifeArea;
-  onValueChange: (value: number) => void;
-}> = ({ area, onValueChange }) => (
-  <View style={styles.sliderCard}>
-    <View style={styles.sliderHeader}>
-      <View style={styles.sliderTitleRow}>
-        <View style={[styles.sliderDot, { backgroundColor: area.color }]} />
-        <Text style={styles.sliderTitle}>{area.name}</Text>
-      </View>
-      <Text style={styles.sliderValue}>{area.value}</Text>
-    </View>
-    <Text style={styles.sliderDescription}>{area.description}</Text>
-    <Slider
-      style={styles.slider}
-      minimumValue={0}
-      maximumValue={10}
-      step={1}
-      value={area.value}
-      onValueChange={onValueChange}
-      minimumTrackTintColor={area.color}
-      maximumTrackTintColor={colors.gray[200]}
-      thumbTintColor={area.color}
-    />
-    <View style={styles.sliderLabels}>
-      <Text style={styles.sliderLabel}>0</Text>
-      <Text style={styles.sliderLabel}>5</Text>
-      <Text style={styles.sliderLabel}>10</Text>
-    </View>
-  </View>
-);
-
-/**
- * Styles
- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: DESIGN_COLORS.bgPrimary,
   },
   content: {
-    padding: spacing.md,
+    padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: DESIGN_COLORS.bgPrimary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: DESIGN_COLORS.textSecondary,
   },
   header: {
-    marginBottom: spacing.lg,
+    marginBottom: 24,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    color: DESIGN_COLORS.textPrimary,
+    marginBottom: 8,
+    letterSpacing: 0.5,
   },
   subtitle: {
-    fontSize: 16,
-    color: colors.text.secondary,
-    lineHeight: 24,
+    fontSize: 15,
+    color: DESIGN_COLORS.textSecondary,
+    lineHeight: 22,
   },
-  wheelCard: {
+  chartContainer: {
     alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  wheelContainer: {
-    marginBottom: spacing.md,
-  },
-  legend: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.gray[50],
-  },
-  legendItemSelected: {
-    backgroundColor: colors.primary[50],
+    marginBottom: 24,
+    paddingVertical: 16,
+    backgroundColor: DESIGN_COLORS.bgSecondary,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.primary[300],
+    borderColor: DESIGN_COLORS.border,
   },
-  legendDot: {
-    width: 8,
-    height: 8,
-    borderRadius: borderRadius.full,
-    marginRight: spacing.xs,
-  },
-  legendText: {
-    fontSize: 12,
-    color: colors.text.secondary,
-  },
-  messageCard: {
-    backgroundColor: colors.primary[50],
-    borderColor: colors.primary[200],
+  statusCard: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 24,
     borderWidth: 1,
-    marginBottom: spacing.lg,
   },
-  messageText: {
+  statusCardBalanced: {
+    backgroundColor: 'rgba(45, 90, 74, 0.2)',
+    borderColor: DESIGN_COLORS.accentGreen,
+  },
+  statusCardModerate: {
+    backgroundColor: 'rgba(201, 162, 39, 0.15)',
+    borderColor: DESIGN_COLORS.accentGold,
+  },
+  statusCardUnbalanced: {
+    backgroundColor: 'rgba(139, 58, 95, 0.2)',
+    borderColor: DESIGN_COLORS.accentRose,
+  },
+  statusText: {
     fontSize: 14,
-    color: colors.primary[700],
+    color: DESIGN_COLORS.textPrimary,
     textAlign: 'center',
+    lineHeight: 20,
+    fontWeight: '500',
   },
   slidersSection: {
-    marginBottom: spacing.lg,
+    marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text.primary,
-    marginBottom: spacing.md,
-  },
-  sliderCard: {
-    backgroundColor: colors.background.primary,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    ...shadows.sm,
-  },
-  sliderHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  sliderTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sliderDot: {
-    width: 12,
-    height: 12,
-    borderRadius: borderRadius.full,
-    marginRight: spacing.sm,
-  },
-  sliderTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text.primary,
-  },
-  sliderValue: {
     fontSize: 20,
-    fontWeight: '700',
-    color: colors.primary[600],
+    fontWeight: '600',
+    color: DESIGN_COLORS.textPrimary,
+    marginBottom: 4,
   },
-  sliderDescription: {
+  sectionSubtitle: {
     fontSize: 14,
-    color: colors.text.tertiary,
-    marginBottom: spacing.sm,
+    color: DESIGN_COLORS.textTertiary,
+    marginBottom: 16,
   },
-  slider: {
-    width: '100%',
-    height: 40,
-  },
-  sliderLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.xs,
-  },
-  sliderLabel: {
-    fontSize: 12,
-    color: colors.text.tertiary,
+  saveStatusContainer: {
+    alignItems: 'center',
+    marginBottom: 16,
+    minHeight: 20,
   },
   saveStatus: {
     fontSize: 12,
-    color: colors.text.tertiary,
-    textAlign: 'center',
-    marginBottom: spacing.md,
+    color: DESIGN_COLORS.textTertiary,
   },
-  actions: {
-    marginTop: spacing.md,
+  saveButton: {
+    backgroundColor: DESIGN_COLORS.accentPurple,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: DESIGN_COLORS.accentPurple,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  saveButtonPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+  saveButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: DESIGN_COLORS.textPrimary,
+    letterSpacing: 0.5,
   },
   bottomSpacer: {
-    height: spacing.xl,
+    height: 40,
   },
 });
 

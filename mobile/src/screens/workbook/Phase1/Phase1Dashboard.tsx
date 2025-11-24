@@ -215,6 +215,12 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
       case 'swot-analysis':
         navigation.navigate('SWOT');
         break;
+      case 'personal-values':
+        navigation.navigate('PersonalValues');
+        break;
+      case 'habit-tracking':
+        navigation.navigate('HabitTracking');
+        break;
       default:
         // TODO: Navigate to other exercise screens as they are implemented
         console.log('Navigate to exercise:', exerciseId);
