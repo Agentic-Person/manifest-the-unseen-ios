@@ -65,6 +65,51 @@ export type WorkbookStackParamList = {
   KnowYourself: undefined;
   AbilitiesRating: undefined;
   ThoughtAwareness: undefined;
+  // Phase 2: Values & Vision screens
+  Phase2Dashboard: undefined;
+  PurposeStatement: undefined;
+  VisionBoard: { boardId?: string };
+  LifeMission: undefined;
+  // Phase 3: Goal Setting screens
+  Phase3Dashboard: undefined;
+  SMARTGoals: undefined;
+  ActionPlan: { goalId?: string };
+  Timeline: undefined;
+  // Phase 4: Facing Fears & Limiting Beliefs screens
+  Phase4Dashboard: undefined;
+  FearInventory: undefined;
+  LimitingBeliefs: undefined;
+  FearFacingPlan: { fearId?: string };
+  // Phase 5: Cultivating Self-Love & Self-Care screens
+  Phase5Dashboard: undefined;
+  SelfLoveAffirmations: undefined;
+  SelfCareRoutine: undefined;
+  InnerChild: undefined;
+  // Phase 6: Manifestation Techniques screens
+  Phase6Dashboard: undefined;
+  ThreeSixNine: undefined;
+  Scripting: undefined;
+  WOOP: undefined;
+  // Phase 7: Practicing Gratitude screens
+  Phase7Dashboard: undefined;
+  GratitudeJournal: undefined;
+  GratitudeLetters: undefined;
+  GratitudeMeditation: undefined;
+  // Phase 8: Turning Envy Into Inspiration screens
+  Phase8Dashboard: undefined;
+  EnvyInventory: undefined;
+  InspirationReframe: undefined;
+  RoleModels: undefined;
+  // Phase 9: Trust & Surrender screens
+  Phase9Dashboard: undefined;
+  TrustAssessment: undefined;
+  SurrenderPractice: undefined;
+  Signs: undefined;
+  // Phase 10: Trust & Letting Go screens
+  Phase10Dashboard: undefined;
+  JourneyReview: undefined;
+  FutureLetter: undefined;
+  Graduation: undefined;
 };
 
 /**

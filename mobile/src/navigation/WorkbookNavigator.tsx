@@ -14,7 +14,32 @@ import { colors } from '../theme';
 import WorkbookScreen from '../screens/WorkbookScreen';
 import Phase1Dashboard from '../screens/workbook/Phase1/Phase1Dashboard';
 import WheelOfLifeScreen from '../screens/workbook/Phase1/WheelOfLifeScreen';
-import SWOTScreen from '../screens/workbook/Phase1/SWOTScreen';
+// SWOT Analysis - New organic flower petal layout (dark spiritual theme)
+import SWOTAnalysisScreen from '../screens/workbook/Phase1/SWOTAnalysisScreen';
+import ValuesAssessmentScreen from '../screens/workbook/Phase1/ValuesAssessmentScreen';
+import HabitsAuditScreen from '../screens/workbook/Phase1/HabitsAuditScreen';
+// Phase 2: Values & Vision screens
+import { VisionBoardScreen, LifeMissionScreen } from '../screens/workbook/Phase2';
+// Phase 3: Goal Setting screens
+import { SMARTGoalsScreen, TimelineScreen, ActionPlanScreen } from '../screens/workbook/Phase3';
+// Phase 4: Facing Fears & Limiting Beliefs screens
+import { FearInventoryScreen, LimitingBeliefsScreen, FearFacingPlanScreen } from '../screens/workbook/Phase4';
+// Phase 5: Cultivating Self-Love & Self-Care screens
+import {
+  SelfLoveAffirmationsScreen,
+  SelfCareRoutineScreen,
+  InnerChildScreen,
+} from '../screens/workbook/Phase5';
+// Phase 6: Manifestation Techniques screens
+import { ThreeSixNineScreen, ScriptingScreen, WOOPScreen } from '../screens/workbook/Phase6';
+// Phase 7: Practicing Gratitude screens
+import { GratitudeJournalScreen, GratitudeLettersScreen, GratitudeMeditationScreen } from '../screens/workbook/Phase7';
+// Phase 8: Turning Envy Into Inspiration screens
+import { EnvyInventoryScreen, InspirationReframeScreen, RoleModelsScreen } from '../screens/workbook/Phase8';
+// Phase 9: Trust & Surrender screens
+import { TrustAssessmentScreen, SurrenderPracticeScreen, SignsScreen } from '../screens/workbook/Phase9';
+// Phase 10: Trust & Letting Go screens
+import { JourneyReviewScreen, FutureLetterScreen, GraduationScreen } from '../screens/workbook/Phase10';
 
 const Stack = createNativeStackNavigator<WorkbookStackParamList>();
 
@@ -69,16 +94,494 @@ export const WorkbookNavigator = () => {
       />
       <Stack.Screen
         name="SWOT"
-        component={SWOTScreen}
+        component={SWOTAnalysisScreen}
         options={{
           title: 'SWOT Analysis',
+          // Dark theme header for SWOT screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="PersonalValues"
+        component={ValuesAssessmentScreen}
+        options={{
+          title: 'Personal Values',
+        }}
+      />
+      <Stack.Screen
+        name="HabitTracking"
+        component={HabitsAuditScreen}
+        options={{
+          title: 'Habit Tracking',
         }}
       />
 
       {/* TODO: Add remaining Phase 1 screens */}
-      {/* FeelWheel, HabitTracking, ABCModel, PersonalValues, etc. */}
+      {/* FeelWheel, ABCModel, etc. */}
 
-      {/* TODO: Add Phase 2-10 screens as they're built */}
+      {/* Phase 2: Values & Vision */}
+      <Stack.Screen
+        name="LifeMission"
+        component={LifeMissionScreen}
+        options={{
+          title: 'Life Mission',
+          // Dark theme header for Life Mission screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="VisionBoard"
+        component={VisionBoardScreen}
+        options={{
+          title: 'Vision Board',
+          // Dark theme header for Vision Board screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+
+      {/* Phase 3: Goal Setting */}
+      <Stack.Screen
+        name="SMARTGoals"
+        component={SMARTGoalsScreen}
+        options={{
+          title: 'SMART Goals',
+          // Dark theme header for SMART Goals screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="Timeline"
+        component={TimelineScreen}
+        options={{
+          title: 'Goal Timeline',
+          // Dark theme header for Timeline screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="ActionPlan"
+        component={ActionPlanScreen}
+        options={{
+          title: 'Action Plan',
+          // Dark theme header for Action Plan screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+
+      {/* Phase 4: Facing Fears & Limiting Beliefs */}
+      <Stack.Screen
+        name="FearInventory"
+        component={FearInventoryScreen}
+        options={{
+          title: 'Fear Inventory',
+          // Dark theme header for Fear Inventory screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="LimitingBeliefs"
+        component={LimitingBeliefsScreen}
+        options={{
+          title: 'Limiting Beliefs',
+          // Dark theme header for Limiting Beliefs screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="FearFacingPlan"
+        component={FearFacingPlanScreen}
+        options={{
+          title: 'Fear Facing Plan',
+          // Dark theme header for Fear Facing Plan screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+
+      {/* Phase 5: Cultivating Self-Love & Self-Care */}
+      <Stack.Screen
+        name="SelfLoveAffirmations"
+        component={SelfLoveAffirmationsScreen}
+        options={{
+          title: 'Self-Love Affirmations',
+          // Dark theme header for Self-Love Affirmations screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="SelfCareRoutine"
+        component={SelfCareRoutineScreen}
+        options={{
+          title: 'Self-Care Routines',
+          // Dark theme header for Self-Care Routine screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="InnerChild"
+        component={InnerChildScreen}
+        options={{
+          title: 'Inner Child Healing',
+          // Dark theme header with softer accent for nurturing feel
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: '#6b5b8a', // Softer lavender for inner child work
+        }}
+      />
+
+      {/* Phase 6: Manifestation Techniques */}
+      <Stack.Screen
+        name="ThreeSixNine"
+        component={ThreeSixNineScreen}
+        options={{
+          title: '3-6-9 Method',
+          // Dark theme header for ThreeSixNine screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="Scripting"
+        component={ScriptingScreen}
+        options={{
+          title: 'Scripting',
+          // Dark theme header for Scripting screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="WOOP"
+        component={WOOPScreen}
+        options={{
+          title: 'WOOP Method',
+          // Dark theme header for WOOP screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+
+      {/* Phase 7: Practicing Gratitude */}
+      <Stack.Screen
+        name="GratitudeJournal"
+        component={GratitudeJournalScreen}
+        options={{
+          title: 'Gratitude Journal',
+          // Dark theme header for Gratitude Journal screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="GratitudeLetters"
+        component={GratitudeLettersScreen}
+        options={{
+          title: 'Gratitude Letters',
+          // Dark theme header for Gratitude Letters screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="GratitudeMeditation"
+        component={GratitudeMeditationScreen}
+        options={{
+          title: 'Gratitude Meditation',
+          // Dark theme header for Gratitude Meditation screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+
+      {/* Phase 8: Turning Envy Into Inspiration */}
+      <Stack.Screen
+        name="EnvyInventory"
+        component={EnvyInventoryScreen}
+        options={{
+          title: 'Envy Inventory',
+          // Dark theme header for Envy Inventory screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="InspirationReframe"
+        component={InspirationReframeScreen}
+        options={{
+          title: 'Inspiration Reframe',
+          // Dark theme header for Inspiration Reframe screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="RoleModels"
+        component={RoleModelsScreen}
+        options={{
+          title: 'Role Models',
+          // Dark theme header for Role Models screen
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+
+      {/* Phase 9: Trust & Surrender - screens already registered above */}
+      <Stack.Screen
+        name="TrustAssessment"
+        component={TrustAssessmentScreen}
+        options={{
+          title: 'Trust Assessment',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="SurrenderPractice"
+        component={SurrenderPracticeScreen}
+        options={{
+          title: 'Surrender Practice',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="Signs"
+        component={SignsScreen}
+        options={{
+          title: 'Signs & Synchronicities',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+
+      {/* Phase 10: Trust & Letting Go - FINAL PHASE */}
+      <Stack.Screen
+        name="JourneyReview"
+        component={JourneyReviewScreen}
+        options={{
+          title: 'Journey Review',
+          // Celebratory gold theme for Phase 10
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.accentGold || '#c9a227',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="FutureLetter"
+        component={FutureLetterScreen}
+        options={{
+          title: 'Letter to Future Self',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.accentGold || '#c9a227',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="Graduation"
+        component={GraduationScreen}
+        options={{
+          title: 'Graduation',
+          // Special celebratory header for graduation
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: '700',
+            color: colors.dark?.accentGold || '#c9a227',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
     </Stack.Navigator>
   );
 };

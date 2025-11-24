@@ -4,7 +4,16 @@
       "Bash(git add:*)",
       "Bash(git rm:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(dir /B C:projectsmobileAppsmanifest-the-unseen-iosagent-orchestrationtasksactive)",
+      "Bash(dir:*)",
+      "Bash(node --version:*)",
+      "Bash(npm:*)",
+      "Bash(test:*)",
+      "Bash(npx supabase:*)",
+      "Bash(docker exec:*)",
+      "Bash(npx tsc:*)",
+      "mcp__Canva__search-designs"
     ],
     "deny": [],
     "ask": []

@@ -154,6 +154,51 @@ export const colors = {
     gold: '#fbbf24',         // secondary-400 (main gold accent)
   },
 
+  // Dark theme colors (spiritual/meditation app aesthetic)
+  dark: {
+    bgPrimary: '#1a1a2e',     // Deep charcoal (primary background)
+    bgSecondary: '#16213e',   // Dark slate blue (alternative background)
+    bgElevated: '#252547',    // Elevated surface (cards)
+    textPrimary: '#e8e8e8',   // Soft off-white (NEVER pure white)
+    textSecondary: '#a0a0b0', // Muted gray
+    textTertiary: '#6b6b80',  // Subtle hints
+    accentPurple: '#4a1a6b',  // Deep purple (primary accent)
+    accentTeal: '#1a5f5f',    // Deep teal (opportunities, wisdom)
+    accentGold: '#c9a227',    // Muted gold (enlightenment, value)
+    accentRose: '#8b3a5f',    // Deep rose (heart, compassion)
+    accentGreen: '#2d5a4a',   // Forest green (growth, nature)
+    accentAmber: '#8b6914',   // Deep amber (earth, grounding)
+    accentBurgundy: '#6b2d3d', // Deep burgundy (awareness, threats)
+  },
+
+  // SWOT Analysis specific colors (dark theme)
+  swot: {
+    strengths: {
+      primary: '#2d5a4a',     // Deep forest green
+      light: 'rgba(45, 90, 74, 0.2)',
+      border: 'rgba(45, 90, 74, 0.4)',
+      glow: 'rgba(45, 90, 74, 0.3)',
+    },
+    weaknesses: {
+      primary: '#8b6914',     // Deep amber
+      light: 'rgba(139, 105, 20, 0.2)',
+      border: 'rgba(139, 105, 20, 0.4)',
+      glow: 'rgba(139, 105, 20, 0.3)',
+    },
+    opportunities: {
+      primary: '#1a5f5f',     // Deep teal
+      light: 'rgba(26, 95, 95, 0.2)',
+      border: 'rgba(26, 95, 95, 0.4)',
+      glow: 'rgba(26, 95, 95, 0.3)',
+    },
+    threats: {
+      primary: '#6b2d3d',     // Deep burgundy
+      light: 'rgba(107, 45, 61, 0.2)',
+      border: 'rgba(107, 45, 61, 0.4)',
+      glow: 'rgba(107, 45, 61, 0.3)',
+    },
+  },
+
   // Status colors (quick access to main semantic colors)
   status: {
     success: '#16a34a',      // success-600
