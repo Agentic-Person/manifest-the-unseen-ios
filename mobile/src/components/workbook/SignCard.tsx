@@ -227,7 +227,7 @@ export const SignCard: React.FC<SignCardProps> = ({
   return (
     <View
       style={styles.container}
-      accessibilityRole="article"
+      accessibilityRole="none"
       accessibilityLabel={`Synchronicity entry: ${entry.whatHappened || 'New entry'}`}
     >
       {/* Header */}

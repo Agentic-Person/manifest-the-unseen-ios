@@ -345,7 +345,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
   const handleSaveAndContinue = async () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     await autoSave();
-    navigation.goBack();
+    _navigation.goBack();
   };
 
   if (isLoading) {

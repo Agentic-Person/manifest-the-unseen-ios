@@ -49,7 +49,7 @@ const generateId = (): string => {
 /**
  * EnvyInventoryScreen Component
  */
-const EnvyInventoryScreen: React.FC<Props> = ({ navigation }) => {
+const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
   const [envyItems, setEnvyItems] = useState<EnvyItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<EnvyCategory | 'all'>('all');
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
 
   emptyState: {
     alignItems: 'center',
-    paddingVertical: spacing.xxl,
+    paddingVertical: 96,
     paddingHorizontal: spacing.xl,
   },
 

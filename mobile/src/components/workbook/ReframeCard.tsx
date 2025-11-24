@@ -28,7 +28,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  Animated,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
@@ -138,7 +137,7 @@ export const ReframeCard: React.FC<ReframeCardProps> = ({
       style={[styles.container, reframe.isComplete && styles.containerComplete]}
       testID={testID}
       accessible
-      accessibilityRole="article"
+      accessibilityRole="none"
       accessibilityLabel={`Reframe: ${reframe.envyText}`}
     >
       {/* Completion Badge */}

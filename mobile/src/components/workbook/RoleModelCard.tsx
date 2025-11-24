@@ -195,7 +195,7 @@ export const RoleModelCard: React.FC<RoleModelCardProps> = ({
       style={[styles.container, { borderTopColor: category.color }]}
       testID={testID}
       accessible
-      accessibilityRole="article"
+      accessibilityRole="none"
       accessibilityLabel={`Role model: ${roleModel.name}, Category: ${category.label}`}
     >
       {/* Header Row */}

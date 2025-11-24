@@ -18,7 +18,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
   FlatList,
@@ -27,8 +26,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { ReframeCard, ReframeData } from '../../../components/workbook/ReframeCard';
-import { ENVY_CATEGORIES, EnvyItem } from '../../../components/workbook/EnvyCard';
-import { colors, spacing, borderRadius, shadows } from '../../../theme';
+import { EnvyItem } from '../../../components/workbook/EnvyCard';
+import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 
 type Props = WorkbookStackScreenProps<'InspirationReframe'>;
@@ -386,12 +385,12 @@ const styles = StyleSheet.create({
 
   listContent: {
     padding: spacing.md,
-    paddingBottom: spacing.xxl,
+    paddingBottom: 96,
   },
 
   emptyState: {
     alignItems: 'center',
-    paddingVertical: spacing.xxl,
+    paddingVertical: 96,
     paddingHorizontal: spacing.xl,
   },
 

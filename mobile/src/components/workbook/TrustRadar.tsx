@@ -148,7 +148,7 @@ export const TrustRadar: React.FC<TrustRadarProps> = ({
   onDimensionTap,
   showLabels = true,
   showValues = true,
-  animated = true,
+  animated: _animated = true,
 }) => {
   const centerX = size / 2;
   const centerY = size / 2;

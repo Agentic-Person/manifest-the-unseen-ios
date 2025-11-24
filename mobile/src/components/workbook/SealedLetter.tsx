@@ -114,8 +114,12 @@ export const SealedLetter: React.FC<SealedLetterProps> = ({
         ])
       );
       pulse.start();
-      return () => pulse.stop();
+      return () => {
+        pulse.stop();
+        return;
+      };
     }
+    return;
   }, [timeRemaining.canOpen, isSealed, pulseAnimation]);
 
   const handleOpen = () => {

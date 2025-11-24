@@ -45,8 +45,9 @@ const DESIGN_COLORS = {
 // Timer size configuration
 const TIMER_SIZE = 260;
 const STROKE_WIDTH = 12;
-const RADIUS = (TIMER_SIZE - STROKE_WIDTH) / 2;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+// RADIUS and CIRCUMFERENCE reserved for SVG-based progress implementation
+// const RADIUS = (TIMER_SIZE - STROKE_WIDTH) / 2;
+// const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 // Duration options in seconds
 export const DURATION_OPTIONS = [
@@ -99,7 +100,8 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
     ? 0
     : 1 - (timeRemaining / selectedDuration);
 
-  const _strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+  // Calculate stroke dash offset for SVG-based progress (currently unused in view-based implementation)
+  // const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
 
   /**
    * Update timer state and notify parent

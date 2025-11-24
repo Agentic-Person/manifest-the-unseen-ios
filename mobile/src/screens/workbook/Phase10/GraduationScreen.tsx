@@ -19,7 +19,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -105,12 +105,12 @@ const DAILY_PRACTICES: DailyPractice[] = [
   },
 ];
 
-// Commitment data interface
-interface CommitmentData {
-  statement: string;
-  selectedPractices: string[];
-  completedAt: Date | null;
-}
+// Commitment data interface (used for Supabase persistence - TODO)
+// interface CommitmentData {
+//   statement: string;
+//   selectedPractices: string[];
+//   completedAt: Date | null;
+// }
 
 type Props = WorkbookStackScreenProps<'Graduation'>;
 

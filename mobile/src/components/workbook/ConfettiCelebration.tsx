@@ -106,7 +106,7 @@ export const ConfettiCelebration: React.FC<ConfettiCelebrationProps> = ({
     setParticles(newParticles);
 
     // Animate each particle
-    const animations = newParticles.map((particle, index) => {
+    const animations = newParticles.map((particle, _index) => {
       const delay = random(0, 500);
       const particleDuration = random(duration * 0.7, duration);
       const drift = random(-100, 100);
@@ -126,7 +126,7 @@ export const ConfettiCelebration: React.FC<ConfettiCelebrationProps> = ({
         Animated.sequence([
           Animated.delay(delay),
           Animated.timing(particle.x, {
-            toValue: particle.x._value + drift,
+            toValue: (particle.x as any)._value + drift,
             duration: particleDuration,
             easing: Easing.inOut(Easing.sin),
             useNativeDriver: true,

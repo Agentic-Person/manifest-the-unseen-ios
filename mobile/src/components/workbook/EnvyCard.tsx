@@ -29,7 +29,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Animated,
   LayoutAnimation,
   Platform,
   UIManager,

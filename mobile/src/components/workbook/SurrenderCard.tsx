@@ -229,7 +229,7 @@ export const SurrenderCard: React.FC<SurrenderCardProps> = ({
           ],
         },
       ]}
-      accessibilityRole="article"
+      accessibilityRole="none"
       accessibilityLabel={`Surrender card ${index + 1}`}
     >
       {/* Glow Effect Overlay */}

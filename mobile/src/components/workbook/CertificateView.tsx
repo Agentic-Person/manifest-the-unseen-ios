@@ -20,19 +20,6 @@ import {
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// Design system colors
-const DESIGN_COLORS = {
-  bgPrimary: '#1a1a2e',
-  bgElevated: '#252547',
-  textPrimary: '#e8e8e8',
-  textSecondary: '#a0a0b0',
-  textTertiary: '#6b6b80',
-  accentPurple: '#4a1a6b',
-  accentGold: '#c9a227',
-  accentTeal: '#1a5f5f',
-  border: '#3a3a5a',
-};
-
 // Certificate paper color (aged parchment effect)
 const CERTIFICATE_COLORS = {
   paper: '#f8f4eb',

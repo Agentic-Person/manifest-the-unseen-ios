@@ -25,7 +25,6 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Animated,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
@@ -106,8 +105,8 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   });
   const [showExplanation, setShowExplanation] = useState(false);
 
-  // Animation refs
-  const _cardScale = useRef(new Animated.Value(1)).current;
+  // Animation refs (cardScale reserved for future use)
+  // const cardScale = useRef(new Animated.Value(1)).current;
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   /**

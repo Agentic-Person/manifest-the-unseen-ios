@@ -197,7 +197,8 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
   const handlePhasePress = (phaseNumber: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // Navigate to phase dashboard
-    const screenName = `Phase${phaseNumber}Dashboard` as keyof typeof navigation.navigate;
+    // Screen name prepared for navigation (to be implemented)
+    // const screenName = `Phase${phaseNumber}Dashboard` as keyof typeof navigation.navigate;
     // For now, just log - would navigate to phase
     console.log(`Navigate to Phase ${phaseNumber}`);
   };

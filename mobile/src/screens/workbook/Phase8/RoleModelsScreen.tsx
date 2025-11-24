@@ -50,7 +50,7 @@ const generateId = (): string => {
 /**
  * RoleModelsScreen Component
  */
-const RoleModelsScreen: React.FC<Props> = ({ navigation }) => {
+const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
   const [roleModels, setRoleModels] = useState<RoleModel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<RoleModelCategory | 'all'>('all');
@@ -587,7 +587,7 @@ const styles = StyleSheet.create({
 
   emptyState: {
     alignItems: 'center',
-    paddingVertical: spacing.xxl,
+    paddingVertical: 96,
     paddingHorizontal: spacing.xl,
   },
 
