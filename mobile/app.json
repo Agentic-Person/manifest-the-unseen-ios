@@ -3,6 +3,7 @@
     "name": "Manifest the Unseen",
     "slug": "manifest-the-unseen",
     "version": "1.0.0",
+    "entryPoint": "./index.js",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -36,7 +37,6 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "single",
       "favicon": "./assets/icon.png"
     },
     "plugins": [

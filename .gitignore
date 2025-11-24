@@ -102,3 +102,12 @@ mobile/.bundle/
 # Generated types
 **/generated/
 **/database.types.ts
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Playwright MCP test artifacts
+.playwright-mcp/
+
+# Expo web build output
+mobile/web/
