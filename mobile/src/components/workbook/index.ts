@@ -126,3 +126,7 @@ export type { CertificateViewProps } from './CertificateView';
 
 export { ConfettiCelebration, ConfettiBurst } from './ConfettiCelebration';
 export type { ConfettiCelebrationProps, ConfettiBurstProps } from './ConfettiCelebration';
+
+// Save Status Indicator
+export { SaveIndicator } from './SaveIndicator';
+export type { default as SaveIndicatorDefault } from './SaveIndicator';

@@ -26,9 +26,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { WheelChart, LifeAreaSlider, LIFE_AREAS } from '../../../components/workbook';
+import { WheelChart, LifeAreaSlider, LIFE_AREAS, SaveIndicator } from '../../../components/workbook';
 import type { WheelOfLifeValues, LifeAreaKey } from '../../../components/workbook';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -93,86 +96,30 @@ type Props = WorkbookStackScreenProps<'WheelOfLife'>;
 const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
   const [values, setValues] = useState<WheelOfLifeValues>(DEFAULT_VALUES);
   const [selectedArea, setSelectedArea] = useState<LifeAreaKey | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Screen dimensions
   const screenWidth = Dimensions.get('window').width;
   const chartSize = Math.min(screenWidth - 32, 340);
 
-  /**
-   * Load saved data on mount
-   */
+  // Load saved data from Supabase
+  const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.WHEEL_OF_LIFE);
+
+  // Auto-save with debounce
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: values,
+    phaseNumber: 1,
+    worksheetId: WORKSHEET_IDS.WHEEL_OF_LIFE,
+    debounceMs: 1500,
+  });
+
+  // Load saved data into state when fetched
   useEffect(() => {
-    loadSavedData();
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  /**
-   * Auto-save when values change (debounced)
-   */
-  useEffect(() => {
-    if (!isLoading) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 1500);
+    if (savedProgress?.data) {
+      const savedData = savedProgress.data as WheelOfLifeValues;
+      setValues(savedData);
     }
-  }, [values, isLoading]);
-
-  /**
-   * Load saved data from storage/Supabase
-   */
-  const loadSavedData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      // const { data } = await supabase
-      //   .from('workbook_progress')
-      //   .select('data')
-      //   .eq('exercise_id', 'wheel-of-life')
-      //   .single();
-      // if (data?.data) setValues(data.data);
-
-      // Simulate loading delay
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      console.log('Loaded wheel of life data');
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Auto-save progress to Supabase
-   */
-  const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      // await supabase.from('workbook_progress').upsert({
-      //   exercise_id: 'wheel-of-life',
-      //   data: values,
-      //   updated_at: new Date().toISOString(),
-      // });
-      console.log('Auto-saving wheel of life data:', values);
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [values]);
+  }, [savedProgress]);
 
   /**
    * Handle value change for a life area
@@ -220,7 +167,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleSaveAndContinue = async () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await autoSave();
+    saveNow();
     navigation.goBack();
   };
 
@@ -297,13 +244,12 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Save Status */}
       <View style={styles.saveStatusContainer}>
-        {isSaving ? (
-          <Text style={styles.saveStatus}>Saving...</Text>
-        ) : lastSaved ? (
-          <Text style={styles.saveStatus}>
-            Last saved: {lastSaved.toLocaleTimeString()}
-          </Text>
-        ) : null}
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
       </View>
 
       {/* Action Button */}
