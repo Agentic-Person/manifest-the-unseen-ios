@@ -16,6 +16,12 @@ config.resolver.sourceExts = [...config.resolver.sourceExts, 'mjs', 'cjs'];
 // Handle import.meta for web builds
 config.transformer = {
   ...config.transformer,
+  getTransformOptions: async () => ({
+    transform: {
+      experimentalImportSupport: false,
+      inlineRequires: true,
+    },
+  }),
   minifierConfig: {
     ...config.transformer?.minifierConfig,
     keep_classnames: true,
