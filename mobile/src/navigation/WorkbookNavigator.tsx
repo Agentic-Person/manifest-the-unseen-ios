@@ -19,27 +19,28 @@ import SWOTAnalysisScreen from '../screens/workbook/Phase1/SWOTAnalysisScreen';
 import ValuesAssessmentScreen from '../screens/workbook/Phase1/ValuesAssessmentScreen';
 import HabitsAuditScreen from '../screens/workbook/Phase1/HabitsAuditScreen';
 // Phase 2: Values & Vision screens
-import { VisionBoardScreen, LifeMissionScreen } from '../screens/workbook/Phase2';
+import { Phase2Dashboard, VisionBoardScreen, LifeMissionScreen } from '../screens/workbook/Phase2';
 // Phase 3: Goal Setting screens
-import { SMARTGoalsScreen, TimelineScreen, ActionPlanScreen } from '../screens/workbook/Phase3';
+import { Phase3Dashboard, SMARTGoalsScreen, TimelineScreen, ActionPlanScreen } from '../screens/workbook/Phase3';
 // Phase 4: Facing Fears & Limiting Beliefs screens
-import { FearInventoryScreen, LimitingBeliefsScreen, FearFacingPlanScreen } from '../screens/workbook/Phase4';
+import { Phase4Dashboard, FearInventoryScreen, LimitingBeliefsScreen, FearFacingPlanScreen } from '../screens/workbook/Phase4';
 // Phase 5: Cultivating Self-Love & Self-Care screens
 import {
+  Phase5Dashboard,
   SelfLoveAffirmationsScreen,
   SelfCareRoutineScreen,
   InnerChildScreen,
 } from '../screens/workbook/Phase5';
 // Phase 6: Manifestation Techniques screens
-import { ThreeSixNineScreen, ScriptingScreen, WOOPScreen } from '../screens/workbook/Phase6';
+import { Phase6Dashboard, ThreeSixNineScreen, ScriptingScreen, WOOPScreen } from '../screens/workbook/Phase6';
 // Phase 7: Practicing Gratitude screens
-import { GratitudeJournalScreen, GratitudeLettersScreen, GratitudeMeditationScreen } from '../screens/workbook/Phase7';
+import { Phase7Dashboard, GratitudeJournalScreen, GratitudeLettersScreen, GratitudeMeditationScreen } from '../screens/workbook/Phase7';
 // Phase 8: Turning Envy Into Inspiration screens
-import { EnvyInventoryScreen, InspirationReframeScreen, RoleModelsScreen } from '../screens/workbook/Phase8';
+import { Phase8Dashboard, EnvyInventoryScreen, InspirationReframeScreen, RoleModelsScreen } from '../screens/workbook/Phase8';
 // Phase 9: Trust & Surrender screens
-import { TrustAssessmentScreen, SurrenderPracticeScreen, SignsScreen } from '../screens/workbook/Phase9';
+import { Phase9Dashboard, TrustAssessmentScreen, SurrenderPracticeScreen, SignsScreen } from '../screens/workbook/Phase9';
 // Phase 10: Trust & Letting Go screens
-import { JourneyReviewScreen, FutureLetterScreen, GraduationScreen } from '../screens/workbook/Phase10';
+import { Phase10Dashboard, JourneyReviewScreen, FutureLetterScreen, GraduationScreen } from '../screens/workbook/Phase10';
 
 const Stack = createNativeStackNavigator<WorkbookStackParamList>();
 
@@ -85,6 +86,88 @@ export const WorkbookNavigator = () => {
           title: 'Phase 1: Self-Evaluation',
         }}
       />
+
+      {/* Phase 2: Values & Vision */}
+      <Stack.Screen
+        name="Phase2Dashboard"
+        component={Phase2Dashboard}
+        options={{
+          title: 'Phase 2: Values & Vision',
+        }}
+      />
+
+      {/* Phase 3: Goal Setting */}
+      <Stack.Screen
+        name="Phase3Dashboard"
+        component={Phase3Dashboard}
+        options={{
+          title: 'Phase 3: Goal Setting',
+        }}
+      />
+
+      {/* Phase 4: Facing Fears & Limiting Beliefs */}
+      <Stack.Screen
+        name="Phase4Dashboard"
+        component={Phase4Dashboard}
+        options={{
+          title: 'Phase 4: Facing Fears',
+        }}
+      />
+
+      {/* Phase 5: Cultivating Self-Love & Self-Care */}
+      <Stack.Screen
+        name="Phase5Dashboard"
+        component={Phase5Dashboard}
+        options={{
+          title: 'Phase 5: Self-Love & Care',
+        }}
+      />
+
+      {/* Phase 6: Manifestation Techniques */}
+      <Stack.Screen
+        name="Phase6Dashboard"
+        component={Phase6Dashboard}
+        options={{
+          title: 'Phase 6: Manifestation',
+        }}
+      />
+
+      {/* Phase 7: Practicing Gratitude */}
+      <Stack.Screen
+        name="Phase7Dashboard"
+        component={Phase7Dashboard}
+        options={{
+          title: 'Phase 7: Gratitude',
+        }}
+      />
+
+      {/* Phase 8: Turning Envy Into Inspiration */}
+      <Stack.Screen
+        name="Phase8Dashboard"
+        component={Phase8Dashboard}
+        options={{
+          title: 'Phase 8: Envy to Inspiration',
+        }}
+      />
+
+      {/* Phase 9: Trust & Surrender */}
+      <Stack.Screen
+        name="Phase9Dashboard"
+        component={Phase9Dashboard}
+        options={{
+          title: 'Phase 9: Trust & Surrender',
+        }}
+      />
+
+      {/* Phase 10: Trust & Letting Go */}
+      <Stack.Screen
+        name="Phase10Dashboard"
+        component={Phase10Dashboard}
+        options={{
+          title: 'Phase 10: Letting Go',
+        }}
+      />
+
       <Stack.Screen
         name="WheelOfLife"
         component={WheelOfLifeScreen}

@@ -11,6 +11,7 @@
  * - GraduationScreen: Celebration and commitment ceremony
  */
 
+export { default as Phase10Dashboard } from './Phase10Dashboard';
 export { default as JourneyReviewScreen } from './JourneyReviewScreen';
 export { default as FutureLetterScreen } from './FutureLetterScreen';
 export { default as GraduationScreen } from './GraduationScreen';

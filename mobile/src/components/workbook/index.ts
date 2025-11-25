@@ -130,3 +130,8 @@ export type { ConfettiCelebrationProps, ConfettiBurstProps } from './ConfettiCel
 // Save Status Indicator
 export { SaveIndicator } from './SaveIndicator';
 export type { default as SaveIndicatorDefault } from './SaveIndicator';
+
+// Dashboard Navigation Components
+export { PhaseCard } from './PhaseCard';
+export { ProgressBar } from './ProgressBar';
+export { PhaseDashboard } from './PhaseDashboard';

@@ -5,8 +5,9 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import type { WorkbookStackScreenProps } from '../types/navigation';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import type { WorkbookStackScreenProps, WorkbookStackParamList } from '../types/navigation';
 import { useProfile } from '../stores/authStore';
 
 type Props = WorkbookStackScreenProps<'WorkbookHome'>;
@@ -76,14 +77,36 @@ const WorkbookScreen = ({ navigation }: Props) => {
                 !isUnlocked && styles.phaseCardLocked,
               ]}
               onPress={() => {
-                if (isUnlocked) {
-                  // Navigate to phase dashboard
-                  if (phase.id === 1) {
-                    navigation.navigate('Phase1Dashboard');
-                  } else {
-                    // TODO: Add navigation for phases 2-10
-                    console.log('Phase', phase.id, 'coming soon');
-                  }
+                if (!isUnlocked) {
+                  // Phase is locked
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                  Alert.alert(
+                    'Phase Locked',
+                    `Complete Phase ${phase.id - 1} first to unlock this phase.`
+                  );
+                  return;
+                }
+
+                // Haptic feedback for unlocked phase
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+                // Navigate to the corresponding Phase Dashboard
+                const dashboardMap: Record<number, keyof WorkbookStackParamList> = {
+                  1: 'Phase1Dashboard',
+                  2: 'Phase2Dashboard',
+                  3: 'Phase3Dashboard',
+                  4: 'Phase4Dashboard',
+                  5: 'Phase5Dashboard',
+                  6: 'Phase6Dashboard',
+                  7: 'Phase7Dashboard',
+                  8: 'Phase8Dashboard',
+                  9: 'Phase9Dashboard',
+                  10: 'Phase10Dashboard',
+                };
+
+                const screenName = dashboardMap[phase.id];
+                if (screenName) {
+                  navigation.navigate(screenName);
                 }
               }}
               disabled={!isUnlocked}

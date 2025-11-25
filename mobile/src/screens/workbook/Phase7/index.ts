@@ -10,6 +10,7 @@
  * - GratitudeMeditationScreen: Guided gratitude visualization meditation
  */
 
+export { default as Phase7Dashboard } from './Phase7Dashboard';
 export { default as GratitudeJournalScreen } from './GratitudeJournalScreen';
 export { default as GratitudeLettersScreen } from './GratitudeLettersScreen';
 export { default as GratitudeMeditationScreen } from './GratitudeMeditationScreen';

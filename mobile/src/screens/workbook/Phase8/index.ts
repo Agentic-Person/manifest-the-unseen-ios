@@ -10,6 +10,7 @@
  * - RoleModelsScreen: Build a board of inspiring role models and lessons
  */
 
+export { default as Phase8Dashboard } from './Phase8Dashboard';
 export { default as EnvyInventoryScreen } from './EnvyInventoryScreen';
 export { default as InspirationReframeScreen } from './InspirationReframeScreen';
 export { default as RoleModelsScreen } from './RoleModelsScreen';

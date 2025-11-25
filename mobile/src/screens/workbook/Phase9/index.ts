@@ -11,6 +11,7 @@
  * - SignsScreen: Log synchronicities and meaningful coincidences
  */
 
+export { default as Phase9Dashboard } from './Phase9Dashboard';
 export { default as TrustAssessmentScreen } from './TrustAssessmentScreen';
 export { default as SurrenderPracticeScreen } from './SurrenderPracticeScreen';
 export { default as SignsScreen } from './SignsScreen';

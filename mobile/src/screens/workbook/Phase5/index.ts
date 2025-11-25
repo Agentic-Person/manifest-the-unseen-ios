@@ -10,9 +10,7 @@
  * - Inner Child healing work through letters
  */
 
+export { default as Phase5Dashboard } from './Phase5Dashboard';
 export { default as SelfLoveAffirmationsScreen } from './SelfLoveAffirmationsScreen';
 export { default as SelfCareRoutineScreen } from './SelfCareRoutineScreen';
 export { default as InnerChildScreen } from './InnerChildScreen';
-
-// TODO: Add Phase 5 Dashboard as it's implemented
-// export { default as Phase5Dashboard } from './Phase5Dashboard';
