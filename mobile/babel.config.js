@@ -7,6 +7,14 @@
 module.exports = function(api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          // Enable experimental import.meta transformation as fallback
+          unstable_transformImportMeta: true,
+        },
+      ],
+    ],
   };
 };
