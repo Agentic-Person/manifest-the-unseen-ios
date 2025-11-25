@@ -42,13 +42,13 @@ const Phase4Dashboard: React.FC<Props> = ({ navigation }) => {
   const handleExercisePress = (exerciseId: string) => {
     switch (exerciseId) {
       case 'fear-inventory':
-        navigation.navigate('FearInventory');
+        (navigation.navigate as any)('FearInventory');
         break;
       case 'limiting-beliefs':
-        navigation.navigate('LimitingBeliefs');
+        (navigation.navigate as any)('LimitingBeliefs');
         break;
       case 'fear-facing-plan':
-        navigation.navigate('FearFacingPlan');
+        (navigation.navigate as any)('FearFacingPlan');
         break;
     }
   };

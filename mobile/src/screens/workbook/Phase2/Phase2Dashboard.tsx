@@ -35,10 +35,10 @@ const Phase2Dashboard: React.FC<Props> = ({ navigation }) => {
     // Map exercise ID to screen name
     switch (exerciseId) {
       case 'life-mission':
-        navigation.navigate('LifeMission');
+        (navigation.navigate as any)('LifeMission');
         break;
       case 'vision-board':
-        navigation.navigate('VisionBoard');
+        (navigation.navigate as any)('VisionBoard');
         break;
     }
   };

@@ -106,7 +106,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
 
                 const screenName = dashboardMap[phase.id];
                 if (screenName) {
-                  navigation.navigate(screenName);
+                  (navigation.navigate as any)(screenName);
                 }
               }}
               disabled={!isUnlocked}

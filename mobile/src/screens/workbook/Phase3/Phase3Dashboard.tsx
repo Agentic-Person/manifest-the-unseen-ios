@@ -42,13 +42,13 @@ const Phase3Dashboard: React.FC<Props> = ({ navigation }) => {
   const handleExercisePress = (exerciseId: string) => {
     switch (exerciseId) {
       case 'smart-goals':
-        navigation.navigate('SMARTGoals');
+        (navigation.navigate as any)('SMARTGoals');
         break;
       case 'timeline':
-        navigation.navigate('Timeline');
+        (navigation.navigate as any)('Timeline');
         break;
       case 'action-plan':
-        navigation.navigate('ActionPlan');
+        (navigation.navigate as any)('ActionPlan');
         break;
     }
   };
