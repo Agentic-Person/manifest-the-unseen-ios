@@ -46,6 +46,9 @@ import {
   DEFAULT_IMAGE_STYLE,
 } from '../../../components/vision-board';
 import type { VisionBoardItem, VisionBoardData } from '../../../components/vision-board';
+import { SaveIndicator } from '../../../components/workbook';
+import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -82,11 +85,15 @@ type Props = WorkbookStackScreenProps<'VisionBoard'>;
  * VisionBoardScreen Component
  */
 const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress, isLoading: isLoadingProgress } = useWorkbookProgress(2, WORKSHEET_IDS.VISION_BOARD);
+  const { mutate: saveWorkbook, isPending: isSaving } = useSaveWorkbook();
+
   const [board, setBoard] = useState<VisionBoardData>(createEmptyBoard());
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [saveError, setSaveError] = useState(false);
   const [showTextModal, setShowTextModal] = useState(false);
   const [newText, setNewText] = useState('');
 
@@ -96,13 +103,20 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
    * Load board data on mount
    */
   useEffect(() => {
-    loadBoardData();
+    // Check if we have saved progress from Supabase
+    if (!isLoadingProgress) {
+      if (savedProgress?.data) {
+        const data = savedProgress.data as unknown as VisionBoardData;
+        setBoard(data);
+      }
+      setIsLoading(false);
+    }
     return () => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, []);
+  }, [savedProgress, isLoadingProgress]);
 
   /**
    * Auto-save when board changes (debounced)
@@ -119,48 +133,32 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
   }, [board, isLoading]);
 
   /**
-   * Load board data from Supabase (stubbed)
-   */
-  const loadBoardData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      // const { data } = await supabase
-      //   .from('vision_boards')
-      //   .select('*')
-      //   .eq('id', route.params?.boardId)
-      //   .single();
-      // if (data) setBoard(data);
-
-      // Simulate loading delay
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      console.log('Loaded vision board data');
-    } catch (error) {
-      console.error('Failed to load board:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Auto-save board to Supabase (stubbed)
+   * Auto-save board to Supabase
    */
   const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      // await supabase.from('vision_boards').upsert({
-      //   ...board,
-      //   updated_at: new Date().toISOString(),
-      // });
-      console.log('Auto-saving vision board:', board);
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [board]);
+    setSaveError(false);
+    const boardData = {
+      ...board,
+      updatedAt: new Date().toISOString(),
+    };
+
+    saveWorkbook(
+      {
+        phaseNumber: 2,
+        worksheetId: WORKSHEET_IDS.VISION_BOARD,
+        data: boardData as unknown as Record<string, unknown>,
+      },
+      {
+        onSuccess: () => {
+          setLastSaved(new Date());
+        },
+        onError: (error) => {
+          console.error('Failed to save:', error);
+          setSaveError(true);
+        },
+      }
+    );
+  }, [board, saveWorkbook]);
 
   /**
    * Add an image to the board
@@ -288,7 +286,7 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your vision board...</Text>
       </View>
     );
@@ -354,17 +352,7 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
         </View>
 
         {/* Save Status */}
-        <View style={styles.saveStatusContainer}>
-          {isSaving ? (
-            <Text style={styles.saveStatus}>Saving...</Text>
-          ) : lastSaved ? (
-            <Text style={styles.saveStatus}>
-              Last saved: {lastSaved.toLocaleTimeString()}
-            </Text>
-          ) : board.items.length > 0 ? (
-            <Text style={styles.saveStatus}>Changes will auto-save</Text>
-          ) : null}
-        </View>
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={saveError} onRetry={autoSave} />
 
         {/* Save Button */}
         <Pressable

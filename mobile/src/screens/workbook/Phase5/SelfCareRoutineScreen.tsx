@@ -8,7 +8,7 @@
  * Design: Dark spiritual theme with nurturing accents
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -30,6 +30,10 @@ import RoutineItem, {
   ACTIVITY_ICONS,
 } from '../../../components/workbook/RoutineItem';
 import StreakCounter from '../../../components/workbook/StreakCounter';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -89,14 +93,23 @@ type Props = WorkbookStackScreenProps<'SelfCareRoutine'>;
 /**
  * SelfCareRoutineScreen Component
  */
+/**
+ * Interface for form data to save
+ */
+interface SelfCareFormData {
+  morningActivities: RoutineActivityData[];
+  eveningActivities: RoutineActivityData[];
+  morningStreak: number;
+  eveningStreak: number;
+  bestMorningStreak: number;
+  bestEveningStreak: number;
+}
+
 const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
   const [morningActivities, setMorningActivities] = useState<RoutineActivityData[]>([]);
   const [eveningActivities, setEveningActivities] = useState<RoutineActivityData[]>([]);
   const [activeTab, setActiveTab] = useState<'morning' | 'evening'>('morning');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customActivityName, setCustomActivityName] = useState('');
@@ -108,8 +121,25 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
   const [bestMorningStreak, setBestMorningStreak] = useState(0);
   const [bestEveningStreak, setBestEveningStreak] = useState(0);
 
-  // Refs
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Supabase hooks
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(5, WORKSHEET_IDS.SELF_CARE_ROUTINE);
+
+  // Prepare form data for auto-save
+  const formData: SelfCareFormData = useMemo(() => ({
+    morningActivities,
+    eveningActivities,
+    morningStreak,
+    eveningStreak,
+    bestMorningStreak,
+    bestEveningStreak,
+  }), [morningActivities, eveningActivities, morningStreak, eveningStreak, bestMorningStreak, bestEveningStreak]);
+
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 5,
+    worksheetId: WORKSHEET_IDS.SELF_CARE_ROUTINE,
+    debounceMs: 1500,
+  });
 
   // Current activities based on tab
   const currentActivities = activeTab === 'morning' ? morningActivities : eveningActivities;
@@ -132,72 +162,28 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
   }, [currentActivities]);
 
   /**
-   * Load routine data on mount
+   * Load saved progress
    */
   useEffect(() => {
-    loadRoutineData();
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  /**
-   * Auto-save when activities change
-   */
-  useEffect(() => {
-    if (!isLoading) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 1500);
+    // Error state
+    if (isLoadError) {
+      console.error('[SelfCareRoutineScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
     }
-  }, [morningActivities, eveningActivities, isLoading]);
 
-  /**
-   * Load routine data
-   */
-  const loadRoutineData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      await new Promise((resolve) => setTimeout(resolve, 300));
+    // Only initialize once when loading completes
+    if (isLoading) return;
 
-      // Demo data
-      setMorningStreak(5);
-      setEveningStreak(3);
-      setBestMorningStreak(12);
-      setBestEveningStreak(8);
-
-      console.log('Loaded routine data');
-    } catch (error) {
-      console.error('Failed to load routine data:', error);
-    } finally {
-      setIsLoading(false);
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as SelfCareFormData;
+      setMorningActivities(data.morningActivities || []);
+      setEveningActivities(data.eveningActivities || []);
+      setMorningStreak(data.morningStreak || 0);
+      setEveningStreak(data.eveningStreak || 0);
+      setBestMorningStreak(data.bestMorningStreak || 0);
+      setBestEveningStreak(data.bestEveningStreak || 0);
     }
-  };
-
-  /**
-   * Auto-save routine
-   */
-  const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      console.log('Auto-saving routine:', {
-        morning: morningActivities.length,
-        evening: eveningActivities.length,
-      });
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [morningActivities, eveningActivities]);
+  }, [savedProgress, isLoading]);
 
   /**
    * Switch active tab
@@ -404,7 +390,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your routines...</Text>
       </View>
     );
@@ -548,15 +534,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
         )}
 
         {/* Save Status */}
-        <View style={styles.saveStatusContainer}>
-          {isSaving ? (
-            <Text style={styles.saveStatus}>Saving...</Text>
-          ) : lastSaved ? (
-            <Text style={styles.saveStatus}>
-              Last saved: {lastSaved.toLocaleTimeString()}
-            </Text>
-          ) : null}
-        </View>
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
@@ -879,16 +857,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: DESIGN_COLORS.textPrimary,
-  },
-
-  // Save status
-  saveStatusContainer: {
-    alignItems: 'center',
-    minHeight: 20,
-  },
-  saveStatus: {
-    fontSize: 12,
-    color: DESIGN_COLORS.textTertiary,
   },
 
   bottomSpacer: {

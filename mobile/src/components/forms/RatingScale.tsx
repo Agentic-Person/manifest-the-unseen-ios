@@ -180,8 +180,8 @@ const styles = StyleSheet.create({
   },
 
   scaleButtonPressed: {
-    backgroundColor: colors.primary[50],
-    borderColor: colors.primary[300],
+    backgroundColor: colors.primary[900],
+    borderColor: colors.primary[500],
   },
 
   scaleButtonDisabled: {

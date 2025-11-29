@@ -37,6 +37,9 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import StepList from '../../../components/workbook/StepList';
 import type { ActionStepData } from '../../../components/workbook/StepList';
+import { SaveIndicator } from '../../../components/workbook';
+import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -97,17 +100,28 @@ const MOCK_GOALS: SMARTGoal[] = [
 
 type Props = WorkbookStackScreenProps<'ActionPlan'>;
 
+/** Data structure for storing action plan data */
+interface ActionPlanData {
+  selectedGoalId: string | null;
+  steps: ActionStepData[];
+  updatedAt: string;
+}
+
 /**
  * ActionPlanScreen Component
  */
 const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress, } = useWorkbookProgress(3, WORKSHEET_IDS.ACTION_PLAN);
+  const { mutate: saveWorkbook, isPending: isSavingWorkbook } = useSaveWorkbook();
+
   // State
   const [goals, setGoals] = useState<SMARTGoal[]>([]);
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [steps, setSteps] = useState<ActionStepData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [saveError, setSaveError] = useState(false);
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showAddStepModal, setShowAddStepModal] = useState(false);
   const [newStepText, setNewStepText] = useState('');
@@ -136,6 +150,15 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
       }
     };
   }, []);
+
+  // Load saved data from Supabase
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as ActionPlanData;
+      if (data.selectedGoalId) setSelectedGoalId(data.selectedGoalId);
+      if (data.steps) setSteps(data.steps);
+    }
+  }, [savedProgress]);
 
   /**
    * Auto-save when steps change (debounced)
@@ -203,25 +226,33 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   /**
-   * Auto-save action plan to Supabase (stubbed)
+   * Auto-save action plan to Supabase
    */
   const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      // await supabase.from('action_plans').upsert({
-      //   goal_id: selectedGoalId,
-      //   steps: steps,
-      //   updated_at: new Date().toISOString(),
-      // });
-      console.log('Auto-saving action plan:', { goalId: selectedGoalId, steps });
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [selectedGoalId, steps]);
+    setSaveError(false);
+    const data: ActionPlanData = {
+      selectedGoalId,
+      steps,
+      updatedAt: new Date().toISOString(),
+    };
+
+    saveWorkbook(
+      {
+        phaseNumber: 3,
+        worksheetId: WORKSHEET_IDS.ACTION_PLAN,
+        data: data as unknown as Record<string, unknown>,
+      },
+      {
+        onSuccess: () => {
+          setLastSaved(new Date());
+        },
+        onError: (error) => {
+          console.error('Failed to save:', error);
+          setSaveError(true);
+        },
+      }
+    );
+  }, [selectedGoalId, steps, saveWorkbook]);
 
   /**
    * Trigger celebration animation
@@ -396,7 +427,7 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your goals...</Text>
       </View>
     );
@@ -515,17 +546,7 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Save Status */}
-        <View style={styles.saveStatusContainer}>
-          {isSaving ? (
-            <Text style={styles.saveStatus}>Saving...</Text>
-          ) : lastSaved ? (
-            <Text style={styles.saveStatus}>
-              Last saved: {lastSaved.toLocaleTimeString()}
-            </Text>
-          ) : selectedGoalId && steps.length > 0 ? (
-            <Text style={styles.saveStatus}>Changes will auto-save</Text>
-          ) : null}
-        </View>
+        <SaveIndicator isSaving={isSavingWorkbook} lastSaved={lastSaved} isError={saveError} onRetry={autoSave} />
 
         {/* Save Button */}
         <Pressable

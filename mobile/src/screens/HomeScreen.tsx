@@ -9,6 +9,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import type { MainTabScreenProps } from '../types/navigation';
 import { useUser } from '../stores/authStore';
 import { useUserProfile } from '../hooks/useUser';
+import { colors } from '../theme';
 
 type Props = MainTabScreenProps<'Home'>;
 
@@ -127,7 +128,7 @@ const getPhaseDescription = (phase: number): string => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background.primary,
   },
   content: {
     padding: 16,
@@ -138,28 +139,25 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text.primary,
     marginBottom: 4,
   },
   userName: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.text.secondary,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background.elevated,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   cardTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.text.secondary,
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -167,42 +165,42 @@ const styles = StyleSheet.create({
   tier: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#8B5CF6',
+    color: colors.primary[400],
     marginBottom: 4,
   },
   status: {
     fontSize: 14,
-    color: '#10B981',
+    color: colors.success[400],
     textTransform: 'capitalize',
   },
   phaseNumber: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#8B5CF6',
+    color: colors.primary[400],
     marginBottom: 4,
   },
   phaseDescription: {
     fontSize: 16,
-    color: '#4B5563',
+    color: colors.text.secondary,
   },
   quote: {
     fontSize: 18,
     fontStyle: 'italic',
-    color: '#374151',
+    color: colors.text.primary,
     marginBottom: 8,
     lineHeight: 28,
   },
   quoteAuthor: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.text.secondary,
     textAlign: 'right',
   },
   action: {
     fontSize: 16,
-    color: '#8B5CF6',
+    color: colors.primary[400],
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border.default,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -212,30 +210,27 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background.elevated,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   statNumber: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#8B5CF6',
+    color: colors.primary[400],
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.text.secondary,
     textAlign: 'center',
   },
   text: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text.primary,
   },
 });
 

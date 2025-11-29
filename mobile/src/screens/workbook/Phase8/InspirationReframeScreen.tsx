@@ -27,8 +27,12 @@ import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { ReframeCard, ReframeData } from '../../../components/workbook/ReframeCard';
 import { EnvyItem } from '../../../components/workbook/EnvyCard';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 type Props = WorkbookStackScreenProps<'InspirationReframe'>;
 
@@ -66,32 +70,70 @@ const SAMPLE_ENVY_ITEMS: EnvyItem[] = [
   },
 ];
 
+// Data type for persistence
+interface InspirationReframeData {
+  reframes: ReframeData[];
+  envyItems: EnvyItem[];
+}
+
+const PHASE_NUMBER = 8;
+
 /**
  * InspirationReframeScreen Component
  */
 const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
+  // Supabase data fetching
+  const { data: savedProgress } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.INSPIRATION_REFRAME
+  );
+
   // State
-  const [envyItems] = useState<EnvyItem[]>(SAMPLE_ENVY_ITEMS);
+  const [envyItems, setEnvyItems] = useState<EnvyItem[]>(SAMPLE_ENVY_ITEMS);
   const [reframes, setReframes] = useState<ReframeData[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'complete'>('all');
 
+  // Auto-save hook
+  const formData: InspirationReframeData = useMemo(() => ({ reframes, envyItems }), [reframes, envyItems]);
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.INSPIRATION_REFRAME,
+    debounceMs: 1500,
+  });
+
+  // Load saved data
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as InspirationReframeData;
+      if (data.reframes) {
+        setReframes(data.reframes);
+      }
+      if (data.envyItems) {
+        setEnvyItems(data.envyItems);
+      }
+    }
+  }, [savedProgress]);
+
   /**
-   * Initialize reframes from envy items
+   * Initialize reframes from envy items (only when no saved data)
    */
   useEffect(() => {
-    // In real app, check if reframe already exists for each envy item
-    const initialReframes: ReframeData[] = envyItems.map((envy) => ({
-      id: generateId(),
-      envyId: envy.id,
-      envyText: envy.whoWhat,
-      valueText: '',
-      actionText: '',
-      isComplete: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
-    setReframes(initialReframes);
-  }, [envyItems]);
+    // Only initialize if we don't have saved reframes
+    if (reframes.length === 0 && envyItems.length > 0 && !savedProgress?.data) {
+      const initialReframes: ReframeData[] = envyItems.map((envy) => ({
+        id: generateId(),
+        envyId: envy.id,
+        envyText: envy.whoWhat,
+        valueText: '',
+        actionText: '',
+        isComplete: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }));
+      setReframes(initialReframes);
+    }
+  }, [envyItems, savedProgress, reframes.length]);
 
   /**
    * Calculate progress
@@ -129,7 +171,6 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         r.id === id ? { ...r, valueText: value, updatedAt: new Date().toISOString() } : r
       )
     );
-    console.log('[InspirationReframe] Value updated, auto-save triggered');
   }, []);
 
   /**
@@ -141,7 +182,6 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         r.id === id ? { ...r, actionText: action, updatedAt: new Date().toISOString() } : r
       )
     );
-    console.log('[InspirationReframe] Action updated, auto-save triggered');
   }, []);
 
   /**
@@ -153,7 +193,6 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         r.id === id ? { ...r, isComplete: true, updatedAt: new Date().toISOString() } : r
       )
     );
-    console.log('[InspirationReframe] Reframe completed, auto-save triggered');
   }, []);
 
   /**
@@ -251,6 +290,7 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.headerSubtitle}>
           Reframe each source of envy by discovering what you truly value and how you can achieve it.
         </Text>
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
       </View>
 
       {/* Progress Bar */}

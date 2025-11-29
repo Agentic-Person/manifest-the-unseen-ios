@@ -22,7 +22,7 @@ import {
   View,
 } from 'react-native';
 import { Text } from '../Text';
-import { colors, spacing, borderRadius, shadows } from '../../theme';
+import { colors, spacing, borderRadius } from '../../theme';
 
 /**
  * Value icons mapping for visual representation
@@ -159,11 +159,10 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     borderWidth: 2,
-    borderColor: colors.gray[200],
-    ...shadows.sm,
+    borderColor: colors.border.default,
   },
   containerSelected: {
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.primary[900],
     borderColor: colors.primary[600],
     borderWidth: 2,
   },
@@ -174,13 +173,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: borderRadius.md,
-    backgroundColor: colors.gray[100],
+    backgroundColor: colors.background.elevated,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.sm,
   },
   iconContainerSelected: {
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.primary[800],
   },
   icon: {
     fontSize: 22,
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   valueNameSelected: {
-    color: colors.primary[700],
+    color: colors.primary[400],
   },
   valueNameDisabled: {
     color: colors.text.tertiary,

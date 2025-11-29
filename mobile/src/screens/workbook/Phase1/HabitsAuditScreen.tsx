@@ -13,7 +13,7 @@
  * - Progress tracking integration
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -23,8 +23,12 @@ import {
 import { Card, Text, Button } from '../../../components';
 import HabitSection, { TimeOfDay, Habit } from '../../../components/workbook/HabitSection';
 import { HabitCategory } from '../../../components/workbook/HabitEntry';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * Habits data structure for storage
@@ -61,8 +65,25 @@ type Props = WorkbookStackScreenProps<'HabitTracking'>;
 const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State for habits data
   const [habitsData, setHabitsData] = useState<HabitsData>(INITIAL_DATA);
-  const [isSaving, setIsSaving] = useState(false);
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // Load saved data from Supabase
+  const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.HABITS_AUDIT);
+
+  // Auto-save with debounce
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: habitsData as unknown as Record<string, unknown>,
+    phaseNumber: 1,
+    worksheetId: WORKSHEET_IDS.HABITS_AUDIT,
+    debounceMs: 1500,
+  });
+
+  // Load saved data into state when fetched
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const saved = savedProgress.data as unknown as HabitsData;
+      setHabitsData(saved);
+    }
+  }, [savedProgress]);
 
   /**
    * Calculate summary statistics
@@ -109,7 +130,6 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       [timeOfDay]: [...prev[timeOfDay], newHabit],
       updatedAt: new Date().toISOString(),
     }));
-    setHasUnsavedChanges(true);
   }, []);
 
   /**
@@ -127,7 +147,6 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       ),
       updatedAt: new Date().toISOString(),
     }));
-    setHasUnsavedChanges(true);
   }, []);
 
   /**
@@ -139,7 +158,6 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       [timeOfDay]: prev[timeOfDay].filter(h => h.id !== habitId),
       updatedAt: new Date().toISOString(),
     }));
-    setHasUnsavedChanges(true);
   }, []);
 
   /**
@@ -157,11 +175,10 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       ),
       updatedAt: new Date().toISOString(),
     }));
-    setHasUnsavedChanges(true);
   }, []);
 
   /**
-   * Save habits to Supabase
+   * Save habits manually
    */
   const handleSave = useCallback(async () => {
     // Validate: ensure all habits have text
@@ -181,39 +198,13 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       return;
     }
 
-    setIsSaving(true);
-    try {
-      // TODO: Implement Supabase save
-      // await supabase
-      //   .from('workbook_progress')
-      //   .upsert({
-      //     user_id: userId,
-      //     phase: 1,
-      //     exercise: 'habits-audit',
-      //     data: habitsData,
-      //     updated_at: new Date().toISOString(),
-      //   });
-
-      // Simulate save delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      setHasUnsavedChanges(false);
-      Alert.alert(
-        'Saved!',
-        'Your habits audit has been saved successfully.',
-        [{ text: 'OK' }]
-      );
-    } catch (error) {
-      console.error('Error saving habits:', error);
-      Alert.alert(
-        'Save Failed',
-        'Unable to save your habits. Please try again.',
-        [{ text: 'OK' }]
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  }, [habitsData]);
+    saveNow();
+    Alert.alert(
+      'Saved!',
+      'Your habits audit has been saved successfully.',
+      [{ text: 'OK' }]
+    );
+  }, [habitsData, saveNow]);
 
   /**
    * Get balance status text and color
@@ -395,16 +386,24 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         </View>
       </Card>
 
+      {/* Save Status */}
+      <SaveIndicator
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        isError={false}
+        onRetry={saveNow}
+      />
+
       {/* Save Button */}
       <View style={styles.saveContainer}>
         <Button
-          title={isSaving ? 'Saving...' : hasUnsavedChanges ? 'Save Changes' : 'Saved'}
+          title={isSaving ? 'Saving...' : 'Save & Continue'}
           onPress={handleSave}
           variant="primary"
           size="lg"
           fullWidth
           loading={isSaving}
-          disabled={!hasUnsavedChanges || isSaving}
+          disabled={isSaving}
           accessibilityLabel="Save habits audit"
           accessibilityHint="Saves your current habits to your profile"
         />

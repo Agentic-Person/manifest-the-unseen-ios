@@ -279,7 +279,7 @@ export const HabitEntry: React.FC<HabitEntryProps> = ({
  */
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.gray[50],
+    backgroundColor: colors.background.elevated,
     borderRadius: borderRadius.md,
     borderLeftWidth: 4,
     padding: spacing.sm,
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.gray[200],
+    backgroundColor: colors.gray[700],
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: colors.gray[200],
+    borderColor: colors.border.default,
     backgroundColor: colors.background.primary,
   },
   categoryButtonIcon: {

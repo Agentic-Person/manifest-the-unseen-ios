@@ -20,7 +20,7 @@
  * - Accent: #c9a227 (muted gold)
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -33,6 +33,10 @@ import {
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { TimelineChart } from '../../../components/workbook/TimelineChart';
+import { SaveIndicator } from '../../../components/workbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors
 const DESIGN_COLORS = {
@@ -153,13 +157,40 @@ const getStatusStyle = (status: TimelineGoal['status']) => {
   }
 };
 
+/** Data structure for storing timeline data */
+interface TimelineData {
+  goals: TimelineGoal[];
+  selectedView: TimelineView;
+  updatedAt: string;
+}
+
 /**
  * TimelineScreen Component
  */
 const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.TIMELINE);
+
   const [selectedView, setSelectedView] = useState<TimelineView>('month');
   const [selectedGoal, setSelectedGoal] = useState<TimelineGoal | null>(null);
-  const [goals] = useState<TimelineGoal[]>(MOCK_GOALS);
+  const [goals, setGoals] = useState<TimelineGoal[]>(MOCK_GOALS);
+
+  // Auto-save hook
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: { goals, selectedView, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+    phaseNumber: 3,
+    worksheetId: WORKSHEET_IDS.TIMELINE,
+    debounceMs: 1500,
+  });
+
+  // Load saved data on mount
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as TimelineData;
+      if (data.goals) setGoals(data.goals);
+      if (data.selectedView) setSelectedView(data.selectedView);
+    }
+  }, [savedProgress]);
 
   /**
    * Filter goals that have valid dates
@@ -227,6 +258,9 @@ const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             Visualize your journey toward achieving your goals
           </Text>
         </View>
+
+        {/* Save Status Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         {/* View Toggle */}
         <View style={styles.viewToggleContainer}>

@@ -18,7 +18,7 @@
  * Navigation: WorkbookNavigator -> ThreeSixNine
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -31,6 +31,10 @@ import { Text } from '../../../components';
 import RepetitionTracker, { RepetitionPeriod } from '../../../components/workbook/RepetitionTracker';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 /**
  * Cycle duration options
@@ -94,6 +98,14 @@ type Props = WorkbookStackScreenProps<'ThreeSixNine'>;
 /**
  * ThreeSixNineScreen Component
  */
+/**
+ * Interface for form data to save
+ */
+interface ThreeSixNineFormData {
+  practice: ThreeSixNineData;
+  todayProgress: DailyProgress;
+}
+
 const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
   const [practice, setPractice] = useState<ThreeSixNineData>(createEmptyPractice());
@@ -105,25 +117,37 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   });
   const [showExplanation, setShowExplanation] = useState(false);
 
-  // Animation refs (cardScale reserved for future use)
-  // const cardScale = useRef(new Animated.Value(1)).current;
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Supabase hooks
+  const { data: savedProgress } = useWorkbookProgress(6, WORKSHEET_IDS.THREE_SIX_NINE);
+
+  // Prepare form data for auto-save
+  const formData: ThreeSixNineFormData = useMemo(() => ({
+    practice,
+    todayProgress,
+  }), [practice, todayProgress]);
+
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 6,
+    worksheetId: WORKSHEET_IDS.THREE_SIX_NINE,
+    debounceMs: 2000,
+  });
 
   /**
-   * Trigger auto-save (stubbed)
+   * Load saved progress
    */
-  const triggerAutoSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as ThreeSixNineFormData;
+      if (data.practice) setPractice(data.practice);
+      if (data.todayProgress) {
+        // Check if it's still today, otherwise reset today's progress
+        if (data.todayProgress.date === getTodayString()) {
+          setTodayProgress(data.todayProgress);
+        }
+      }
     }
-    saveTimeoutRef.current = setTimeout(() => {
-      console.log('[369Method] Auto-saving practice...', {
-        manifestation: practice.manifestation,
-        progress: todayProgress,
-        timestamp: new Date().toISOString(),
-      });
-    }, 2000);
-  }, [practice.manifestation, todayProgress]);
+  }, [savedProgress]);
 
   /**
    * Handle manifestation text change
@@ -134,8 +158,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       manifestation: text,
       updatedAt: new Date().toISOString(),
     }));
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Handle cycle duration change
@@ -147,8 +170,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       cycleDuration: duration,
       updatedAt: new Date().toISOString(),
     }));
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Handle repetition toggle
@@ -181,9 +203,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     if (allComplete) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-
-    triggerAutoSave();
-  }, [todayProgress, triggerAutoSave]);
+  }, [todayProgress]);
 
   /**
    * Toggle explanation card
@@ -215,14 +235,6 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     todayProgress.afternoon >= 6 &&
     todayProgress.evening >= 9;
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -410,6 +422,9 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           </Text>
           <Text style={styles.quoteAuthor}>- Albert Einstein</Text>
         </View>
+
+        {/* Save Status */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         {/* Bottom Spacer */}
         <View style={styles.bottomSpacer} />

@@ -13,7 +13,15 @@
       "Bash(npx supabase:*)",
       "Bash(docker exec:*)",
       "Bash(npx tsc:*)",
-      "mcp__Canva__search-designs"
+      "mcp__Canva__search-designs",
+      "Bash(nul)",
+      "Bash(npx expo start --help:*)",
+      "Bash(cat:*)",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__get_project_url",
+      "mcp__supabase__get_publishable_keys",
+      "mcp__supabase__execute_sql"
     ],
     "deny": [],
     "ask": []

@@ -19,7 +19,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -35,6 +35,10 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { CertificateView } from '../../../components/workbook/CertificateView';
 import { ConfettiCelebration, ConfettiBurst } from '../../../components/workbook/ConfettiCelebration';
+import { SaveIndicator } from '../../../components/workbook';
+import { useWorkbookProgress, useMarkComplete } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -114,11 +118,29 @@ const DAILY_PRACTICES: DailyPractice[] = [
 
 type Props = WorkbookStackScreenProps<'Graduation'>;
 
+// Data type for persistence
+interface GraduationData {
+  commitmentStatement: string;
+  selectedPractices: string[];
+  hasGraduated: boolean;
+  graduatedAt?: string;
+}
+
+const PHASE_NUMBER = 10;
+
 /**
  * GraduationScreen Component
  */
 const GraduationScreen: React.FC<Props> = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  // Supabase data fetching
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.GRADUATION
+  );
+
+  // Mark complete mutation
+  const { mutate: markComplete } = useMarkComplete();
+
   const [showCelebration, setShowCelebration] = useState(false);
   const [showBurst, setShowBurst] = useState(false);
   const [hasGraduated, setHasGraduated] = useState(false);
@@ -133,35 +155,42 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
     (new Date().getTime() - journeyStartDate.getTime()) / (1000 * 60 * 60 * 24)
   );
 
-  /**
-   * Load graduation data
-   */
+  // Auto-save hook
+  const formData: GraduationData = useMemo(() => ({
+    commitmentStatement,
+    selectedPractices,
+    hasGraduated,
+    graduatedAt: hasGraduated ? new Date().toISOString() : undefined,
+  }), [commitmentStatement, selectedPractices, hasGraduated]);
+
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.GRADUATION,
+    debounceMs: 1500,
+  });
+
+  // Load saved data
   useEffect(() => {
-    loadGraduationData();
-  }, []);
-
-  const loadGraduationData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Check if already graduated (mock)
-      const alreadyGraduated = false;
-
-      if (alreadyGraduated) {
-        setHasGraduated(true);
-        setCommitmentStatement('I commit to my daily practice...');
-        setSelectedPractices(['gratitude', 'meditation']);
-      }
-
-      console.log('Loaded graduation data');
-    } catch (error) {
-      console.error('Failed to load graduation data:', error);
-    } finally {
-      setIsLoading(false);
+    // Error state
+    if (isLoadError) {
+      console.error('[GraduationScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
     }
-  };
+
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as GraduationData;
+      if (data.commitmentStatement) {
+        setCommitmentStatement(data.commitmentStatement);
+      }
+      if (data.selectedPractices) {
+        setSelectedPractices(data.selectedPractices);
+      }
+      if (data.hasGraduated) {
+        setHasGraduated(true);
+      }
+    }
+  }, [savedProgress, isError, error]);
 
   /**
    * Toggle practice selection
@@ -212,12 +241,14 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
             setShowBurst(true);
             setHasGraduated(true);
 
-            // TODO: Save to Supabase
-            console.log('Graduation completed:', {
-              commitmentStatement,
-              selectedPractices,
-              completedAt: new Date(),
+            // Mark worksheet as complete
+            markComplete({
+              phaseNumber: PHASE_NUMBER,
+              worksheetId: WORKSHEET_IDS.GRADUATION,
             });
+
+            // Save graduation data
+            saveNow();
 
             // Show certificate after celebration
             setTimeout(() => {
@@ -273,7 +304,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Preparing your graduation...</Text>
       </View>
     );
@@ -428,6 +459,13 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
           <Text style={styles.quoteAuthor}>- Tony Robbins</Text>
         </View>
+
+        {/* Save Indicator */}
+        {!hasGraduated && (
+          <View style={{ alignItems: 'center', marginVertical: 16 }}>
+            <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+          </View>
+        )}
 
         {/* Action Buttons */}
         {hasGraduated ? (

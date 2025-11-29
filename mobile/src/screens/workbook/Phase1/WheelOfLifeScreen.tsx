@@ -107,7 +107,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
 
   // Auto-save with debounce
   const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
-    data: values,
+    data: values as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.WHEEL_OF_LIFE,
     debounceMs: 1500,
@@ -116,7 +116,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
   // Load saved data into state when fetched
   useEffect(() => {
     if (savedProgress?.data) {
-      const savedData = savedProgress.data as WheelOfLifeValues;
+      const savedData = savedProgress.data as unknown as WheelOfLifeValues;
       setValues(savedData);
     }
   }, [savedProgress]);
@@ -176,7 +176,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your progress...</Text>
       </View>
     );
@@ -247,7 +247,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
         <SaveIndicator
           isSaving={isSaving}
           lastSaved={lastSaved}
-          isError={isError}
+          isError={false}
           onRetry={saveNow}
         />
       </View>

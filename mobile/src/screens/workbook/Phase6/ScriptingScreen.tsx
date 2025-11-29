@@ -17,7 +17,7 @@
  * Navigation: WorkbookNavigator -> Scripting
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -38,6 +38,10 @@ import ScriptTemplate, {
 } from '../../../components/workbook/ScriptTemplate';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 /**
  * Saved script data structure
@@ -71,6 +75,13 @@ type Props = WorkbookStackScreenProps<'Scripting'>;
 /**
  * ScriptingScreen Component
  */
+/**
+ * Interface for form data to save
+ */
+interface ScriptingFormData {
+  scripts: SavedScript[];
+}
+
 const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
   const [selectedTemplate, setSelectedTemplate] = useState<ScriptTemplateData | null>(null);
@@ -83,24 +94,32 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const [showSavedScripts, setShowSavedScripts] = useState(false);
 
   // Refs
-  const inputRef = useRef<TextInput>(null);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const inputRef = React.useRef<TextInput>(null);
+
+  // Supabase hooks
+  const { data: savedProgress, isLoading: _isLoading } = useWorkbookProgress(6, WORKSHEET_IDS.SCRIPTING);
+
+  // Prepare form data for auto-save
+  const formData: ScriptingFormData = useMemo(() => ({
+    scripts,
+  }), [scripts]);
+
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 6,
+    worksheetId: WORKSHEET_IDS.SCRIPTING,
+    debounceMs: 2000,
+  });
 
   /**
-   * Trigger auto-save (stubbed)
+   * Load saved progress
    */
-  const triggerAutoSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as ScriptingFormData;
+      if (data.scripts) setScripts(data.scripts);
     }
-    saveTimeoutRef.current = setTimeout(() => {
-      console.log('[Scripting] Auto-saving script...', {
-        templateId: selectedTemplate?.id,
-        wordCount: countWords(currentScript),
-        timestamp: new Date().toISOString(),
-      });
-    }, 2000);
-  }, [selectedTemplate?.id, currentScript]);
+  }, [savedProgress]);
 
   /**
    * Handle template selection
@@ -119,8 +138,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
    */
   const handleScriptChange = useCallback((text: string) => {
     setCurrentScript(text);
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Handle save script
@@ -233,15 +251,6 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   const wordCount = countWords(currentScript);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -350,6 +359,9 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             destiny is mightier still."
           </Text>
         </View>
+
+        {/* Save Status */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         {/* Bottom Spacer */}
         <View style={styles.bottomSpacer} />

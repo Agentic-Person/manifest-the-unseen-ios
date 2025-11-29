@@ -38,6 +38,10 @@ import {
   MeditationTimer,
 } from '../../../components/workbook/MeditationTimer';
 import type { TimerState } from '../../../components/workbook/MeditationTimer';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -112,7 +116,6 @@ type Props = WorkbookStackScreenProps<'GratitudeMeditation'>;
  * GratitudeMeditationScreen Component
  */
 const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [timerState, setTimerState] = useState<TimerState>('idle');
   const [sessions, setSessions] = useState<MeditationSession[]>([]);
   const [stats, setStats] = useState<SessionStats>({
@@ -130,11 +133,44 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
   const gradientAnim = useRef(new Animated.Value(0)).current;
   const breatheAnim = useRef(new Animated.Value(1)).current;
 
+  // Supabase integration hooks
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_MEDITATION);
+
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: { sessions, stats } as Record<string, unknown>,
+    phaseNumber: 7,
+    worksheetId: WORKSHEET_IDS.GRATITUDE_MEDITATION,
+    debounceMs: 1500,
+  });
+
   /**
-   * Load data on mount
+   * Load saved data from Supabase
    */
   useEffect(() => {
-    loadData();
+    // Error state
+    if (isLoadError) {
+      console.error('[GratitudeMeditationScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
+    }
+
+    // Only initialize once when loading completes
+    if (isLoading) return;
+
+    if (savedProgress?.data) {
+      const loadedData = savedProgress.data as { sessions: MeditationSession[]; stats: SessionStats };
+      if (loadedData.sessions) {
+        setSessions(loadedData.sessions);
+      }
+      if (loadedData.stats) {
+        setStats(loadedData.stats);
+      }
+    }
+  }, [savedProgress, isLoading]);
+
+  /**
+   * Initialize prompt on mount
+   */
+  useEffect(() => {
     selectRandomPrompt();
   }, []);
 
@@ -199,28 +235,6 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
     gradientAnim.setValue(0);
     breatheAnim.setValue(1);
   }, [gradientAnim, breatheAnim]);
-
-  /**
-   * Load data from storage (stubbed)
-   */
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      // const { data } = await supabase
-      //   .from('meditation_sessions')
-      //   .select('*')
-      //   .order('completed_at', { ascending: false });
-
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      calculateStats([]);
-      console.log('Loaded meditation session data');
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   /**
    * Calculate stats from sessions
@@ -293,12 +307,11 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
     };
 
     // Update local state
-    setSessions((prev) => [newSession, ...prev]);
-    calculateStats([newSession, ...sessions]);
+    const updatedSessions = [newSession, ...sessions];
+    setSessions(updatedSessions);
+    calculateStats(updatedSessions);
 
-    // TODO: Save to Supabase
-    // await supabase.from('meditation_sessions').insert(newSession);
-    console.log('Saved meditation session:', newSession);
+    await saveNow();
 
     setShowReflection(false);
     setReflectionText('');
@@ -328,7 +341,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Preparing your meditation space...</Text>
       </View>
     );
@@ -472,6 +485,9 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
             <Text style={styles.tipItem}>- Focus on feeling, not just thinking</Text>
           </View>
         )}
+
+        {/* Save Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

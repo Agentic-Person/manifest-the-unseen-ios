@@ -18,7 +18,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -32,6 +32,10 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseProgressCard } from '../../../components/workbook/PhaseProgressCard';
 import type { PhaseProgressData } from '../../../components/workbook/PhaseProgressCard';
+import { SaveIndicator } from '../../../components/workbook';
+import { useAllWorkbookProgress, useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -82,104 +86,104 @@ interface TransformationReflection {
 
 type Props = WorkbookStackScreenProps<'JourneyReview'>;
 
+// Data type for persistence
+interface JourneyReviewData {
+  transformation: TransformationReflection;
+}
+
+const PHASE_NUMBER = 10;
+
 /**
  * JourneyReviewScreen Component
  */
 const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [phaseProgress, setPhaseProgress] = useState<PhaseProgressData[]>([]);
+  // Fetch all workbook progress (for showing phase summary)
+  const { data: allProgress, isLoading: isLoadingAll } = useAllWorkbookProgress();
+
+  // Fetch this worksheet's data
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.JOURNEY_REVIEW
+  );
+
   const [transformation, setTransformation] = useState<TransformationReflection>({
     beforeState: '',
     afterState: '',
     biggestLesson: '',
     gratefulFor: '',
   });
-  const [journeyStats, setJourneyStats] = useState({
-    totalDays: 0,
-    exercisesCompleted: 0,
-    journalEntries: 0,
-    meditationMinutes: 0,
+
+  // Auto-save hook
+  const formData: JourneyReviewData = useMemo(() => ({ transformation }), [transformation]);
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.JOURNEY_REVIEW,
+    debounceMs: 1500,
   });
 
-  /**
-   * Calculate journey statistics
-   */
-  const calculateJourneyStats = useCallback(() => {
+  // Load saved data
+  useEffect(() => {
+    // Error state
+    if (isLoadError) {
+      console.error('[JourneyReviewScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
+    }
+
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as JourneyReviewData;
+      if (data.transformation) {
+        setTransformation(data.transformation);
+      }
+    }
+  }, [savedProgress, isError, error]);
+
+  // Calculate journey stats from all progress data
+  const journeyStats = useMemo(() => {
+    if (!allProgress) {
+      return {
+        totalDays: 0,
+        exercisesCompleted: 0,
+        journalEntries: 0,
+        meditationMinutes: 0,
+      };
+    }
+
     const now = new Date();
     const daysDiff = Math.floor(
       (now.getTime() - JOURNEY_START_DATE.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    // Mock data - would come from database
     return {
       totalDays: daysDiff,
-      exercisesCompleted: 32,
-      journalEntries: 45,
-      meditationMinutes: 360,
+      exercisesCompleted: allProgress.filter(p => p.completed).length,
+      journalEntries: 45, // Would come from separate journal table
+      meditationMinutes: 360, // Would come from meditation_sessions table
     };
-  }, []);
+  }, [allProgress]);
 
-  /**
-   * Load journey data
-   */
-  useEffect(() => {
-    loadJourneyData();
-  }, []);
+  // Generate phase progress data from all progress
+  const phaseProgress = useMemo(() => {
+    const progressByPhase: PhaseProgressData[] = PHASES.map((phase) => {
+      const phaseItems = allProgress?.filter(p => p.phase_number === phase.number) || [];
+      const completed = phaseItems.filter(p => p.completed).length;
+      const percentage = phase.exercises > 0 ? Math.round((completed / phase.exercises) * 100) : 0;
 
-  const loadJourneyData = async () => {
-    setIsLoading(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Get key insight from phase data if available
+      const keyInsight = phaseItems.length > 0 ? `Completed ${completed} of ${phase.exercises} exercises` : undefined;
 
-      // Mock phase progress data
-      const mockProgress: PhaseProgressData[] = PHASES.map((phase) => {
-        // Generate mock completion data
-        const completed = Math.floor(Math.random() * (phase.exercises + 1));
-        const percentage = Math.round((completed / phase.exercises) * 100);
+      return {
+        phaseNumber: phase.number,
+        completionPercentage: percentage,
+        exercisesCompleted: completed,
+        totalExercises: phase.exercises,
+        keyInsight,
+        lastUpdated: phaseItems.length > 0 ? new Date(phaseItems[0].updated_at).toLocaleDateString() : undefined,
+      };
+    });
 
-        // Mock insights
-        const insights = [
-          'I discovered my core values guide every decision.',
-          'My vision is clearer than ever before.',
-          'Breaking goals into steps makes them achievable.',
-          'Fear is just a signal for growth.',
-          'Self-love is the foundation of all love.',
-          'Gratitude shifts my entire perspective.',
-          'What I focus on expands.',
-          'Others\' success can inspire my own.',
-          'Surrendering control brings peace.',
-          'Letting go creates space for new.',
-        ];
-
-        return {
-          phaseNumber: phase.number,
-          completionPercentage: percentage,
-          exercisesCompleted: completed,
-          totalExercises: phase.exercises,
-          keyInsight: percentage > 50 ? insights[phase.number - 1] : undefined,
-          lastUpdated: percentage > 0 ? 'Nov 20, 2024' : undefined,
-        };
-      });
-
-      setPhaseProgress(mockProgress);
-      setJourneyStats(calculateJourneyStats());
-
-      // Mock transformation data
-      setTransformation({
-        beforeState: 'Uncertain, scattered, lacking direction...',
-        afterState: 'Focused, aligned, purposeful...',
-        biggestLesson: 'The power of consistent daily practice.',
-        gratefulFor: 'This journey and the person I\'m becoming.',
-      });
-
-      console.log('Loaded journey review data');
-    } catch (error) {
-      console.error('Failed to load journey data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    return progressByPhase;
+  }, [allProgress]);
 
   /**
    * Calculate overall completion
@@ -223,10 +227,10 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('FutureLetter');
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingAll) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your journey...</Text>
       </View>
     );
@@ -306,6 +310,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>My Transformation</Text>
         <Text style={styles.sectionSubtitle}>Before and after this journey</Text>
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
       </View>
 
       <View style={styles.transformationCard}>

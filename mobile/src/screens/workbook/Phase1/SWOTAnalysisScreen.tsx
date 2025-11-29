@@ -11,7 +11,7 @@
  * earth connection, sacred geometry.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -20,8 +20,12 @@ import {
 } from 'react-native';
 import { Text, Button } from '../../../components';
 import { SWOTQuadrant } from '../../../components/workbook/SWOTQuadrant';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * SWOT Data Interface
@@ -106,42 +110,25 @@ const CentralMandala: React.FC<{ totalItems: number }> = ({ totalItems }) => {
  */
 const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
   const [swotData, setSWOTData] = useState<SWOTData>(getDefaultSWOTData());
-  const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  /**
-   * Auto-save functionality with debounce
-   */
+  // Load saved data from Supabase
+  const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.SWOT_ANALYSIS);
+
+  // Auto-save with debounce
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: swotData as unknown as Record<string, unknown>,
+    phaseNumber: 1,
+    worksheetId: WORKSHEET_IDS.SWOT_ANALYSIS,
+    debounceMs: 2000,
+  });
+
+  // Load saved data into state when fetched
   useEffect(() => {
-    const saveTimer = setTimeout(() => {
-      autoSave();
-    }, 2000);
-
-    return () => clearTimeout(saveTimer);
-  }, [swotData]);
-
-  /**
-   * Auto-save to Supabase
-   */
-  const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      // await supabase.from('workbook_progress').upsert({
-      //   user_id: userId,
-      //   exercise_id: 'swot-analysis',
-      //   phase: 1,
-      //   data: swotData,
-      //   updated_at: new Date().toISOString(),
-      // });
-      console.log('Auto-saving SWOT data:', swotData);
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
+    if (savedProgress?.data) {
+      const saved = savedProgress.data as unknown as SWOTData;
+      setSWOTData(saved);
     }
-  }, [swotData]);
+  }, [savedProgress]);
 
   /**
    * Update handler for each quadrant
@@ -230,18 +217,19 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       {/* Save status */}
-      {lastSaved && (
-        <Text style={styles.saveStatus}>
-          {isSaving ? 'Saving...' : `Saved at ${lastSaved.toLocaleTimeString()}`}
-        </Text>
-      )}
+      <SaveIndicator
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        isError={false}
+        onRetry={saveNow}
+      />
 
       {/* Actions */}
       <View style={styles.actions}>
         <Button
           title="Save & Continue"
           onPress={() => {
-            autoSave();
+            saveNow();
             navigation.goBack();
           }}
           variant="primary"

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(cat:*)",
+      "Bash(tree:*)",
+      "WebSearch",
+      "Bash(taskkill:*)",
+      "Bash(if exist .expo rmdir /s /q .expo)",
+      "Bash(if exist node_modules rmdir /s /q node_modules)",
+      "Bash(if exist .metro-cache rmdir /s /q .metro-cache)",
+      "Bash(npm run type-check:*)",
+      "Bash(npx expo start:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

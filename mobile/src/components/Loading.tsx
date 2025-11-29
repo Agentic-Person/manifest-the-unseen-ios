@@ -6,7 +6,7 @@
  *
  * @example
  * ```tsx
- * <Loading variant="spinner" size="large" />
+ * <Loading variant="spinner" size={50} />
  * <Loading variant="skeleton" type="text" />
  * ```
  */
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
 
   skeletonLine: {
     height: 12,
-    backgroundColor: colors.gray[200],
+    backgroundColor: colors.gray[700],
     borderRadius: borderRadius.sm,
     marginBottom: spacing.sm,
   },
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   skeletonImage: {
     width: '100%',
     height: 200,
-    backgroundColor: colors.gray[200],
+    backgroundColor: colors.gray[700],
     borderRadius: borderRadius.md,
     marginBottom: spacing.md,
   },

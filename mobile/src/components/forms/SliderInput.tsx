@@ -95,7 +95,7 @@ export const SliderInput: React.FC<SliderInputProps> = ({
         maximumValue={max}
         step={step}
         minimumTrackTintColor={color}
-        maximumTrackTintColor={colors.gray[200]}
+        maximumTrackTintColor={colors.gray[700]}
         thumbTintColor={color}
         disabled={disabled}
         accessible

@@ -11,7 +11,7 @@
  * - Hand-drawn decorative elements
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -24,6 +24,9 @@ import { Card, Text } from '../../../components';
 import { ValueCard } from '../../../components/workbook/ValueCard';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * Core values list - 20 foundational values for self-discovery
@@ -75,7 +78,27 @@ type Props = WorkbookStackScreenProps<'PersonalValues'>;
 const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
   // State for selected values (ordered list)
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
-  const [isSaving, setIsSaving] = useState(false);
+
+  // Load saved data from Supabase
+  const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.VALUES_ASSESSMENT);
+
+  // Auto-save with debounce
+  const { isSaving, saveNow } = useAutoSave({
+    data: { selectedValues, allValuesViewed: true, updatedAt: new Date().toISOString() },
+    phaseNumber: 1,
+    worksheetId: WORKSHEET_IDS.VALUES_ASSESSMENT,
+    debounceMs: 1500,
+  });
+
+  // Load saved data into state when fetched
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const saved = savedProgress.data as unknown as ValuesData;
+      if (saved.selectedValues) {
+        setSelectedValues(saved.selectedValues);
+      }
+    }
+  }, [savedProgress]);
 
   /**
    * Check if selection limit is reached
@@ -170,42 +193,18 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
    * Perform the actual save operation
    */
   const performSave = async () => {
-    setIsSaving(true);
-
-    try {
-      // TODO: Save to Supabase
-      const valuesData: ValuesData = {
-        selectedValues,
-        allValuesViewed: true,
-        updatedAt: new Date().toISOString(),
-      };
-
-      console.log('Saving values data:', valuesData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert(
-        'Values Saved!',
-        'Your core values have been saved successfully.',
-        [
-          {
-            text: 'Continue',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
-    } catch (error) {
-      console.error('Failed to save values:', error);
-      Alert.alert(
-        'Save Failed',
-        'Unable to save your values. Please try again.',
-        [{ text: 'OK' }]
-      );
-    } finally {
-      setIsSaving(false);
-    }
+    saveNow();
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Alert.alert(
+      'Values Saved!',
+      'Your core values have been saved successfully.',
+      [
+        {
+          text: 'Continue',
+          onPress: () => navigation.goBack(),
+        },
+      ]
+    );
   };
 
   /**

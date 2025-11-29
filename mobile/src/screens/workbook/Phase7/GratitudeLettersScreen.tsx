@@ -19,7 +19,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -36,6 +36,10 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -107,8 +111,6 @@ type Props = WorkbookStackScreenProps<'GratitudeLetters'>;
  * GratitudeLettersScreen Component
  */
 const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
   const [letters, setLetters] = useState<GratitudeLetter[]>([]);
   const [selectedLetter, setSelectedLetter] = useState<GratitudeLetter | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -121,53 +123,43 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Supabase integration hooks
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_LETTERS);
+
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: letters as unknown as Record<string, unknown>,
+    phaseNumber: 7,
+    worksheetId: WORKSHEET_IDS.GRATITUDE_LETTERS,
+    debounceMs: 1500,
+  });
+
   /**
-   * Load saved letters on mount
+   * Load saved data from Supabase
    */
   useEffect(() => {
-    loadData();
+    // Error state
+    if (isLoadError) {
+      console.error('[GratitudeLettersScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
+    }
+
+    // Only initialize once when loading completes
+    if (isLoading) return;
+
+    if (savedProgress?.data) {
+      setLetters(savedProgress.data as unknown as GratitudeLetter[]);
+    }
+  }, [savedProgress, isLoading]);
+
+  /**
+   * Cleanup on unmount
+   */
+  useEffect(() => {
     return () => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, []);
-
-  /**
-   * Load data from storage (stubbed)
-   */
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      // const { data } = await supabase
-      //   .from('gratitude_letters')
-      //   .select('*')
-      //   .order('updated_at', { ascending: false });
-
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      console.log('Loaded gratitude letters');
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Save to storage (stubbed)
-   */
-  const saveLetter = useCallback(async (letter: GratitudeLetter) => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      // await supabase.from('gratitude_letters').upsert(letter);
-      console.log('Saving letter:', letter);
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
   }, []);
 
   /**
@@ -240,7 +232,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
       return [letter, ...prev];
     });
 
-    await saveLetter(letter);
+    await saveNow();
     setShowEditor(false);
   };
 
@@ -273,11 +265,10 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
+          onPress: async () => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
             setLetters((prev) => prev.filter((l) => l.id !== letter.id));
-            // TODO: Delete from Supabase
-            console.log('Deleted letter:', letter.id);
+            await saveNow();
           },
         },
       ]
@@ -347,7 +338,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your letters...</Text>
       </View>
     );
@@ -429,6 +420,9 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
           <Text style={styles.tipItem}>- Writing heals, even if you never send the letter</Text>
           <Text style={styles.tipItem}>- Consider writing to yourself for self-compassion</Text>
         </View>
+
+        {/* Save Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

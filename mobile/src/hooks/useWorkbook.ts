@@ -15,7 +15,6 @@ import {
   markWorksheetComplete,
   deleteWorkbookProgress,
 } from '../services/workbook';
-import type { WorkbookProgress } from '../types/workbook';
 
 /**
  * Query keys for cache management
@@ -43,9 +42,21 @@ export const workbookKeys = {
 export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
   const user = useAuthStore((state) => state.user);
 
+  console.log('[useWorkbookProgress] Hook called:', {
+    phaseNumber,
+    worksheetId,
+    userId: user?.id,
+    enabled: !!user?.id
+  });
+
   return useQuery({
     queryKey: workbookKeys.worksheet(user?.id || '', phaseNumber, worksheetId),
-    queryFn: () => getWorkbookProgress(user!.id, phaseNumber, worksheetId),
+    queryFn: async () => {
+      console.log('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId, userId: user!.id });
+      const result = await getWorkbookProgress(user!.id, phaseNumber, worksheetId);
+      console.log('[useWorkbookProgress] Query result:', result);
+      return result;
+    },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -141,6 +152,13 @@ export function useSaveWorkbook() {
       queryClient.invalidateQueries({
         queryKey: workbookKeys.progress(user!.id),
       });
+    },
+    onError: (error, variables) => {
+      // Log mutation errors for debugging
+      console.error(
+        `[useSaveWorkbook] Mutation failed for phase ${variables.phaseNumber}, worksheet ${variables.worksheetId}:`,
+        error
+      );
     },
   });
 }

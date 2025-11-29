@@ -23,7 +23,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   showPercentage = true,
   height = 8,
   fillColor = colors.primary[600],
-  backgroundColor = colors.gray[200],
+  backgroundColor = colors.gray[700],
 }) => {
   const clampedProgress = Math.min(100, Math.max(0, progress));
 

@@ -16,7 +16,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -35,8 +35,12 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../../../components/Text';
 import { RoleModelCard, ROLE_MODEL_CATEGORIES, RoleModel, RoleModelCategory } from '../../../components/workbook/RoleModelCard';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 type Props = WorkbookStackScreenProps<'RoleModels'>;
 
@@ -47,15 +51,47 @@ const generateId = (): string => {
   return `rolemodel_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 };
 
+// Data type for persistence
+interface RoleModelsData {
+  roleModels: RoleModel[];
+}
+
+const PHASE_NUMBER = 8;
+
 /**
  * RoleModelsScreen Component
  */
 const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  // Supabase data fetching
+  const { data: savedProgress } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.ROLE_MODELS
+  );
+
   // State
   const [roleModels, setRoleModels] = useState<RoleModel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<RoleModelCategory | 'all'>('all');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<RoleModel | null>(null);
+
+  // Auto-save hook
+  const formData: RoleModelsData = useMemo(() => ({ roleModels }), [roleModels]);
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.ROLE_MODELS,
+    debounceMs: 1500,
+  });
+
+  // Load saved data
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as RoleModelsData;
+      if (data.roleModels) {
+        setRoleModels(data.roleModels);
+      }
+    }
+  }, [savedProgress]);
 
   // Form state
   const [formName, setFormName] = useState('');
@@ -227,18 +263,14 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       setRoleModels((prev) => [newItem, ...prev]);
     }
 
-    // Auto-save stub
-    console.log('[RoleModels] Auto-save triggered:', { itemCount: roleModels.length + 1 });
-
     setIsModalVisible(false);
-  }, [editingItem, formName, formPhotoUri, formCategory, formInspiration, formLessons, formQuote, roleModels.length]);
+  }, [editingItem, formName, formPhotoUri, formCategory, formInspiration, formLessons, formQuote]);
 
   /**
    * Delete item
    */
   const handleDelete = useCallback((id: string) => {
     setRoleModels((prev) => prev.filter((item) => item.id !== id));
-    console.log('[RoleModels] Item deleted, auto-save triggered');
   }, []);
 
   /**
@@ -306,6 +338,7 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         <Text style={styles.headerSubtitle}>
           Create a board of people who inspire you. Document what you admire and the lessons you can learn.
         </Text>
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
       </View>
 
       {/* Category Filters */}

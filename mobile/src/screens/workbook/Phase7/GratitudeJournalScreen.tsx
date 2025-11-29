@@ -19,7 +19,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -40,6 +40,10 @@ import type {
   GratitudeCategory,
 } from '../../../components/workbook/GratitudeItem';
 import type { StreakData } from '../../../components/workbook/StreakDisplay';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -92,8 +96,6 @@ type Props = WorkbookStackScreenProps<'GratitudeJournal'>;
  * GratitudeJournalScreen Component
  */
 const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>(getTodayKey());
   const [entries, setEntries] = useState<Record<string, DailyEntry>>({});
   const [streakData, setStreakData] = useState<StreakData>({
@@ -105,6 +107,16 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Supabase integration hooks
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_JOURNAL);
+
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: entries as Record<string, unknown>,
+    phaseNumber: 7,
+    worksheetId: WORKSHEET_IDS.GRATITUDE_JOURNAL,
+    debounceMs: 1500,
+  });
+
   /**
    * Get current day's items
    */
@@ -112,55 +124,35 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
   const isToday = selectedDate === getTodayKey();
 
   /**
-   * Load saved data on mount
+   * Load saved data from Supabase
    */
   useEffect(() => {
-    loadData();
+    // Error state
+    if (isLoadError) {
+      console.error('[GratitudeJournalScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
+    }
+
+    // Only initialize once when loading completes
+    if (isLoading) return;
+
+    if (savedProgress?.data) {
+      const loadedEntries = savedProgress.data as Record<string, DailyEntry>;
+      setEntries(loadedEntries);
+      calculateStreak(loadedEntries);
+    }
+  }, [savedProgress, isLoading]);
+
+  /**
+   * Cleanup on unmount
+   */
+  useEffect(() => {
     return () => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
     };
   }, []);
-
-  /**
-   * Auto-save when entries change
-   */
-  useEffect(() => {
-    if (!isLoading) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 2000);
-    }
-  }, [entries, isLoading]);
-
-  /**
-   * Load data from storage (stubbed)
-   */
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      // const { data } = await supabase
-      //   .from('gratitude_entries')
-      //   .select('*')
-      //   .order('date_key', { ascending: false });
-
-      // Simulate loading delay
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Calculate mock streak data
-      calculateStreak({});
-      console.log('Loaded gratitude journal data');
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   /**
    * Calculate streak from entries
@@ -201,27 +193,6 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
       lastCompletedDate: completedDates[0] || null,
     });
   };
-
-  /**
-   * Auto-save to storage (stubbed)
-   */
-  const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      // await supabase.from('gratitude_entries').upsert({
-      //   date_key: selectedDate,
-      //   items: entries[selectedDate]?.items || [],
-      //   updated_at: new Date().toISOString(),
-      // });
-      console.log('Auto-saving gratitude entries:', entries);
-      calculateStreak(entries);
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [entries, selectedDate]);
 
   /**
    * Add new gratitude item
@@ -344,14 +315,14 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
    */
   const handleSaveAndContinue = async () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await autoSave();
+    await saveNow();
     _navigation.goBack();
   };
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your gratitude journal...</Text>
       </View>
     );
@@ -490,14 +461,8 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
         <Text style={styles.tipItem}>- Review past entries when feeling down</Text>
       </View>
 
-      {/* Save Status */}
-      <View style={styles.saveStatusContainer}>
-        {isSaving ? (
-          <Text style={styles.saveStatus}>Saving...</Text>
-        ) : (
-          <Text style={styles.saveStatus}>Changes auto-save</Text>
-        )}
-      </View>
+      {/* Save Indicator */}
+      <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
       {/* Save Button */}
       <Pressable
@@ -706,16 +671,6 @@ const styles = StyleSheet.create({
     color: DESIGN_COLORS.textSecondary,
     marginBottom: 6,
     lineHeight: 20,
-  },
-
-  // Save Status
-  saveStatusContainer: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  saveStatus: {
-    fontSize: 12,
-    color: DESIGN_COLORS.textTertiary,
   },
 
   // Save Button

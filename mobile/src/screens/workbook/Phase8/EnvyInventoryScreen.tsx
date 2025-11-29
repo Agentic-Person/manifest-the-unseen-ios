@@ -16,7 +16,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -34,8 +34,12 @@ import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { EnvyCard, ENVY_CATEGORIES, EnvyItem, EnvyCategory } from '../../../components/workbook/EnvyCard';
 import { IntensitySlider } from '../../../components/workbook/IntensitySlider';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 type Props = WorkbookStackScreenProps<'EnvyInventory'>;
 
@@ -49,12 +53,44 @@ const generateId = (): string => {
 /**
  * EnvyInventoryScreen Component
  */
+// Data type for persistence
+interface EnvyInventoryData {
+  envyItems: EnvyItem[];
+}
+
+const PHASE_NUMBER = 8;
+
 const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  // Supabase data fetching
+  const { data: savedProgress } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.ENVY_INVENTORY
+  );
+
   // State
   const [envyItems, setEnvyItems] = useState<EnvyItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<EnvyCategory | 'all'>('all');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<EnvyItem | null>(null);
+
+  // Auto-save hook
+  const formData: EnvyInventoryData = useMemo(() => ({ envyItems }), [envyItems]);
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.ENVY_INVENTORY,
+    debounceMs: 1500,
+  });
+
+  // Load saved data
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as EnvyInventoryData;
+      if (data.envyItems) {
+        setEnvyItems(data.envyItems);
+      }
+    }
+  }, [savedProgress]);
 
   // Form state
   const [formWhoWhat, setFormWhoWhat] = useState('');
@@ -156,18 +192,14 @@ const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       setEnvyItems((prev) => [newItem, ...prev]);
     }
 
-    // Auto-save stub
-    console.log('[EnvyInventory] Auto-save triggered:', { itemCount: envyItems.length + 1 });
-
     setIsModalVisible(false);
-  }, [editingItem, formWhoWhat, formTrigger, formCategory, formIntensity, formReflection, envyItems.length]);
+  }, [editingItem, formWhoWhat, formTrigger, formCategory, formIntensity, formReflection]);
 
   /**
    * Delete item
    */
   const handleDelete = useCallback((id: string) => {
     setEnvyItems((prev) => prev.filter((item) => item.id !== id));
-    console.log('[EnvyInventory] Item deleted, auto-save triggered');
   }, []);
 
   /**
@@ -181,7 +213,6 @@ const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           : item
       )
     );
-    console.log('[EnvyInventory] Intensity updated, auto-save triggered');
   }, []);
 
   /**
@@ -248,6 +279,7 @@ const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         <Text style={styles.headerSubtitle}>
           What do you find yourself envious of? Awareness is the first step to transformation.
         </Text>
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
       </View>
 
       {/* Category Filters */}

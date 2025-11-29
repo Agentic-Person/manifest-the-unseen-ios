@@ -112,15 +112,12 @@ export const PhaseCard: React.FC<PhaseCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.background.elevated,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   cardLocked: {
     opacity: 0.5,
@@ -141,7 +138,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.gray[200],
+    backgroundColor: colors.gray[700],
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -153,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.success[500],
   },
   phaseNumberLocked: {
-    backgroundColor: colors.gray[300],
+    backgroundColor: colors.gray[600],
   },
   phaseNumberText: {
     fontSize: 18,
@@ -190,7 +187,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: colors.gray[200],
+    borderTopColor: colors.border.default,
   },
   currentBadgeText: {
     fontSize: 12,
@@ -204,7 +201,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 4,
-    backgroundColor: colors.gray[200],
+    backgroundColor: colors.gray[700],
     borderRadius: 2,
     overflow: 'hidden',
     marginBottom: 6,

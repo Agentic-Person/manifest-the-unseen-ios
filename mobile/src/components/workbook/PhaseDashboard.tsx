@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { colors, spacing, borderRadius, shadows } from '../../theme';
+import { colors, spacing, borderRadius } from '../../theme';
 
 interface Exercise {
   id: string;
@@ -153,11 +153,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   progressCard: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.background.elevated,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.lg,
-    ...shadows.sm,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   progressCardHeader: {
     flexDirection: 'row',
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 8,
-    backgroundColor: colors.gray[200],
+    backgroundColor: colors.gray[700],
     borderRadius: borderRadius.full,
     overflow: 'hidden',
   },
@@ -207,11 +208,12 @@ const styles = StyleSheet.create({
   exerciseCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.background.elevated,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     marginBottom: spacing.sm,
-    ...shadows.sm,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   exerciseCompleted: {
     opacity: 0.7,
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.background.tertiary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.sm,

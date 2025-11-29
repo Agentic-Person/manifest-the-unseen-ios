@@ -96,6 +96,24 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true });
 
+          // Dev mode: Skip auth if EXPO_PUBLIC_DEV_SKIP_AUTH is enabled
+          if (process.env.EXPO_PUBLIC_DEV_SKIP_AUTH === 'true') {
+            console.log('[Auth] DEV_SKIP_AUTH enabled - bypassing authentication');
+            set({
+              user: { id: '00000000-0000-0000-0000-000000000000', email: 'dev@manifest.local' } as any,
+              session: { user: { id: '00000000-0000-0000-0000-000000000000' } } as any,
+              profile: {
+                id: '00000000-0000-0000-0000-000000000000',
+                email: 'dev@manifest.local',
+                displayName: 'Dev User',
+                subscriptionTier: 'enlightenment', // Full access in dev
+              } as any,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+            return;
+          }
+
           const { data: { session } } = await supabase.auth.getSession();
 
           if (session) {

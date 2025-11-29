@@ -223,33 +223,33 @@ const styles = StyleSheet.create({
     paddingRight: spacing.xs,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.primary[900],
     gap: spacing.xs,
   },
 
   tagText: {
     ...typography.bodySmall,
     fontWeight: fontWeights.medium as any,
-    color: colors.primary[700],
+    color: colors.primary[400],
   },
 
   removeButton: {
     width: 20,
     height: 20,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary[200],
+    backgroundColor: colors.primary[700],
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   removeButtonPressed: {
-    backgroundColor: colors.primary[300],
+    backgroundColor: colors.primary[600],
   },
 
   removeButtonText: {
     ...typography.caption,
     fontWeight: fontWeights.bold as any,
-    color: colors.primary[700],
+    color: colors.primary[300],
     lineHeight: 16,
   },
 

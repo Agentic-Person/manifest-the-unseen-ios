@@ -18,7 +18,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -34,6 +34,10 @@ import {
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { SealedLetter } from '../../../components/workbook/SealedLetter';
+import { SaveIndicator } from '../../../components/workbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -90,93 +94,75 @@ interface FutureLetter {
 
 type Props = WorkbookStackScreenProps<'FutureLetter'>;
 
+// Data type for persistence
+interface FutureLetterData {
+  letterContent: string;
+  promptResponses: Record<string, string>;
+  existingLetter: FutureLetter | null;
+}
+
+const PHASE_NUMBER = 10;
+
 /**
  * FutureLetterScreen Component
  */
 const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  // Supabase data fetching
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.FUTURE_LETTER
+  );
+
   const [existingLetter, setExistingLetter] = useState<FutureLetter | null>(null);
   const [letterContent, setLetterContent] = useState('');
   const [promptResponses, setPromptResponses] = useState<Record<string, string>>({});
   const [showPrompts, setShowPrompts] = useState(true);
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
   // Calculate open date (1 year from now)
   const openDate = new Date();
   openDate.setFullYear(openDate.getFullYear() + 1);
 
-  /**
-   * Load existing letter data
-   */
+  // Auto-save hook
+  const formData: FutureLetterData = useMemo(() => ({
+    letterContent,
+    promptResponses,
+    existingLetter
+  }), [letterContent, promptResponses, existingLetter]);
+
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.FUTURE_LETTER,
+    debounceMs: 1500,
+  });
+
+  // Load saved data
   useEffect(() => {
-    loadLetterData();
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const loadLetterData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      // const { data } = await supabase
-      //   .from('future_letters')
-      //   .select('*')
-      //   .single();
-
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Check for existing sealed letter (mock)
-      const hasExistingLetter = false; // Would check database
-
-      if (hasExistingLetter) {
-        setExistingLetter({
-          id: 'mock-letter-1',
-          content: 'Dear Future Self, this is a test letter...',
-          createdAt: new Date('2024-01-15'),
-          openDate: new Date('2025-01-15'),
-          isSealed: true,
-        });
-      }
-
-      console.log('Loaded future letter data');
-    } catch (error) {
-      console.error('Failed to load letter data:', error);
-    } finally {
-      setIsLoading(false);
+    // Error state
+    if (isLoadError) {
+      console.error('[FutureLetterScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
     }
-  };
+
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as FutureLetterData;
+      if (data.letterContent) {
+        setLetterContent(data.letterContent);
+      }
+      if (data.promptResponses) {
+        setPromptResponses(data.promptResponses);
+      }
+      if (data.existingLetter) {
+        setExistingLetter(data.existingLetter);
+      }
+    }
+  }, [savedProgress, isError, error]);
 
   /**
-   * Auto-save draft
-   */
-  const autoSave = useCallback(async () => {
-    if (!letterContent && Object.keys(promptResponses).length === 0) return;
-
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      console.log('Auto-saving letter draft:', { letterContent, promptResponses });
-    } catch (error) {
-      console.error('Failed to save draft:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [letterContent, promptResponses]);
-
-  /**
-   * Handle content change with auto-save
+   * Handle content change
    */
   const handleContentChange = (text: string) => {
     setLetterContent(text);
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    saveTimeoutRef.current = setTimeout(autoSave, 2000);
   };
 
   /**
@@ -187,10 +173,6 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
       ...prev,
       [promptId]: text,
     }));
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    saveTimeoutRef.current = setTimeout(autoSave, 2000);
   };
 
   /**
@@ -256,22 +238,16 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
           onPress: async () => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-            try {
-              // TODO: Save to Supabase
-              const newLetter: FutureLetter = {
-                id: Date.now().toString(),
-                content: finalContent,
-                createdAt: new Date(),
-                openDate,
-                isSealed: true,
-              };
+            const newLetter: FutureLetter = {
+              id: Date.now().toString(),
+              content: finalContent,
+              createdAt: new Date(),
+              openDate,
+              isSealed: true,
+            };
 
-              console.log('Sealing letter:', newLetter);
-              setExistingLetter(newLetter);
-            } catch (error) {
-              console.error('Failed to seal letter:', error);
-              Alert.alert('Error', 'Failed to seal letter. Please try again.');
-            }
+            setExistingLetter(newLetter);
+            saveNow();
           },
         },
       ]
@@ -314,7 +290,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your letter...</Text>
       </View>
     );
@@ -489,11 +465,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Save Status */}
         <View style={styles.saveStatusContainer}>
-          {isSaving ? (
-            <Text style={styles.saveStatus}>Saving draft...</Text>
-          ) : (
-            <Text style={styles.saveStatus}>Draft auto-saved</Text>
-          )}
+          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
         </View>
 
         {/* Seal Button */}
@@ -674,38 +646,40 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   letterPaper: {
-    backgroundColor: '#f8f4eb',
+    backgroundColor: '#2a2a3d', // Dark parchment
     borderRadius: 8,
     padding: 20,
     minHeight: 400,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
+    borderWidth: 1,
+    borderColor: DESIGN_COLORS.border,
   },
   letterDate: {
     fontSize: 12,
-    color: '#888',
+    color: DESIGN_COLORS.textTertiary,
     marginBottom: 16,
     textAlign: 'right',
   },
   letterSalutation: {
     fontSize: 18,
     fontStyle: 'italic',
-    color: '#3a3a3a',
+    color: DESIGN_COLORS.textPrimary,
     marginBottom: 16,
   },
   letterInput: {
     fontSize: 15,
-    color: '#3a3a3a',
+    color: DESIGN_COLORS.textPrimary,
     lineHeight: 24,
     minHeight: 250,
   },
   letterSignature: {
     fontSize: 16,
     fontStyle: 'italic',
-    color: '#5a5a5a',
+    color: DESIGN_COLORS.textSecondary,
     marginTop: 24,
     textAlign: 'right',
   },

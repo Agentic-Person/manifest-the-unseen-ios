@@ -18,7 +18,7 @@
  * Navigation: WorkbookNavigator -> WOOP
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -32,6 +32,10 @@ import { Text } from '../../../components';
 import WOOPSection, { WOOPSectionType, WOOP_CONFIG } from '../../../components/workbook/WOOPSection';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 /**
  * WOOP Plan data structure
@@ -73,6 +77,14 @@ type Props = WorkbookStackScreenProps<'WOOP'>;
 /**
  * WOOPScreen Component
  */
+/**
+ * Interface for form data to save
+ */
+interface WOOPFormData {
+  currentWOOP: WOOPPlan;
+  savedWOOPs: WOOPPlan[];
+}
+
 const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
   const [currentWOOP, setCurrentWOOP] = useState<WOOPPlan>(createEmptyWOOP());
@@ -83,26 +95,33 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   // Refs
   const scrollViewRef = useRef<ScrollView>(null);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Supabase hooks
+  const { data: savedProgress, isLoading: _isLoading } = useWorkbookProgress(6, WORKSHEET_IDS.WOOP);
+
+  // Prepare form data for auto-save
+  const formData: WOOPFormData = useMemo(() => ({
+    currentWOOP,
+    savedWOOPs,
+  }), [currentWOOP, savedWOOPs]);
+
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 6,
+    worksheetId: WORKSHEET_IDS.WOOP,
+    debounceMs: 2000,
+  });
 
   /**
-   * Trigger auto-save (stubbed)
+   * Load saved progress
    */
-  const triggerAutoSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as WOOPFormData;
+      if (data.currentWOOP) setCurrentWOOP(data.currentWOOP);
+      if (data.savedWOOPs) setSavedWOOPs(data.savedWOOPs);
     }
-    saveTimeoutRef.current = setTimeout(() => {
-      console.log('[WOOP] Auto-saving plan...', {
-        id: currentWOOP.id,
-        hasWish: !!currentWOOP.wish,
-        hasOutcome: !!currentWOOP.outcome,
-        hasObstacle: !!currentWOOP.obstacle,
-        hasPlan: !!currentWOOP.plan,
-        timestamp: new Date().toISOString(),
-      });
-    }, 2000);
-  }, [currentWOOP]);
+  }, [savedProgress]);
 
   /**
    * Handle section value change
@@ -113,8 +132,7 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       [section]: value,
       updatedAt: new Date().toISOString(),
     }));
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Handle section press (expand/collapse)
@@ -277,15 +295,6 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const isComplete = progress === 4;
   const sections: WOOPSectionType[] = ['wish', 'outcome', 'obstacle', 'plan'];
   const currentSectionIndex = sections.indexOf(activeSection);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -490,6 +499,9 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         </View>
 
         {/* Bottom Spacer */}
+        {/* Save Status */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+
         <View style={styles.bottomSpacer} />
       </ScrollView>
 

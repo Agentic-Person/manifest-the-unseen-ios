@@ -35,8 +35,12 @@ import GoalCard, {
   CATEGORY_NAMES,
 } from '../../../components/workbook/GoalCard';
 import SMARTGoalForm from '../../../components/workbook/SMARTGoalForm';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * Generate unique ID
@@ -69,7 +73,16 @@ type Props = WorkbookStackScreenProps<'SMARTGoals'>;
 /**
  * SMART Goals Screen Component
  */
+/** Data structure for storing goals */
+interface SMARTGoalsData {
+  goals: SMARTGoal[];
+  updatedAt: string;
+}
+
 const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.SMART_GOALS);
+
   // State
   const [goals, setGoals] = useState<SMARTGoal[]>(SAMPLE_GOALS);
   const [showForm, setShowForm] = useState(false);
@@ -79,21 +92,21 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // Animation refs
   const fabScale = useRef(new Animated.Value(1)).current;
 
-  // Auto-save debounce timer
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: { goals, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+    phaseNumber: 3,
+    worksheetId: WORKSHEET_IDS.SMART_GOALS,
+    debounceMs: 1500,
+  });
 
-  /**
-   * Trigger auto-save (stubbed for Supabase)
-   */
-  const triggerAutoSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  // Load saved data on mount
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as SMARTGoalsData;
+      if (data.goals) setGoals(data.goals);
     }
-    saveTimeoutRef.current = setTimeout(() => {
-      // TODO: Save to Supabase
-      console.log('[SMARTGoals] Auto-saving goals...', new Date().toISOString());
-    }, 2000);
-  }, []);
+  }, [savedProgress]);
 
   /**
    * Handle adding a new goal
@@ -154,16 +167,14 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
     setShowForm(false);
     setEditingGoal(null);
-    triggerAutoSave();
-  }, [editingGoal, triggerAutoSave]);
+  }, [editingGoal]);
 
   /**
    * Handle deleting a goal
    */
   const handleDeleteGoal = useCallback((goalId: string) => {
     setGoals(prev => prev.filter(g => g.id !== goalId));
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Handle status change
@@ -174,13 +185,12 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         ? { ...g, status, updatedAt: new Date().toISOString() }
         : g
     ));
-    triggerAutoSave();
 
     // Celebration haptic for completed goals
     if (status === 'completed') {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Filter goals by category
@@ -197,15 +207,6 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     completed: goals.filter(g => g.status === 'completed').length,
     inProgress: goals.filter(g => g.status === 'in_progress').length,
   };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -251,6 +252,9 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             <Text style={styles.statLabel}>Completed</Text>
           </View>
         </View>
+
+        {/* Save Status Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         {/* Category Filter */}
         <View style={styles.filterContainer}>

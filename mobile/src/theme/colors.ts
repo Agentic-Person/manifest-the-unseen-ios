@@ -113,33 +113,33 @@ export const colors = {
   black: '#000000',
   transparent: 'transparent',
 
-  // Semantic text colors (for easy access)
+  // Semantic text colors (for easy access) - DARK MODE DEFAULT
   text: {
-    primary: '#111827',      // gray-900
-    secondary: '#4b5563',    // gray-600
-    tertiary: '#9ca3af',     // gray-400
-    disabled: '#d1d5db',     // gray-300
-    inverse: '#ffffff',      // white
-    link: '#9333ea',         // primary-600
+    primary: '#e8e8e8',      // Soft off-white (never pure white)
+    secondary: '#a0a0b0',    // Muted gray
+    tertiary: '#6b6b80',     // Subtle hints
+    disabled: '#4a4a5a',     // Dimmed
+    inverse: '#111827',      // Dark text for light backgrounds
+    link: '#c084fc',         // Lighter purple for dark bg
   },
 
-  // Background colors
+  // Background colors - DARK MODE DEFAULT
   background: {
-    primary: '#ffffff',      // white
-    secondary: '#f9fafb',    // gray-50
-    tertiary: '#f3f4f6',     // gray-100
-    elevated: '#ffffff',     // white (for cards)
-    inverse: '#111827',      // gray-900
-    purple: '#faf5ff',       // primary-50 (ethereal background)
-    gold: '#fffbeb',         // secondary-50 (achievement background)
+    primary: '#1a1a2e',      // Deep charcoal
+    secondary: '#16213e',    // Dark slate blue
+    tertiary: '#252547',     // Elevated surface
+    elevated: '#252547',     // Cards, modals
+    inverse: '#ffffff',      // White (for rare light elements)
+    purple: '#2d1f47',       // Dark purple tint
+    gold: '#2d2815',         // Dark gold tint
   },
 
-  // Border colors
+  // Border colors - DARK MODE DEFAULT
   border: {
-    default: '#e5e7eb',      // gray-200
-    focused: '#9333ea',      // primary-600
-    error: '#dc2626',        // error-600
-    disabled: '#f3f4f6',     // gray-100
+    default: '#3a3a50',      // Subtle dark border
+    focused: '#c084fc',      // Lighter purple for visibility
+    error: '#f87171',        // Brighter red for dark bg
+    disabled: '#2a2a3e',     // Very subtle
   },
 
   // Overlay colors (for modals, bottom sheets)

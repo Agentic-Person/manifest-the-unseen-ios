@@ -31,8 +31,12 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import BeliefCard, { LimitingBelief } from '../../../components/workbook/BeliefCard';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * Generate unique ID
@@ -72,10 +76,19 @@ type Props = WorkbookStackScreenProps<'LimitingBeliefs'>;
  */
 type FormStep = 'limiting' | 'evidence' | 'new';
 
+/** Data structure for storing limiting beliefs data */
+interface LimitingBeliefsData {
+  beliefs: LimitingBelief[];
+  updatedAt: string;
+}
+
 /**
  * Limiting Beliefs Screen Component
  */
 const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress } = useWorkbookProgress(4, WORKSHEET_IDS.LIMITING_BELIEFS);
+
   // State
   const [beliefs, setBeliefs] = useState<LimitingBelief[]>(SAMPLE_BELIEFS);
   const [showModal, setShowModal] = useState(false);
@@ -88,21 +101,21 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
   // Animation refs
   const fabScale = useRef(new Animated.Value(1)).current;
 
-  // Auto-save debounce timer
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: { beliefs, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+    phaseNumber: 4,
+    worksheetId: WORKSHEET_IDS.LIMITING_BELIEFS,
+    debounceMs: 1500,
+  });
 
-  /**
-   * Trigger auto-save (stubbed for Supabase)
-   */
-  const triggerAutoSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  // Load saved data on mount
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as LimitingBeliefsData;
+      if (data.beliefs) setBeliefs(data.beliefs);
     }
-    saveTimeoutRef.current = setTimeout(() => {
-      // TODO: Save to Supabase
-      console.log('[LimitingBeliefs] Auto-saving beliefs...', new Date().toISOString());
-    }, 2000);
-  }, []);
+  }, [savedProgress]);
 
   /**
    * Handle adding a new belief
@@ -211,16 +224,14 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
 
     setShowModal(false);
     setEditingBelief(null);
-    triggerAutoSave();
-  }, [limitingBeliefText, evidenceText, newBeliefText, editingBelief, triggerAutoSave]);
+  }, [limitingBeliefText, evidenceText, newBeliefText, editingBelief]);
 
   /**
    * Handle delete
    */
   const handleDeleteBelief = useCallback((beliefId: string) => {
     setBeliefs(prev => prev.filter(b => b.id !== beliefId));
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Calculate stats
@@ -270,15 +281,6 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
   };
 
   const stepConfig = getStepConfig();
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -342,6 +344,9 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
             />
           </View>
         </View>
+
+        {/* Save Status Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         {/* How It Works Card */}
         <View style={styles.howItWorksCard}>

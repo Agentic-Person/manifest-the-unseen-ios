@@ -31,6 +31,10 @@ import AffirmationCard, {
   AffirmationData,
   AffirmationCategory,
 } from '../../../components/workbook/AffirmationCard';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -111,30 +115,90 @@ type Props = WorkbookStackScreenProps<'SelfLoveAffirmations'>;
 /**
  * SelfLoveAffirmationsScreen Component
  */
+/**
+ * Interface for form data to save
+ */
+interface AffirmationsFormData {
+  affirmations: AffirmationData[];
+  favorites: string[];
+  customAffirmations: AffirmationData[];
+}
+
 const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
   const [affirmations, setAffirmations] = useState<AffirmationData[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<AffirmationCategory | 'all' | 'favorites'>('all');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newAffirmationText, setNewAffirmationText] = useState('');
   const [newAffirmationCategory, setNewAffirmationCategory] = useState<AffirmationCategory>('self-worth');
   const [showMirrorTimer, setShowMirrorTimer] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(60);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   // Animation refs
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(0)).current;
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Supabase hooks
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(5, WORKSHEET_IDS.SELF_LOVE_AFFIRMATIONS);
+
+  // Prepare form data for auto-save
+  const formData: AffirmationsFormData = useMemo(() => ({
+    affirmations: affirmations,
+    favorites: affirmations.filter(a => a.isFavorite).map(a => a.id),
+    customAffirmations: affirmations.filter(a => a.isCustom),
+  }), [affirmations]);
+
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 5,
+    worksheetId: WORKSHEET_IDS.SELF_LOVE_AFFIRMATIONS,
+    debounceMs: 1500,
+  });
+
   /**
-   * Load affirmations on mount
+   * Load saved progress
    */
   useEffect(() => {
-    loadAffirmations();
+    // Only initialize once when loading completes
+    if (isLoading) return;
+
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as AffirmationsFormData;
+      // Merge saved data with defaults
+      const favoriteIds = new Set(data.favorites || []);
+      const customAffs = data.customAffirmations || [];
+
+      const initialized: AffirmationData[] = DEFAULT_AFFIRMATIONS.map((a) => ({
+        ...a,
+        isFavorite: favoriteIds.has(a.id),
+        createdAt: new Date().toISOString(),
+      }));
+
+      // Add custom affirmations
+      const customWithFavorites = customAffs.map(ca => ({
+        ...ca,
+        isFavorite: favoriteIds.has(ca.id),
+      }));
+
+      setAffirmations([...customWithFavorites, ...initialized]);
+    } else {
+      // Initialize with defaults if no saved data
+      const initialized: AffirmationData[] = DEFAULT_AFFIRMATIONS.map((a) => ({
+        ...a,
+        isFavorite: false,
+        createdAt: new Date().toISOString(),
+      }));
+      setAffirmations(initialized);
+    }
+  }, [savedProgress, isLoading]);
+
+  /**
+   * Cleanup timer on unmount
+   */
+  useEffect(() => {
     return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
@@ -160,45 +224,6 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
    */
   const currentAffirmation = filteredAffirmations[currentIndex] || null;
 
-  /**
-   * Load affirmations from storage
-   */
-  const loadAffirmations = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      // const { data } = await supabase.from('affirmations').select('*');
-
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Initialize with default affirmations
-      const initialized: AffirmationData[] = DEFAULT_AFFIRMATIONS.map((a) => ({
-        ...a,
-        isFavorite: false,
-        createdAt: new Date().toISOString(),
-      }));
-
-      setAffirmations(initialized);
-      console.log('Loaded affirmations');
-    } catch (error) {
-      console.error('Failed to load affirmations:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Auto-save affirmations (debounced)
-   */
-  const autoSave = useCallback(async () => {
-    try {
-      // TODO: Save to Supabase
-      console.log('Auto-saving affirmations:', { count: affirmations.length });
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save:', error);
-    }
-  }, [affirmations]);
 
   /**
    * Handle category change
@@ -296,8 +321,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
         a.id === id ? { ...a, isFavorite: !a.isFavorite } : a
       )
     );
-    autoSave();
-  }, [autoSave]);
+  }, []);
 
   /**
    * Add custom affirmation
@@ -321,7 +345,6 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
     setShowAddModal(false);
     setNewAffirmationText('');
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    autoSave();
   };
 
   /**
@@ -369,11 +392,17 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Error state
+  if (isLoadError) {
+    console.error('[SelfLoveAffirmationsScreen] Failed to load progress:', loadError);
+    // Continue with default data instead of blocking the UI
+  }
+
   // Loading state
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading affirmations...</Text>
       </View>
     );
@@ -444,7 +473,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
             <AffirmationCard
               affirmation={currentAffirmation}
               onToggleFavorite={handleToggleFavorite}
-              size="large"
+              size="medium"
             />
           </Animated.View>
         ) : (
@@ -522,11 +551,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
         </View>
 
         {/* Save Status */}
-        {lastSaved && (
-          <Text style={styles.saveStatus}>
-            Saved: {lastSaved.toLocaleTimeString()}
-          </Text>
-        )}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
@@ -831,14 +856,6 @@ const styles = StyleSheet.create({
     color: DESIGN_COLORS.textSecondary,
     marginBottom: 6,
     lineHeight: 20,
-  },
-
-  // Save status
-  saveStatus: {
-    fontSize: 12,
-    color: DESIGN_COLORS.textTertiary,
-    textAlign: 'center',
-    marginBottom: 16,
   },
 
   bottomSpacer: {

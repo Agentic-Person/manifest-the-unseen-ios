@@ -43,6 +43,11 @@ export const RootNavigator = () => {
     // Initialize auth on app launch
     initialize();
 
+    // Skip Supabase listener in dev mode
+    if (process.env.EXPO_PUBLIC_DEV_SKIP_AUTH === 'true') {
+      return;
+    }
+
     // Listen for auth changes
     const {
       data: { subscription },

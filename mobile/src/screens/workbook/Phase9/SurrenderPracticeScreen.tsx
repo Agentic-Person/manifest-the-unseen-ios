@@ -19,7 +19,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -36,6 +36,10 @@ import {
   SurrenderEntryData,
   SURRENDER_AFFIRMATIONS,
 } from '../../../components/workbook/SurrenderCard';
+import { SaveIndicator } from '../../../components/workbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -65,81 +69,58 @@ const getRandomAffirmation = (): string => {
 
 type Props = WorkbookStackScreenProps<'SurrenderPractice'>;
 
+// Data type for persistence
+interface SurrenderPracticeData {
+  entries: SurrenderEntryData[];
+  totalReleased: number;
+}
+
+const PHASE_NUMBER = 9;
+
 /**
  * SurrenderPracticeScreen Component
  */
 const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  // Supabase data fetching
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.SURRENDER_PRACTICE
+  );
+
   const [entries, setEntries] = useState<SurrenderEntryData[]>([]);
-  const [dailyAffirmation, setDailyAffirmation] = useState<string>('');
+  const [dailyAffirmation, setDailyAffirmation] = useState<string>(getRandomAffirmation());
   const [totalReleased, setTotalReleased] = useState(0);
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const formData: SurrenderPracticeData = useMemo(() => ({ entries, totalReleased }), [entries, totalReleased]);
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.SURRENDER_PRACTICE,
+    debounceMs: 1500,
+  });
 
-  /**
-   * Load saved data on mount
-   */
+  // Load saved data
   useEffect(() => {
-    loadData();
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
+    // Error state
+    if (isLoadError) {
+      console.error('[SurrenderPracticeScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
+    }
+
+    // Only initialize once when loading completes
+    if (isLoading) return;
+
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as SurrenderPracticeData;
+      if (data.entries) {
+        setEntries(data.entries);
       }
-    };
-  }, []);
-
-  /**
-   * Auto-save when entries change
-   */
-  useEffect(() => {
-    if (!isLoading) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
+      if (data.totalReleased !== undefined) {
+        setTotalReleased(data.totalReleased);
       }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 2000);
     }
-  }, [entries, isLoading]);
-
-  /**
-   * Load data from storage (stubbed)
-   */
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Set daily affirmation
-      setDailyAffirmation(getRandomAffirmation());
-
-      // Calculate total released
-      setTotalReleased(0); // Would come from database
-
-      console.log('Loaded surrender practice data');
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Auto-save to storage (stubbed)
-   */
-  const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      console.log('Auto-saving surrender entries:', entries);
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [entries]);
+  }, [savedProgress, isLoading]);
 
   /**
    * Add new surrender entry
@@ -247,9 +228,9 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Save and continue
    */
-  const handleSaveAndContinue = async () => {
+  const handleSaveAndContinue = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await autoSave();
+    saveNow();
     navigation.goBack();
   };
 
@@ -260,7 +241,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentTeal} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentTeal} />
         <Text style={styles.loadingText}>Loading your surrender practice...</Text>
       </View>
     );
@@ -414,11 +395,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Save Status */}
       <View style={styles.saveStatusContainer}>
-        {isSaving ? (
-          <Text style={styles.saveStatus}>Saving...</Text>
-        ) : (
-          <Text style={styles.saveStatus}>Changes auto-save</Text>
-        )}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
       </View>
 
       {/* Save Button */}

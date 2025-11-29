@@ -9,6 +9,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import type { MainTabScreenProps } from '../types/navigation';
 import { useUser, useProfile, useSignOut } from '../stores/authStore';
 import { useUserProfile } from '../hooks/useUser';
+import { colors } from '../theme';
 
 type Props = MainTabScreenProps<'Profile'>;
 
@@ -131,7 +132,7 @@ const ProfileScreen = (_props: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background.primary,
   },
   content: {
     padding: 16,
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#8B5CF6',
+    backgroundColor: colors.primary[500],
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -153,33 +154,30 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   userName: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text.primary,
     marginBottom: 4,
   },
   userEmail: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.text.secondary,
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background.elevated,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   cardTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.text.secondary,
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -192,16 +190,16 @@ const styles = StyleSheet.create({
   tierName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.text.primary,
     marginBottom: 4,
   },
   tierStatus: {
     fontSize: 14,
-    color: '#10B981',
+    color: colors.success[400],
     textTransform: 'capitalize',
   },
   upgradeButton: {
-    backgroundColor: '#8B5CF6',
+    backgroundColor: colors.primary[500],
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -209,7 +207,7 @@ const styles = StyleSheet.create({
   upgradeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   option: {
     flexDirection: 'row',
@@ -217,18 +215,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border.default,
   },
   optionText: {
     fontSize: 16,
-    color: '#111827',
+    color: colors.text.primary,
   },
   optionArrow: {
     fontSize: 24,
-    color: '#D1D5DB',
+    color: colors.text.tertiary,
   },
   signOutButton: {
-    backgroundColor: '#EF4444',
+    backgroundColor: colors.error[500],
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
@@ -238,17 +236,17 @@ const styles = StyleSheet.create({
   signOutText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: colors.white,
   },
   versionText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.text.tertiary,
     textAlign: 'center',
     marginBottom: 24,
   },
   text: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text.primary,
   },
 });
 

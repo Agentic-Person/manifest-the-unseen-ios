@@ -18,7 +18,7 @@
  * - Question text: #e8e8e8 (off-white), larger font
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -34,8 +34,11 @@ import { Text } from '../../../components';
 import { GuidedQuestion, GuidedQuestionData } from '../../../components/workbook/GuidedQuestion';
 import { StatementDisplay } from '../../../components/workbook/StatementDisplay';
 import { QuestionProgress } from '../../../components/workbook/QuestionProgress';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius, typography, fontWeights } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * The 7 guided questions for purpose discovery
@@ -123,6 +126,12 @@ const generateStatement = (answers: Record<string, string>): string => {
  * Purpose Statement Screen Component
  */
 const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress } = useWorkbookProgress(2, WORKSHEET_IDS.PURPOSE_STATEMENT);
+  const { mutate: saveWorkbook, isPending: isSaving } = useSaveWorkbook();
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [saveError, setSaveError] = useState(false);
+
   // Current question index
   const [currentIndex, setCurrentIndex] = useState(0);
   // User answers
@@ -133,8 +142,15 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   const [finalStatement, setFinalStatement] = useState('');
   // Whether statement is in edit mode
   const [isEditingStatement, setIsEditingStatement] = useState(false);
-  // Saving state
-  const [isSaving, setIsSaving] = useState(false);
+
+  // Load saved data on mount
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as PurposeStatementData;
+      if (data.answers) setAnswers(data.answers);
+      if (data.finalStatement) setFinalStatement(data.finalStatement);
+    }
+  }, [savedProgress]);
 
   const currentQuestion = GUIDED_QUESTIONS[currentIndex];
   const isLastQuestion = currentIndex === GUIDED_QUESTIONS.length - 1;
@@ -219,44 +235,49 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    setIsSaving(true);
+    setSaveError(false);
 
-    try {
-      // TODO: Save to Supabase
-      const data: PurposeStatementData = {
-        answers,
-        generatedStatement: generateStatement(answers),
-        finalStatement,
-        updatedAt: new Date().toISOString(),
-      };
+    const data: PurposeStatementData = {
+      answers,
+      generatedStatement: generateStatement(answers),
+      finalStatement,
+      updatedAt: new Date().toISOString(),
+    };
 
-      console.log('Saving purpose statement:', data);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert(
-        'Purpose Statement Saved!',
-        'Your purpose statement has been saved. Return to it whenever you need guidance.',
-        [
-          {
-            text: 'Continue',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
-    } catch (error) {
-      console.error('Failed to save purpose statement:', error);
-      Alert.alert(
-        'Save Failed',
-        'Unable to save your purpose statement. Please try again.',
-        [{ text: 'OK' }]
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  }, [answers, finalStatement, navigation]);
+    saveWorkbook(
+      {
+        phaseNumber: 2,
+        worksheetId: WORKSHEET_IDS.PURPOSE_STATEMENT,
+        data: data as unknown as Record<string, unknown>,
+        completed: true,
+      },
+      {
+        onSuccess: () => {
+          setLastSaved(new Date());
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          Alert.alert(
+            'Purpose Statement Saved!',
+            'Your purpose statement has been saved. Return to it whenever you need guidance.',
+            [
+              {
+                text: 'Continue',
+                onPress: () => navigation.goBack(),
+              },
+            ]
+          );
+        },
+        onError: (error) => {
+          console.error('Failed to save purpose statement:', error);
+          setSaveError(true);
+          Alert.alert(
+            'Save Failed',
+            'Unable to save your purpose statement. Please try again.',
+            [{ text: 'OK' }]
+          );
+        },
+      }
+    );
+  }, [answers, finalStatement, navigation, saveWorkbook]);
 
   /**
    * Regenerate the statement
@@ -295,6 +316,9 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
             testID="purpose-progress"
           />
         )}
+
+        {/* Save Status Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={saveError} onRetry={handleSave} />
 
         {/* Main Content */}
         <ScrollView

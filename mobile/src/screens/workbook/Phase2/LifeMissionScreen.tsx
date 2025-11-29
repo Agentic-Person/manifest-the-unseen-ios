@@ -12,7 +12,7 @@
  * - Smooth animations
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -22,8 +22,12 @@ import {
 import { Text } from '../../../components';
 import MissionSection, { MissionId } from '../../../components/workbook/MissionSection';
 import CombinedMissionView from '../../../components/workbook/CombinedMissionView';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * Life Mission Data Structure
@@ -93,6 +97,9 @@ type Props = WorkbookStackScreenProps<'LifeMission'>;
  * Life Mission Screen Component
  */
 const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress } = useWorkbookProgress(2, WORKSHEET_IDS.LIFE_MISSION);
+
   // State for mission data
   const [missionData, setMissionData] = useState<LifeMissionData>({
     personalMission: '',
@@ -109,8 +116,20 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State for combined view modal
   const [showCombinedView, setShowCombinedView] = useState(false);
 
-  // Auto-save debounce timer ref
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: missionData as unknown as Record<string, unknown>,
+    phaseNumber: 2,
+    worksheetId: WORKSHEET_IDS.LIFE_MISSION,
+    debounceMs: 1500,
+  });
+
+  // Load saved data on mount
+  useEffect(() => {
+    if (savedProgress?.data) {
+      setMissionData(savedProgress.data as unknown as LifeMissionData);
+    }
+  }, [savedProgress]);
 
   /**
    * Handle text change for a mission section
@@ -124,15 +143,6 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         updatedAt: new Date().toISOString(),
       };
     });
-
-    // Trigger auto-save with debounce
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    saveTimeoutRef.current = setTimeout(() => {
-      // TODO: Save to Supabase
-      console.log('Auto-saving mission data...', new Date().toISOString());
-    }, 2000);
   }, []);
 
   /**
@@ -164,15 +174,6 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   }, [missionData]);
 
   const progress = calculateProgress();
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -216,6 +217,9 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             {progress.completed} of {progress.total} missions written
           </Text>
         </View>
+
+        {/* Save Status Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         {/* Mission Sections */}
         <View style={styles.sectionsContainer}>

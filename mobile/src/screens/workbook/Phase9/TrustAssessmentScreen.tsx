@@ -19,7 +19,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -37,6 +37,10 @@ import {
   TrustValues,
   TrustDimension,
 } from '../../../components/workbook/TrustRadar';
+import { SaveIndicator } from '../../../components/workbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -117,12 +121,23 @@ const JOURNAL_PROMPTS: Record<TrustDimension, string[]> = {
 
 type Props = WorkbookStackScreenProps<'TrustAssessment'>;
 
+// Data type for persistence
+interface TrustAssessmentData {
+  trustValues: TrustValues;
+}
+
+const PHASE_NUMBER = 9;
+
 /**
  * TrustAssessmentScreen Component
  */
 const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  // Supabase data fetching
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.TRUST_ASSESSMENT
+  );
+
   const [trustValues, setTrustValues] = useState<TrustValues>({
     self: 5,
     others: 5,
@@ -133,64 +148,33 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedDimension, setSelectedDimension] = useState<TrustDimension | null>(null);
   const [showInsights, setShowInsights] = useState(false);
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const formData: TrustAssessmentData = useMemo(() => ({ trustValues }), [trustValues]);
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.TRUST_ASSESSMENT,
+    debounceMs: 1500,
+  });
 
-  /**
-   * Load saved data on mount
-   */
+  // Load saved data
   useEffect(() => {
-    loadData();
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
+    // Error state
+    if (isLoadError) {
+      console.error('[TrustAssessmentScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
+    }
+
+    // Only initialize once when loading completes
+    if (isLoading) return;
+
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as TrustAssessmentData;
+      if (data.trustValues) {
+        setTrustValues(data.trustValues);
       }
-    };
-  }, []);
-
-  /**
-   * Auto-save when values change
-   */
-  useEffect(() => {
-    if (!isLoading) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 2000);
     }
-  }, [trustValues, isLoading]);
-
-  /**
-   * Load data from storage (stubbed)
-   */
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      console.log('Loaded trust assessment data');
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Auto-save to storage (stubbed)
-   */
-  const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      console.log('Auto-saving trust assessment:', trustValues);
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [trustValues]);
+  }, [savedProgress, isLoading]);
 
   /**
    * Handle slider value change
@@ -231,9 +215,9 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Save and continue
    */
-  const handleSaveAndContinue = async () => {
+  const handleSaveAndContinue = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await autoSave();
+    saveNow();
     navigation.goBack();
   };
 
@@ -248,7 +232,7 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your trust assessment...</Text>
       </View>
     );
@@ -385,11 +369,7 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Save Status */}
       <View style={styles.saveStatusContainer}>
-        {isSaving ? (
-          <Text style={styles.saveStatus}>Saving...</Text>
-        ) : (
-          <Text style={styles.saveStatus}>Changes auto-save</Text>
-        )}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
       </View>
 
       {/* Save Button */}

@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   ghostPressed: {
-    backgroundColor: colors.gray[100],
+    backgroundColor: colors.gray[800],
   },
   ghostText: {
     color: colors.primary[600],
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary[600],
   },
   outlinePressed: {
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.primary[900],
   },
 
   // Sizes

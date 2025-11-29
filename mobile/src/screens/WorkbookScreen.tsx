@@ -9,6 +9,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'rea
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps, WorkbookStackParamList } from '../types/navigation';
 import { useProfile } from '../stores/authStore';
+import { colors } from '../theme';
 
 type Props = WorkbookStackScreenProps<'WorkbookHome'>;
 
@@ -33,7 +34,10 @@ const PHASES = [
  */
 const WorkbookScreen = ({ navigation }: Props) => {
   const profile = useProfile();
+  // All phases are always unlocked - users can explore freely
+  // Progress tracking is separate from access control
   const currentPhase = profile?.currentPhase || 1;
+  const allPhasesUnlocked = true; // Set to false to enable progressive unlocking
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -64,7 +68,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
       {/* Phases List */}
       <View style={styles.phasesList}>
         {PHASES.map((phase) => {
-          const isUnlocked = phase.id <= currentPhase;
+          const isUnlocked = allPhasesUnlocked || phase.id <= currentPhase;
           const isCurrent = phase.id === currentPhase;
           const isCompleted = phase.id < currentPhase;
 
@@ -173,7 +177,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background.primary,
   },
   content: {
     padding: 16,
@@ -184,64 +188,58 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text.primary,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.text.secondary,
   },
   progressCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background.elevated,
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   progressTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.text.secondary,
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border.default,
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: 8,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#8B5CF6',
+    backgroundColor: colors.primary[500],
     borderRadius: 4,
   },
   progressText: {
     fontSize: 14,
-    color: '#4B5563',
+    color: colors.text.secondary,
   },
   phasesList: {
     gap: 12,
   },
   phaseCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background.elevated,
     borderRadius: 12,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   phaseCardCurrent: {
     borderWidth: 2,
-    borderColor: '#8B5CF6',
+    borderColor: colors.primary[500],
   },
   phaseCardLocked: {
     opacity: 0.5,
@@ -255,26 +253,26 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.background.secondary,
     justifyContent: 'center',
     alignItems: 'center',
   },
   phaseNumberCurrent: {
-    backgroundColor: '#8B5CF6',
+    backgroundColor: colors.primary[500],
   },
   phaseNumberCompleted: {
-    backgroundColor: '#10B981',
+    backgroundColor: colors.success[500],
   },
   phaseNumberLocked: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border.default,
   },
   phaseNumberText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#6B7280',
+    color: colors.text.secondary,
   },
   phaseNumberTextActive: {
-    color: '#FFFFFF',
+    color: colors.white,
   },
   phaseInfo: {
     flex: 1,
@@ -282,33 +280,33 @@ const styles = StyleSheet.create({
   phaseName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.text.primary,
     marginBottom: 2,
   },
   phaseNameLocked: {
-    color: '#9CA3AF',
+    color: colors.text.tertiary,
   },
   phaseDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.text.secondary,
   },
   phaseDescriptionLocked: {
-    color: '#D1D5DB',
+    color: colors.text.disabled,
   },
   phaseArrow: {
     fontSize: 24,
-    color: '#D1D5DB',
+    color: colors.text.tertiary,
   },
   currentBadge: {
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border.default,
   },
   currentBadgeText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#8B5CF6',
+    color: colors.primary[400],
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },

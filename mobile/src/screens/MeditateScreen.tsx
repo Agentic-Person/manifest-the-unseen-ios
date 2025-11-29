@@ -7,6 +7,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import type { MainTabScreenProps } from '../types/navigation';
+import { colors } from '../theme';
 
 type Props = MainTabScreenProps<'Meditate'>;
 
@@ -37,7 +38,7 @@ const MeditateScreen = (_props: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background.primary,
   },
   content: {
     padding: 16,
@@ -48,23 +49,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text.primary,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.text.secondary,
   },
   placeholder: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background.elevated,
     borderRadius: 12,
     padding: 48,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   placeholderEmoji: {
     fontSize: 64,
@@ -73,12 +71,12 @@ const styles = StyleSheet.create({
   placeholderText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.text.primary,
     marginBottom: 8,
   },
   placeholderSubtext: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.text.secondary,
     textAlign: 'center',
   },
 });

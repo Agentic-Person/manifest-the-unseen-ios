@@ -8,7 +8,7 @@
  * Design: Dark spiritual theme with softer, more nurturing colors
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -26,6 +26,10 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { SaveIndicator } from '../../../components/workbook';
 
 // Design system colors - softer variant for nurturing feel
 const DESIGN_COLORS = {
@@ -121,13 +125,17 @@ type Props = WorkbookStackScreenProps<'InnerChild'>;
 /**
  * InnerChildScreen Component
  */
+/**
+ * Interface for form data to save
+ */
+interface InnerChildFormData {
+  letters: InnerChildLetter[];
+}
+
 const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
   const [letters, setLetters] = useState<InnerChildLetter[]>([]);
   const [currentLetter, setCurrentLetter] = useState<InnerChildLetter | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [showPromptsModal, setShowPromptsModal] = useState(false);
   const [showTimelineModal, setShowTimelineModal] = useState(false);
   const [selectedPrompt, setSelectedPrompt] = useState<GuidedPrompt | null>(null);
@@ -138,100 +146,86 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   // Animation
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Supabase hooks
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(5, WORKSHEET_IDS.INNER_CHILD);
+
+  // Prepare form data for auto-save
+  const formData: InnerChildFormData = useMemo(() => ({
+    letters,
+  }), [letters]);
+
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 5,
+    worksheetId: WORKSHEET_IDS.INNER_CHILD,
+    debounceMs: 2000,
+  });
 
   /**
-   * Load letters on mount
+   * Load saved progress and animate on mount
    */
   useEffect(() => {
-    loadLetters();
+    // Error state
+    if (isLoadError) {
+      console.error('[InnerChildScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
+    }
+
+    // Only initialize once when loading completes
+    if (isLoading) return;
+
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as InnerChildFormData;
+      setLetters(data.letters || []);
+    }
+  }, [savedProgress, isLoading]);
+
+  /**
+   * Animation on mount
+   */
+  useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       useNativeDriver: true,
     }).start();
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
+  }, [fadeAnim]);
 
   /**
-   * Auto-save when content changes
+   * Save current letter to letters array
    */
-  useEffect(() => {
-    if (!isLoading && isEditing && letterContent.length > 0) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 2000);
-    }
-  }, [letterContent, letterTitle, isLoading, isEditing]);
-
-  /**
-   * Load letters from storage
-   */
-  const loadLetters = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      console.log('Loaded letters');
-    } catch (error) {
-      console.error('Failed to load letters:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Auto-save current letter
-   */
-  const autoSave = useCallback(async () => {
+  const saveCurrentLetter = useCallback(() => {
     if (!letterContent.trim()) return;
 
-    setIsSaving(true);
-    try {
-      const now = new Date().toISOString();
-      const age = letterAge ? parseInt(letterAge, 10) : null;
+    const now = new Date().toISOString();
+    const age = letterAge ? parseInt(letterAge, 10) : null;
 
-      if (currentLetter) {
-        // Update existing letter
-        const updated: InnerChildLetter = {
-          ...currentLetter,
-          title: letterTitle || 'Untitled Letter',
-          content: letterContent,
-          ageAddressed: age,
-          updatedAt: now,
-        };
-        setLetters((prev) =>
-          prev.map((l) => (l.id === updated.id ? updated : l))
-        );
-        setCurrentLetter(updated);
-      } else {
-        // Create new letter
-        const newLetter: InnerChildLetter = {
-          id: generateId(),
-          title: letterTitle || 'Untitled Letter',
-          content: letterContent,
-          ageAddressed: age,
-          createdAt: now,
-          updatedAt: now,
-        };
-        setLetters((prev) => [newLetter, ...prev]);
-        setCurrentLetter(newLetter);
-      }
-
-      console.log('Auto-saved letter');
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
+    if (currentLetter) {
+      // Update existing letter
+      const updated: InnerChildLetter = {
+        ...currentLetter,
+        title: letterTitle || 'Untitled Letter',
+        content: letterContent,
+        ageAddressed: age,
+        updatedAt: now,
+      };
+      setLetters((prev) =>
+        prev.map((l) => (l.id === updated.id ? updated : l))
+      );
+      setCurrentLetter(updated);
+    } else {
+      // Create new letter
+      const newLetter: InnerChildLetter = {
+        id: generateId(),
+        title: letterTitle || 'Untitled Letter',
+        content: letterContent,
+        ageAddressed: age,
+        createdAt: now,
+        updatedAt: now,
+      };
+      setLetters((prev) => [newLetter, ...prev]);
+      setCurrentLetter(newLetter);
     }
   }, [letterContent, letterTitle, letterAge, currentLetter]);
 
@@ -247,8 +241,8 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           { text: 'Discard', style: 'destructive', onPress: startFreshLetter },
           {
             text: 'Save First',
-            onPress: async () => {
-              await autoSave();
+            onPress: () => {
+              saveCurrentLetter();
               startFreshLetter();
             },
           },
@@ -320,8 +314,8 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   /**
    * Save and close editing
    */
-  const handleSaveAndClose = async () => {
-    await autoSave();
+  const handleSaveAndClose = () => {
+    saveCurrentLetter();
     setIsEditing(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
@@ -342,7 +336,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentLavender} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentLavender} />
         <Text style={styles.loadingText}>Preparing a safe space...</Text>
       </View>
     );
@@ -551,15 +545,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
         {/* Save Status */}
         {isEditing && (
-          <View style={styles.saveStatusContainer}>
-            {isSaving ? (
-              <Text style={styles.saveStatus}>Saving...</Text>
-            ) : lastSaved ? (
-              <Text style={styles.saveStatus}>
-                Last saved: {lastSaved.toLocaleTimeString()}
-              </Text>
-            ) : null}
-          </View>
+          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
         )}
 
         <View style={styles.bottomSpacer} />
@@ -996,17 +982,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: DESIGN_COLORS.accentLavender,
-  },
-
-  // Save status
-  saveStatusContainer: {
-    alignItems: 'center',
-    marginTop: 16,
-    minHeight: 20,
-  },
-  saveStatus: {
-    fontSize: 12,
-    color: DESIGN_COLORS.textTertiary,
   },
 
   bottomSpacer: {

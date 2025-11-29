@@ -18,7 +18,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -36,6 +36,10 @@ import {
   SignCategory,
   SIGN_CATEGORIES,
 } from '../../../components/workbook/SignCard';
+import { SaveIndicator } from '../../../components/workbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -64,74 +68,54 @@ const getTodayDate = (): string => {
 
 type Props = WorkbookStackScreenProps<'Signs'>;
 
+// Data type for persistence
+interface SignsData {
+  entries: SignEntryData[];
+}
+
+const PHASE_NUMBER = 9;
+
 /**
  * SignsScreen Component
  */
 const SignsScreen: React.FC<Props> = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  // Supabase data fetching
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.SIGNS_TRACKING
+  );
+
   const [entries, setEntries] = useState<SignEntryData[]>([]);
   const [expandedEntryId, setExpandedEntryId] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<SignCategory | 'all'>('all');
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const formData: SignsData = useMemo(() => ({ entries }), [entries]);
+  const { isSaving, lastSaved, saveNow } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.SIGNS_TRACKING,
+    debounceMs: 1500,
+  });
 
-  /**
-   * Load saved data on mount
-   */
+  // Load saved data
   useEffect(() => {
-    loadData();
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
+    // Error state
+    if (isLoadError) {
+      console.error('[SignsScreen] Failed to load progress:', loadError);
+      // Continue with default data instead of blocking the UI
+    }
+
+    // Only initialize once when loading completes
+    if (isLoading) return;
+
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as SignsData;
+      if (data.entries) {
+        setEntries(data.entries);
       }
-    };
-  }, []);
-
-  /**
-   * Auto-save when entries change
-   */
-  useEffect(() => {
-    if (!isLoading) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 2000);
     }
-  }, [entries, isLoading]);
-
-  /**
-   * Load data from storage (stubbed)
-   */
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      console.log('Loaded signs data');
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Auto-save to storage (stubbed)
-   */
-  const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      console.log('Auto-saving signs entries:', entries);
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [entries]);
+  }, [savedProgress, isLoading]);
 
   /**
    * Add new sign entry
@@ -283,9 +267,9 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Save and continue
    */
-  const handleSaveAndContinue = async () => {
+  const handleSaveAndContinue = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await autoSave();
+    saveNow();
     navigation.goBack();
   };
 
@@ -294,7 +278,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={DESIGN_COLORS.accentGold} />
+        <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />
         <Text style={styles.loadingText}>Loading your signs journal...</Text>
       </View>
     );
@@ -499,11 +483,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Save Status */}
       <View style={styles.saveStatusContainer}>
-        {isSaving ? (
-          <Text style={styles.saveStatus}>Saving...</Text>
-        ) : (
-          <Text style={styles.saveStatus}>Changes auto-save</Text>
-        )}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
       </View>
 
       {/* Save Button */}

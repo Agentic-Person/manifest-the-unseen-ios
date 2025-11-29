@@ -9,7 +9,6 @@ import { supabase } from './supabase';
 import type {
   WorkbookProgress,
   WorkbookProgressInsert,
-  WORKSHEETS_PER_PHASE,
 } from '../types/workbook';
 
 /**
@@ -20,17 +19,31 @@ export const getWorkbookProgress = async (
   phaseNumber: number,
   worksheetId: string
 ): Promise<WorkbookProgress | null> => {
-  const { data, error } = await supabase
-    .from('workbook_progress')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('phase_number', phaseNumber)
-    .eq('worksheet_id', worksheetId)
-    .single();
+  console.log('[workbook.service] Starting query:', { userId, phaseNumber, worksheetId });
 
-  // PGRST116 = no rows returned, which is fine for new worksheets
-  if (error && error.code !== 'PGRST116') throw error;
-  return data as WorkbookProgress | null;
+  try {
+    const { data, error } = await supabase
+      .from('workbook_progress')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('phase_number', phaseNumber)
+      .eq('worksheet_id', worksheetId)
+      .single();
+
+    console.log('[workbook.service] Query completed:', { data, error });
+
+    // PGRST116 = no rows returned, which is fine for new worksheets
+    if (error && error.code !== 'PGRST116') {
+      console.error('[workbook.service] Query error (not PGRST116):', error);
+      throw error;
+    }
+
+    console.log('[workbook.service] Returning data:', data);
+    return data as WorkbookProgress | null;
+  } catch (err) {
+    console.error('[workbook.service] Exception in getWorkbookProgress:', err);
+    throw err;
+  }
 };
 
 /**
@@ -108,15 +121,26 @@ export const upsertWorkbookProgress = async (
     updated_at: new Date().toISOString(),
   };
 
+  // @ts-ignore - Supabase types not yet generated, but table exists
   const { data: result, error } = await supabase
     .from('workbook_progress')
-    .upsert(payload, {
+    .upsert(payload as any, {
       onConflict: 'user_id,phase_number,worksheet_id',
     })
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error(
+      `[workbook.service] Upsert failed for phase ${phaseNumber}, worksheet ${worksheetId}:`,
+      {
+        error,
+        payload: { ...payload, data: '[omitted for brevity]' },
+        userId,
+      }
+    );
+    throw error;
+  }
   return result as WorkbookProgress;
 };
 
@@ -128,13 +152,15 @@ export const markWorksheetComplete = async (
   phaseNumber: number,
   worksheetId: string
 ): Promise<WorkbookProgress> => {
+  // @ts-ignore - Supabase types not yet generated, but table exists
   const { data, error } = await supabase
     .from('workbook_progress')
+    // @ts-ignore
     .update({
       completed: true,
       completed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    })
+    } as any)
     .eq('user_id', userId)
     .eq('phase_number', phaseNumber)
     .eq('worksheet_id', worksheetId)

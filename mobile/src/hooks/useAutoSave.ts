@@ -91,7 +91,11 @@ export function useAutoSave<T extends Record<string, unknown>>({
           setLastSaved(now);
           onSaveSuccess?.(now);
         },
-        onError: (err) => onSaveError?.(err as Error),
+        onError: (err) => {
+          // Always log errors to console for debugging
+          console.error(`[useAutoSave] Failed to save phase ${phaseNumber}, worksheet ${worksheetId}:`, err);
+          onSaveError?.(err as Error);
+        },
       }
     );
   }, [phaseNumber, worksheetId, save, onSaveStart, onSaveSuccess, onSaveError]);

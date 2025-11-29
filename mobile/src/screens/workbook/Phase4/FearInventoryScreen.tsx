@@ -31,8 +31,12 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import FearCard, { Fear, FearCategory, FEAR_CATEGORIES } from '../../../components/workbook/FearCard';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * Generate unique ID
@@ -65,10 +69,19 @@ const SAMPLE_FEARS: Fear[] = [
 
 type Props = WorkbookStackScreenProps<'FearInventory'>;
 
+/** Data structure for storing fear inventory data */
+interface FearInventoryData {
+  fears: Fear[];
+  updatedAt: string;
+}
+
 /**
  * Fear Inventory Screen Component
  */
 const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress } = useWorkbookProgress(4, WORKSHEET_IDS.FEAR_INVENTORY);
+
   // State
   const [fears, setFears] = useState<Fear[]>(SAMPLE_FEARS);
   const [showModal, setShowModal] = useState(false);
@@ -80,21 +93,21 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // Animation refs
   const fabScale = useRef(new Animated.Value(1)).current;
 
-  // Auto-save debounce timer
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: { fears, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+    phaseNumber: 4,
+    worksheetId: WORKSHEET_IDS.FEAR_INVENTORY,
+    debounceMs: 1500,
+  });
 
-  /**
-   * Trigger auto-save (stubbed for Supabase)
-   */
-  const triggerAutoSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  // Load saved data on mount
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as FearInventoryData;
+      if (data.fears) setFears(data.fears);
     }
-    saveTimeoutRef.current = setTimeout(() => {
-      // TODO: Save to Supabase
-      console.log('[FearInventory] Auto-saving fears...', new Date().toISOString());
-    }, 2000);
-  }, []);
+  }, [savedProgress]);
 
   /**
    * Handle adding a new fear
@@ -167,8 +180,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     setShowModal(false);
     setEditingFear(null);
     setFearText('');
-    triggerAutoSave();
-  }, [fearText, selectedCategory, editingFear, triggerAutoSave]);
+  }, [fearText, selectedCategory, editingFear]);
 
   /**
    * Handle intensity change
@@ -179,16 +191,14 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         ? { ...f, intensity, updatedAt: new Date().toISOString() }
         : f
     ));
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Handle delete
    */
   const handleDeleteFear = useCallback((fearId: string) => {
     setFears(prev => prev.filter(f => f.id !== fearId));
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Filter fears by category
@@ -207,15 +217,6 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       ? Math.round(fears.reduce((sum, f) => sum + f.intensity, 0) / fears.length)
       : 0,
   };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -261,6 +262,9 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             <Text style={styles.statLabel}>Avg Intensity</Text>
           </View>
         </View>
+
+        {/* Save Status Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         {/* Category Filter */}
         <View style={styles.filterContainer}>

@@ -7,6 +7,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import type { Database } from '../types/database';
 
 /**
@@ -18,10 +19,35 @@ const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:5
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 /**
+ * Web-compatible storage adapter using localStorage
+ * AsyncStorage doesn't work properly on web, causing Supabase queries to hang
+ */
+const webStorage = {
+  getItem: (key: string) => {
+    if (typeof window !== 'undefined') {
+      return Promise.resolve(window.localStorage.getItem(key));
+    }
+    return Promise.resolve(null);
+  },
+  setItem: (key: string, value: string) => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(key, value);
+    }
+    return Promise.resolve();
+  },
+  removeItem: (key: string) => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(key);
+    }
+    return Promise.resolve();
+  },
+};
+
+/**
  * Supabase Client
  *
  * Configured with:
- * - AsyncStorage for session persistence
+ * - localStorage for web, AsyncStorage for native (session persistence)
  * - Auto refresh tokens
  * - Detect session in URL (for magic links)
  *
@@ -50,7 +76,7 @@ const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGci
  */
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
-    storage: AsyncStorage,
+    storage: Platform.OS === 'web' ? webStorage : AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false, // Not needed for mobile

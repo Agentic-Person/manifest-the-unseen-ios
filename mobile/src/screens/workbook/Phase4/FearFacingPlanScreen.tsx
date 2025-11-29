@@ -33,8 +33,12 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import { Fear, FEAR_CATEGORIES, FearCategory } from '../../../components/workbook/FearCard';
+import { SaveIndicator } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
 
 /**
  * Generate unique ID
@@ -121,10 +125,19 @@ const SAMPLE_PLANS: FearFacingPlan[] = [
 
 type Props = WorkbookStackScreenProps<'FearFacingPlan'>;
 
+/** Data structure for storing fear facing plan data */
+interface FearFacingPlanData {
+  plans: FearFacingPlan[];
+  updatedAt: string;
+}
+
 /**
  * Fear Facing Plan Screen Component
  */
 const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  // Fetch saved progress from Supabase
+  const { data: savedProgress } = useWorkbookProgress(4, WORKSHEET_IDS.FEAR_FACING_PLAN);
+
   // State
   const [plans, setPlans] = useState<FearFacingPlan[]>(SAMPLE_PLANS);
   const [availableFears] = useState<Fear[]>(SAMPLE_FEARS);
@@ -139,20 +152,21 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const celebrationScale = useRef(new Animated.Value(0)).current;
   const celebrationOpacity = useRef(new Animated.Value(0)).current;
 
-  // Auto-save debounce timer
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+    data: { plans, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+    phaseNumber: 4,
+    worksheetId: WORKSHEET_IDS.FEAR_FACING_PLAN,
+    debounceMs: 1500,
+  });
 
-  /**
-   * Trigger auto-save (stubbed for Supabase)
-   */
-  const triggerAutoSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
+  // Load saved data on mount
+  useEffect(() => {
+    if (savedProgress?.data) {
+      const data = savedProgress.data as unknown as FearFacingPlanData;
+      if (data.plans) setPlans(data.plans);
     }
-    saveTimeoutRef.current = setTimeout(() => {
-      console.log('[FearFacingPlan] Auto-saving plans...', new Date().toISOString());
-    }, 2000);
-  }, []);
+  }, [savedProgress]);
 
   /**
    * Show celebration animation
@@ -236,8 +250,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     setPlans(prev => [newPlan, ...prev]);
     setShowFearModal(false);
     setSelectedPlanId(newPlan.id);
-    triggerAutoSave();
-  }, [triggerAutoSave]);
+  }, []);
 
   /**
    * Handle adding a step to a plan
@@ -265,8 +278,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
     setNewStepText('');
     setShowStepModal(false);
-    triggerAutoSave();
-  }, [newStepText, selectedPlanId, triggerAutoSave]);
+  }, [newStepText, selectedPlanId]);
 
   /**
    * Handle toggling step completion
@@ -307,9 +319,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
       return updated;
     });
-
-    triggerAutoSave();
-  }, [triggerAutoSave, triggerCelebration]);
+  }, [triggerCelebration]);
 
   /**
    * Handle deleting a plan
@@ -320,8 +330,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     if (selectedPlanId === planId) {
       setSelectedPlanId(null);
     }
-    triggerAutoSave();
-  }, [selectedPlanId, triggerAutoSave]);
+  }, [selectedPlanId]);
 
   /**
    * Get the selected plan
@@ -335,15 +344,6 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     if (plan.steps.length === 0) return 0;
     return Math.round((plan.steps.filter(s => s.isCompleted).length / plan.steps.length) * 100);
   };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -366,6 +366,9 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             <View style={styles.dividerLine} />
           </View>
         </View>
+
+        {/* Save Status Indicator */}
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
 
         {/* Plans List */}
         <View style={styles.plansSection}>
