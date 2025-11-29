@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-11-24
+**Last Updated**: 2025-11-28
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
-**Timeline**: Week 4 of 28 (Workbook Phases Complete + Supabase Backend Integrated)
-**Status**: Active Development - ALL 10 WORKBOOK PHASES COMPLETE ✅ + BACKEND INTEGRATED ✅
+**Timeline**: Week 5 of 28 (Voice Journal MVP Complete)
+**Status**: Active Development - ALL 10 WORKBOOK PHASES ✅ + VOICE JOURNAL MVP ✅ + DARK MODE ✅
 
 ---
 
@@ -17,19 +17,19 @@
 - **Actual Status**: ✅ MASSIVELY AHEAD OF SCHEDULE - All 10 phases built in parallel!
 
 ### Last Activity
-- **Date**: November 24, 2025 (Update 3 - Code Verification Complete)
-- **Duration**: Full session (~6 hours total)
-- **What Was Done**: Dashboard navigation implementation + comprehensive code verification. Connected WorkbookScreen to all 10 Phase Dashboards with full exercise navigation.
+- **Date**: November 28, 2025 - Voice Journal MVP Complete
+- **Duration**: Full session (~4 hours with 3 parallel agents)
+- **What Was Done**: Implemented complete Voice Journal feature with on-device Whisper transcription, text entry, and image attachments using orchestrated multi-agent workflow.
 - **Completed**:
-  - ✅ Registered Phase2-10Dashboard routes in WorkbookNavigator
-  - ✅ Updated WorkbookScreen with navigation to all 10 phases + haptic feedback
-  - ✅ Created 3 reusable components (PhaseCard, ProgressBar, PhaseDashboard)
-  - ✅ Implemented 9 Phase Dashboard screens (Phase2-10) using PhaseDashboard template
-  - ✅ All 10 phases now navigable from WorkbookScreen → Dashboard → Exercises
-  - ✅ **CODE VERIFICATION COMPLETE**: All navigation routes verified, exercise mappings confirmed, TypeScript compiled successfully
-- **Previous Activity** (Earlier Nov 24): Complete Supabase backend integration for ALL 30 workbook screens
-- **Session Logs**: `agent-orchestration/tasks/active/DASHBOARD-ORCHESTRATOR.md` + `DASHBOARD-PLAYWRIGHT-VERIFICATION.md`
-- **Final Status**: ✅ Dashboard navigation code-verified and functionally complete (manual testing recommended for UX validation)
+  - ✅ **Audio Infrastructure** - whisper.rn integration, on-device transcription, audio recording hooks
+  - ✅ **Backend Services** - Journal CRUD, image upload, React Query hooks, database migration
+  - ✅ **UI Components** - VoiceRecorder, ImagePicker, JournalEntryCard, full screens
+  - ✅ **Multi-Agent Orchestration** - 3 agents (Audio, Backend, UI) worked in parallel with clean handoffs
+  - ✅ Privacy-first: Audio never leaves device, deleted after transcription
+  - ✅ TypeScript: 0 errors, all hooks and services properly typed
+- **Agent Reports**: See `agent-orchestration/reports/` for detailed implementation reports
+- **Session Logs**: `agent-orchestration/orchestrator/voice-journal-orchestrator.md`
+- **Final Status**: ✅ Voice Journal MVP feature-complete, requires EAS development build for testing
 
 ### What's Working Right Now
 - ✅ **App Logo** - Final design approved: Monk + Chakras + Mandala wheel ([Canva](https://www.canva.com/design/DAG5fDUuSKw/vrxVe9MlJt0uA7o-oI2BhQ/edit))
@@ -52,11 +52,33 @@
 - ✅ ~~**Supabase Integration**~~ - COMPLETE! All 30 screens auto-save to Supabase with TanStack Query
 - ✅ ~~**Dashboard Navigation**~~ - COMPLETE! Full navigation from WorkbookScreen → Phase Dashboards → Exercises
 - ❌ **Supabase Auth Connection** - Need to connect auth service to real Supabase instance (local ready)
-- ❌ **Voice Journaling** - Planned for Week 7-8
+- ✅ ~~**Voice Journaling**~~ - COMPLETE! On-device Whisper transcription, text entry, image attachments (requires EAS build)
 - ❌ **AI Chat** - Planned for Week 15-18
 - ❌ **Meditation Player** - Planned for Week 13-14
 
-### Recently Fixed (2025-11-24)
+### Recently Completed (2025-11-28)
+- ✅ **VOICE JOURNAL MVP COMPLETE** - Full feature implementation with multi-agent orchestration
+  - **Audio Agent**: whisper.rn (40MB model, on-device), expo-av recording, useWhisper/useAudioRecorder hooks
+  - **Backend Agent**: journal types, journalService (CRUD + image upload), useJournal hooks, DB migration
+  - **UI Agent**: VoiceRecorder, ImagePicker, JournalEntryCard components, JournalScreen, NewJournalEntryScreen
+  - **Architecture**: 3 agents in parallel (Audio + Backend), then UI sequentially
+  - **Files Created**: 14 new files (services, hooks, components, screens, migration)
+  - **Privacy**: Audio deleted after transcription, images in user-specific storage folders
+  - **Testing**: Requires EAS development build (`eas build --profile development --platform ios`)
+  - **Documentation**: `docs/Voice-Journal-MVP.md`, orchestrator at `agent-orchestration/orchestrator/voice-journal-orchestrator.md`
+
+### Recently Fixed (2025-11-27)
+- ✅ **DARK MODE AUDIT COMPLETE** - Comprehensive audit and fix of all light-colored backgrounds across 14 files
+  - **Root cause**: `PhaseDashboard.tsx` was using `colors.white` for exercise cards
+  - **Files fixed**: PhaseDashboard, PhaseCard, ValueCard, HabitEntry, HabitSection, Loading, ProgressBar, Button, MultiSelect, RatingScale, SliderInput, TagInput, FutureLetterScreen, SealedLetter
+  - **Color mappings applied**: `colors.white` → `colors.background.elevated`, `colors.gray[50/100/200]` → `colors.gray[700/800]`, `colors.primary[50/100]` → `colors.primary[900]`
+  - **TypeScript verified**: 0 errors after removing unused `shadows` imports
+- ✅ **Dark Theme Consistency** - All screens now use consistent dark backgrounds:
+  - Primary background: `colors.background.secondary` (#1a1a2e)
+  - Card backgrounds: `colors.background.elevated` (dark gray)
+  - Form components: Dark borders, muted hover states
+
+### Previously Fixed (2025-11-24)
 - ✅ **Dashboard Navigation (CODE-VERIFIED)** - Full navigation flow implemented and verified: WorkbookScreen → 10 Phase Dashboards → 30+ Exercise screens
   - All 10 Phase Dashboard routes registered in WorkbookNavigator
   - All exercise-to-screen navigation mappings verified (type-safe switch statements)
@@ -537,6 +559,140 @@ npx supabase status
 - **E2E Tests**: 0% (planned for Week 25-26)
 - **Manual Test Checklist**: See `docs/expo-setup-complete.md` for verification steps
 
+---
+
+## Testing Strategy & iOS Deployment (2025-11-27)
+
+### Development Environment (Windows 11 - No Mac Required)
+
+**Current Stack**:
+- **Expo SDK 54** with React 19.1.0 + React Native 0.81.5 (Legacy Architecture)
+- **Styling**: Custom design system using `StyleSheet.create` (NOT Tailwind/NativeWind)
+- **Auth Bypass**: `EXPO_PUBLIC_DEV_SKIP_AUTH=true` in `.env` for development
+
+### Testing Hierarchy (Recommended Order)
+
+#### 1. Browser Testing (Fastest Iteration)
+```bash
+cd mobile && npm start
+# Press 'w' to open web browser
+```
+- Use Chrome DevTools → Device Mode (F12 → Toggle device toolbar)
+- Select "iPhone 14 Pro" or similar for realistic sizing
+- **Limitations**: No native haptics, no native navigation feel
+- **Best for**: Layout, colors, component styling, dark mode verification
+
+#### 2. Expo Go (Real Device Testing - No Build Required)
+```bash
+cd mobile && npm start
+# Scan QR code with Expo Go app on iPhone/Android
+```
+- **Best for**: Haptics, gestures, navigation, real performance
+- **Limitation**: Some native modules may not work in Expo Go
+
+#### 3. EAS Build (Production-Ready iOS Testing)
+```bash
+# Install EAS CLI (one-time)
+npm install -g eas-cli
+
+# Login to Expo account
+eas login
+
+# Create development build for iOS
+eas build --platform ios --profile development
+
+# Create preview build (installable via TestFlight)
+eas build --platform ios --profile preview
+
+# Create production build (App Store submission)
+eas build --platform ios --profile production
+```
+
+### iOS Deployment Path (No Mac Required!)
+
+**EAS Build enables iOS deployment from Windows**:
+
+1. **Apple Developer Account** ($99/year) - Required for TestFlight/App Store
+2. **EAS Build** (cloud) - Compiles iOS app on Expo's Mac servers
+3. **TestFlight** - Install builds on real iOS devices for beta testing
+4. **App Store Connect** - Submit for review and publish
+
+**EAS Build Profiles** (in `eas.json`):
+```json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  }
+}
+```
+
+### Why Staying on Expo SDK 54
+
+**Decision**: Keep Expo SDK 54 (stable) rather than upgrading to SDK 55+
+- SDK 54 uses Legacy Architecture (stable, well-tested)
+- SDK 55+ requires New Architecture migration (breaking changes)
+- Current codebase works well with SDK 54
+- No features require SDK 55 at this time
+
+**If upgrading later**:
+- Use `npx expo install --check` to verify compatibility
+- Test thoroughly in development build before production
+
+### Development Workflow (Daily)
+
+```bash
+# 1. Start Expo (browser + device testing)
+cd mobile && npm start
+
+# 2. Test in browser first (fastest iteration)
+# Press 'w' → Chrome DevTools device mode
+
+# 3. Test on device via Expo Go
+# Scan QR code with Expo Go app
+
+# 4. TypeScript check before commit
+npm run type-check
+
+# 5. Commit changes
+git add . && git commit -m "feat: description"
+```
+
+### Dark Mode Enforcement Rules
+
+**All UI must follow these color conventions**:
+- **Backgrounds**: Use `colors.background.*` (never `colors.white` or light grays)
+- **Cards/Elevated**: Use `colors.background.elevated` (dark gray)
+- **Borders**: Use `colors.border.default` (muted)
+- **Pressed/Hover states**: Use `colors.primary[900]` or `colors.gray[800]` (not `colors.primary[50]`)
+- **Track colors** (sliders): Use `colors.gray[700]` (not `colors.gray[200]`)
+
+**Files that define the color system**:
+- `mobile/src/theme/colors.ts` - All color tokens
+- `mobile/src/theme/index.ts` - Theme exports
+
+### Quick Dark Mode Audit Command
+
+To find remaining light backgrounds:
+```bash
+# Search for potential light colors
+cd mobile/src
+grep -rn "colors.white" --include="*.tsx"
+grep -rn "colors.gray\[50\]" --include="*.tsx"
+grep -rn "colors.gray\[100\]" --include="*.tsx"
+grep -rn "colors.gray\[200\]" --include="*.tsx"
+grep -rn "colors.primary\[50\]" --include="*.tsx"
+grep -rn "colors.primary\[100\]" --include="*.tsx"
+grep -rn "#fff" --include="*.tsx"
+grep -rn "#ffffff" --include="*.tsx"
+```
+
 ### Manual Testing Checklist (To Be Completed)
 - [ ] Install Android Studio and create AVD
 - [ ] Launch app in Android emulator
@@ -715,6 +871,71 @@ cp agent-orchestration/tasks/templates/implementation-task.md \
 ---
 
 ## Change Log
+
+### 2025-11-27 - DARK MODE AUDIT & TESTING STRATEGY 🌙
+**Duration**: ~2 hours
+**Focus**: Enforce dark mode consistency across all components
+
+**Problem Identified**:
+User reported bright white exercise cards in Phase 4 dashboard, breaking the dark mode aesthetic. Screenshot showed jarring white cards against dark background.
+
+**Root Cause Analysis**:
+- `PhaseDashboard.tsx` was using `colors.white` for card backgrounds
+- Multiple form components using light grays (`colors.gray[50/100/200]`)
+- Press states using light primary colors (`colors.primary[50/100]`)
+
+**Files Audited & Fixed** (14 files total):
+
+**Critical (White backgrounds)**:
+- `src/components/workbook/PhaseDashboard.tsx` - Main culprit, white exercise cards
+- `src/components/workbook/PhaseCard.tsx` - White card, light number badge
+
+**Secondary (Light grays)**:
+- `src/components/workbook/HabitEntry.tsx` - gray[50] container
+- `src/components/workbook/HabitSection.tsx` - gray[100] add button
+- `src/components/workbook/ValueCard.tsx` - gray[100/200] icon container
+- `src/components/Loading.tsx` - gray[200] skeleton lines
+- `src/components/ProgressBar.tsx` - gray[200] track
+
+**Form Components (Light press states)**:
+- `src/components/Button.tsx` - gray[100], primary[50] press states
+- `src/components/forms/MultiSelect.tsx` - primary[50] chip press
+- `src/components/forms/RatingScale.tsx` - primary[50] button press
+- `src/components/forms/SliderInput.tsx` - gray[200] track
+- `src/components/forms/TagInput.tsx` - primary[100] tag background
+
+**Letter Screens (Light parchment)**:
+- `src/screens/workbook/Phase10/FutureLetterScreen.tsx` - #f8f4eb paper
+- `src/components/workbook/SealedLetter.tsx` - #f5f0e6 paper
+
+**Color Mapping Applied**:
+| Before | After |
+|--------|-------|
+| `colors.white` | `colors.background.elevated` |
+| `colors.gray[50]` | `colors.background.elevated` |
+| `colors.gray[100]` | `colors.background.elevated` or `colors.gray[800]` |
+| `colors.gray[200]` | `colors.gray[700]` |
+| `colors.primary[50]` | `colors.primary[900]` |
+| `colors.primary[100]` | `colors.primary[900]` |
+| `#f8f4eb` (light cream) | `#2a2a3d` (dark parchment) |
+
+**TypeScript Fixes**:
+- Removed unused `shadows` import from PhaseDashboard.tsx
+- Removed unused `shadows` import from ValueCard.tsx
+- Final TypeScript check: 0 errors
+
+**Testing Strategy Documented**:
+- Browser testing with Chrome DevTools device mode
+- Expo Go for real device testing
+- EAS Build for production iOS builds
+- iOS deployment path from Windows (no Mac required)
+
+**Notes**:
+- Design system now enforces dark backgrounds consistently
+- Quick audit command added to documentation
+- Future components should follow dark mode rules in MTU-PROJECT-STATUS.md
+
+---
 
 ### 2025-11-24 - SUPABASE BACKEND INTEGRATION COMPLETE 🚀
 **Duration**: ~3 hours
@@ -1107,7 +1328,7 @@ npm run type-check
 
 ---
 
-**Last Updated by**: Claude Code (Supabase Integration Session)
-**Session Date**: November 24, 2025
-**Next Scheduled Review**: On next session start (Week 4)
-**Document Version**: 1.2.0
+**Last Updated by**: Claude Code (Dark Mode Audit & Testing Strategy Session)
+**Session Date**: November 27, 2025
+**Next Scheduled Review**: On next session start (Week 5)
+**Document Version**: 1.3.0
