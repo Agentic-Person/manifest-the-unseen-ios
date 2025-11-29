@@ -38,6 +38,7 @@ export type MainTabParamList = {
   Meditate: undefined;
   Journal: undefined;
   Profile: undefined;
+  NewJournalEntry: undefined;
 };
 
 /**

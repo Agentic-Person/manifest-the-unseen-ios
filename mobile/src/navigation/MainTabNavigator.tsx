@@ -8,6 +8,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList } from '../types/navigation';
+import { colors } from '../theme';
 
 // Import screen components
 import HomeScreen from '../screens/HomeScreen';
@@ -15,6 +16,7 @@ import { WorkbookNavigator } from './WorkbookNavigator';
 import MeditateScreen from '../screens/MeditateScreen';
 import JournalScreen from '../screens/JournalScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import NewJournalEntryScreen from '../screens/NewJournalEntryScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -38,12 +40,12 @@ export const MainTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        // Tab bar styling (to be enhanced with design system)
-        tabBarActiveTintColor: '#8B5CF6', // Purple primary
-        tabBarInactiveTintColor: '#9CA3AF', // Gray
+        // Tab bar styling - DARK MODE
+        tabBarActiveTintColor: colors.primary[400], // Lighter purple for dark bg
+        tabBarInactiveTintColor: colors.text.tertiary,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#E5E7EB',
+          backgroundColor: colors.background.primary,
+          borderTopColor: colors.border.default,
           borderTopWidth: 1,
           height: 60,
           paddingBottom: 8,
@@ -53,18 +55,18 @@ export const MainTabNavigator = () => {
           fontSize: 12,
           fontWeight: '600',
         },
-        // Header styling
+        // Header styling - DARK MODE
         headerStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.background.primary,
           elevation: 0,
           shadowOpacity: 0,
           borderBottomWidth: 1,
-          borderBottomColor: '#E5E7EB',
+          borderBottomColor: colors.border.default,
         },
         headerTitleStyle: {
           fontSize: 18,
           fontWeight: '700',
-          color: '#111827',
+          color: colors.text.primary,
         },
       }}
     >
@@ -131,6 +133,30 @@ export const MainTabNavigator = () => {
           // tabBarIcon: ({ color, size }) => (
           //   <ProfileIcon color={color} size={size} />
           // ),
+        }}
+      />
+
+      {/* NewJournalEntry Screen - Hidden from tab bar */}
+      <Tab.Screen
+        name="NewJournalEntry"
+        component={NewJournalEntryScreen}
+        options={{
+          title: 'New Entry',
+          tabBarButton: () => null, // Hide from tab bar
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: colors.background.primary,
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border.default,
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.text.primary,
+          },
+          headerTintColor: colors.text.primary,
         }}
       />
     </Tab.Navigator>
