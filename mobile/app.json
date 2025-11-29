@@ -39,12 +39,21 @@
       "favicon": "./assets/icon.png"
     },
     "plugins": [
-      "expo-splash-screen"
+      "expo-splash-screen",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.0"
+          }
+        }
+      ]
     ],
     "extra": {
       "eas": {
         "projectId": "placeholder-project-id"
       }
-    }
+    },
+    "owner": "agentic-person"
   }
 }
