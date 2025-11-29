@@ -46,3 +46,25 @@ export {
   resetPhaseProgress,
   resetAllProgress,
 } from './workbook';
+
+// Journal service
+export {
+  createJournalEntry,
+  getJournalEntries,
+  getJournalEntry,
+  updateJournalEntry,
+  deleteJournalEntry,
+  uploadJournalImage,
+  deleteJournalImage,
+} from './journalService';
+
+// Whisper service
+export {
+  isModelDownloaded,
+  downloadModel,
+  transcribe,
+  deleteAudioFile,
+  getModelPath,
+  getModelSize,
+  deleteModel,
+} from './whisperService';
