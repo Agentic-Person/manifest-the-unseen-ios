@@ -424,7 +424,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         </View>
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
 
         {/* Bottom Spacer */}
         <View style={styles.bottomSpacer} />

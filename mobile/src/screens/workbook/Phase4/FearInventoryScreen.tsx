@@ -264,7 +264,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         </View>
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
 
         {/* Category Filter */}
         <View style={styles.filterContainer}>

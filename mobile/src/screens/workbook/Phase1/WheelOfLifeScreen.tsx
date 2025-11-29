@@ -247,7 +247,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
         <SaveIndicator
           isSaving={isSaving}
           lastSaved={lastSaved}
-          isError={false}
+          isError={isError}
           onRetry={saveNow}
         />
       </View>

@@ -290,7 +290,7 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.headerSubtitle}>
           Reframe each source of envy by discovering what you truly value and how you can achieve it.
         </Text>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
       </View>
 
       {/* Progress Bar */}

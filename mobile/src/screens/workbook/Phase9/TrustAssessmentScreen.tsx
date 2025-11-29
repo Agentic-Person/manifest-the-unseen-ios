@@ -369,7 +369,7 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Save Status */}
       <View style={styles.saveStatusContainer}>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
       </View>
 
       {/* Save Button */}

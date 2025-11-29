@@ -346,7 +346,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
         </View>
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
 
         {/* How It Works Card */}
         <View style={styles.howItWorksCard}>

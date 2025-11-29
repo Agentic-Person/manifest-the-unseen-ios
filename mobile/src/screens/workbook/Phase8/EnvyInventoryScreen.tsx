@@ -279,7 +279,7 @@ const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         <Text style={styles.headerSubtitle}>
           What do you find yourself envious of? Awareness is the first step to transformation.
         </Text>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
       </View>
 
       {/* Category Filters */}

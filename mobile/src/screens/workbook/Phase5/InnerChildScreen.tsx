@@ -545,7 +545,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
         {/* Save Status */}
         {isEditing && (
-          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
         )}
 
         <View style={styles.bottomSpacer} />

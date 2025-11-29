@@ -338,7 +338,7 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         <Text style={styles.headerSubtitle}>
           Create a board of people who inspire you. Document what you admire and the lessons you can learn.
         </Text>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
       </View>
 
       {/* Category Filters */}

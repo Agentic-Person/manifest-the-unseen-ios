@@ -463,7 +463,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         {/* Save Indicator */}
         {!hasGraduated && (
           <View style={{ alignItems: 'center', marginVertical: 16 }}>
-            <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={false} onRetry={saveNow} />
+            <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
           </View>
         )}
 

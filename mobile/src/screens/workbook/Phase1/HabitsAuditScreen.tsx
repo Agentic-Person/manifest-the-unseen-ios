@@ -390,7 +390,7 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       <SaveIndicator
         isSaving={isSaving}
         lastSaved={lastSaved}
-        isError={false}
+        isError={isError}
         onRetry={saveNow}
       />
 
