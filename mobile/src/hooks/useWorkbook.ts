@@ -138,17 +138,15 @@ export function useSaveWorkbook() {
       return upsertWorkbookProgress(user.id, phaseNumber, worksheetId, data, completed);
     },
     onSuccess: (result) => {
-      // Invalidate and refetch related queries
-      queryClient.invalidateQueries({
-        queryKey: workbookKeys.worksheet(
-          user!.id,
-          result.phase_number,
-          result.worksheet_id
-        ),
-      });
-      queryClient.invalidateQueries({
-        queryKey: workbookKeys.phase(user!.id, result.phase_number),
-      });
+      // Update cache directly instead of invalidating (prevents refetch loops)
+      const worksheetKey = workbookKeys.worksheet(
+        user!.id,
+        result.phase_number,
+        result.worksheet_id
+      );
+      queryClient.setQueryData(worksheetKey, result);
+
+      // Only invalidate the broad progress query (acceptable cost)
       queryClient.invalidateQueries({
         queryKey: workbookKeys.progress(user!.id),
       });
@@ -189,16 +187,15 @@ export function useMarkComplete() {
       return markWorksheetComplete(user.id, phaseNumber, worksheetId);
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({
-        queryKey: workbookKeys.worksheet(
-          user!.id,
-          result.phase_number,
-          result.worksheet_id
-        ),
-      });
-      queryClient.invalidateQueries({
-        queryKey: workbookKeys.phase(user!.id, result.phase_number),
-      });
+      // Update cache directly instead of invalidating (prevents refetch loops)
+      const worksheetKey = workbookKeys.worksheet(
+        user!.id,
+        result.phase_number,
+        result.worksheet_id
+      );
+      queryClient.setQueryData(worksheetKey, result);
+
+      // Only invalidate the broad progress query (acceptable cost)
       queryClient.invalidateQueries({
         queryKey: workbookKeys.progress(user!.id),
       });
@@ -232,16 +229,15 @@ export function useDeleteWorkbookProgress() {
       return deleteWorkbookProgress(user.id, phaseNumber, worksheetId);
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: workbookKeys.worksheet(
-          user!.id,
-          variables.phaseNumber,
-          variables.worksheetId
-        ),
-      });
-      queryClient.invalidateQueries({
-        queryKey: workbookKeys.phase(user!.id, variables.phaseNumber),
-      });
+      // Clear cache directly for deleted worksheet (prevents refetch loops)
+      const worksheetKey = workbookKeys.worksheet(
+        user!.id,
+        variables.phaseNumber,
+        variables.worksheetId
+      );
+      queryClient.setQueryData(worksheetKey, null);
+
+      // Only invalidate the broad progress query (acceptable cost)
       queryClient.invalidateQueries({
         queryKey: workbookKeys.progress(user!.id),
       });
