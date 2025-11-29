@@ -51,9 +51,8 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "placeholder-project-id"
+        "projectId": "dc531e3e-af7f-409e-b3fc-145058bbfbad"
       }
-    },
-    "owner": "agentic-person"
+    }
   }
 }
