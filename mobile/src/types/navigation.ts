@@ -60,7 +60,7 @@ export type WorkbookStackParamList = {
   SWOT: undefined;
   FeelWheel: undefined;
   HabitTracking: undefined;
-  ABCModel: undefined;
+  AbcModel: undefined;
   PersonalValues: undefined;
   StrengthsWeaknesses: undefined;
   ComfortZone: undefined;

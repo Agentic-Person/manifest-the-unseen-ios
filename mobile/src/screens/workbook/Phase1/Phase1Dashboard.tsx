@@ -212,6 +212,9 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
       case 'wheel-of-life':
         navigation.navigate('WheelOfLife');
         break;
+      case 'feel-wheel':
+        navigation.navigate('FeelWheel');
+        break;
       case 'swot-analysis':
         navigation.navigate('SWOT');
         break;
@@ -221,9 +224,26 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
       case 'habit-tracking':
         navigation.navigate('HabitTracking');
         break;
+      case 'abc-model':
+        navigation.navigate('AbcModel');
+        break;
+      case 'strengths-weaknesses':
+        navigation.navigate('StrengthsWeaknesses');
+        break;
+      case 'comfort-zone':
+        navigation.navigate('ComfortZone');
+        break;
+      case 'know-yourself':
+        navigation.navigate('KnowYourself');
+        break;
+      case 'abilities-rating':
+        navigation.navigate('AbilitiesRating');
+        break;
+      case 'thought-awareness':
+        navigation.navigate('ThoughtAwareness');
+        break;
       default:
-        // TODO: Navigate to other exercise screens as they are implemented
-        console.log('Navigate to exercise:', exerciseId);
+        console.log('Unknown exercise:', exerciseId);
     }
   };
 

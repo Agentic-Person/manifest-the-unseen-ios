@@ -18,6 +18,14 @@ import WheelOfLifeScreen from '../screens/workbook/Phase1/WheelOfLifeScreen';
 import SWOTAnalysisScreen from '../screens/workbook/Phase1/SWOTAnalysisScreen';
 import ValuesAssessmentScreen from '../screens/workbook/Phase1/ValuesAssessmentScreen';
 import HabitsAuditScreen from '../screens/workbook/Phase1/HabitsAuditScreen';
+// Phase 1 additional screens
+import FeelWheelScreen from '../screens/workbook/Phase1/FeelWheelScreen';
+import AbcModelScreen from '../screens/workbook/Phase1/AbcModelScreen';
+import StrengthsWeaknessesScreen from '../screens/workbook/Phase1/StrengthsWeaknessesScreen';
+import ComfortZoneScreen from '../screens/workbook/Phase1/ComfortZoneScreen';
+import KnowYourselfScreen from '../screens/workbook/Phase1/KnowYourselfScreen';
+import AbilitiesRatingScreen from '../screens/workbook/Phase1/AbilitiesRatingScreen';
+import ThoughtAwarenessScreen from '../screens/workbook/Phase1/ThoughtAwarenessScreen';
 // Phase 2: Values & Vision screens
 import { Phase2Dashboard, VisionBoardScreen, LifeMissionScreen } from '../screens/workbook/Phase2';
 // Phase 3: Goal Setting screens
@@ -206,9 +214,118 @@ export const WorkbookNavigator = () => {
           title: 'Habit Tracking',
         }}
       />
-
-      {/* TODO: Add remaining Phase 1 screens */}
-      {/* FeelWheel, ABCModel, etc. */}
+      <Stack.Screen
+        name="FeelWheel"
+        component={FeelWheelScreen}
+        options={{
+          title: 'Feel Wheel',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="AbcModel"
+        component={AbcModelScreen}
+        options={{
+          title: 'ABC Model',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="StrengthsWeaknesses"
+        component={StrengthsWeaknessesScreen}
+        options={{
+          title: 'Strengths & Weaknesses',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="ComfortZone"
+        component={ComfortZoneScreen}
+        options={{
+          title: 'Comfort Zone',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="KnowYourself"
+        component={KnowYourselfScreen}
+        options={{
+          title: 'Know Yourself',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="AbilitiesRating"
+        component={AbilitiesRatingScreen}
+        options={{
+          title: 'Abilities Rating',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
+      <Stack.Screen
+        name="ThoughtAwareness"
+        component={ThoughtAwarenessScreen}
+        options={{
+          title: 'Thought Awareness',
+          headerStyle: {
+            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: '700',
+            color: colors.dark?.textPrimary || '#e8e8e8',
+          },
+          headerTintColor: colors.dark?.accentGold || '#c9a227',
+        }}
+      />
 
       {/* Phase 2: Values & Vision */}
       <Stack.Screen
