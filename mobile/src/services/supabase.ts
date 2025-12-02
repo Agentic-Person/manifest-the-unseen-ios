@@ -44,6 +44,18 @@ const webStorage = {
 };
 
 /**
+ * No-op lock for web to prevent deadlocks
+ * The Supabase client's internal lock can cause queries to hang on web
+ */
+const noopLock = async <R>(
+  _name: string,
+  _acquireTimeout: number,
+  fn: () => Promise<R>
+): Promise<R> => {
+  return fn();
+};
+
+/**
  * Supabase Client
  *
  * Configured with:
@@ -79,7 +91,10 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
     storage: Platform.OS === 'web' ? webStorage : AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false, // Not needed for mobile
+    detectSessionInUrl: Platform.OS === 'web', // Enable for web to handle auth callbacks
+    flowType: 'implicit', // Better compatibility with web
+    // Use no-op lock on web to prevent deadlocks that cause queries to hang
+    ...(Platform.OS === 'web' && { lock: noopLock }),
   },
 });
 
