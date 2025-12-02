@@ -167,7 +167,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleSaveAndContinue = async () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow();
+    saveNow({ completed: true });
     navigation.goBack();
   };
 

@@ -36,8 +36,8 @@ interface UseAutoSaveReturn {
   error: Error | null;
   /** Timestamp of the last successful save */
   lastSaved: Date | null;
-  /** Manually trigger a save immediately */
-  saveNow: () => void;
+  /** Manually trigger a save immediately. Pass completed=true to mark worksheet as complete. */
+  saveNow: (options?: { completed?: boolean }) => void;
 }
 
 /**
@@ -81,10 +81,10 @@ export function useAutoSave<T extends Record<string, unknown>>({
   dataRef.current = data;
 
   // Perform the save operation
-  const performSave = useCallback(() => {
+  const performSave = useCallback((options?: { completed?: boolean }) => {
     onSaveStart?.();
     save(
-      { phaseNumber, worksheetId, data: dataRef.current },
+      { phaseNumber, worksheetId, data: dataRef.current, completed: options?.completed ?? false },
       {
         onSuccess: () => {
           const now = new Date();
@@ -129,11 +129,11 @@ export function useAutoSave<T extends Record<string, unknown>>({
   }, [data, enabled, debouncedSave]);
 
   // Manual save function (saves immediately)
-  const saveNow = useCallback(() => {
+  const saveNow = useCallback((options?: { completed?: boolean }) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    performSave();
+    performSave(options);
   }, [performSave]);
 
   // Cleanup on unmount

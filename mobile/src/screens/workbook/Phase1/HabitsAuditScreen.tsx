@@ -198,7 +198,7 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       return;
     }
 
-    saveNow();
+    saveNow({ completed: true });
     Alert.alert(
       'Saved!',
       'Your habits audit has been saved successfully.',

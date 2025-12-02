@@ -229,7 +229,7 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
         <Button
           title="Save & Continue"
           onPress={() => {
-            saveNow();
+            saveNow({ completed: true });
             navigation.goBack();
           }}
           variant="primary"

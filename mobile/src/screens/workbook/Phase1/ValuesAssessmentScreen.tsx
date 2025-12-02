@@ -193,7 +193,7 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
    * Perform the actual save operation
    */
   const performSave = async () => {
-    saveNow();
+    saveNow({ completed: true });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     Alert.alert(
       'Values Saved!',

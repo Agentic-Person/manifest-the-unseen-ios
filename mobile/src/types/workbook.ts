@@ -50,9 +50,16 @@ export interface PhaseProgress {
 export const WORKSHEET_IDS = {
   // Phase 1: Self-Evaluation
   WHEEL_OF_LIFE: 'wheel-of-life',
+  FEEL_WHEEL: 'feel-wheel',
   SWOT_ANALYSIS: 'swot-analysis',
   HABITS_AUDIT: 'habits-audit',
   VALUES_ASSESSMENT: 'values-assessment',
+  ABC_MODEL: 'abc-model',
+  STRENGTHS_WEAKNESSES: 'strengths-weaknesses',
+  COMFORT_ZONE: 'comfort-zone',
+  KNOW_YOURSELF: 'know-yourself',
+  ABILITIES_RATING: 'abilities-rating',
+  THOUGHT_AWARENESS: 'thought-awareness',
 
   // Phase 2: Values & Vision
   LIFE_MISSION: 'life-mission',
