@@ -146,6 +146,10 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
       setState('complete');
       onTranscriptionComplete(text);
+      // Auto-reset state after showing success message
+      setTimeout(() => {
+        setState('idle');
+      }, 2000);
     } catch (error) {
       console.error('Transcription error:', error);
       setState('error');
