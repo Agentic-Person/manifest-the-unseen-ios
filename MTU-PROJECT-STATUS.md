@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-11-28
+**Last Updated**: 2025-12-01
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
-**Timeline**: Week 5 of 28 (Voice Journal MVP Complete)
-**Status**: Active Development - ALL 10 WORKBOOK PHASES ✅ + VOICE JOURNAL MVP ✅ + DARK MODE ✅
+**Timeline**: Week 6 of 28 (Meditation & Breathing MVP Complete)
+**Status**: Active Development - ALL 10 WORKBOOK PHASES ✅ + VOICE JOURNAL MVP ✅ + DARK MODE ✅ + MEDITATION MVP ✅ + DATABASE COMPLETE ✅
 
 ---
 
@@ -17,19 +17,32 @@
 - **Actual Status**: ✅ MASSIVELY AHEAD OF SCHEDULE - All 10 phases built in parallel!
 
 ### Last Activity
-- **Date**: November 28, 2025 - Voice Journal MVP Complete
-- **Duration**: Full session (~4 hours with 3 parallel agents)
-- **What Was Done**: Implemented complete Voice Journal feature with on-device Whisper transcription, text entry, and image attachments using orchestrated multi-agent workflow.
+- **Date**: December 1, 2025 - Supabase Database Schema Complete
+- **Duration**: ~30 minutes
+- **What Was Done**: Fixed production Supabase database by applying missing migrations. Database now has all 8 required tables.
 - **Completed**:
-  - ✅ **Audio Infrastructure** - whisper.rn integration, on-device transcription, audio recording hooks
-  - ✅ **Backend Services** - Journal CRUD, image upload, React Query hooks, database migration
-  - ✅ **UI Components** - VoiceRecorder, ImagePicker, JournalEntryCard, full screens
-  - ✅ **Multi-Agent Orchestration** - 3 agents (Audio, Backend, UI) worked in parallel with clean handoffs
-  - ✅ Privacy-first: Audio never leaves device, deleted after transcription
-  - ✅ TypeScript: 0 errors, all hooks and services properly typed
-- **Agent Reports**: See `agent-orchestration/reports/` for detailed implementation reports
-- **Session Logs**: `agent-orchestration/orchestrator/voice-journal-orchestrator.md`
-- **Final Status**: ✅ Voice Journal MVP feature-complete, requires EAS development build for testing
+  - ✅ **Migration: add_missing_tables** - Created 6 missing tables (journal_entries, meditations, meditation_sessions, ai_conversations, vision_boards, knowledge_embeddings)
+  - ✅ **Migration: add_meditation_types** - Added meditation_type enum, seeded 3 breathing exercises + 4 music tracks
+  - ✅ **Database Verification** - All 8 tables confirmed with RLS policies and proper schema
+  - ✅ **Supabase Client Fix** - Updated to use localStorage on web (AsyncStorage was causing hangs)
+
+### Previous Session
+- **Date**: November 29, 2025 - Meditation & Breathing MVP Complete
+- **Duration**: Full session (~3 hours)
+- **What Was Done**: Implemented complete Meditation & Breathing MVP feature with audio playback, session tracking, breathing animations, and tabbed navigation.
+- **Completed**:
+  - ✅ **Database Migration** - meditation_type enum (guided, breathing, music), seed data for 3 breathing exercises + 4 music tracks
+  - ✅ **TypeScript Types** - Meditation, MeditationSession, SessionStats, BreathingPattern, PlaybackState, AudioProgress
+  - ✅ **Meditation Service** - CRUD operations, session tracking, streak calculation algorithm
+  - ✅ **Audio Player Hook** - expo-av playback with progress tracking, seek, background playback
+  - ✅ **Query Hooks** - TanStack Query wrappers for all meditation queries and mutations
+  - ✅ **UI Components** - MeditationCard, BreathingAnimation (5-2-5-2 pattern with haptics)
+  - ✅ **Screens** - MeditateScreen (tabs: Meditations, Breathing, Music), MeditationPlayerScreen (full player)
+  - ✅ **Navigation** - MeditateNavigator stack, modal player presentation
+  - ✅ **Session Stats** - Total minutes, session count, current streak, longest streak
+  - ✅ TypeScript: All meditation-related errors fixed
+- **MVP Plan**: `agent-orchestration/orchestrator/Meditation and Breathing MVP Plan.md`
+- **Final Status**: ✅ Meditation MVP code-complete, requires audio content files for full testing
 
 ### What's Working Right Now
 - ✅ **App Logo** - Final design approved: Monk + Chakras + Mandala wheel ([Canva](https://www.canva.com/design/DAG5fDUuSKw/vrxVe9MlJt0uA7o-oI2BhQ/edit))
@@ -41,8 +54,8 @@
 - ✅ **Hot Reload** - Test: Edit WelcomeScreen.tsx, save, see changes in ~2 seconds
 - ✅ **Supabase Local** - Test: `npx supabase status` → all services show "Running"
 - ✅ **Navigation** - Root navigator with auth flow + 5-tab main navigator (Home, Workbook, Journal, Meditate, Profile)
-- ✅ **Database Tables** - Verified: 8 tables exist with correct schema (tested 2025-11-21)
-- ✅ **RLS Policies** - Verified: 23 policies active on 6 user tables (tested 2025-11-21)
+- ✅ **Database Tables** - Verified: 8 tables exist with correct schema (fixed 2025-12-01)
+- ✅ **RLS Policies** - Verified: 24+ policies active on user tables (updated 2025-12-01)
 - ✅ **Auth API E2E** - Verified: Signup → Email Confirm → Login all working (test user: test@manifest.app)
 
 ### What's NOT Working Yet
@@ -54,9 +67,23 @@
 - ❌ **Supabase Auth Connection** - Need to connect auth service to real Supabase instance (local ready)
 - ✅ ~~**Voice Journaling**~~ - COMPLETE! On-device Whisper transcription, text entry, image attachments (requires EAS build)
 - ❌ **AI Chat** - Planned for Week 15-18
-- ❌ **Meditation Player** - Planned for Week 13-14
+- ✅ ~~**Meditation Player**~~ - COMPLETE! MVP implementation with audio playback, breathing animation, session tracking (requires audio content)
 
-### Recently Completed (2025-11-28)
+### Recently Completed (2025-11-29)
+- ✅ **MEDITATION & BREATHING MVP COMPLETE** - Full feature implementation
+  - **Database**: migration with meditation_type enum, seed data for breathing exercises + music
+  - **Types**: Meditation, MeditationSession, SessionStats, BreathingPattern, PlaybackState
+  - **Service**: meditationService.ts - CRUD, session tracking, streak calculation
+  - **Hooks**: useAudioPlayer (expo-av), useMeditation (TanStack Query)
+  - **Components**: MeditationCard, BreathingAnimation (5-2-5-2 with haptics)
+  - **Screens**: MeditateScreen (tabs), MeditationPlayerScreen (modal player)
+  - **Navigation**: MeditateNavigator stack with modal presentation
+  - **Stats**: Total minutes, session count, current/longest streak
+  - **Files Created**: 11 new files (migration, types, service, hooks, components, screens, navigator)
+  - **Testing**: Requires audio content files for full testing
+  - **Documentation**: `agent-orchestration/orchestrator/Meditation and Breathing MVP Plan.md`
+
+### Previously Completed (2025-11-28)
 - ✅ **VOICE JOURNAL MVP COMPLETE** - Full feature implementation with multi-agent orchestration
   - **Audio Agent**: whisper.rn (40MB model, on-device), expo-av recording, useWhisper/useAudioRecorder hooks
   - **Backend Agent**: journal types, journalService (CRUD + image upload), useJournal hooks, DB migration
@@ -872,6 +899,122 @@ cp agent-orchestration/tasks/templates/implementation-task.md \
 
 ## Change Log
 
+### 2025-12-01 - SUPABASE DATABASE SCHEMA COMPLETE 🗄️
+
+**Duration**: ~30 minutes
+**Focus**: Fix production Supabase database with missing tables
+
+**Problem Identified**:
+Previous agent crashed while debugging Supabase client issues. The database only had 2 tables (users, workbook_progress) when 8 were required.
+
+**Root Cause**:
+- Initial schema migration (`20250101000000_initial_schema.sql`) was never applied to production
+- Database was manually created with different migration names
+- Missing tables: journal_entries, meditations, meditation_sessions, ai_conversations, vision_boards, knowledge_embeddings
+
+**Migrations Applied** (2 new):
+1. `20251129171850_add_missing_tables` - Created 6 missing tables:
+   - `journal_entries` - Voice/text journals with full-text search (tsvector)
+   - `meditations` - Meditation library with tier-based access
+   - `meditation_sessions` - User practice tracking
+   - `ai_conversations` - AI monk chat history (JSONB messages)
+   - `vision_boards` - User vision boards (JSONB images)
+   - `knowledge_embeddings` - RAG vector store (pgvector 1536 dimensions)
+
+2. `20251129171923_add_meditation_types` - Added type enum and seed data:
+   - Created `meditation_type` enum: guided, breathing, music
+   - Seeded 3 breathing exercises: Box Breathing, Deep Calm, Energy Boost
+   - Seeded 4 music tracks: Tibetan Singing Bowls, 432Hz Healing, Nature & Drums, Ocean Waves
+
+**Database Final State** (8 tables):
+| Table | Rows | RLS |
+|-------|------|-----|
+| users | 2 | ✅ |
+| workbook_progress | 3 | ✅ |
+| journal_entries | 0 | ✅ |
+| meditations | 7 | public |
+| meditation_sessions | 0 | ✅ |
+| ai_conversations | 0 | ✅ |
+| vision_boards | 0 | ✅ |
+| knowledge_embeddings | 0 | public |
+
+**Also Fixed**:
+- `mobile/src/services/supabase.ts` - Added web-compatible storage adapter (localStorage instead of AsyncStorage on web platform)
+
+**Migrations in Production**:
+```
+20251124161605_create_users_table
+20251124161607_create_workbook_progress_table
+20251128033625_add_auth_trigger
+20251128034414_add_admin_role
+20251129171850_add_missing_tables      ← NEW
+20251129171923_add_meditation_types    ← NEW
+```
+
+---
+
+### 2025-11-29 - MEDITATION & BREATHING MVP COMPLETE 🧘
+
+**Duration**: ~3 hours
+**Focus**: Implement meditation player, breathing animation, session tracking
+
+**Files Created** (11 new files):
+
+**Database:**
+- `supabase/migrations/20251129000000_meditation_types.sql` - meditation_type enum, 3 breathing exercises, 4 music tracks
+
+**Types:**
+- `mobile/src/types/meditation.ts` - Meditation, MeditationSession, SessionStats, BreathingPattern, PlaybackState, AudioProgress
+
+**Services:**
+- `mobile/src/services/meditationService.ts` - getMeditations, createSession, completeSession, getSessionStats, streak calculation
+
+**Hooks:**
+- `mobile/src/hooks/useAudioPlayer.ts` - expo-av audio playback with progress tracking, seek, background playback
+- `mobile/src/hooks/useMeditation.ts` - TanStack Query hooks for all meditation queries and mutations
+
+**Components:**
+- `mobile/src/components/meditation/MeditationCard.tsx` - Card for meditation lists with type icons
+- `mobile/src/components/meditation/BreathingAnimation.tsx` - 5-2-5-2 breathing circle with haptics
+- `mobile/src/components/meditation/index.ts` - Component exports
+
+**Screens:**
+- `mobile/src/screens/MeditateScreen.tsx` - Main hub with tabs (Meditations, Breathing, Music)
+- `mobile/src/screens/meditation/MeditationPlayerScreen.tsx` - Full-screen audio player with progress bar
+
+**Navigation:**
+- `mobile/src/navigation/MeditateNavigator.tsx` - Stack navigator with modal player presentation
+
+**Files Modified** (6 files):
+- `mobile/src/types/index.ts` - Added meditation type exports
+- `mobile/src/types/database.ts` - Updated meditation and meditation_sessions table types
+- `mobile/src/services/queryClient.ts` - Added meditation query keys
+- `mobile/src/hooks/index.ts` - Added meditation hook exports
+- `mobile/src/navigation/MainTabNavigator.tsx` - Integrated MeditateNavigator
+
+**Features Implemented:**
+- 3-tab navigation: Meditations | Breathing | Music
+- Narrator preference filtering (male/female)
+- Audio playback with play/pause/seek
+- Breathing animation (5-2-5-2 pattern with configurable patterns)
+- Session tracking (start/complete mutations)
+- Stats display: Total minutes, session count, current streak, longest streak
+- Streak calculation algorithm (consecutive days)
+- Modal player presentation with animated artwork
+
+**TypeScript Fixes:**
+- Fixed color references (colors.accent.gold → colors.dark.accentGold)
+- Fixed Loading component usage (removed message prop)
+- Added type assertions for Supabase operations
+- Updated database types to match new schema
+
+**Remaining Work:**
+1. Content creation (audio files via Cartesia + Suno AI)
+2. Upload audio to Supabase Storage
+3. E2E tests with Playwright MCP
+
+---
+
 ### 2025-11-27 - DARK MODE AUDIT & TESTING STRATEGY 🌙
 **Duration**: ~2 hours
 **Focus**: Enforce dark mode consistency across all components
@@ -1328,7 +1471,7 @@ npm run type-check
 
 ---
 
-**Last Updated by**: Claude Code (Dark Mode Audit & Testing Strategy Session)
-**Session Date**: November 27, 2025
-**Next Scheduled Review**: On next session start (Week 5)
-**Document Version**: 1.3.0
+**Last Updated by**: Claude Code (Meditation & Breathing MVP Session)
+**Session Date**: November 29, 2025
+**Next Scheduled Review**: On next session start (Week 7)
+**Document Version**: 1.4.0
