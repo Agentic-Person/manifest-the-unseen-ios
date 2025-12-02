@@ -97,15 +97,17 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true });
 
           // Dev mode: Skip auth if EXPO_PUBLIC_DEV_SKIP_AUTH is enabled
+          // Uses real demo user from database to avoid 406 RLS errors
           if (process.env.EXPO_PUBLIC_DEV_SKIP_AUTH === 'true') {
-            console.log('[Auth] DEV_SKIP_AUTH enabled - bypassing authentication');
+            const DEV_USER_ID = 'fd0bbfb1-768d-48d3-abab-650891725f43'; // test@manifest.app
+            console.log('[Auth] DEV_SKIP_AUTH enabled - using demo user:', DEV_USER_ID);
             set({
-              user: { id: '00000000-0000-0000-0000-000000000000', email: 'dev@manifest.local' } as any,
-              session: { user: { id: '00000000-0000-0000-0000-000000000000' } } as any,
+              user: { id: DEV_USER_ID, email: 'test@manifest.app' } as any,
+              session: { user: { id: DEV_USER_ID } } as any,
               profile: {
-                id: '00000000-0000-0000-0000-000000000000',
-                email: 'dev@manifest.local',
-                displayName: 'Dev User',
+                id: DEV_USER_ID,
+                email: 'test@manifest.app',
+                displayName: 'Demo User',
                 subscriptionTier: 'enlightenment', // Full access in dev
               } as any,
               isAuthenticated: true,

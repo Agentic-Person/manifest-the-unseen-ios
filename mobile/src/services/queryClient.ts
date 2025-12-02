@@ -152,9 +152,11 @@ export const queryKeys = {
   // Meditation queries
   meditations: {
     all: ['meditations'] as const,
-    list: ['meditations', 'list'] as const,
-    detail: (id: string) => ['meditations', id] as const,
+    list: (type?: string, narrator?: string) =>
+      ['meditations', 'list', { type, narrator }] as const,
+    detail: (id: string) => ['meditations', 'detail', id] as const,
     sessions: (userId: string) => ['meditations', 'sessions', userId] as const,
+    stats: (userId: string) => ['meditations', 'stats', userId] as const,
   },
 
   // AI Chat queries

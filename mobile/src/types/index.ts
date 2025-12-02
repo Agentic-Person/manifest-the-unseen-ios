@@ -35,3 +35,28 @@ export type {
 
 // Database types
 export type { Database } from './database';
+
+// Meditation types
+export type {
+  MeditationType,
+  NarratorGender,
+  SubscriptionTier,
+  BreathingPhase,
+  Meditation,
+  MeditationSession,
+  CreateMeditationSession,
+  UpdateMeditationSession,
+  SessionStats,
+  BreathingPattern,
+  PlaybackState,
+  AudioProgress,
+} from './meditation';
+
+export {
+  BREATHING_PATTERNS,
+  BREATHING_PHASE_LABELS,
+  formatDuration,
+  formatTime,
+  getMeditationIcon,
+  getMeditationTypeLabel,
+} from './meditation';

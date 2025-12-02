@@ -32,3 +32,24 @@ export {
 // Voice journal hooks
 export { useWhisper } from './useWhisper';
 export { useAudioRecorder, type RecordingStatus } from './useAudioRecorder';
+
+// Audio player hook
+export { useAudioPlayer } from './useAudioPlayer';
+
+// Meditation hooks
+export {
+  useMeditations,
+  useMeditation,
+  useGuidedMeditations,
+  useBreathingExercises,
+  useMeditationMusic,
+  useMeditationSessions,
+  useMeditationStats,
+  useStartMeditationSession,
+  useCompleteMeditationSession,
+  getMeditationAudioUrl,
+  meditationKeys,
+} from './useMeditation';
+
+// AI Chat hooks
+export { useAIChat, useConversations } from './useAIChat';

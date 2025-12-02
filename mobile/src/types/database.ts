@@ -133,38 +133,41 @@ export interface Database {
         Row: {
           id: string
           title: string
-          description: string
-          duration: number
-          audio_url_male: string
-          audio_url_female: string
-          tier_requirement: 'free' | 'novice' | 'awakening' | 'enlightenment'
+          description: string | null
+          duration_seconds: number
+          audio_url: string
+          narrator_gender: 'male' | 'female'
+          tier_required: 'novice' | 'awakening' | 'enlightenment'
+          type: 'guided' | 'breathing' | 'music'
+          tags: string[]
           order_index: number
           created_at: string
-          updated_at: string
         }
         Insert: {
           id?: string
           title: string
-          description: string
-          duration: number
-          audio_url_male: string
-          audio_url_female: string
-          tier_requirement?: 'free' | 'novice' | 'awakening' | 'enlightenment'
+          description?: string | null
+          duration_seconds: number
+          audio_url: string
+          narrator_gender: 'male' | 'female'
+          tier_required?: 'novice' | 'awakening' | 'enlightenment'
+          type?: 'guided' | 'breathing' | 'music'
+          tags?: string[]
           order_index: number
           created_at?: string
-          updated_at?: string
         }
         Update: {
           id?: string
           title?: string
-          description?: string
-          duration?: number
-          audio_url_male?: string
-          audio_url_female?: string
-          tier_requirement?: 'free' | 'novice' | 'awakening' | 'enlightenment'
+          description?: string | null
+          duration_seconds?: number
+          audio_url?: string
+          narrator_gender?: 'male' | 'female'
+          tier_required?: 'novice' | 'awakening' | 'enlightenment'
+          type?: 'guided' | 'breathing' | 'music'
+          tags?: string[]
           order_index?: number
           created_at?: string
-          updated_at?: string
         }
       }
       meditation_sessions: {
@@ -172,24 +175,27 @@ export interface Database {
           id: string
           user_id: string
           meditation_id: string
-          duration_completed: number
+          duration_seconds: number | null
           completed: boolean
+          completed_at: string | null
           created_at: string
         }
         Insert: {
           id?: string
           user_id: string
           meditation_id: string
-          duration_completed: number
+          duration_seconds?: number | null
           completed?: boolean
+          completed_at?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           user_id?: string
           meditation_id?: string
-          duration_completed?: number
+          duration_seconds?: number | null
           completed?: boolean
+          completed_at?: string | null
           created_at?: string
         }
       }

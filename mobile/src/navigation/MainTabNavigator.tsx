@@ -13,8 +13,9 @@ import { colors } from '../theme';
 // Import screen components
 import HomeScreen from '../screens/HomeScreen';
 import { WorkbookNavigator } from './WorkbookNavigator';
-import MeditateScreen from '../screens/MeditateScreen';
+import { MeditateNavigator } from './MeditateNavigator';
 import JournalScreen from '../screens/JournalScreen';
+import { AIChatScreen } from '../screens/AIChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import NewJournalEntryScreen from '../screens/NewJournalEntryScreen';
 
@@ -99,10 +100,11 @@ export const MainTabNavigator = () => {
 
       <Tab.Screen
         name="Meditate"
-        component={MeditateScreen}
+        component={MeditateNavigator}
         options={{
           title: 'Meditate',
           tabBarLabel: 'Meditate',
+          headerShown: false, // MeditateNavigator handles its own headers
           // TODO: Add icon when design system is ready
           // tabBarIcon: ({ color, size }) => (
           //   <MeditateIcon color={color} size={size} />
@@ -119,6 +121,19 @@ export const MainTabNavigator = () => {
           // TODO: Add icon when design system is ready
           // tabBarIcon: ({ color, size }) => (
           //   <JournalIcon color={color} size={size} />
+          // ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Wisdom"
+        component={AIChatScreen}
+        options={{
+          title: 'Wisdom',
+          tabBarLabel: 'Wisdom',
+          // TODO: Add icon when design system is ready
+          // tabBarIcon: ({ color, size }) => (
+          //   <WisdomIcon color={color} size={size} />
           // ),
         }}
       />

@@ -68,3 +68,6 @@ export {
   getModelSize,
   deleteModel,
 } from './whisperService';
+
+// AI Chat service
+export { aiChatService } from './aiChatService';
