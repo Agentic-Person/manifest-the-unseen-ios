@@ -58,11 +58,11 @@ const ProfileScreen = (_props: Props) => {
           <View style={styles.subscriptionInfo}>
             <View>
               <Text style={styles.tierName}>
-                {profile.subscriptionTier.charAt(0).toUpperCase() +
-                 profile.subscriptionTier.slice(1)} Path
+                {(profile.subscriptionTier ?? 'free').charAt(0).toUpperCase() +
+                 (profile.subscriptionTier ?? 'free').slice(1)} Path
               </Text>
               <Text style={styles.tierStatus}>
-                Status: {profile.subscriptionStatus}
+                Status: {profile.subscriptionStatus ?? 'active'}
               </Text>
             </View>
             <TouchableOpacity style={styles.upgradeButton}>

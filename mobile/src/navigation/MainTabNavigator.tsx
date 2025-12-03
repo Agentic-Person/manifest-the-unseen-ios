@@ -41,20 +41,21 @@ export const MainTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        // Tab bar styling - DARK MODE
-        tabBarActiveTintColor: colors.primary[400], // Lighter purple for dark bg
-        tabBarInactiveTintColor: colors.text.tertiary,
+        // Tab bar styling - Ancient Mystical Design
+        tabBarActiveTintColor: colors.primary[500], // Aged Gold (#C4A052)
+        tabBarInactiveTintColor: colors.text.tertiary, // Muted gray (#6B6B6B)
         tabBarStyle: {
-          backgroundColor: colors.background.primary,
-          borderTopColor: colors.border.default,
+          backgroundColor: colors.background.primary, // Deep Void (#0A0A0F)
+          borderTopColor: colors.border.default, // Subtle gold border rgba(196, 160, 82, 0.15)
           borderTopWidth: 1,
-          height: 60,
+          height: 80, // Generous spacing like temple courtyard
           paddingBottom: 8,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: '600',
+          letterSpacing: 0.5, // Refined spacing
         },
         // Header styling - DARK MODE
         headerStyle: {

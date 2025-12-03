@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text.primary,
+    color: colors.text.golden,
     marginBottom: 4,
   },
   userName: {
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   card: {
-    backgroundColor: colors.background.elevated,
+    backgroundColor: colors.background.secondary,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.text.secondary,
+    color: colors.text.golden,
     marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   tier: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.primary[400],
+    color: colors.primary[500],
     marginBottom: 4,
   },
   status: {
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   phaseNumber: {
     fontSize: 32,
     fontWeight: '700',
-    color: colors.primary[400],
+    color: colors.primary[500],
     marginBottom: 4,
   },
   phaseDescription: {
@@ -197,10 +197,10 @@ const styles = StyleSheet.create({
   },
   action: {
     fontSize: 16,
-    color: colors.primary[400],
+    color: colors.text.golden,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.default,
+    borderBottomColor: colors.border.gold,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: colors.background.elevated,
+    backgroundColor: colors.background.secondary,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.primary[400],
+    color: colors.primary[500],
     marginBottom: 4,
   },
   statLabel: {

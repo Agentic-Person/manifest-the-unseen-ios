@@ -107,8 +107,13 @@ export const useAuthStore = create<AuthState>()(
               profile: {
                 id: DEV_USER_ID,
                 email: 'test@manifest.app',
+                fullName: 'Demo User',
                 displayName: 'Demo User',
                 subscriptionTier: 'enlightenment', // Full access in dev
+                subscriptionStatus: 'active',
+                currentPhase: 1,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
               } as any,
               isAuthenticated: true,
               isLoading: false,
