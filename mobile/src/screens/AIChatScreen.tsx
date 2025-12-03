@@ -3,6 +3,7 @@
  *
  * Main AI monk chat interface
  * Displays conversation history and allows sending messages
+ * Ancient mystical design with Deep Void background and gold accents
  */
 
 import React, { useRef, useEffect } from 'react';
@@ -12,12 +13,14 @@ import {
   ActivityIndicator,
   Text,
   SafeAreaView,
+  StyleSheet,
 } from 'react-native';
 import { useAIChat } from '../hooks/useAIChat';
 import { MessageBubble } from '../components/chat/MessageBubble';
 import { ChatInput } from '../components/chat/ChatInput';
 import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { EmptyChatState } from '../components/chat/EmptyChatState';
+import { colors } from '@/theme';
 import type { AIMessage } from '../types/aiChat';
 
 export function AIChatScreen() {
@@ -50,9 +53,9 @@ export function AIChatScreen() {
   const renderEmptyState = () => {
     if (isLoading) {
       return (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#9333EA" />
-          <Text className="text-gray-400 mt-4">
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.brand.gold} />
+          <Text style={styles.loadingText}>
             Loading conversation...
           </Text>
         </View>
@@ -66,11 +69,11 @@ export function AIChatScreen() {
     if (!error) return null;
 
     return (
-      <View className="bg-red-900/20 border border-red-800 rounded-lg p-4 mx-4 mb-4">
-        <Text className="text-red-200 font-semibold mb-1">
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorTitle}>
           Error
         </Text>
-        <Text className="text-red-300 text-sm">
+        <Text style={styles.errorMessage}>
           {error instanceof Error ? error.message : 'Something went wrong'}
         </Text>
       </View>
@@ -78,20 +81,15 @@ export function AIChatScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#1a1a2e]">
+    <SafeAreaView style={styles.safeArea}>
       {/* Messages List */}
-      <View className="flex-1">
+      <View style={styles.messagesContainer}>
         <FlatList
           ref={flatListRef}
           data={messages}
           renderItem={renderMessage}
           keyExtractor={(item, index) => `${item.timestamp}-${index}`}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingTop: 16,
-            paddingBottom: 8,
-            flexGrow: 1,
-          }}
+          contentContainerStyle={styles.listContent}
           ListEmptyComponent={renderEmptyState}
           ListHeaderComponent={renderError}
           onContentSizeChange={() => {
@@ -103,7 +101,7 @@ export function AIChatScreen() {
 
         {/* Typing Indicator */}
         {isSending && (
-          <View className="px-4">
+          <View style={styles.typingContainer}>
             <TypingIndicator />
           </View>
         )}
@@ -114,3 +112,50 @@ export function AIChatScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background.primary,
+  },
+  messagesContainer: {
+    flex: 1,
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+    flexGrow: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: colors.text.secondary,
+  },
+  errorContainer: {
+    backgroundColor: 'rgba(220, 38, 38, 0.15)',
+    borderColor: 'rgba(220, 38, 38, 0.4)',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  errorTitle: {
+    fontWeight: '600',
+    marginBottom: 4,
+    color: colors.error[300],
+  },
+  errorMessage: {
+    fontSize: 14,
+    color: colors.error[200],
+  },
+  typingContainer: {
+    paddingHorizontal: 16,
+  },
+});

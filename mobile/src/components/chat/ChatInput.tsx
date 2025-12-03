@@ -2,6 +2,7 @@
  * ChatInput Component
  *
  * Multiline text input with send button for chat messages
+ * Styled with ancient mystical design system
  */
 
 import React, { useState } from 'react';
@@ -11,8 +12,11 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
+  Text,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, borderRadius } from '@/theme';
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -26,6 +30,7 @@ export function ChatInput({
   placeholder = 'Ask the monk anything...',
 }: ChatInputProps) {
   const [message, setMessage] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSend = () => {
     const trimmed = message.trim();
@@ -42,24 +47,24 @@ export function ChatInput({
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
-      <View className="border-t border-gray-700 bg-[#1a1a2e] px-4 py-3">
-        <View className="flex-row items-end space-x-2">
-          <View className="flex-1">
+      <View style={styles.container}>
+        <View style={styles.inputRow}>
+          <View style={styles.inputWrapper}>
             <TextInput
               value={message}
               onChangeText={setMessage}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               placeholder={placeholder}
-              placeholderTextColor="#6B7280"
+              placeholderTextColor={colors.text.tertiary}
               multiline
               maxLength={2000}
               editable={!disabled}
-              className="
-                bg-gray-800
-                rounded-2xl px-4 py-3
-                text-base text-white
-                max-h-32
-              "
-              style={{ minHeight: 44 }}
+              style={[
+                styles.textInput,
+                isFocused && styles.textInputFocused,
+                disabled && styles.textInputDisabled,
+              ]}
               returnKeyType="default"
               blurOnSubmit={false}
             />
@@ -68,38 +73,99 @@ export function ChatInput({
           <Pressable
             onPress={handleSend}
             disabled={!canSend}
-            className={`
-              w-11 h-11 rounded-full items-center justify-center
-              ${
-                canSend
-                  ? 'bg-purple-600 active:bg-purple-700'
-                  : 'bg-gray-300 dark:bg-gray-700'
-              }
-            `}
+            style={({ pressed }) => [
+              styles.sendButton,
+              canSend ? styles.sendButtonActive : styles.sendButtonDisabled,
+              pressed && canSend && styles.sendButtonPressed,
+            ]}
           >
             <Ionicons
               name="arrow-up"
               size={24}
-              color={canSend ? '#FFFFFF' : '#9CA3AF'}
+              color={canSend ? colors.text.primary : colors.text.tertiary}
             />
           </Pressable>
         </View>
 
-        {/* Character count (optional) */}
+        {/* Character count warning */}
         {message.length > 1800 && (
-          <View className="mt-1 px-1">
-            <View
-              className={`text-xs ${
-                message.length >= 2000
-                  ? 'text-red-500'
-                  : 'text-gray-500 dark:text-gray-400'
-              }`}
+          <View style={styles.charCountContainer}>
+            <Text
+              style={[
+                styles.charCount,
+                message.length >= 2000 && styles.charCountLimit,
+              ]}
             >
               {message.length}/2000
-            </View>
+            </Text>
           </View>
         )}
       </View>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(196, 160, 82, 0.2)',
+    backgroundColor: colors.background.secondary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing[3],
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: spacing.sm,
+  },
+  inputWrapper: {
+    flex: 1,
+  },
+  textInput: {
+    backgroundColor: 'rgba(26, 26, 36, 0.8)',
+    borderWidth: 1,
+    borderColor: 'rgba(196, 160, 82, 0.2)',
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing[3],
+    fontSize: 16,
+    lineHeight: 22,
+    color: colors.text.primary,
+    minHeight: 44,
+    maxHeight: 128,
+  },
+  textInputFocused: {
+    borderColor: colors.border.focused,
+  },
+  textInputDisabled: {
+    opacity: 0.6,
+  },
+  sendButton: {
+    width: 44,
+    height: 44,
+    borderRadius: borderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sendButtonActive: {
+    backgroundColor: colors.brand.gold,
+  },
+  sendButtonDisabled: {
+    backgroundColor: 'rgba(107, 107, 107, 0.3)',
+  },
+  sendButtonPressed: {
+    backgroundColor: colors.primary[600],
+    opacity: 0.9,
+  },
+  charCountContainer: {
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.xs,
+  },
+  charCount: {
+    fontSize: 12,
+    color: colors.text.tertiary,
+  },
+  charCountLimit: {
+    color: colors.error[500],
+  },
+});

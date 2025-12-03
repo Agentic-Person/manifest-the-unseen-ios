@@ -82,7 +82,7 @@ export const aiChatService = {
     }
 
     // Transform to list items with last message preview
-    return (data || []).map((conv) => ({
+    return ((data || []) as Array<{ id: string; title: string; messages: Array<{ content: string }>; updated_at: string }>).map((conv) => ({
       id: conv.id,
       title: conv.title,
       lastMessage:

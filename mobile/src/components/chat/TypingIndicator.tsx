@@ -2,10 +2,12 @@
  * TypingIndicator Component
  *
  * Animated dots showing AI is thinking/typing
+ * Ancient mystical design with gold accents
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated } from 'react-native';
+import { View, Text, Animated, StyleSheet } from 'react-native';
+import { colors } from '@/theme';
 
 export function TypingIndicator() {
   const dot1 = useRef(new Animated.Value(0)).current;
@@ -55,26 +57,50 @@ export function TypingIndicator() {
   });
 
   return (
-    <View className="mb-4 items-start">
-      <View className="bg-gray-800 rounded-2xl rounded-bl-sm px-4 py-3">
-        <Text className="text-xs text-purple-400 font-semibold mb-1">
+    <View style={styles.container}>
+      <View style={styles.bubble}>
+        <Text style={styles.monkLabel}>
           Wisdom Monk
         </Text>
-        <View className="flex-row items-center space-x-1">
-          <Animated.View
-            style={dotStyle(dot1)}
-            className="w-2 h-2 rounded-full bg-purple-600"
-          />
-          <Animated.View
-            style={dotStyle(dot2)}
-            className="w-2 h-2 rounded-full bg-purple-600 ml-1"
-          />
-          <Animated.View
-            style={dotStyle(dot3)}
-            className="w-2 h-2 rounded-full bg-purple-600 ml-1"
-          />
+        <View style={styles.dotsContainer}>
+          <Animated.View style={[dotStyle(dot1), styles.dot]} />
+          <Animated.View style={[dotStyle(dot2), styles.dot]} />
+          <Animated.View style={[dotStyle(dot3), styles.dot]} />
         </View>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+    alignItems: 'flex-start',
+  },
+  bubble: {
+    backgroundColor: colors.background.secondary, // Temple Stone
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    borderRadius: 16,
+    borderBottomLeftRadius: 4,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  monkLabel: {
+    fontSize: 12,
+    color: colors.brand.amber, // Amber Glow
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.brand.gold, // Aged Gold
+  },
+});

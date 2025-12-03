@@ -2,10 +2,12 @@
  * MessageBubble Component
  *
  * Displays a single chat message with different styling for user vs AI messages
+ * Uses ancient mystical design system with Temple Stone and Gold accents
  */
 
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { colors } from '@/theme';
 import type { AIMessage } from '../../types/aiChat';
 
 interface MessageBubbleProps {
@@ -19,37 +21,23 @@ export function MessageBubble({ message, onLongPress }: MessageBubbleProps) {
   return (
     <Pressable
       onLongPress={onLongPress}
-      className={`mb-4 ${isUser ? 'items-end' : 'items-start'}`}
+      style={[styles.container, isUser ? styles.containerUser : styles.containerAI]}
     >
       <View
-        className={`
-          max-w-[80%] rounded-2xl px-4 py-3
-          ${
-            isUser
-              ? 'bg-purple-600 rounded-br-sm'
-              : 'bg-gray-800 rounded-bl-sm'
-          }
-        `}
+        style={[
+          styles.bubble,
+          isUser ? styles.bubbleUser : styles.bubbleAI,
+        ]}
       >
         {!isUser && (
-          <Text className="text-xs text-purple-400 font-semibold mb-1">
+          <Text style={styles.monkLabel}>
             Wisdom Monk
           </Text>
         )}
-        <Text
-          className={`
-            text-base leading-6
-            ${isUser ? 'text-white' : 'text-gray-100'}
-          `}
-        >
+        <Text style={styles.messageText}>
           {message.content}
         </Text>
-        <Text
-          className={`
-            text-xs mt-1
-            ${isUser ? 'text-purple-200' : 'text-gray-400'}
-          `}
-        >
+        <Text style={[styles.timestamp, isUser ? styles.timestampUser : styles.timestampAI]}>
           {formatMessageTime(message.timestamp)}
         </Text>
       </View>
@@ -88,3 +76,52 @@ function formatMessageTime(timestamp: string): string {
     day: 'numeric',
   });
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+  },
+  containerUser: {
+    alignItems: 'flex-end',
+  },
+  containerAI: {
+    alignItems: 'flex-start',
+  },
+  bubble: {
+    maxWidth: '80%',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  bubbleUser: {
+    backgroundColor: 'rgba(196, 160, 82, 0.15)', // Gold-tinted background
+    borderBottomRightRadius: 4,
+  },
+  bubbleAI: {
+    backgroundColor: colors.background.secondary, // Temple Stone (#1A1A24)
+    borderWidth: 1,
+    borderColor: colors.border.default, // Subtle gold border (rgba(196, 160, 82, 0.15))
+    borderBottomLeftRadius: 4,
+  },
+  monkLabel: {
+    fontSize: 12,
+    color: colors.brand.amber, // Amber Glow (#D4A84B)
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  messageText: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.text.primary, // Enlightened White (#F5F0E6)
+  },
+  timestamp: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  timestampUser: {
+    color: 'rgba(196, 160, 82, 0.7)', // Lighter gold for user messages
+  },
+  timestampAI: {
+    color: colors.text.secondary, // Muted Wisdom (#A09080)
+  },
+});

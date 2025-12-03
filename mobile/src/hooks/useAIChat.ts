@@ -81,7 +81,7 @@ export function useAIChat(options: UseAIChatOptions = {}) {
 
       return { previousConversation };
     },
-    onError: (err, message, context) => {
+    onError: (_err, _message, context) => {
       // Rollback on error
       if (context?.previousConversation) {
         queryClient.setQueryData(
