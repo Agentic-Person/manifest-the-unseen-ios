@@ -249,7 +249,7 @@ const MeditateScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: colors.background.primary, // Deep Void (#0A0A0F)
   },
   header: {
     paddingHorizontal: spacing.md,
@@ -259,20 +259,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text.primary,
+    color: colors.text.primary, // Enlightened White (#F5F0E6)
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: colors.text.secondary,
+    color: colors.text.secondary, // Muted Wisdom (#A09080)
+    fontStyle: 'italic',
   },
   statsBanner: {
     flexDirection: 'row',
-    backgroundColor: colors.background.elevated,
+    backgroundColor: colors.background.elevated, // Temple Stone (#1A1A24)
     marginHorizontal: spacing.md,
     marginVertical: spacing.sm,
     padding: spacing.md,
     borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border.default, // Subtle gold border
     ...shadows.sm,
   },
   statItem: {
@@ -282,7 +285,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 20,
     fontWeight: '700',
-    color: colors.text.primary,
+    color: colors.dark.accentGold, // Aged Gold (#C4A052)
   },
   statLabel: {
     fontSize: 12,
@@ -291,7 +294,7 @@ const styles = StyleSheet.create({
   },
   statDivider: {
     width: 1,
-    backgroundColor: colors.border.default,
+    backgroundColor: colors.border.gold, // Stronger gold divider
     marginHorizontal: spacing.sm,
   },
   streakContainer: {
@@ -313,11 +316,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.md,
-    backgroundColor: colors.background.elevated,
+    backgroundColor: colors.background.elevated, // Temple Stone (#1A1A24)
+    borderWidth: 1,
+    borderColor: colors.border.disabled, // Very subtle border
     gap: spacing.xs,
   },
   tabActive: {
-    backgroundColor: `${colors.dark.accentGold}20`,
+    backgroundColor: `${colors.dark.accentGold}20`, // Gold tint
+    borderColor: colors.dark.accentGold, // Aged Gold border (#C4A052)
   },
   tabText: {
     fontSize: 13,
@@ -325,7 +331,7 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
   },
   tabTextActive: {
-    color: colors.dark.accentGold,
+    color: colors.dark.accentGold, // Aged Gold (#C4A052)
     fontWeight: '600',
   },
   listContent: {
@@ -340,9 +346,10 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: colors.text.secondary,
+    color: colors.text.secondary, // Muted Wisdom (#A09080)
     textAlign: 'center',
     marginTop: spacing.md,
+    fontStyle: 'italic',
   },
 });
 

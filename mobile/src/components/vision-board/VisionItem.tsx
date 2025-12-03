@@ -11,16 +11,18 @@
  * - Muted gold (#c9a227) for selected items
  */
 
-import React, { memo } from 'react';
+import React, { memo, useRef } from 'react';
 import {
   View,
   Text,
   Image,
   StyleSheet,
   TouchableOpacity,
-  Pressable,
-  ViewStyle,
+  Animated,
+  PanResponder,
+  type ViewStyle,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import type { VisionBoardItem } from './types';
 
 // Design system colors from APP-DESIGN.md
@@ -45,6 +47,9 @@ interface VisionItemProps {
 
 /**
  * VisionItem Component
+ *
+ * Supports direct drag-and-drop for repositioning.
+ * Tap to select, then drag anywhere to move.
  */
 const VisionItem: React.FC<VisionItemProps> = ({
   item,
@@ -53,46 +58,86 @@ const VisionItem: React.FC<VisionItemProps> = ({
   onDelete,
   onUpdatePosition,
 }) => {
-  const { id, type, content, position, size, style } = item;
+  const { id, type, content, position, size, style: itemStyle } = item;
+
+  // Animation values for drag feedback
+  const pan = useRef(new Animated.ValueXY({ x: position.x, y: position.y })).current;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  // Track if we're currently dragging
+  const isDragging = useRef(false);
+
+  // Update pan position when item position changes externally
+  React.useEffect(() => {
+    if (!isDragging.current) {
+      pan.setValue({ x: position.x, y: position.y });
+    }
+  }, [position.x, position.y]);
 
   /**
-   * Handle item press - select it
+   * PanResponder for drag-and-drop
    */
-  const handlePress = () => {
-    onSelect(id);
-  };
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // Only capture pan if user has moved significantly
+        return Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
+      },
+      onPanResponderGrant: () => {
+        // Select the item and provide haptic feedback
+        onSelect(id);
+        isDragging.current = true;
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+        // Scale up slightly when picked up
+        Animated.spring(scale, {
+          toValue: 1.05,
+          useNativeDriver: true,
+        }).start();
+
+        // Set offset to current position
+        pan.setOffset({
+          x: (pan.x as any)._value || position.x,
+          y: (pan.y as any)._value || position.y,
+        });
+        pan.setValue({ x: 0, y: 0 });
+      },
+      onPanResponderMove: Animated.event(
+        [null, { dx: pan.x, dy: pan.y }],
+        { useNativeDriver: false }
+      ),
+      onPanResponderRelease: () => {
+        isDragging.current = false;
+
+        // Flatten offset into value
+        pan.flattenOffset();
+
+        // Get final position
+        const newX = Math.max(0, (pan.x as any)._value || 0);
+        const newY = Math.max(0, (pan.y as any)._value || 0);
+
+        // Scale back down
+        Animated.spring(scale, {
+          toValue: 1,
+          useNativeDriver: true,
+        }).start();
+
+        // Update position in parent
+        onUpdatePosition(id, { x: newX, y: newY });
+
+        // Haptic feedback on drop
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      },
+    })
+  ).current;
 
   /**
    * Handle delete button press
    */
   const handleDelete = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     onDelete(id);
-  };
-
-  /**
-   * Move item in a direction (simple tap-to-move controls)
-   */
-  const moveItem = (direction: 'up' | 'down' | 'left' | 'right') => {
-    const step = 20; // pixels to move
-    let newX = position.x;
-    let newY = position.y;
-
-    switch (direction) {
-      case 'up':
-        newY = Math.max(0, position.y - step);
-        break;
-      case 'down':
-        newY = position.y + step;
-        break;
-      case 'left':
-        newX = Math.max(0, position.x - step);
-        break;
-      case 'right':
-        newX = position.x + step;
-        break;
-    }
-
-    onUpdatePosition(id, { x: newX, y: newY });
   };
 
   /**
@@ -102,8 +147,6 @@ const VisionItem: React.FC<VisionItemProps> = ({
     const containerStyles: ViewStyle[] = [
       styles.container,
       {
-        left: position.x,
-        top: position.y,
         width: size.width,
         height: size.height,
       },
@@ -113,7 +156,7 @@ const VisionItem: React.FC<VisionItemProps> = ({
       containerStyles.push(styles.selected);
     }
 
-    if (style?.hasShadow) {
+    if (itemStyle?.hasShadow) {
       containerStyles.push(styles.shadow);
     }
 
@@ -124,27 +167,27 @@ const VisionItem: React.FC<VisionItemProps> = ({
    * Render image item
    */
   const renderImage = () => {
-    const imageStyle: ViewStyle[] = [styles.imageWrapper];
+    const imageStyles: ViewStyle[] = [styles.imageWrapper];
 
     // Polaroid frame effect
-    if (style?.hasFrame) {
-      imageStyle.push(styles.polaroidFrame);
+    if (itemStyle?.hasFrame) {
+      imageStyles.push(styles.polaroidFrame);
     }
 
     return (
-      <View style={imageStyle}>
+      <View style={imageStyles}>
         <Image
           source={{ uri: content }}
           style={[
             styles.image,
             {
-              borderRadius: style?.borderRadius || 4,
-              opacity: style?.opacity || 1,
+              borderRadius: itemStyle?.borderRadius || 4,
+              opacity: itemStyle?.opacity || 1,
             },
           ]}
           resizeMode="cover"
         />
-        {style?.hasFrame && (
+        {itemStyle?.hasFrame && (
           <View style={styles.polaroidBottom} />
         )}
       </View>
@@ -161,10 +204,10 @@ const VisionItem: React.FC<VisionItemProps> = ({
           style={[
             styles.text,
             {
-              fontSize: style?.fontSize || 18,
-              fontWeight: style?.fontWeight || 'bold',
-              textAlign: style?.textAlign || 'center',
-              color: style?.color || DESIGN_COLORS.textPrimary,
+              fontSize: itemStyle?.fontSize || 18,
+              fontWeight: itemStyle?.fontWeight || 'bold',
+              textAlign: itemStyle?.textAlign || 'center',
+              color: itemStyle?.color || DESIGN_COLORS.textPrimary,
             },
           ]}
           numberOfLines={5}
@@ -176,65 +219,37 @@ const VisionItem: React.FC<VisionItemProps> = ({
   };
 
   return (
-    <Pressable
-      style={getContainerStyle()}
-      onPress={handlePress}
+    <Animated.View
+      {...panResponder.panHandlers}
+      style={[
+        ...getContainerStyle(),
+        {
+          transform: [
+            { translateX: pan.x },
+            { translateY: pan.y },
+            { scale },
+          ],
+        },
+      ]}
       accessibilityRole="button"
-      accessibilityLabel={type === 'image' ? 'Vision board image' : content}
-      accessibilityHint="Tap to select this item"
+      accessibilityLabel={type === 'image' ? 'Vision board image - drag to move' : `${content} - drag to move`}
+      accessibilityHint="Touch and drag to reposition this item"
     >
       {/* Content */}
       {type === 'image' ? renderImage() : renderText()}
 
-      {/* Selection Controls - Only show when selected */}
+      {/* Delete Button - Only show when selected */}
       {isSelected && (
-        <View style={styles.controls}>
-          {/* Delete Button */}
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={handleDelete}
-            accessibilityRole="button"
-            accessibilityLabel="Delete item"
-          >
-            <Text style={styles.deleteButtonText}>X</Text>
-          </TouchableOpacity>
-
-          {/* Move Controls */}
-          <View style={styles.moveControls}>
-            <TouchableOpacity
-              style={styles.moveButton}
-              onPress={() => moveItem('up')}
-              accessibilityLabel="Move up"
-            >
-              <Text style={styles.moveButtonText}>^</Text>
-            </TouchableOpacity>
-            <View style={styles.moveButtonRow}>
-              <TouchableOpacity
-                style={styles.moveButton}
-                onPress={() => moveItem('left')}
-                accessibilityLabel="Move left"
-              >
-                <Text style={styles.moveButtonText}>{'<'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.moveButton}
-                onPress={() => moveItem('right')}
-                accessibilityLabel="Move right"
-              >
-                <Text style={styles.moveButtonText}>{'>'}</Text>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              style={styles.moveButton}
-              onPress={() => moveItem('down')}
-              accessibilityLabel="Move down"
-            >
-              <Text style={styles.moveButtonText}>v</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={handleDelete}
+          accessibilityRole="button"
+          accessibilityLabel="Delete item"
+        >
+          <Text style={styles.deleteButtonText}>×</Text>
+        </TouchableOpacity>
       )}
-    </Pressable>
+    </Animated.View>
   );
 };
 
@@ -294,16 +309,11 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
 
-  // Controls
-  controls: {
-    position: 'absolute',
-    top: -40,
-    right: -8,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 8,
-  },
+  // Delete button - positioned at top-right corner
   deleteButton: {
+    position: 'absolute',
+    top: -12,
+    right: -12,
     width: 28,
     height: 28,
     borderRadius: 14,
@@ -315,34 +325,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
+    zIndex: 10,
   },
   deleteButtonText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: 'bold',
-  },
-
-  // Move controls
-  moveControls: {
-    alignItems: 'center',
-  },
-  moveButtonRow: {
-    flexDirection: 'row',
-    gap: 4,
-  },
-  moveButton: {
-    width: 24,
-    height: 24,
-    borderRadius: 4,
-    backgroundColor: DESIGN_COLORS.accentPurple,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 1,
-  },
-  moveButtonText: {
-    color: DESIGN_COLORS.textPrimary,
-    fontSize: 12,
-    fontWeight: 'bold',
+    lineHeight: 20,
   },
 });
 
