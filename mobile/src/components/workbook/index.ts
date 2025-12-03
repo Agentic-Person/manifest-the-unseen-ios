@@ -135,3 +135,5 @@ export type { default as SaveIndicatorDefault } from './SaveIndicator';
 export { PhaseCard } from './PhaseCard';
 export { ProgressBar } from './ProgressBar';
 export { PhaseDashboard } from './PhaseDashboard';
+// Phase Header Component
+export { PhaseHeader } from './PhaseHeader';

@@ -46,6 +46,17 @@ const DESIGN_COLORS = {
   border: '#3a3a5a',
 };
 
+/**
+ * Get color based on value for POSITIVE metrics (higher is better)
+ * Red (low/needs work) -> Orange -> Yellow -> Green (high/excellent)
+ */
+const getPositiveGradientColor = (value: number): string => {
+  if (value <= 3) return '#dc2626'; // Red - needs improvement
+  if (value <= 5) return '#c9a227'; // Orange/gold - developing
+  if (value <= 7) return '#8b6914'; // Yellow/amber - good
+  return '#2d5a4a'; // Green - excellent
+};
+
 export interface LifeAreaSliderProps {
   /** Label for the life area */
   label: string;
@@ -55,7 +66,7 @@ export interface LifeAreaSliderProps {
   value: number;
   /** Callback when value changes */
   onValueChange: (value: number) => void;
-  /** Accent color for this area (defaults to gold) */
+  /** Accent color for this area (defaults to gold) - only used when useGradient is false */
   accentColor?: string;
   /** Whether the slider is disabled */
   disabled?: boolean;
@@ -63,6 +74,10 @@ export interface LifeAreaSliderProps {
   onPress?: () => void;
   /** Whether this slider is currently selected/focused */
   isSelected?: boolean;
+  /** Use dynamic gradient colors based on value (default: true) */
+  useGradient?: boolean;
+  /** Show gradient indicator dots (default: true when useGradient is true) */
+  showGradientDots?: boolean;
 }
 
 export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
@@ -74,7 +89,11 @@ export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
   disabled = false,
   onPress,
   isSelected = false,
+  useGradient = true,
+  showGradientDots = true,
 }) => {
+  // Determine the active color based on gradient mode
+  const activeColor = useGradient ? getPositiveGradientColor(value) : accentColor;
   /**
    * Handle slider value change with haptic feedback
    */
@@ -114,11 +133,11 @@ export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
       {/* Header: Label and Value */}
       <View style={styles.header}>
         <View style={styles.labelContainer}>
-          <View style={[styles.colorDot, { backgroundColor: accentColor }]} />
+          <View style={[styles.colorDot, { backgroundColor: activeColor }]} />
           <Text style={styles.label}>{label}</Text>
         </View>
         <View style={styles.valueContainer}>
-          <Text style={[styles.value, { color: accentColor }]}>{value}</Text>
+          <Text style={[styles.value, { color: activeColor }]}>{value}</Text>
           <Text style={styles.maxValue}>/10</Text>
         </View>
       </View>
@@ -130,6 +149,23 @@ export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
 
       {/* Slider */}
       <View style={styles.sliderContainer}>
+        {/* Gradient indicator dots */}
+        {useGradient && showGradientDots && (
+          <View style={styles.gradientIndicator}>
+            {Array.from({ length: 10 }, (_, i) => (
+              <View
+                key={i}
+                style={[
+                  styles.gradientDot,
+                  {
+                    backgroundColor: getPositiveGradientColor(i + 1),
+                    opacity: i + 1 <= value ? 1 : 0.3,
+                  },
+                ]}
+              />
+            ))}
+          </View>
+        )}
         <Slider
           style={styles.slider}
           value={value}
@@ -137,9 +173,9 @@ export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
           minimumValue={1}
           maximumValue={10}
           step={1}
-          minimumTrackTintColor={accentColor}
+          minimumTrackTintColor={activeColor}
           maximumTrackTintColor={DESIGN_COLORS.border}
-          thumbTintColor={accentColor}
+          thumbTintColor={activeColor}
           disabled={disabled}
           accessible
           accessibilityLabel={`${label} rating`}
@@ -155,7 +191,7 @@ export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
       {/* Rating Labels */}
       <View style={styles.labelsRow}>
         <Text style={styles.minLabel}>1</Text>
-        <Text style={[styles.ratingLabel, { color: accentColor }]}>
+        <Text style={[styles.ratingLabel, { color: activeColor }]}>
           {getRatingLabel(value)}
         </Text>
         <Text style={styles.maxLabel}>10</Text>
@@ -234,6 +270,17 @@ const styles = StyleSheet.create({
   },
   sliderContainer: {
     marginHorizontal: -4,
+  },
+  gradientIndicator: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+    marginBottom: 4,
+  },
+  gradientDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   slider: {
     width: '100%',

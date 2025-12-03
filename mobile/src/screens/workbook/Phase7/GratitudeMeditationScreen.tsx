@@ -487,7 +487,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
         )}
 
         {/* Save Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

@@ -534,7 +534,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
         )}
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

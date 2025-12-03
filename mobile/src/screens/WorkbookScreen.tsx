@@ -5,43 +5,43 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, ImageSourcePropType } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps, WorkbookStackParamList } from '../types/navigation';
 import { useProfile } from '../stores/authStore';
 import { colors } from '../theme';
+import { PhaseImages } from '../assets';
 
 type Props = WorkbookStackScreenProps<'WorkbookHome'>;
 
-/**
- * Workbook Phase Data
- */
-const PHASES = [
-  { id: 1, name: 'Self-Evaluation', description: 'Assess your current state' },
-  { id: 2, name: 'Values & Vision', description: 'Define your core values' },
-  { id: 3, name: 'Goal Setting', description: 'Set SMART goals' },
-  { id: 4, name: 'Facing Fears', description: 'Overcome limiting beliefs' },
-  { id: 5, name: 'Self-Love & Care', description: 'Cultivate self-compassion' },
-  { id: 6, name: 'Manifestation', description: 'Learn manifestation techniques' },
-  { id: 7, name: 'Gratitude', description: 'Practice daily gratitude' },
-  { id: 8, name: 'Envy to Inspiration', description: 'Transform envy positively' },
-  { id: 9, name: 'Trust & Surrender', description: 'Let go of control' },
-  { id: 10, name: 'Letting Go', description: 'Release what no longer serves' },
+interface Phase {
+  id: number;
+  name: string;
+  description: string;
+  image: ImageSourcePropType;
+}
+
+const PHASES: Phase[] = [
+  { id: 1, name: 'Self-Evaluation', description: 'Assess your current state', image: PhaseImages.phase1 },
+  { id: 2, name: 'Values & Vision', description: 'Define your core values', image: PhaseImages.phase2 },
+  { id: 3, name: 'Goal Setting', description: 'Set SMART goals', image: PhaseImages.phase3 },
+  { id: 4, name: 'Facing Fears', description: 'Overcome limiting beliefs', image: PhaseImages.phase4 },
+  { id: 5, name: 'Self-Love & Care', description: 'Cultivate self-compassion', image: PhaseImages.phase5 },
+  { id: 6, name: 'Manifestation', description: 'Learn manifestation techniques', image: PhaseImages.phase6 },
+  { id: 7, name: 'Gratitude', description: 'Practice daily gratitude', image: PhaseImages.phase7 },
+  { id: 8, name: 'Envy to Inspiration', description: 'Transform envy positively', image: PhaseImages.phase8 },
+  { id: 9, name: 'Trust & Surrender', description: 'Let go of control', image: PhaseImages.phase9 },
+  { id: 10, name: 'Letting Go', description: 'Release what no longer serves', image: PhaseImages.phase10 },
 ];
 
-/**
- * Workbook Screen Component
- */
 const WorkbookScreen = ({ navigation }: Props) => {
   const profile = useProfile();
-  // All phases are always unlocked - users can explore freely
-  // Progress tracking is separate from access control
   const currentPhase = profile?.currentPhase || 1;
-  const allPhasesUnlocked = true; // Set to false to enable progressive unlocking
+  const allPhasesUnlocked = true;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Workbook Journey</Text>
         <Text style={styles.subtitle}>
@@ -49,7 +49,6 @@ const WorkbookScreen = ({ navigation }: Props) => {
         </Text>
       </View>
 
-      {/* Progress Overview */}
       <View style={styles.progressCard}>
         <Text style={styles.progressTitle}>Your Progress</Text>
         <View style={styles.progressBar}>
@@ -65,7 +64,6 @@ const WorkbookScreen = ({ navigation }: Props) => {
         </Text>
       </View>
 
-      {/* Phases List */}
       <View style={styles.phasesList}>
         {PHASES.map((phase) => {
           const isUnlocked = allPhasesUnlocked || phase.id <= currentPhase;
@@ -82,7 +80,6 @@ const WorkbookScreen = ({ navigation }: Props) => {
               ]}
               onPress={() => {
                 if (!isUnlocked) {
-                  // Phase is locked
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
                   Alert.alert(
                     'Phase Locked',
@@ -90,11 +87,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
                   );
                   return;
                 }
-
-                // Haptic feedback for unlocked phase
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-                // Navigate to the corresponding Phase Dashboard
                 const dashboardMap: Record<number, keyof WorkbookStackParamList> = {
                   1: 'Phase1Dashboard',
                   2: 'Phase2Dashboard',
@@ -107,55 +100,53 @@ const WorkbookScreen = ({ navigation }: Props) => {
                   9: 'Phase9Dashboard',
                   10: 'Phase10Dashboard',
                 };
-
                 const screenName = dashboardMap[phase.id];
-                if (screenName) {
-                  (navigation.navigate as any)(screenName);
-                }
+                if (screenName) (navigation.navigate as any)(screenName);
               }}
               disabled={!isUnlocked}
+              activeOpacity={0.8}
             >
-              <View style={styles.phaseHeader}>
-                <View
-                  style={[
-                    styles.phaseNumber,
-                    isCurrent && styles.phaseNumberCurrent,
-                    isCompleted && styles.phaseNumberCompleted,
-                    !isUnlocked && styles.phaseNumberLocked,
-                  ]}
-                >
-                  <Text
+              <View style={styles.imageContainer}>
+                <Image source={phase.image} style={styles.phaseImage} resizeMode="cover" />
+                <LinearGradient
+                  colors={['transparent', 'rgba(0,0,0,0.7)']}
+                  style={styles.imageGradient}
+                />
+                <View style={styles.imageOverlay}>
+                  <View
                     style={[
-                      styles.phaseNumberText,
-                      (isCurrent || isCompleted) && styles.phaseNumberTextActive,
+                      styles.phaseNumber,
+                      isCurrent && styles.phaseNumberCurrent,
+                      isCompleted && styles.phaseNumberCompleted,
                     ]}
                   >
-                    {isCompleted ? '✓' : phase.id}
-                  </Text>
+                    <Text
+                      style={[
+                        styles.phaseNumberText,
+                        (isCurrent || isCompleted) && styles.phaseNumberTextActive,
+                      ]}
+                    >
+                      {isCompleted ? '✓' : phase.id}
+                    </Text>
+                  </View>
+                  {!isUnlocked && (
+                    <View style={styles.lockOverlay}>
+                      <Text style={styles.lockIcon}>🔒</Text>
+                    </View>
+                  )}
                 </View>
+              </View>
 
+              <View style={styles.phaseContent}>
                 <View style={styles.phaseInfo}>
-                  <Text
-                    style={[
-                      styles.phaseName,
-                      !isUnlocked && styles.phaseNameLocked,
-                    ]}
-                  >
+                  <Text style={[styles.phaseName, !isUnlocked && styles.phaseNameLocked]}>
                     {phase.name}
                   </Text>
-                  <Text
-                    style={[
-                      styles.phaseDescription,
-                      !isUnlocked && styles.phaseDescriptionLocked,
-                    ]}
-                  >
+                  <Text style={[styles.phaseDescription, !isUnlocked && styles.phaseDescriptionLocked]}>
                     {phase.description}
                   </Text>
                 </View>
-
-                <Text style={styles.phaseArrow}>
-                  {isUnlocked ? '›' : '🔒'}
-                </Text>
+                <Text style={styles.phaseArrow}>›</Text>
               </View>
 
               {isCurrent && (
@@ -171,9 +162,6 @@ const WorkbookScreen = ({ navigation }: Props) => {
   );
 };
 
-/**
- * Styles
- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -181,6 +169,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    paddingBottom: 32,
   },
   header: {
     marginBottom: 24,
@@ -228,12 +217,12 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   phasesList: {
-    gap: 12,
+    gap: 16,
   },
   phaseCard: {
     backgroundColor: colors.background.elevated,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.border.default,
   },
@@ -242,46 +231,79 @@ const styles = StyleSheet.create({
     borderColor: colors.primary[500],
   },
   phaseCardLocked: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
-  phaseHeader: {
+  imageContainer: {
+    height: 140,
+    position: 'relative',
+  },
+  phaseImage: {
+    width: '100%',
+    height: '100%',
+  },
+  imageGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+  },
+  imageOverlay: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    right: 12,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  lockOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 20,
+    padding: 8,
+  },
+  lockIcon: {
+    fontSize: 20,
   },
   phaseNumber: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.background.secondary,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   phaseNumberCurrent: {
     backgroundColor: colors.primary[500],
+    borderColor: colors.primary[400],
   },
   phaseNumberCompleted: {
     backgroundColor: colors.success[500],
-  },
-  phaseNumberLocked: {
-    backgroundColor: colors.border.default,
+    borderColor: colors.success[400],
   },
   phaseNumberText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-    color: colors.text.secondary,
+    color: colors.white,
   },
   phaseNumberTextActive: {
     color: colors.white,
+  },
+  phaseContent: {
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   phaseInfo: {
     flex: 1,
   },
   phaseName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     color: colors.text.primary,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   phaseNameLocked: {
     color: colors.text.tertiary,
@@ -294,14 +316,16 @@ const styles = StyleSheet.create({
     color: colors.text.disabled,
   },
   phaseArrow: {
-    fontSize: 24,
+    fontSize: 28,
     color: colors.text.tertiary,
+    marginLeft: 12,
   },
   currentBadge: {
-    marginTop: 12,
-    paddingTop: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
     borderTopWidth: 1,
     borderTopColor: colors.border.default,
+    paddingTop: 12,
   },
   currentBadgeText: {
     fontSize: 12,

@@ -190,7 +190,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         setHasGraduated(true);
       }
     }
-  }, [savedProgress, isError, error]);
+  }, [savedProgress, isLoadError, loadError]);
 
   /**
    * Toggle practice selection
@@ -463,7 +463,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         {/* Save Indicator */}
         {!hasGraduated && (
           <View style={{ alignItems: 'center', marginVertical: 16 }}>
-            <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+            <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
           </View>
         )}
 

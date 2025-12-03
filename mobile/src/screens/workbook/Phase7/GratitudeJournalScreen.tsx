@@ -462,7 +462,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
       </View>
 
       {/* Save Indicator */}
-      <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+      <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
       {/* Save Button */}
       <Pressable

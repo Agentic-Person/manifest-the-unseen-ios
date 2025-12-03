@@ -2,13 +2,15 @@
  * Phase Dashboard Template Component
  *
  * Reusable template for phase dashboards with progress tracking and exercise list.
- * Agent 3 can use this to create Phase2-10 dashboards.
+ * Now with beautiful header images for each phase.
  */
 
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, borderRadius } from '../../theme';
+import { getPhaseImage } from '../../assets';
 
 interface Exercise {
   id: string;
@@ -16,7 +18,7 @@ interface Exercise {
   description?: string;
   icon: string;
   estimatedTime: string;
-  progress?: number; // 0-100
+  progress?: number;
   isCompleted: boolean;
 }
 
@@ -38,6 +40,7 @@ export const PhaseDashboard: React.FC<PhaseDashboardProps> = ({
   onExercisePress,
 }) => {
   const completedCount = exercises.filter((e) => e.isCompleted).length;
+  const phaseImage = getPhaseImage(phaseNumber);
 
   const handleExercisePress = (exerciseId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -46,11 +49,20 @@ export const PhaseDashboard: React.FC<PhaseDashboardProps> = ({
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.phaseLabel}>Phase {phaseNumber}</Text>
-        <Text style={styles.title}>{phaseName}</Text>
-        <Text style={styles.subtitle}>{phaseDescription}</Text>
+      {/* Phase Header with Image */}
+      <View style={styles.headerContainer}>
+        <Image source={phaseImage} style={styles.headerImage} resizeMode="cover" />
+        <LinearGradient
+          colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
+          style={styles.headerGradient}
+        />
+        <View style={styles.headerOverlay}>
+          <View style={styles.phaseBadge}>
+            <Text style={styles.phaseLabel}>Phase {phaseNumber}</Text>
+          </View>
+          <Text style={styles.title}>{phaseName}</Text>
+          <Text style={styles.subtitle}>{phaseDescription}</Text>
+        </View>
       </View>
 
       {/* Progress Card */}
@@ -128,34 +140,62 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.secondary,
   },
   content: {
-    padding: spacing.md,
+    paddingBottom: spacing.md,
   },
-  header: {
+  headerContainer: {
+    height: 220,
+    position: 'relative',
     marginBottom: spacing.lg,
   },
+  headerImage: {
+    width: '100%',
+    height: '100%',
+  },
+  headerGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  headerOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: spacing.md,
+  },
+  phaseBadge: {
+    backgroundColor: colors.primary[500],
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+    marginBottom: spacing.xs,
+  },
   phaseLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.primary[600],
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.white,
     textTransform: 'uppercase',
     letterSpacing: 1,
-    marginBottom: spacing.xs,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: colors.text.primary,
+    color: colors.white,
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: 16,
-    color: colors.text.secondary,
-    lineHeight: 24,
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.85)',
+    lineHeight: 22,
   },
   progressCard: {
     backgroundColor: colors.background.elevated,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
+    marginHorizontal: spacing.md,
     marginBottom: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border.default,
@@ -197,6 +237,7 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
   },
   exercisesSection: {
+    paddingHorizontal: spacing.md,
     marginBottom: spacing.lg,
   },
   sectionTitle: {

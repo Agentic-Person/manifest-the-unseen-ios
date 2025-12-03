@@ -156,7 +156,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         setExistingLetter(data.existingLetter);
       }
     }
-  }, [savedProgress, isError, error]);
+  }, [savedProgress, isLoadError, loadError]);
 
   /**
    * Handle content change
@@ -465,7 +465,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Save Status */}
         <View style={styles.saveStatusContainer}>
-          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
         </View>
 
         {/* Seal Button */}

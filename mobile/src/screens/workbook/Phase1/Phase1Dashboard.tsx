@@ -15,6 +15,8 @@ import {
 import { Card, Text } from '../../../components';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { PhaseHeader } from '../../../components/workbook';
+import { PhaseImages } from '../../../assets';
 
 /**
  * Exercise data structure
@@ -253,14 +255,13 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.phaseLabel}>Phase 1</Text>
-        <Text style={styles.title}>Self-Evaluation</Text>
-        <Text style={styles.subtitle}>
-          Discover who you truly are through deep self-reflection
-        </Text>
-      </View>
+      {/* Phase Header with Image */}
+      <PhaseHeader
+        phaseNumber={1}
+        title="Self-Evaluation"
+        subtitle="Discover who you truly are through deep self-reflection"
+        image={PhaseImages.phase1}
+      />
 
       {/* Overall Progress Card */}
       <Card elevation="raised" style={styles.progressCard}>

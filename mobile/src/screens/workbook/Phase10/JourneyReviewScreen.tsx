@@ -136,7 +136,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
         setTransformation(data.transformation);
       }
     }
-  }, [savedProgress, isError, error]);
+  }, [savedProgress, isLoadError, loadError]);
 
   // Calculate journey stats from all progress data
   const journeyStats = useMemo(() => {
@@ -310,7 +310,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>My Transformation</Text>
         <Text style={styles.sectionSubtitle}>Before and after this journey</Text>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
       </View>
 
       <View style={styles.transformationCard}>

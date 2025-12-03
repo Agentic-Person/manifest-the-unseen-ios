@@ -14,7 +14,7 @@ import type {
 /**
  * Timeout helper for web platform where Supabase queries can hang
  */
-const withTimeout = <T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> => {
+const withTimeout = <T>(promise: PromiseLike<T>, ms: number, fallback: T): Promise<T> => {
   const timeout = new Promise<T>((resolve) => {
     setTimeout(() => {
       console.log('[workbook.service] Query timed out after', ms, 'ms');
@@ -41,7 +41,7 @@ export const getWorkbookProgress = async (
       .eq('user_id', userId)
       .eq('phase_number', phaseNumber)
       .eq('worksheet_id', worksheetId)
-      .single();
+      .single().then(r => r);
 
     // On web, add a timeout to prevent infinite loading if Supabase SDK hangs
     const { data, error } = await withTimeout(
@@ -151,7 +151,7 @@ export const upsertWorkbookProgress = async (
         onConflict: 'user_id,phase_number,worksheet_id',
       })
       .select()
-      .single();
+      .single().then(r => r);
 
     // On web, add a timeout to prevent UI hanging if Supabase SDK freezes
     const { data: result, error } = await withTimeout(
@@ -211,7 +211,7 @@ export const markWorksheetComplete = async (
     .eq('phase_number', phaseNumber)
     .eq('worksheet_id', worksheetId)
     .select()
-    .single();
+    .single().then(r => r);
 
   if (error) throw error;
   return data as WorkbookProgress;
