@@ -48,7 +48,7 @@ export const Loading: React.FC<LoadingProps> = ({
   variant = 'spinner',
   skeletonType = 'text',
   size = 'large',
-  color = colors.primary[600],
+  color = colors.primary[500], // Aged Gold: #C4A052
   style,
   accessibilityLabel = 'Loading',
 }) => {

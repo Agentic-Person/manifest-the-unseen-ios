@@ -26,7 +26,7 @@ import {
   PressableStateCallbackType,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { colors, typography, spacing, shadows } from '../theme';
+import { colors, typography, spacing } from '../theme';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -180,7 +180,7 @@ export const Button: React.FC<ButtonProps> = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'primary' ? colors.white : colors.primary[600]}
+          color={variant === 'primary' ? colors.text.inverse : colors.brand.gold}
           size="small"
         />
       ) : (
@@ -192,54 +192,68 @@ export const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 9999, // Full rounded
+    borderRadius: 12, // Ancient mystical design - 12px border radius
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
   },
 
-  // Variants
+  // Variants - Gold Gradient Styling
   primary: {
-    backgroundColor: colors.primary[600],
-    ...shadows.sm,
+    // Solid Aged Gold background (fallback until LinearGradient is added)
+    // TODO: Replace with LinearGradient from Burnished Bronze (#8B6914) to Aged Gold (#C4A052)
+    backgroundColor: colors.brand.gold, // #C4A052 - Aged Gold
+    // Golden shadow for mystical glow
+    shadowColor: colors.brand.gold,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
   primaryPressed: {
-    backgroundColor: colors.primary[700],
-    ...shadows.xs,
+    backgroundColor: colors.brand.bronze, // #8B6914 - Burnished Bronze (darker)
+    shadowColor: colors.brand.bronze,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   primaryText: {
-    color: colors.white,
+    color: colors.text.inverse, // #0A0A0F - Dark text on gold background
   },
 
   secondary: {
-    backgroundColor: colors.secondary[400],
-    ...shadows.sm,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.brand.gold, // #C4A052 - Gold border
   },
   secondaryPressed: {
-    backgroundColor: colors.secondary[500],
-    ...shadows.xs,
+    backgroundColor: 'rgba(196, 160, 82, 0.1)', // Subtle gold tint
+    borderColor: colors.brand.amber, // #D4A84B - Lighter amber on press
   },
   secondaryText: {
-    color: colors.gray[900],
+    color: colors.brand.gold, // #C4A052 - Gold text
   },
 
   ghost: {
     backgroundColor: 'transparent',
+    borderWidth: 0,
   },
   ghostPressed: {
-    backgroundColor: colors.gray[800],
+    backgroundColor: 'rgba(196, 160, 82, 0.08)', // Very subtle gold background
   },
   ghostText: {
-    color: colors.primary[600],
+    color: colors.text.secondary, // #A09080 - Muted Wisdom
   },
 
   outline: {
     backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: colors.primary[600],
+    borderWidth: 1,
+    borderColor: colors.brand.gold,
   },
   outlinePressed: {
-    backgroundColor: colors.primary[900],
+    backgroundColor: 'rgba(196, 160, 82, 0.1)',
+    borderColor: colors.brand.amber,
   },
 
   // Sizes

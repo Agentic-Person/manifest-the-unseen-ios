@@ -25,7 +25,7 @@ import {
   TextInputProps as RNTextInputProps,
   ViewStyle,
 } from 'react-native';
-import { colors, typography, spacing, borderRadius, fontWeights } from '../theme';
+import { colors, typography, spacing, fontWeights } from '../theme';
 
 export interface TextInputProps extends Omit<RNTextInputProps, 'style'> {
   /** Input label */
@@ -109,7 +109,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         multiline={multiline}
         numberOfLines={multiline ? numberOfLines : 1}
         maxLength={maxLength}
-        placeholderTextColor={colors.text.tertiary}
+        placeholderTextColor="#6B6B6B"
         accessible
         accessibilityLabel={label}
         accessibilityHint={helperText}
@@ -170,33 +170,38 @@ const styles = StyleSheet.create({
   input: {
     ...typography.body,
     color: colors.text.primary,
-    backgroundColor: colors.background.primary,
+    backgroundColor: 'rgba(26, 26, 36, 0.8)', // Semi-transparent Temple Stone
     borderWidth: 1,
-    borderColor: colors.border.default,
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    borderColor: 'rgba(196, 160, 82, 0.2)', // Subtle gold
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     minHeight: 44, // iOS minimum touch target
   },
 
   inputMultiline: {
-    paddingTop: spacing.sm,
+    paddingTop: 16,
     textAlignVertical: 'top',
   },
 
   inputFocused: {
-    borderColor: colors.border.focused,
-    borderWidth: 2,
+    borderColor: '#C4A052', // Aged Gold
+    borderWidth: 1,
+    shadowColor: '#C4A052',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4, // Android shadow
   },
 
   inputError: {
-    borderColor: colors.border.error,
-    borderWidth: 2,
+    borderColor: '#f87171', // Error red
+    borderWidth: 1,
   },
 
   inputDisabled: {
-    backgroundColor: colors.background.tertiary,
-    borderColor: colors.border.disabled,
+    backgroundColor: 'rgba(26, 26, 36, 0.5)', // More transparent when disabled
+    borderColor: 'rgba(196, 160, 82, 0.1)', // Very subtle gold
     color: colors.text.disabled,
   },
 
