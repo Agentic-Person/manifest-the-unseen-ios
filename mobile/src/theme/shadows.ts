@@ -95,15 +95,34 @@ export const shadows = {
 
 /**
  * Component-specific shadow presets
+ * Enhanced with golden glow effects for ancient mystical design
  */
 export const componentShadows = {
-  // Cards
-  card: shadows.sm,
+  // Cards with subtle golden tint for Deep Void (#0A0A0F) background
+  card: {
+    shadowColor: '#C4A052', // Aged Gold tint
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+  } as Shadow,
   cardPressed: shadows.md,
-  cardElevated: shadows.md,
+  cardElevated: {
+    shadowColor: '#C4A052', // Aged Gold tint
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  } as Shadow,
 
-  // Buttons
-  button: shadows.sm,
+  // Buttons with golden glow
+  button: {
+    shadowColor: '#C4A052', // Aged Gold
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  } as Shadow,
   buttonPressed: shadows.xs,
   fab: shadows.lg, // Floating action button
 
@@ -137,15 +156,43 @@ export const innerShadow = {
 
 /**
  * Glow effect (for focused states, special highlights)
- * Uses the primary color with blur
+ * Ancient mystical design system with golden glow effects
  */
 export const glow = {
+  // Primary golden glow (Aged Gold)
   primary: {
-    shadowColor: '#9333ea', // primary-600
+    shadowColor: '#C4A052', // Aged Gold
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  } as Shadow,
+
+  // Golden glow for mystical elements
+  glowGold: {
+    shadowColor: '#C4A052', // Aged Gold
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  } as Shadow,
+
+  // Amber glow for active/interactive states
+  glowAmber: {
+    shadowColor: '#D4A84B', // Amber Glow
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
     shadowRadius: 8,
     elevation: 8,
+  } as Shadow,
+
+  // Bronze glow for subtle emphasis
+  glowBronze: {
+    shadowColor: '#8B6914', // Burnished Bronze
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 6,
   } as Shadow,
 
   secondary: {

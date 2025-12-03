@@ -1,8 +1,9 @@
 /**
  * Color palette for Manifest the Unseen
  *
- * Brand colors: Purple (primary) and Gold (secondary) for spiritual, ethereal aesthetic
- * All colors meet WCAG AA contrast requirements (4.5:1 for text)
+ * Ancient Mystical Design System
+ * Inspired by Tibetan Buddhist, Hindu, and Mayan traditions
+ * Dark mode default with gold/amber accents
  *
  * Usage:
  * - Import: `import { colors } from '@/theme'`
@@ -10,34 +11,34 @@
  */
 
 export const colors = {
-  // Primary brand color - Purple (spiritual, mystical)
+  // Primary brand color - Aged Gold (sacred, ancient, enlightenment)
   primary: {
-    50: '#faf5ff',
-    100: '#f3e8ff',
-    200: '#e9d5ff',
-    300: '#d8b4fe',
-    400: '#c084fc',
-    500: '#a855f7',
-    600: '#9333ea',  // Main brand color
-    700: '#7e22ce',
-    800: '#6b21a8',
-    900: '#581c87',
-    950: '#3b0764',
+    50: '#fdf8e8',
+    100: '#f9edc4',
+    200: '#f0d890',
+    300: '#e5c05c',
+    400: '#D4A84B',  // Amber Glow (highlights, active states)
+    500: '#C4A052',  // Aged Gold (main brand color)
+    600: '#a8873f',  // Slightly darker
+    700: '#8B6914',  // Burnished Bronze (secondary accent)
+    800: '#6b5210',
+    900: '#4a3a0c',
+    950: '#2d2308',
   },
 
-  // Secondary brand color - Gold (enlightenment, achievement)
+  // Secondary brand color - Crown Purple (spirituality, wisdom)
   secondary: {
-    50: '#fffbeb',
-    100: '#fef3c7',
-    200: '#fde68a',
-    300: '#fcd34d',
-    400: '#fbbf24',  // Main gold accent
-    500: '#f59e0b',
-    600: '#d97706',
-    700: '#b45309',
-    800: '#92400e',
-    900: '#78350f',
-    950: '#451a03',
+    50: '#f5f0ff',
+    100: '#ebe0ff',
+    200: '#d4c0ff',
+    300: '#b894f6',
+    400: '#9b6ce8',
+    500: '#7e4dcf',
+    600: '#6B4C9A',  // Crown Purple (main secondary)
+    700: '#5a3d82',
+    800: '#4a3269',
+    900: '#3b2854',
+    950: '#251838',
   },
 
   // Semantic colors
@@ -115,31 +116,33 @@ export const colors = {
 
   // Semantic text colors (for easy access) - DARK MODE DEFAULT
   text: {
-    primary: '#e8e8e8',      // Soft off-white (never pure white)
-    secondary: '#a0a0b0',    // Muted gray
-    tertiary: '#6b6b80',     // Subtle hints
+    primary: '#F5F0E6',      // Enlightened White (warm, never pure white)
+    secondary: '#A09080',    // Muted Wisdom (earthy gray)
+    tertiary: '#6B6B6B',     // Subtle hints
     disabled: '#4a4a5a',     // Dimmed
-    inverse: '#111827',      // Dark text for light backgrounds
-    link: '#c084fc',         // Lighter purple for dark bg
+    inverse: '#0A0A0F',      // Dark text for light backgrounds (Deep Void)
+    link: '#D4A84B',         // Amber Glow for links
+    golden: '#C4A052',       // Aged Gold for emphasis
   },
 
   // Background colors - DARK MODE DEFAULT
   background: {
-    primary: '#1a1a2e',      // Deep charcoal
-    secondary: '#16213e',    // Dark slate blue
-    tertiary: '#252547',     // Elevated surface
-    elevated: '#252547',     // Cards, modals
-    inverse: '#ffffff',      // White (for rare light elements)
-    purple: '#2d1f47',       // Dark purple tint
-    gold: '#2d2815',         // Dark gold tint
+    primary: '#0A0A0F',      // Deep Void (infinite darkness)
+    secondary: '#1A1A24',    // Temple Stone (cards, elevated surfaces)
+    tertiary: '#22222E',     // Slightly elevated
+    elevated: '#1A1A24',     // Cards, modals (Temple Stone)
+    inverse: '#F5F0E6',      // Enlightened White (rare light elements)
+    purple: '#1A1525',       // Dark purple tint
+    gold: '#1A1810',         // Dark gold tint
   },
 
   // Border colors - DARK MODE DEFAULT
   border: {
-    default: '#3a3a50',      // Subtle dark border
-    focused: '#c084fc',      // Lighter purple for visibility
+    default: 'rgba(196, 160, 82, 0.15)',  // Subtle gold border
+    focused: '#C4A052',      // Aged Gold for focus
+    gold: 'rgba(196, 160, 82, 0.4)',      // Stronger gold border
     error: '#f87171',        // Brighter red for dark bg
-    disabled: '#2a2a3e',     // Very subtle
+    disabled: 'rgba(196, 160, 82, 0.08)', // Very subtle gold
   },
 
   // Overlay colors (for modals, bottom sheets)
@@ -150,25 +153,29 @@ export const colors = {
 
   // Brand colors (quick access to main brand colors)
   brand: {
-    purple: '#9333ea',       // primary-600 (main brand color)
-    gold: '#fbbf24',         // secondary-400 (main gold accent)
+    gold: '#C4A052',         // Aged Gold (main brand color)
+    amber: '#D4A84B',        // Amber Glow (highlights)
+    bronze: '#8B6914',       // Burnished Bronze (secondary accent)
+    purple: '#6B4C9A',       // Crown Purple (spirituality)
   },
 
-  // Dark theme colors (spiritual/meditation app aesthetic)
+  // Dark theme colors (ancient mystical aesthetic)
   dark: {
-    bgPrimary: '#1a1a2e',     // Deep charcoal (primary background)
-    bgSecondary: '#16213e',   // Dark slate blue (alternative background)
-    bgElevated: '#252547',    // Elevated surface (cards)
-    textPrimary: '#e8e8e8',   // Soft off-white (NEVER pure white)
-    textSecondary: '#a0a0b0', // Muted gray
-    textTertiary: '#6b6b80',  // Subtle hints
-    accentPurple: '#4a1a6b',  // Deep purple (primary accent)
+    bgPrimary: '#0A0A0F',     // Deep Void (primary background)
+    bgSecondary: '#1A1A24',   // Temple Stone (alternative background)
+    bgElevated: '#1A1A24',    // Temple Stone (cards, elevated surfaces)
+    textPrimary: '#F5F0E6',   // Enlightened White (NEVER pure white)
+    textSecondary: '#A09080', // Muted Wisdom
+    textTertiary: '#6B6B6B',  // Subtle hints
+    // Spiritual accent colors (chakra-inspired)
+    accentPurple: '#6B4C9A',  // Crown Purple (spirituality, third eye)
     accentTeal: '#1a5f5f',    // Deep teal (opportunities, wisdom)
-    accentGold: '#c9a227',    // Muted gold (enlightenment, value)
-    accentRose: '#8b3a5f',    // Deep rose (heart, compassion)
-    accentGreen: '#2d5a4a',   // Forest green (growth, nature)
-    accentAmber: '#8b6914',   // Deep amber (earth, grounding)
-    accentBurgundy: '#6b2d3d', // Deep burgundy (awareness, threats)
+    accentGold: '#C4A052',    // Aged Gold (enlightenment, sacred)
+    accentRose: '#8b3a5f',    // Deep rose (heart chakra, compassion)
+    accentGreen: '#2D5A4A',   // Heart Emerald (growth, healing)
+    accentAmber: '#8B6914',   // Burnished Bronze (earth, grounding)
+    accentBurgundy: '#7A3333', // Root Crimson (grounding, passion)
+    accentOrange: '#C4702C',  // Sacral Orange (creativity, energy)
   },
 
   // SWOT Analysis specific colors (dark theme)
