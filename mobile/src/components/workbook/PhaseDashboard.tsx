@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, borderRadius } from '../../theme';
@@ -16,7 +16,7 @@ interface Exercise {
   id: string;
   name: string;
   description?: string;
-  icon: string;
+  icon: ImageSourcePropType;
   estimatedTime: string;
   progress?: number;
   isCompleted: boolean;
@@ -106,7 +106,7 @@ export const PhaseDashboard: React.FC<PhaseDashboardProps> = ({
             }`}
           >
             <View style={styles.exerciseIcon}>
-              <Text style={styles.exerciseIconText}>{exercise.icon}</Text>
+              <Image source={exercise.icon} style={styles.exerciseIconImage} resizeMode="cover" />
             </View>
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseName}>{exercise.name}</Text>
@@ -269,9 +269,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.sm,
+    overflow: 'hidden',
   },
-  exerciseIconText: {
-    fontSize: 24,
+  exerciseIconImage: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.lg,
   },
   exerciseInfo: {
     flex: 1,

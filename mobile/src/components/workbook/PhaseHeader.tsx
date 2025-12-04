@@ -27,7 +27,13 @@ export const PhaseHeader: React.FC<PhaseHeaderProps> = ({
     <View style={styles.container}>
       {/* Background Image */}
       <View style={styles.imageContainer}>
-        <Image source={image} style={styles.image} resizeMode="cover" />
+        <Image
+          source={image}
+          style={styles.image}
+          resizeMode="cover"
+          onError={(e) => console.warn('PhaseHeader image failed to load:', e.nativeEvent.error)}
+          onLoad={() => console.log('PhaseHeader image loaded successfully')}
+        />
         <LinearGradient
           colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
           style={styles.gradient}
@@ -55,6 +61,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   imageContainer: {
+    backgroundColor: colors.primary[900],
     position: 'absolute',
     top: 0,
     left: 0,
@@ -66,6 +73,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   gradient: {
+    backgroundColor: colors.primary[900],
     position: 'absolute',
     top: 0,
     left: 0,
@@ -73,6 +81,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   textOverlay: {
+    backgroundColor: colors.primary[900],
     position: 'absolute',
     bottom: 0,
     left: 0,

@@ -6,6 +6,7 @@
  */
 
 import { useMemo } from 'react';
+import { ImageSourcePropType } from 'react-native';
 import { usePhaseProgress } from './useWorkbook';
 
 /**
@@ -15,7 +16,7 @@ export interface ExerciseConfig {
   id: string;
   name: string;
   description: string;
-  icon: string;
+  icon: ImageSourcePropType;
   estimatedTime: string;
 }
 

@@ -25,30 +25,12 @@ const initialState = {
 
 /**
  * Auth Store
- *
- * @example
- * ```tsx
- * import { useAuthStore } from '@/stores/authStore';
- *
- * function MyComponent() {
- *   const { user, isAuthenticated, signOut } = useAuthStore();
- *
- *   if (!isAuthenticated) {
- *     return <SignInScreen />;
- *   }
- *
- *   return <Text>Welcome {user?.email}</Text>;
- * }
- * ```
  */
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       ...initialState,
 
-      /**
-       * Set User
-       */
       setUser: (user) => {
         set({
           user,
@@ -57,16 +39,10 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      /**
-       * Set User Profile
-       */
       setProfile: (profile) => {
         set({ profile });
       },
 
-      /**
-       * Set Session
-       */
       setSession: (session) => {
         set({
           session,
@@ -74,42 +50,73 @@ export const useAuthStore = create<AuthState>()(
         });
       },
 
-      /**
-       * Set Loading State
-       */
       setLoading: (isLoading) => {
         set({ isLoading });
       },
 
-      /**
-       * Set Error
-       */
       setError: (error) => {
         set({ error });
       },
 
-      /**
-       * Initialize Auth
-       * Checks for existing session and restores auth state
-       */
       initialize: async () => {
         try {
           set({ isLoading: true });
 
-          // Dev mode: Skip auth if EXPO_PUBLIC_DEV_SKIP_AUTH is enabled
-          // Uses real demo user from database to avoid 406 RLS errors
+          // Dev mode: Skip auth UI but actually sign in as demo user
+          // This ensures we have a valid JWT for RLS policies to work
           if (process.env.EXPO_PUBLIC_DEV_SKIP_AUTH === 'true') {
-            const DEV_USER_ID = 'fd0bbfb1-768d-48d3-abab-650891725f43'; // test@manifest.app
-            console.log('[Auth] DEV_SKIP_AUTH enabled - using demo user:', DEV_USER_ID);
+            console.log('[Auth] DEV_SKIP_AUTH enabled - signing in as demo user');
+
+            // First check if we already have a valid session
+            const { data: existingSession } = await supabase.auth.getSession();
+            if (existingSession?.session) {
+              console.log('[Auth] Existing session found for:', existingSession.session.user.email);
+              set({
+                user: existingSession.session.user,
+                session: existingSession.session,
+                profile: {
+                  id: existingSession.session.user.id,
+                  email: existingSession.session.user.email,
+                  fullName: 'Demo User',
+                  displayName: 'Demo User',
+                  subscriptionTier: 'enlightenment',
+                  subscriptionStatus: 'active',
+                  currentPhase: 1,
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString(),
+                } as any,
+                isAuthenticated: true,
+                isLoading: false,
+              });
+              return;
+            }
+
+            // Sign in as demo user to get a valid JWT for RLS
+            const devEmail = 'test@manifest.app';
+            const devPassword = process.env.EXPO_PUBLIC_DEV_PASSWORD || 'TestPassword123!';
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+              email: devEmail,
+              password: devPassword,
+            });
+
+            if (error) {
+              console.error('[Auth] Demo user sign-in failed:', error.message);
+              console.log('[Auth] Hint: Ensure demo user exists in Supabase with password set');
+              set({ isLoading: false });
+              return;
+            }
+
+            console.log('[Auth] Demo user signed in successfully:', data.user.id);
             set({
-              user: { id: DEV_USER_ID, email: 'test@manifest.app' } as any,
-              session: { user: { id: DEV_USER_ID } } as any,
+              user: data.user,
+              session: data.session,
               profile: {
-                id: DEV_USER_ID,
-                email: 'test@manifest.app',
+                id: data.user.id,
+                email: data.user.email,
                 fullName: 'Demo User',
                 displayName: 'Demo User',
-                subscriptionTier: 'enlightenment', // Full access in dev
+                subscriptionTier: 'enlightenment',
                 subscriptionStatus: 'active',
                 currentPhase: 1,
                 createdAt: new Date().toISOString(),
@@ -130,7 +137,6 @@ export const useAuthStore = create<AuthState>()(
               isAuthenticated: true,
             });
 
-            // Fetch profile
             const { data: profile, error } = await supabase
               .from('users')
               .select('*')
@@ -149,10 +155,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      /**
-       * Sign Out
-       * Clears user session and resets auth state
-       */
       signOut: async () => {
         try {
           set({ isLoading: true, error: null });
@@ -161,7 +163,6 @@ export const useAuthStore = create<AuthState>()(
 
           if (error) throw error;
 
-          // Reset state
           set({
             ...initialState,
             isLoading: false,
@@ -177,10 +178,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      /**
-       * Refresh User Profile
-       * Fetches latest user profile from Supabase
-       */
       refreshProfile: async () => {
         try {
           const { user } = get();
@@ -189,7 +186,6 @@ export const useAuthStore = create<AuthState>()(
             throw new Error('No authenticated user');
           }
 
-          // Fetch user profile from Supabase
           const { data: profile, error } = await supabase
             .from('users')
             .select('*')
@@ -209,10 +205,6 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      /**
-       * Reset Store
-       * Resets all state to initial values
-       */
       reset: () => {
         set(initialState);
       },
@@ -220,7 +212,6 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'manifest-auth-storage',
       storage: createJSONStorage(() => AsyncStorage),
-      // Only persist essential auth data
       partialize: (state) => ({
         user: state.user,
         profile: state.profile,
@@ -231,11 +222,6 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-/**
- * Selector Hooks
- * Optimized hooks that only re-render when specific values change
- */
-
 export const useUser = () => useAuthStore((state) => state.user);
 export const useProfile = () => useAuthStore((state) => state.profile);
 export const useSession = () => useAuthStore((state) => state.session);
@@ -244,26 +230,13 @@ export const useIsAuthenticated = () =>
 export const useAuthLoading = () => useAuthStore((state) => state.isLoading);
 export const useAuthError = () => useAuthStore((state) => state.error);
 
-/**
- * Action Hooks
- * Separate hooks for actions to prevent unnecessary re-renders
- */
-
 export const useSignOut = () => useAuthStore((state) => state.signOut);
 export const useRefreshProfile = () =>
   useAuthStore((state) => state.refreshProfile);
 
-/**
- * Subscription Tier Helper
- * Returns the user's current subscription tier
- */
 export const useSubscriptionTier = () =>
   useAuthStore((state) => state.profile?.subscriptionTier ?? 'free');
 
-/**
- * Feature Gate Helper
- * Checks if user has access to a specific feature based on tier
- */
 export const useHasFeatureAccess = (requiredTier: string): boolean => {
   const tier = useSubscriptionTier();
 

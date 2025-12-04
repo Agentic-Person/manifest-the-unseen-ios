@@ -107,7 +107,13 @@ const WorkbookScreen = ({ navigation }: Props) => {
               activeOpacity={0.8}
             >
               <View style={styles.imageContainer}>
-                <Image source={phase.image} style={styles.phaseImage} resizeMode="cover" />
+                <Image
+                  source={phase.image}
+                  style={styles.phaseImage}
+                  resizeMode="cover"
+                  onError={(e) => console.warn(`WorkbookScreen phase ${phase.id} image failed:`, e.nativeEvent.error)}
+                  onLoad={() => console.log(`WorkbookScreen phase ${phase.id} image loaded`)}
+                />
                 <LinearGradient
                   colors={['transparent', 'rgba(0,0,0,0.7)']}
                   style={styles.imageGradient}
@@ -235,6 +241,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: 140,
+    backgroundColor: colors.primary[800], // Fallback
     position: 'relative',
   },
   phaseImage: {
