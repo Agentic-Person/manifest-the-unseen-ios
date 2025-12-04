@@ -22,7 +22,8 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -227,13 +228,12 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
       showsVerticalScrollIndicator={false}
     >
       {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Abilities Rating</Text>
-        <Text style={styles.subtitle}>
-          Honestly assess your current skill levels. Self-awareness is the foundation
-          of targeted personal growth.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase1ExerciseImages.abilitiesRating}
+        title="Abilities Rating"
+        subtitle="Honestly assess your current skill levels. Self-awareness is the foundation of targeted personal growth."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Summary Card */}
       <View style={styles.summaryCard}>
@@ -398,21 +398,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
   summaryCard: {
     backgroundColor: DESIGN_COLORS.bgSecondary,

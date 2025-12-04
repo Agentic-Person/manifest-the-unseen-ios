@@ -23,7 +23,8 @@ import {
 import { Card, Text, Button } from '../../../components';
 import HabitSection, { TimeOfDay, Habit } from '../../../components/workbook/HabitSection';
 import { HabitCategory } from '../../../components/workbook/HabitEntry';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -241,13 +242,12 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       keyboardShouldPersistTaps="handled"
     >
       {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Current Habits Audit</Text>
-        <Text style={styles.subtitle}>
-          Review your daily routines and identify which habits serve you well
-          and which ones might need changing.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase1ExerciseImages.habitTracking}
+        title="Current Habits Audit"
+        subtitle="Review your daily routines and identify which habits serve you well and which ones might need changing."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Summary Card */}
       <Card elevation="raised" style={styles.summaryCard}>
@@ -426,20 +426,6 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.md,
   },
-  header: {
-    marginBottom: spacing.lg,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: colors.text.secondary,
-    lineHeight: 22,
-  },
   summaryCard: {
     marginBottom: spacing.md,
   },
@@ -545,14 +531,14 @@ const styles = StyleSheet.create({
   },
   tipsCard: {
     marginBottom: spacing.lg,
-    backgroundColor: colors.primary[50],
-    borderColor: colors.primary[100],
+    backgroundColor: colors.primary[950],
+    borderColor: colors.primary[800],
     borderWidth: 1,
   },
   tipsTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.primary[700],
+    color: colors.primary[400],
     marginBottom: spacing.sm,
   },
   tipItem: {
@@ -567,7 +553,7 @@ const styles = StyleSheet.create({
   },
   tipText: {
     fontSize: 13,
-    color: colors.primary[800],
+    color: colors.primary[300],
     flex: 1,
     lineHeight: 18,
   },

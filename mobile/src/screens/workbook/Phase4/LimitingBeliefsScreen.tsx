@@ -31,12 +31,13 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import BeliefCard, { LimitingBelief } from '../../../components/workbook/BeliefCard';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase4ExerciseImages } from '../../../assets';
 
 /**
  * Generate unique ID
@@ -290,20 +291,12 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
         showsVerticalScrollIndicator={false}
       >
         {/* Header Section */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>Phase 4</Text>
-          <Text style={styles.title}>Limiting Beliefs</Text>
-          <Text style={styles.subtitle}>
-            Transform negative thought patterns into empowering beliefs
-          </Text>
-
-          {/* Decorative divider */}
-          <View style={styles.headerDivider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerStar}>{'\u2726'}</Text>
-            <View style={styles.dividerLine} />
-          </View>
-        </View>
+        <ExerciseHeader
+          image={Phase4ExerciseImages.limitingBeliefs}
+          title="Limiting Beliefs"
+          subtitle="Transform negative thought patterns into empowering beliefs"
+          progress={savedProgress?.completed ? 100 : 0}
+        />
 
         {/* Progress Stats Card */}
         <View style={styles.statsCard}>

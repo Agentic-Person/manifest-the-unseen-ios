@@ -35,7 +35,8 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../../../components/Text';
 import { RoleModelCard, ROLE_MODEL_CATEGORIES, RoleModel, RoleModelCategory } from '../../../components/workbook/RoleModelCard';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -332,12 +333,15 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {/* Header Info */}
+      {/* Header */}
+      <ExerciseHeader
+        image={Phase8ExerciseImages.roleModels}
+        title="Role Models & Inspirations"
+        subtitle="Create a board of people who inspire you. Document what you admire and the lessons you can learn."
+        progress={savedProgress?.progress || 0}
+      />
+
       <View style={styles.headerInfo}>
-        <Text style={styles.headerTitle}>{'\u{1F31F}'} Role Models & Inspirations</Text>
-        <Text style={styles.headerSubtitle}>
-          Create a board of people who inspire you. Document what you admire and the lessons you can learn.
-        </Text>
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
       </View>
 

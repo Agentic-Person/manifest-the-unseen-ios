@@ -23,7 +23,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -282,13 +283,12 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
       keyboardShouldPersistTaps="handled"
     >
       {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Thought Awareness</Text>
-        <Text style={styles.subtitle}>
-          Track your thoughts to recognize patterns and cognitive habits.
-          Awareness is the first step to change.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase1ExerciseImages.thoughtAwareness}
+        title="Thought Awareness"
+        subtitle="Track your thoughts to recognize patterns and cognitive habits. Awareness is the first step to change."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Stats Summary */}
       <View style={styles.statsCard}>
@@ -579,21 +579,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
   statsCard: {
     backgroundColor: DESIGN_COLORS.bgSecondary,

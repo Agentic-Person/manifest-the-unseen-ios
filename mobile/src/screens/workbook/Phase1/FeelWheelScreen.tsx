@@ -22,7 +22,8 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -175,13 +176,12 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
       showsVerticalScrollIndicator={false}
     >
       {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Feel Wheel</Text>
-        <Text style={styles.subtitle}>
-          Identify and rate the intensity of your current emotions.
-          Understanding your emotional state is key to self-awareness.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase1ExerciseImages.feelWheel}
+        title="Feel Wheel"
+        subtitle="Identify and rate the intensity of your current emotions. Understanding your emotional state is key to self-awareness."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Dominant Emotion Card */}
       {dominantEmotion && (
@@ -294,21 +294,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
   dominantCard: {
     flexDirection: 'row',

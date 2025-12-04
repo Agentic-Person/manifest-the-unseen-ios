@@ -34,7 +34,8 @@ import {
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { SealedLetter } from '../../../components/workbook/SealedLetter';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase10ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -304,15 +305,14 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>PHASE 10</Text>
-          <Text style={styles.title}>Letter to Future Self</Text>
-          <Text style={styles.subtitle}>
-            {existingLetter.isSealed
-              ? 'Your letter is safely sealed, waiting for the perfect moment.'
-              : 'Your letter has arrived. Read the message from your past self.'}
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase10ExerciseImages.letterFutureSelf}
+          title="Letter to Future Self"
+          subtitle={existingLetter.isSealed
+            ? 'Your letter is safely sealed, waiting for the perfect moment.'
+            : 'Your letter has arrived. Read the message from your past self.'}
+          progress={savedProgress?.progress || 0}
+        />
 
         <SealedLetter
           isSealed={existingLetter.isSealed}
@@ -366,14 +366,12 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>PHASE 10</Text>
-          <Text style={styles.title}>Letter to Future Self</Text>
-          <Text style={styles.subtitle}>
-            Write a letter to yourself, one year from today. Express your hopes,
-            dreams, and the person you're becoming.
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase10ExerciseImages.letterFutureSelf}
+          title="Letter to Future Self"
+          subtitle="Write a letter to yourself, one year from today. Express your hopes, dreams, and the person you're becoming."
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Open Date Display */}
         <View style={styles.openDateCard}>

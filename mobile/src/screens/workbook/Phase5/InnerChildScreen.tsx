@@ -29,7 +29,8 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase5ExerciseImages } from '../../../assets';
 
 // Design system colors - softer variant for nurturing feel
 const DESIGN_COLORS = {
@@ -355,13 +356,12 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Inner Child Healing</Text>
-          <Text style={styles.subtitle}>
-            A safe space to reconnect with and nurture your younger self.
-            Write letters of love, comfort, and understanding.
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase5ExerciseImages.innerChild}
+          title="Inner Child Healing"
+          subtitle="A safe space to reconnect with and nurture your younger self. Write letters of love, comfort, and understanding."
+          progress={savedProgress?.completed ? 100 : 0}
+        />
 
         {/* Action Buttons */}
         <View style={styles.actionsRow}>

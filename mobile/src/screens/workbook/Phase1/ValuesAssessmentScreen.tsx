@@ -22,6 +22,8 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Card, Text } from '../../../components';
 import { ValueCard } from '../../../components/workbook/ValueCard';
+import { ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -220,13 +222,12 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Personal Values</Text>
-          <Text style={styles.subtitle}>
-            Select your top {MAX_SELECTIONS} core values that define who you are
-            and what matters most to you.
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase1ExerciseImages.personalValues}
+          title="Personal Values"
+          subtitle={`Select your top ${MAX_SELECTIONS} core values that define who you are and what matters most to you.`}
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Progress Card */}
         <Card elevation="raised" style={styles.progressCard}>
@@ -383,20 +384,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: spacing.md,
-  },
-  header: {
-    marginBottom: spacing.lg,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.text.secondary,
-    lineHeight: 24,
   },
   progressCard: {
     marginBottom: spacing.lg,

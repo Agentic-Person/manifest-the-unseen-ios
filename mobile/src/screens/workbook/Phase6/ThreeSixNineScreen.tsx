@@ -34,7 +34,8 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase6ExerciseImages } from '../../../assets';
 
 /**
  * Cycle duration options
@@ -245,20 +246,12 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>Phase 6</Text>
-          <Text style={styles.title}>369 Method</Text>
-          <Text style={styles.subtitle}>
-            Nikola Tesla's sacred manifestation technique
-          </Text>
-
-          {/* Decorative Divider */}
-          <View style={styles.headerDivider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerSymbol}>{'\u2726'}</Text>
-            <View style={styles.dividerLine} />
-          </View>
-        </View>
+        <ExerciseHeader
+          image={Phase6ExerciseImages.method369}
+          title="369 Method"
+          subtitle="Nikola Tesla's sacred manifestation technique"
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Progress Card */}
         <View style={styles.progressCard}>
@@ -448,55 +441,6 @@ const styles = StyleSheet.create({
 
   scrollContent: {
     padding: spacing.md,
-  },
-
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-
-  phaseLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.dark.accentGold,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: spacing.xs,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.dark.textPrimary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-
-  subtitle: {
-    fontSize: 15,
-    color: colors.dark.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-
-  headerDivider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: spacing.md,
-    width: '60%',
-  },
-
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.dark.textTertiary,
-    opacity: 0.3,
-  },
-
-  dividerSymbol: {
-    fontSize: 14,
-    color: colors.dark.accentGold,
-    marginHorizontal: spacing.sm,
   },
 
   progressCard: {

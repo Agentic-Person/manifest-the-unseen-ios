@@ -11,12 +11,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from 'react-native';
-import { Card, Text } from '../../../components';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Text } from '../../../components';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
-import { PhaseHeader } from '../../../components/workbook';
-import { PhaseImages } from '../../../assets';
+import { PhaseImages, Phase7ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
 
 /**
@@ -27,21 +28,21 @@ const PHASE7_EXERCISES: ExerciseConfig[] = [
     id: 'gratitude-journal',
     name: 'Gratitude Journal',
     description: 'Daily gratitude practice',
-    icon: '📔',
+    icon: Phase7ExerciseImages.gratitudeJournal,
     estimatedTime: '10 min daily',
   },
   {
     id: 'gratitude-letters',
     name: 'Gratitude Letters',
     description: 'Write heartfelt letters of appreciation',
-    icon: '✉️',
+    icon: Phase7ExerciseImages.gratitudeLetters,
     estimatedTime: '20 min',
   },
   {
     id: 'gratitude-meditation',
     name: 'Gratitude Meditation',
     description: 'Guided gratitude meditation practice',
-    icon: '🧘',
+    icon: Phase7ExerciseImages.gratitudeMeditation,
     estimatedTime: '15 min',
   },
 ];
@@ -57,48 +58,56 @@ const ExerciseCard: React.FC<{
 }> = ({ exercise, onPress }) => {
   return (
     <TouchableOpacity
-      style={styles.exerciseCard}
+      style={[
+        styles.exerciseCard,
+        exercise.isCompleted && styles.exerciseCardCompleted,
+      ]}
       onPress={onPress}
-      activeOpacity={0.7}
+      activeOpacity={0.8}
       accessibilityRole="button"
       accessibilityLabel={`${exercise.name}, ${exercise.progress}% complete`}
       accessibilityHint={`Opens ${exercise.name} exercise`}
     >
-      <View style={styles.exerciseHeader}>
-        <View style={styles.iconContainer}>
-          <Text style={styles.icon}>{exercise.icon}</Text>
+      {/* Exercise Image */}
+      <View style={styles.exerciseImageContainer}>
+        <Image source={exercise.icon} style={styles.exerciseImage} resizeMode="cover" />
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.7)']}
+          style={styles.exerciseImageGradient}
+        />
+        {/* Progress Bar at Bottom Right */}
+        <View style={styles.exerciseProgressContainer}>
+          <View style={styles.exerciseProgressBarBg}>
+            <LinearGradient
+              colors={['#ef4444', '#f97316', '#eab308', '#22c55e']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.exerciseProgressGradient}
+            >
+              <View
+                style={[
+                  styles.exerciseProgressUnfilled,
+                  { width: `${100 - exercise.progress}%` },
+                ]}
+              />
+            </LinearGradient>
+          </View>
+          <Text style={styles.exerciseProgressText}>
+            {exercise.isCompleted ? '✓' : `${exercise.progress}%`}
+          </Text>
         </View>
+      </View>
+
+      {/* Exercise Content */}
+      <View style={styles.exerciseContent}>
         <View style={styles.exerciseInfo}>
-          <Text style={styles.exerciseName}>{exercise.name}</Text>
+          <View style={styles.exerciseTitleRow}>
+            <Text style={styles.exerciseName}>{exercise.name}</Text>
+            <Text style={styles.exerciseTime}>{exercise.estimatedTime}</Text>
+          </View>
           <Text style={styles.exerciseDescription}>{exercise.description}</Text>
         </View>
-        {exercise.isCompleted ? (
-          <View style={styles.completedBadge}>
-            <Text style={styles.completedCheck}>✓</Text>
-          </View>
-        ) : (
-          <Text style={styles.arrow}>›</Text>
-        )}
-      </View>
-      {/* Progress Bar */}
-      <View style={styles.progressContainer}>
-        <View style={styles.progressBar}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${exercise.progress}%` },
-              exercise.isCompleted && styles.progressFillCompleted,
-            ]}
-          />
-        </View>
-        <View style={styles.progressMeta}>
-          <Text style={styles.progressText}>
-            {exercise.progress}% complete
-          </Text>
-          <Text style={styles.timeEstimate}>
-            {exercise.estimatedTime}
-          </Text>
-        </View>
+        <Text style={styles.exerciseArrow}>›</Text>
       </View>
     </TouchableOpacity>
   );
@@ -147,31 +156,42 @@ const Phase7Dashboard: React.FC<Props> = ({ navigation }) => {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* Phase Header with Image */}
-      <PhaseHeader
-        phaseNumber={7}
-        title="Practicing Gratitude"
-        subtitle="Develop a deep gratitude practice that raises your vibration and attracts abundance"
-        image={PhaseImages.phase7}
-      />
-      {/* Overall Progress Card */}
-      <Card elevation="raised" style={styles.progressCard}>
-        <View style={styles.progressCardHeader}>
-          <Text style={styles.progressCardTitle}>Your Progress</Text>
-          <Text style={styles.progressCardPercentage}>{overallProgress}%</Text>
-        </View>
-        <View style={styles.overallProgressBar}>
-          <View
-            style={[
-              styles.overallProgressFill,
-              { width: `${overallProgress}%` },
-            ]}
+      {/* New Header Section */}
+      <View style={styles.newHeader}>
+        <View style={styles.headerImageContainer}>
+          <Image
+            source={PhaseImages.phase7}
+            style={styles.headerImage}
+            resizeMode="cover"
           />
         </View>
-        <Text style={styles.progressCardSubtext}>
-          {completedCount} of {totalCount} exercises completed
+        <Text style={styles.headerTitle}>Practicing Gratitude</Text>
+        <Text style={styles.headerSubtitle}>
+          Develop a deep gratitude practice that raises your vibration and attracts abundance
         </Text>
-      </Card>
+      </View>
+
+      {/* Compact Progress Section */}
+      <View style={styles.progressSection}>
+        <View style={styles.gradientProgressContainer}>
+          <LinearGradient
+            colors={['#ef4444', '#f97316', '#eab308', '#22c55e']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.gradientProgressTrack}
+          >
+            <View
+              style={[
+                styles.gradientProgressUnfilled,
+                { width: `${100 - overallProgress}%` },
+              ]}
+            />
+          </LinearGradient>
+        </View>
+        <Text style={styles.progressCount}>
+          {completedCount} of {totalCount} exercises completed • {overallProgress}%
+        </Text>
+      </View>
       {/* Exercises List */}
       <View style={styles.exercisesList}>
         <Text style={styles.sectionTitle}>Exercises</Text>
@@ -205,64 +225,64 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.background.secondary,
   },
-  header: {
-    marginBottom: spacing.lg,
-  },
-  phaseLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.primary[600],
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: spacing.xs,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.text.secondary,
-    lineHeight: 24,
-  },
-  progressCard: {
-    marginBottom: spacing.lg,
-  },
-  progressCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  // New Header Styles
+  newHeader: {
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
   },
-  progressCardTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text.secondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+  headerImageContainer: {
+    width: '100%',
+    height: 140,
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
+    borderColor: colors.brand.gold,
+    overflow: 'hidden',
+    marginBottom: spacing.md,
   },
-  progressCardPercentage: {
+  headerImage: {
+    width: '100%',
+    height: 200,
+    marginTop: -30,
+  },
+  headerTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.primary[600],
+    color: colors.text.primary,
+    textAlign: 'center',
+    marginBottom: spacing.xs,
   },
-  overallProgressBar: {
-    height: 8,
-    backgroundColor: colors.gray[200],
+  headerSubtitle: {
+    fontSize: 15,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: spacing.md,
+  },
+  // Progress Section Styles
+  progressSection: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.md,
+  },
+  gradientProgressContainer: {
+    width: '100%',
+    height: 10,
     borderRadius: borderRadius.full,
     overflow: 'hidden',
     marginBottom: spacing.sm,
   },
-  overallProgressFill: {
-    height: '100%',
-    backgroundColor: colors.primary[600],
-    borderRadius: borderRadius.full,
+  gradientProgressTrack: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
-  progressCardSubtext: {
+  gradientProgressUnfilled: {
+    height: '100%',
+    backgroundColor: colors.gray[700],
+  },
+  progressCount: {
     fontSize: 14,
-    color: colors.text.tertiary,
+    color: colors.text.secondary,
   },
   sectionTitle: {
     fontSize: 18,
@@ -271,92 +291,100 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   exercisesList: {
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   exerciseCard: {
-    backgroundColor: colors.background.primary,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    ...shadows.sm,
+    backgroundColor: colors.background.elevated,
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
-  exerciseHeader: {
+  exerciseCardCompleted: {
+    borderColor: colors.success[500],
+    opacity: 0.85,
+  },
+  exerciseImageContainer: {
+    height: 120,
+    backgroundColor: colors.primary[800],
+    position: 'relative',
+  },
+  exerciseImage: {
+    width: '100%',
+    height: '100%',
+  },
+  exerciseImageGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+  },
+  exerciseProgressContainer: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: borderRadius.md,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.lg,
-    backgroundColor: colors.background.tertiary,
-    justifyContent: 'center',
+  exerciseProgressBarBg: {
+    width: 50,
+    height: 6,
+    borderRadius: borderRadius.full,
+    overflow: 'hidden',
+    marginRight: 6,
+  },
+  exerciseProgressGradient: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  exerciseProgressUnfilled: {
+    height: '100%',
+    backgroundColor: colors.gray[700],
+  },
+  exerciseProgressText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.white,
+  },
+  exerciseContent: {
+    padding: spacing.md,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginRight: spacing.sm,
-  },
-  icon: {
-    fontSize: 24,
   },
   exerciseInfo: {
     flex: 1,
   },
+  exerciseTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
   exerciseName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     color: colors.text.primary,
-    marginBottom: 2,
+    flex: 1,
   },
   exerciseDescription: {
     fontSize: 14,
     color: colors.text.secondary,
   },
-  arrow: {
-    fontSize: 24,
-    color: colors.gray[400],
-  },
-  completedBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: borderRadius.full,
-    backgroundColor: colors.success[500],
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  completedCheck: {
-    fontSize: 16,
-    color: colors.white,
-    fontWeight: '700',
-  },
-  progressContainer: {
-    marginTop: spacing.xs,
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: colors.gray[200],
-    borderRadius: borderRadius.full,
-    overflow: 'hidden',
-    marginBottom: spacing.xs,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.primary[400],
-    borderRadius: borderRadius.full,
-  },
-  progressFillCompleted: {
-    backgroundColor: colors.success[500],
-  },
-  progressMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  progressText: {
+  exerciseTime: {
     fontSize: 12,
     color: colors.text.tertiary,
+    marginLeft: spacing.sm,
   },
-  timeEstimate: {
-    fontSize: 12,
+  exerciseArrow: {
+    fontSize: 28,
     color: colors.text.tertiary,
+    marginLeft: 12,
   },
   bottomSpacer: {
     height: spacing.xl,

@@ -22,12 +22,13 @@ import {
 import { Text } from '../../../components';
 import MissionSection, { MissionId } from '../../../components/workbook/MissionSection';
 import CombinedMissionView from '../../../components/workbook/CombinedMissionView';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase2ExerciseImages } from '../../../assets';
 
 /**
  * Life Mission Data Structure
@@ -183,21 +184,13 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header Section */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>Phase 2</Text>
-          <Text style={styles.title}>Life Mission</Text>
-          <Text style={styles.subtitle}>
-            Define your purpose across four dimensions of life
-          </Text>
-
-          {/* Hand-drawn decorative divider */}
-          <View style={styles.headerDivider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerStar}>\u2726</Text>
-            <View style={styles.dividerLine} />
-          </View>
-        </View>
+        {/* Exercise Header */}
+        <ExerciseHeader
+          image={Phase2ExerciseImages.lifeMission}
+          title="Life Mission"
+          subtitle="Define your purpose across four dimensions of life"
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Progress Card */}
         <View style={styles.progressCard}>

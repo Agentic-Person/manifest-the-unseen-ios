@@ -34,11 +34,12 @@ import { Text } from '../../../components';
 import { GuidedQuestion, GuidedQuestionData } from '../../../components/workbook/GuidedQuestion';
 import { StatementDisplay } from '../../../components/workbook/StatementDisplay';
 import { QuestionProgress } from '../../../components/workbook/QuestionProgress';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { colors, spacing, borderRadius, typography, fontWeights } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase2ExerciseImages } from '../../../assets';
 
 /**
  * The 7 guided questions for purpose discovery
@@ -296,15 +297,15 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Purpose Statement</Text>
-          <Text style={styles.subtitle}>
-            {showStatement
-              ? 'Your purpose, revealed'
-              : 'Discover what drives your soul'}
-          </Text>
-        </View>
+        {/* Exercise Header */}
+        <ExerciseHeader
+          image={Phase2ExerciseImages.lifeMission}
+          title="Purpose Statement"
+          subtitle={showStatement
+            ? 'Your purpose, revealed'
+            : 'Discover what drives your soul'}
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Progress Indicator */}
         {!showStatement && (

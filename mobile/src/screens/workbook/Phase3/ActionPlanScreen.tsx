@@ -37,9 +37,10 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import StepList from '../../../components/workbook/StepList';
 import type { ActionStepData } from '../../../components/workbook/StepList';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase3ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -467,14 +468,13 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Action Plan</Text>
-          <Text style={styles.subtitle}>
-            Break down your goals into actionable steps.
-            Check off each step as you complete it.
-          </Text>
-        </View>
+        {/* Exercise Header */}
+        <ExerciseHeader
+          image={Phase3ExerciseImages.actionPlan}
+          title="Action Plan"
+          subtitle="Break down your goals into actionable steps. Check off each step as you complete it."
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Goal Selector */}
         <View style={styles.goalSelectorContainer}>

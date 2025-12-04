@@ -39,7 +39,8 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -352,13 +353,12 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Gratitude Letters</Text>
-          <Text style={styles.subtitle}>
-            Write heartfelt letters to express gratitude to the important people
-            in your life. You can keep them or share them.
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase7ExerciseImages.gratitudeLetters}
+          title="Gratitude Letters"
+          subtitle="Write heartfelt letters to express gratitude to important people"
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Stats Summary */}
         <View style={styles.statsRow}>
@@ -591,23 +591,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-
-  // Header
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
 
   // Stats Row

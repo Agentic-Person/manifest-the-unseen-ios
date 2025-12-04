@@ -41,7 +41,8 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase6ExerciseImages } from '../../../assets';
 
 /**
  * Saved script data structure
@@ -259,20 +260,12 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>Phase 6</Text>
-          <Text style={styles.title}>Scripting</Text>
-          <Text style={styles.subtitle}>
-            Write your future into existence
-          </Text>
-
-          {/* Decorative Divider */}
-          <View style={styles.headerDivider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerSymbol}>{'\u270F'}</Text>
-            <View style={styles.dividerLine} />
-          </View>
-        </View>
+        <ExerciseHeader
+          image={Phase6ExerciseImages.scripting}
+          title="Scripting"
+          subtitle="Write your future into existence"
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Saved Scripts Button */}
         {scripts.length > 0 && (
@@ -548,54 +541,6 @@ const styles = StyleSheet.create({
 
   scrollContent: {
     padding: spacing.md,
-  },
-
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-
-  phaseLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: colors.dark.accentGold,
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: spacing.xs,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.dark.textPrimary,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-
-  subtitle: {
-    fontSize: 15,
-    color: colors.dark.textSecondary,
-    textAlign: 'center',
-  },
-
-  headerDivider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: spacing.md,
-    width: '60%',
-  },
-
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.dark.textTertiary,
-    opacity: 0.3,
-  },
-
-  dividerSymbol: {
-    fontSize: 14,
-    color: colors.dark.accentGold,
-    marginHorizontal: spacing.sm,
   },
 
   savedScriptsButton: {

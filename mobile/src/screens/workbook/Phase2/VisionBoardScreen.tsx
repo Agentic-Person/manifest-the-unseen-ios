@@ -46,9 +46,10 @@ import {
   DEFAULT_IMAGE_STYLE,
 } from '../../../components/vision-board';
 import type { VisionBoardItem, VisionBoardData } from '../../../components/vision-board';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase2ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -303,14 +304,13 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Vision Board</Text>
-          <Text style={styles.subtitle}>
-            Create a visual representation of your dreams and goals.
-            Add images and inspiring words to manifest your future.
-          </Text>
-        </View>
+        {/* Exercise Header */}
+        <ExerciseHeader
+          image={Phase2ExerciseImages.visionBoard}
+          title="Vision Board"
+          subtitle="Create a visual representation of your dreams and goals. Add images and inspiring words to manifest your future."
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Vision Canvas */}
         <VisionCanvas

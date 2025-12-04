@@ -41,7 +41,8 @@ import type { TimerState } from '../../../components/workbook/MeditationTimer';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -367,12 +368,12 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Gratitude Meditation</Text>
-          <Text style={styles.subtitle}>
-            Center yourself in gratitude through guided visualization and mindful breathing.
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase7ExerciseImages.gratitudeMeditation}
+          title="Gratitude Meditation"
+          subtitle="Center yourself in gratitude through guided visualization"
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Stats Summary */}
         <View style={styles.statsRow}>
@@ -569,24 +570,6 @@ const styles = StyleSheet.create({
   gradientOverlay: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1,
-  },
-
-  // Header
-  header: {
-    marginBottom: 24,
-    zIndex: 2,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
 
   // Stats Row

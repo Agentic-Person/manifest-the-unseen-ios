@@ -33,7 +33,8 @@ import StreakCounter from '../../../components/workbook/StreakCounter';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase5ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -408,12 +409,12 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Self-Care Routines</Text>
-          <Text style={styles.subtitle}>
-            Build nurturing morning and evening rituals that honor your wellbeing.
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase5ExerciseImages.selfcareRoutine}
+          title="Self-Care Routines"
+          subtitle="Build nurturing morning and evening rituals that honor your wellbeing."
+          progress={savedProgress?.completed ? 100 : 0}
+        />
 
         {/* Streak Counter */}
         <StreakCounter

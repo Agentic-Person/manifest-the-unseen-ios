@@ -23,7 +23,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -295,13 +296,12 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
       keyboardShouldPersistTaps="handled"
     >
       {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Strengths & Weaknesses</Text>
-        <Text style={styles.subtitle}>
-          Honest self-assessment is the foundation of personal growth.
-          Identify what makes you strong and where you can improve.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase1ExerciseImages.strengthsWeaknesses}
+        title="Strengths & Weaknesses"
+        subtitle="Honest self-assessment is the foundation of personal growth. Identify what makes you strong and where you can improve."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Insights Card */}
       <View style={[
@@ -459,21 +459,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
   insightCard: {
     padding: 16,

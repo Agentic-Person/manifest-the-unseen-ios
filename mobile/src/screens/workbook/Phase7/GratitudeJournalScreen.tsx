@@ -43,7 +43,8 @@ import type { StreakData } from '../../../components/workbook/StreakDisplay';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -336,13 +337,12 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
       keyboardShouldPersistTaps="handled"
     >
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Gratitude Journal</Text>
-        <Text style={styles.subtitle}>
-          Take a moment to reflect on what you're grateful for today.
-          Recording at least 3 gratitudes builds a consistent practice.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase7ExerciseImages.gratitudeJournal}
+        title="Gratitude Journal"
+        subtitle="Take a moment to reflect on what you're grateful for today"
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Streak Display */}
       <StreakDisplay
@@ -500,23 +500,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-
-  // Header
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
 
   // Date Navigation

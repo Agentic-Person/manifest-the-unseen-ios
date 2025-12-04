@@ -33,12 +33,13 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import { Fear, FEAR_CATEGORIES, FearCategory } from '../../../components/workbook/FearCard';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase4ExerciseImages } from '../../../assets';
 
 /**
  * Generate unique ID
@@ -353,19 +354,12 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Header Section */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>Phase 4</Text>
-          <Text style={styles.title}>Fear Facing Plan</Text>
-          <Text style={styles.subtitle}>
-            Create step-by-step plans to gradually overcome your fears
-          </Text>
-
-          <View style={styles.headerDivider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerStar}>{'\u2726'}</Text>
-            <View style={styles.dividerLine} />
-          </View>
-        </View>
+        <ExerciseHeader
+          image={Phase4ExerciseImages.facingPlan}
+          title="Fear Facing Plan"
+          subtitle="Create step-by-step plans to gradually overcome your fears"
+          progress={savedProgress?.completed ? 100 : 0}
+        />
 
         {/* Save Status Indicator */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />

@@ -36,7 +36,8 @@ import {
   SurrenderEntryData,
   SURRENDER_AFFIRMATIONS,
 } from '../../../components/workbook/SurrenderCard';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase9ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -255,13 +256,12 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
       keyboardShouldPersistTaps="handled"
     >
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Surrender Practice</Text>
-        <Text style={styles.subtitle}>
-          Let go of what you cannot control. Write what you're holding onto,
-          then release it with intention and trust.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase9ExerciseImages.surrenderPractice}
+        title="Surrender Practice"
+        subtitle="Let go of what you cannot control. Write what you're holding onto, then release it with intention and trust."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Stats */}
       <View style={styles.statsRow}>

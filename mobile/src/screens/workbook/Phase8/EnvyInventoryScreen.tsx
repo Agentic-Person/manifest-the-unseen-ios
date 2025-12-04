@@ -34,7 +34,8 @@ import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { EnvyCard, ENVY_CATEGORIES, EnvyItem, EnvyCategory } from '../../../components/workbook/EnvyCard';
 import { IntensitySlider } from '../../../components/workbook/IntensitySlider';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -273,12 +274,15 @@ const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {/* Header Info */}
+      {/* Header */}
+      <ExerciseHeader
+        image={Phase8ExerciseImages.envyInventory}
+        title="Envy Inventory"
+        subtitle="What do you find yourself envious of? Awareness is the first step to transformation."
+        progress={savedProgress?.progress || 0}
+      />
+
       <View style={styles.headerInfo}>
-        <Text style={styles.headerTitle}>{'\u{1F52E}'} Envy Inventory</Text>
-        <Text style={styles.headerSubtitle}>
-          What do you find yourself envious of? Awareness is the first step to transformation.
-        </Text>
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
       </View>
 

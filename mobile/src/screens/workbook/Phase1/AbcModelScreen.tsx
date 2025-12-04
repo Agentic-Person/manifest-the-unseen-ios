@@ -27,7 +27,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -207,13 +208,12 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
       keyboardShouldPersistTaps="handled"
     >
       {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>ABC Model</Text>
-        <Text style={styles.subtitle}>
-          Understand how your beliefs shape your emotions. Identify the Activating event,
-          your Beliefs about it, and the emotional Consequences.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase1ExerciseImages.abcModel}
+        title="ABC Model"
+        subtitle="Understand how your beliefs shape your emotions. Identify the Activating event, your Beliefs about it, and the emotional Consequences."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* ABC Legend */}
       <View style={styles.legendCard}>
@@ -428,21 +428,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
   legendCard: {
     backgroundColor: DESIGN_COLORS.bgSecondary,

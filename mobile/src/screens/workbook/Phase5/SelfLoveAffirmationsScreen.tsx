@@ -34,7 +34,8 @@ import AffirmationCard, {
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase5ExerciseImages } from '../../../assets';
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -420,12 +421,12 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Self-Love Affirmations</Text>
-          <Text style={styles.subtitle}>
-            Speak kindness to yourself. These words have the power to transform your inner dialogue.
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase5ExerciseImages.affirmations}
+          title="Self-Love Affirmations"
+          subtitle="Speak kindness to yourself. These words have the power to transform your inner dialogue."
+          progress={savedProgress?.completed ? 100 : 0}
+        />
 
         {/* Category Filter */}
         <ScrollView

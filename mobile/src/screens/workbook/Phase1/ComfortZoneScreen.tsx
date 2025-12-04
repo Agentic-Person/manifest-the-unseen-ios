@@ -22,7 +22,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -318,13 +319,12 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
       keyboardShouldPersistTaps="handled"
     >
       {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Comfort Zone Map</Text>
-        <Text style={styles.subtitle}>
-          Understanding where you feel comfortable, challenged, or overwhelmed
-          helps you plan meaningful growth.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase1ExerciseImages.comfortZone}
+        title="Comfort Zone Map"
+        subtitle="Understanding where you feel comfortable, challenged, or overwhelmed helps you plan meaningful growth."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Visual Zone Diagram */}
       <View style={styles.zoneDiagram}>
@@ -438,21 +438,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
   zoneDiagram: {
     alignItems: 'center',

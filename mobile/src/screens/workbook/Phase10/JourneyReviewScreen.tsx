@@ -32,7 +32,8 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseProgressCard } from '../../../components/workbook/PhaseProgressCard';
 import type { PhaseProgressData } from '../../../components/workbook/PhaseProgressCard';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase10ExerciseImages } from '../../../assets';
 import { useAllWorkbookProgress, useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -243,13 +244,12 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.phaseLabel}>PHASE 10</Text>
-        <Text style={styles.title}>Your Transformation Journey</Text>
-        <Text style={styles.subtitle}>
-          Reflect on how far you've come. Every step has shaped who you're becoming.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase10ExerciseImages.journeyReview}
+        title="Your Transformation Journey"
+        subtitle="Reflect on how far you've come. Every step has shaped who you're becoming."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Overall Progress Card */}
       <View style={styles.overallCard}>

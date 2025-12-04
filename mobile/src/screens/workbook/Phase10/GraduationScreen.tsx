@@ -35,7 +35,8 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { CertificateView } from '../../../components/workbook/CertificateView';
 import { ConfettiCelebration, ConfettiBurst } from '../../../components/workbook/ConfettiCelebration';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase10ExerciseImages } from '../../../assets';
 import { useWorkbookProgress, useMarkComplete } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -331,17 +332,14 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>PHASE 10</Text>
-          <Text style={styles.title}>
-            {hasGraduated ? 'Congratulations!' : 'Graduation & Commitment'}
-          </Text>
-          <Text style={styles.subtitle}>
-            {hasGraduated
-              ? 'You\'ve completed your transformation journey. Your new life awaits.'
-              : 'Make a commitment to yourself and celebrate your transformation.'}
-          </Text>
-        </View>
+        <ExerciseHeader
+          image={Phase10ExerciseImages.graduation}
+          title={hasGraduated ? 'Congratulations!' : 'Graduation & Commitment'}
+          subtitle={hasGraduated
+            ? "You've completed your transformation journey. Your new life awaits."
+            : 'Make a commitment to yourself and celebrate your transformation.'}
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Certificate View (if graduated) */}
         {showCertificate && (

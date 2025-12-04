@@ -36,7 +36,8 @@ import {
   SignCategory,
   SIGN_CATEGORIES,
 } from '../../../components/workbook/SignCard';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase9ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -292,13 +293,12 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
       keyboardShouldPersistTaps="handled"
     >
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Signs & Synchronicities</Text>
-        <Text style={styles.subtitle}>
-          Document the meaningful coincidences and signs you notice.
-          The universe is always communicating - learn to listen.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase9ExerciseImages.synchronicity}
+        title="Signs & Synchronicities"
+        subtitle="Document the meaningful coincidences and signs you notice. The universe is always communicating - learn to listen."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Stats */}
       <View style={styles.statsCard}>

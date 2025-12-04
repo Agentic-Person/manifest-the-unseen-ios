@@ -27,7 +27,8 @@ import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { ReframeCard, ReframeData } from '../../../components/workbook/ReframeCard';
 import { EnvyItem } from '../../../components/workbook/EnvyCard';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -284,12 +285,15 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      {/* Header Info */}
+      {/* Header */}
+      <ExerciseHeader
+        image={Phase8ExerciseImages.inspirationReframe}
+        title="Transform Envy to Inspiration"
+        subtitle="Reframe each source of envy by discovering what you truly value and how you can achieve it."
+        progress={savedProgress?.progress || 0}
+      />
+
       <View style={styles.headerInfo}>
-        <Text style={styles.headerTitle}>{'\u{2728}'} Transform Envy to Inspiration</Text>
-        <Text style={styles.headerSubtitle}>
-          Reframe each source of envy by discovering what you truly value and how you can achieve it.
-        </Text>
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
       </View>
 

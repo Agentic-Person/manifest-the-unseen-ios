@@ -20,7 +20,8 @@ import {
 } from 'react-native';
 import { Text, Button } from '../../../components';
 import { SWOTQuadrant } from '../../../components/workbook/SWOTQuadrant';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -160,12 +161,12 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
       showsVerticalScrollIndicator={false}
     >
       {/* Header with hand-drawn style */}
-      <View style={styles.header}>
-        <Text style={styles.title}>SWOT Analysis</Text>
-        <Text style={styles.subtitle}>
-          Explore your inner landscape through the four petals of self-discovery
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase1ExerciseImages.swotAnalysis}
+        title="SWOT Analysis"
+        subtitle="Explore your inner landscape through the four petals of self-discovery"
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Flower Petal Layout */}
       <View style={styles.flowerContainer}>
@@ -357,28 +358,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
 
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.dark.textPrimary,
-    marginBottom: spacing.xs,
-    // In production, use a Sanskrit-inspired font
-    letterSpacing: 1,
-  },
-
-  subtitle: {
-    fontSize: 14,
-    color: colors.dark.textSecondary,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    lineHeight: 20,
-    paddingHorizontal: spacing.lg,
-  },
 
   flowerContainer: {
     alignItems: 'center',

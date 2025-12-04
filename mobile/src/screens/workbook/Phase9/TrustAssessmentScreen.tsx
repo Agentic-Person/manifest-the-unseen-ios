@@ -37,7 +37,8 @@ import {
   TrustValues,
   TrustDimension,
 } from '../../../components/workbook/TrustRadar';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { Phase9ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -247,13 +248,12 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
       showsVerticalScrollIndicator={false}
     >
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Trust Assessment</Text>
-        <Text style={styles.subtitle}>
-          Explore your relationship with trust across different dimensions of life.
-          Rate how much you agree with each area on a scale of 1-10.
-        </Text>
-      </View>
+      <ExerciseHeader
+        image={Phase9ExerciseImages.trustAssessment}
+        title="Trust Assessment"
+        subtitle="Explore your relationship with trust across different dimensions of life. Rate how much you agree with each area on a scale of 1-10."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Trust Radar Chart */}
       <TrustRadar

@@ -33,10 +33,11 @@ import {
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { TimelineChart } from '../../../components/workbook/TimelineChart';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase3ExerciseImages } from '../../../assets';
 
 // Design system colors
 const DESIGN_COLORS = {
@@ -251,13 +252,13 @@ const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Goal Timeline</Text>
-          <Text style={styles.subtitle}>
-            Visualize your journey toward achieving your goals
-          </Text>
-        </View>
+        {/* Exercise Header */}
+        <ExerciseHeader
+          image={Phase3ExerciseImages.timeline}
+          title="Goal Timeline"
+          subtitle="Visualize your journey toward achieving your goals"
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Save Status Indicator */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />

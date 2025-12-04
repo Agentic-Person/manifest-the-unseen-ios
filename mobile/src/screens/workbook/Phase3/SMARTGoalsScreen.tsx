@@ -35,12 +35,13 @@ import GoalCard, {
   CATEGORY_NAMES,
 } from '../../../components/workbook/GoalCard';
 import SMARTGoalForm from '../../../components/workbook/SMARTGoalForm';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase3ExerciseImages } from '../../../assets';
 
 /**
  * Generate unique ID
@@ -215,21 +216,13 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header Section */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>Phase 3</Text>
-          <Text style={styles.title}>SMART Goals</Text>
-          <Text style={styles.subtitle}>
-            Define clear, actionable goals using the SMART framework
-          </Text>
-
-          {/* Hand-drawn decorative divider */}
-          <View style={styles.headerDivider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerStar}>{'\u2726'}</Text>
-            <View style={styles.dividerLine} />
-          </View>
-        </View>
+        {/* Exercise Header */}
+        <ExerciseHeader
+          image={Phase3ExerciseImages.smartGoals}
+          title="SMART Goals"
+          subtitle="Define clear, actionable goals using the SMART framework"
+          progress={savedProgress?.progress || 0}
+        />
 
         {/* Stats Card */}
         <View style={styles.statsCard}>

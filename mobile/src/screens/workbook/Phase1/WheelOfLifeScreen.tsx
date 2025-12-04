@@ -26,12 +26,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { WheelChart, LifeAreaSlider, LIFE_AREAS, SaveIndicator } from '../../../components/workbook';
+import { WheelChart, LifeAreaSlider, LIFE_AREAS, SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import type { WheelOfLifeValues, LifeAreaKey } from '../../../components/workbook';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -189,14 +190,13 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* Header Section */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Wheel of Life</Text>
-        <Text style={styles.subtitle}>
-          Rate each area of your life from 1-10 to visualize your current balance.
-          A perfect circle represents a balanced life.
-        </Text>
-      </View>
+      {/* Exercise Header */}
+      <ExerciseHeader
+        image={Phase1ExerciseImages.wheelOfLife}
+        title="Wheel of Life"
+        subtitle="Rate each area of your life from 1-10 to visualize your current balance. A perfect circle represents a balanced life."
+        progress={savedProgress?.progress || 0}
+      />
 
       {/* Wheel Chart Visualization */}
       <View style={styles.chartContainer}>
@@ -287,21 +287,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontSize: 16,
     color: DESIGN_COLORS.textSecondary,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: DESIGN_COLORS.textPrimary,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: DESIGN_COLORS.textSecondary,
-    lineHeight: 22,
   },
   chartContainer: {
     alignItems: 'center',

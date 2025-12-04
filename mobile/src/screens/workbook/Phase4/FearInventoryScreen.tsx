@@ -31,12 +31,13 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import FearCard, { Fear, FearCategory, FEAR_CATEGORIES } from '../../../components/workbook/FearCard';
-import { SaveIndicator } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase4ExerciseImages } from '../../../assets';
 
 /**
  * Generate unique ID
@@ -226,20 +227,12 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Header Section */}
-        <View style={styles.header}>
-          <Text style={styles.phaseLabel}>Phase 4</Text>
-          <Text style={styles.title}>Fear Inventory</Text>
-          <Text style={styles.subtitle}>
-            Identify and acknowledge your fears to begin the process of overcoming them
-          </Text>
-
-          {/* Decorative divider */}
-          <View style={styles.headerDivider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerStar}>{'\u2726'}</Text>
-            <View style={styles.dividerLine} />
-          </View>
-        </View>
+        <ExerciseHeader
+          image={Phase4ExerciseImages.fearsInventory}
+          title="Fear Inventory"
+          subtitle="Identify and acknowledge your fears to begin the process of overcoming them"
+          progress={savedProgress?.completed ? 100 : 0}
+        />
 
         {/* Stats Card */}
         <View style={styles.statsCard}>
