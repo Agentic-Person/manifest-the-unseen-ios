@@ -137,3 +137,6 @@ export { ProgressBar } from './ProgressBar';
 export { PhaseDashboard } from './PhaseDashboard';
 // Phase Header Component
 export { PhaseHeader } from './PhaseHeader';
+
+// Exercise Header Component (for individual exercise screens)
+export { ExerciseHeader } from './ExerciseHeader';
