@@ -5,18 +5,20 @@
  */
 
 import React from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { PhaseDashboard } from '../../../components/workbook/PhaseDashboard';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import { colors } from '../../../theme';
 
 // Phase 8 exercises
-const EXERCISES = [
+const PHASE8_EXERCISES: ExerciseConfig[] = [
   {
     id: 'envy-inventory',
     name: 'Envy Inventory',
     description: 'Identify what triggers envy',
     icon: '👁️',
     estimatedTime: '15 min',
-    isCompleted: false,
   },
   {
     id: 'inspiration-reframe',
@@ -24,7 +26,6 @@ const EXERCISES = [
     description: 'Transform envy into inspiration',
     icon: '🔄',
     estimatedTime: '20 min',
-    isCompleted: false,
   },
   {
     id: 'role-models',
@@ -32,13 +33,15 @@ const EXERCISES = [
     description: 'Learn from those you admire',
     icon: '⭐',
     estimatedTime: '15 min',
-    isCompleted: false,
   },
 ];
 
 type Props = WorkbookStackScreenProps<'Phase8Dashboard'>;
 
 const Phase8Dashboard: React.FC<Props> = ({ navigation }) => {
+  // Fetch real progress from database and merge with static config
+  const { exercises, completedCount, totalCount, overallProgress, isLoading } = usePhaseExercises(8, PHASE8_EXERCISES);
+
   const handleExercisePress = (exerciseId: string) => {
     switch (exerciseId) {
       case 'envy-inventory':
@@ -53,18 +56,34 @@ const Phase8Dashboard: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const overallProgress = 0;
+  // Show loading state while fetching progress
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary[600]} />
+      </View>
+    );
+  }
 
   return (
     <PhaseDashboard
       phaseNumber={8}
       phaseName="Envy to Inspiration"
       phaseDescription="Transform feelings of envy into powerful inspiration by learning from those you admire."
-      exercises={EXERCISES}
+      exercises={exercises}
       overallProgress={overallProgress}
       onExercisePress={handleExercisePress}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background.secondary,
+  },
+});
 
 export default Phase8Dashboard;

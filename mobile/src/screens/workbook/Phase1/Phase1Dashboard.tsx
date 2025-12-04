@@ -4,44 +4,30 @@
  * Main dashboard showing all 12 exercises in Phase 1 with progress tracking.
  * Users can navigate to each individual exercise from this screen.
  */
-
 import React from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { Card, Text } from '../../../components';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseHeader } from '../../../components/workbook';
 import { PhaseImages } from '../../../assets';
-
-/**
- * Exercise data structure
- */
-interface Exercise {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  progress: number; // 0-100
-  isCompleted: boolean;
-  estimatedTime: string;
-}
+import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
 
 /**
  * Phase 1 exercises configuration
  */
-const PHASE1_EXERCISES: Exercise[] = [
+const PHASE1_EXERCISES: ExerciseConfig[] = [
   {
     id: 'wheel-of-life',
     name: 'Wheel of Life',
     description: 'Rate 8 life areas and visualize balance',
     icon: '🎯',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '10 min',
   },
   {
@@ -49,8 +35,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'Feel Wheel',
     description: 'Track and identify your emotions',
     icon: '😊',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '5 min',
   },
   {
@@ -58,8 +42,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'Habit Tracking',
     description: 'Assess your daily routines and habits',
     icon: '📊',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '15 min',
   },
   {
@@ -67,8 +49,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'ABC Model',
     description: 'Cognitive behavioral analysis',
     icon: '🧠',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '20 min',
   },
   {
@@ -76,8 +56,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'SWOT Analysis',
     description: 'Strengths, Weaknesses, Opportunities, Threats',
     icon: '📋',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '25 min',
   },
   {
@@ -85,8 +63,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'Personal Values',
     description: 'Identify your core values',
     icon: '💎',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '20 min',
   },
   {
@@ -94,8 +70,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'Strengths & Weaknesses',
     description: 'Deep dive into your capabilities',
     icon: '💪',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '15 min',
   },
   {
@@ -103,8 +77,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'Comfort Zone',
     description: 'Map your comfort boundaries',
     icon: '🌀',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '15 min',
   },
   {
@@ -112,8 +84,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'Know Yourself',
     description: 'Personal insights questionnaire',
     icon: '🔍',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '20 min',
   },
   {
@@ -121,8 +91,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'Abilities Rating',
     description: 'Rate your skills and abilities',
     icon: '⭐',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '15 min',
   },
   {
@@ -130,8 +98,6 @@ const PHASE1_EXERCISES: Exercise[] = [
     name: 'Thought Awareness',
     description: 'Mindfulness and thought patterns',
     icon: '💭',
-    progress: 0,
-    isCompleted: false,
     estimatedTime: '10 min',
   },
 ];
@@ -142,7 +108,7 @@ type Props = WorkbookStackScreenProps<'Phase1Dashboard'>;
  * Exercise Card Component
  */
 const ExerciseCard: React.FC<{
-  exercise: Exercise;
+  exercise: ExerciseWithProgress;
   onPress: () => void;
 }> = ({ exercise, onPress }) => {
   return (
@@ -170,7 +136,6 @@ const ExerciseCard: React.FC<{
           <Text style={styles.arrow}>›</Text>
         )}
       </View>
-
       {/* Progress Bar */}
       <View style={styles.progressContainer}>
         <View style={styles.progressBar}>
@@ -194,18 +159,18 @@ const ExerciseCard: React.FC<{
     </TouchableOpacity>
   );
 };
-
 /**
  * Phase 1 Dashboard Component
  */
 const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
-  // Calculate overall progress
-  const completedExercises = PHASE1_EXERCISES.filter(e => e.isCompleted).length;
-  const totalExercises = PHASE1_EXERCISES.length;
-  const overallProgress = Math.round(
-    PHASE1_EXERCISES.reduce((sum, e) => sum + e.progress, 0) / totalExercises
-  );
-
+  // Fetch real progress from database and merge with static config
+  const {
+    exercises,
+    completedCount,
+    totalCount,
+    overallProgress,
+    isLoading,
+  } = usePhaseExercises(1, PHASE1_EXERCISES);
   /**
    * Handle exercise card press - navigate to appropriate screen
    */
@@ -248,7 +213,14 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
         console.log('Unknown exercise:', exerciseId);
     }
   };
-
+  // Show loading state while fetching progress
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary[600]} />
+      </View>
+    );
+  }
   return (
     <ScrollView
       style={styles.container}
@@ -262,7 +234,6 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
         subtitle="Discover who you truly are through deep self-reflection"
         image={PhaseImages.phase1}
       />
-
       {/* Overall Progress Card */}
       <Card elevation="raised" style={styles.progressCard}>
         <View style={styles.progressCardHeader}>
@@ -278,14 +249,13 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
           />
         </View>
         <Text style={styles.progressCardSubtext}>
-          {completedExercises} of {totalExercises} exercises completed
+          {completedCount} of {totalCount} exercises completed
         </Text>
       </Card>
-
       {/* Exercises List */}
       <View style={styles.exercisesList}>
         <Text style={styles.sectionTitle}>Exercises</Text>
-        {PHASE1_EXERCISES.map((exercise) => (
+        {exercises.map((exercise) => (
           <ExerciseCard
             key={exercise.id}
             exercise={exercise}
@@ -293,13 +263,11 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
           />
         ))}
       </View>
-
       {/* Bottom Spacing */}
       <View style={styles.bottomSpacer} />
     </ScrollView>
   );
 };
-
 /**
  * Styles
  */
@@ -310,6 +278,12 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.md,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background.secondary,
   },
   header: {
     marginBottom: spacing.lg,
@@ -395,7 +369,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: borderRadius.lg,
-    backgroundColor: colors.primary[50],
+    backgroundColor: colors.background.tertiary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.sm,
@@ -468,5 +442,4 @@ const styles = StyleSheet.create({
     height: spacing.xl,
   },
 });
-
 export default Phase1Dashboard;

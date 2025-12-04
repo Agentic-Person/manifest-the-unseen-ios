@@ -5,18 +5,20 @@
  */
 
 import React from 'react';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { PhaseDashboard } from '../../../components/workbook/PhaseDashboard';
+import { colors } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { usePhaseExercises, type ExerciseConfig } from '../../../hooks/usePhaseExercises';
 
 // Phase 4 exercises
-const EXERCISES = [
+const PHASE4_EXERCISES: ExerciseConfig[] = [
   {
     id: 'fear-inventory',
     name: 'Fear Inventory',
     description: 'Identify and examine your fears',
     icon: '😨',
     estimatedTime: '20 min',
-    isCompleted: false,
   },
   {
     id: 'limiting-beliefs',
@@ -24,7 +26,6 @@ const EXERCISES = [
     description: 'Challenge and reframe limiting beliefs',
     icon: '🔗',
     estimatedTime: '25 min',
-    isCompleted: false,
   },
   {
     id: 'fear-facing-plan',
@@ -32,13 +33,15 @@ const EXERCISES = [
     description: 'Create a plan to overcome your fears',
     icon: '💪',
     estimatedTime: '15 min',
-    isCompleted: false,
   },
 ];
 
 type Props = WorkbookStackScreenProps<'Phase4Dashboard'>;
 
 const Phase4Dashboard: React.FC<Props> = ({ navigation }) => {
+  // Fetch real progress from database and merge with static config
+  const { exercises, overallProgress, isLoading } = usePhaseExercises(4, PHASE4_EXERCISES);
+
   const handleExercisePress = (exerciseId: string) => {
     switch (exerciseId) {
       case 'fear-inventory':
@@ -53,18 +56,34 @@ const Phase4Dashboard: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const overallProgress = 0;
+  // Show loading state while fetching progress
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary[600]} />
+      </View>
+    );
+  }
 
   return (
     <PhaseDashboard
       phaseNumber={4}
       phaseName="Facing Fears"
       phaseDescription="Confront the fears and limiting beliefs that hold you back. Transform them into sources of strength."
-      exercises={EXERCISES}
+      exercises={exercises}
       overallProgress={overallProgress}
       onExercisePress={handleExercisePress}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background.secondary,
+  },
+});
 
 export default Phase4Dashboard;

@@ -5,18 +5,20 @@
  */
 
 import React from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { PhaseDashboard } from '../../../components/workbook/PhaseDashboard';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { usePhaseExercises, type ExerciseConfig } from '../../../hooks/usePhaseExercises';
+import { colors } from '../../../theme';
 
 // Phase 9 exercises
-const EXERCISES = [
+const PHASE9_EXERCISES: ExerciseConfig[] = [
   {
     id: 'trust-assessment',
     name: 'Trust Assessment',
     description: 'Evaluate your trust in self, others, and universe',
     icon: '🤝',
     estimatedTime: '15 min',
-    isCompleted: false,
   },
   {
     id: 'surrender-practice',
@@ -24,7 +26,6 @@ const EXERCISES = [
     description: 'Learn to release control',
     icon: '🕊️',
     estimatedTime: '20 min',
-    isCompleted: false,
   },
   {
     id: 'signs-tracking',
@@ -32,13 +33,15 @@ const EXERCISES = [
     description: 'Track meaningful coincidences',
     icon: '🔮',
     estimatedTime: '10 min',
-    isCompleted: false,
   },
 ];
 
 type Props = WorkbookStackScreenProps<'Phase9Dashboard'>;
 
 const Phase9Dashboard: React.FC<Props> = ({ navigation }) => {
+  const { exercises, completedCount, totalCount, overallProgress, isLoading } =
+    usePhaseExercises(9, PHASE9_EXERCISES);
+
   const handleExercisePress = (exerciseId: string) => {
     switch (exerciseId) {
       case 'trust-assessment':
@@ -53,18 +56,33 @@ const Phase9Dashboard: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const overallProgress = 0;
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary[600]} />
+      </View>
+    );
+  }
 
   return (
     <PhaseDashboard
       phaseNumber={9}
       phaseName="Trust & Surrender"
       phaseDescription="Develop deep trust in yourself and the universe. Learn the art of surrender and letting go."
-      exercises={EXERCISES}
+      exercises={exercises}
       overallProgress={overallProgress}
       onExercisePress={handleExercisePress}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background.secondary,
+  },
+});
 
 export default Phase9Dashboard;
