@@ -209,6 +209,7 @@ export function getPhaseExerciseImages(phaseNumber: number) {
 // =============================================================================
 export const BackgroundImages = {
   journal: require('./images-compressed/backgrounds/journal.png'),
+  scroll: require('./images-compressed/backgrounds/scroll.png'),
 } as const;
 
 export type BackgroundImageKey = keyof typeof BackgroundImages;

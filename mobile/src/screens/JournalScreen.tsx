@@ -70,10 +70,14 @@ const JournalScreen = ({ navigation }: Props) => {
   // Empty state component
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyEmoji}>📝</Text>
+      <Image
+        source={BackgroundImages.scroll}
+        style={styles.emptyImage}
+        resizeMode="contain"
+      />
       <Text style={styles.emptyTitle}>No journal entries yet</Text>
       <Text style={styles.emptySubtitle}>
-        Tap the + button to create your first entry
+        Tap the button above to create your first entry
       </Text>
       <Text style={styles.emptyHint}>
         Use voice recording or type your thoughts
@@ -262,11 +266,12 @@ const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.xl * 2,
+    paddingVertical: spacing.xl,
     paddingHorizontal: spacing.lg,
   },
-  emptyEmoji: {
-    fontSize: 72,
+  emptyImage: {
+    width: 140,
+    height: 140,
     marginBottom: spacing.lg,
   },
   emptyTitle: {
