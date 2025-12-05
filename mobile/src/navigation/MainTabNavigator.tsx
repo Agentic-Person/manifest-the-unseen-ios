@@ -6,9 +6,11 @@
  */
 
 import React from 'react';
+import { Image, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList } from '../types/navigation';
 import { colors } from '../theme';
+import { BackgroundImages } from '../assets';
 
 // Import screen components
 import HomeScreen from '../screens/HomeScreen';
@@ -119,10 +121,16 @@ export const MainTabNavigator = () => {
         options={{
           title: 'Journal',
           tabBarLabel: 'Journal',
-          // TODO: Add icon when design system is ready
-          // tabBarIcon: ({ color, size }) => (
-          //   <JournalIcon color={color} size={size} />
-          // ),
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={BackgroundImages.scroll}
+              style={[
+                styles.tabIcon,
+                { opacity: focused ? 1 : 0.5 },
+              ]}
+              resizeMode="contain"
+            />
+          ),
         }}
       />
 
@@ -178,5 +186,12 @@ export const MainTabNavigator = () => {
     </Tab.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  tabIcon: {
+    width: 26,
+    height: 26,
+  },
+});
 
 export default MainTabNavigator;
