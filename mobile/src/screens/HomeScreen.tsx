@@ -1,125 +1,127 @@
 /**
  * Home Screen
  *
- * Main dashboard showing user progress, daily inspiration, and quick actions.
+ * Beautiful landing page with three main navigation cards:
+ * Workbook, Meditate, and Journal - plus daily inspiration.
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Pressable,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { MainTabScreenProps } from '../types/navigation';
 import { useUser } from '../stores/authStore';
-import { useUserProfile } from '../hooks/useUser';
-import { colors } from '../theme';
+import { colors, spacing, borderRadius, shadows } from '../theme';
+import { BackgroundImages } from '../assets';
 
 type Props = MainTabScreenProps<'Home'>;
+
+/**
+ * Navigation card data
+ */
+const NAVIGATION_CARDS = [
+  {
+    id: 'workbook',
+    title: 'Workbook',
+    subtitle: 'Your transformation journey',
+    image: BackgroundImages.workbook,
+    route: 'Workbook' as const,
+  },
+  {
+    id: 'meditate',
+    title: 'Meditate',
+    subtitle: 'Find peace and clarity',
+    image: BackgroundImages.meditate,
+    route: 'Meditate' as const,
+  },
+  {
+    id: 'journal',
+    title: 'Journal',
+    subtitle: 'Capture your thoughts',
+    image: BackgroundImages.journal,
+    route: 'Journal' as const,
+  },
+];
 
 /**
  * Home Screen Component
  */
 const HomeScreen = ({ navigation }: Props) => {
   const user = useUser();
-  const { data: profile, isLoading } = useUserProfile();
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Loading...</Text>
-      </View>
-    );
-  }
+  /**
+   * Handle card press - navigate to the selected section
+   */
+  const handleCardPress = (route: 'Workbook' | 'Meditate' | 'Journal') => {
+    navigation.navigate(route);
+  };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.greeting}>Welcome back!</Text>
-        {user && (
-          <Text style={styles.userName}>{user.email}</Text>
-        )}
+        {user && <Text style={styles.userName}>{user.email}</Text>}
       </View>
 
-      {/* Subscription Tier Badge */}
-      {profile && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Subscription</Text>
-          <Text style={styles.tier}>
-            {profile.subscriptionTier.charAt(0).toUpperCase() +
-             profile.subscriptionTier.slice(1)} Path
-          </Text>
-          <Text style={styles.status}>{profile.subscriptionStatus}</Text>
-        </View>
-      )}
+      {/* Navigation Cards */}
+      <View style={styles.cardsContainer}>
+        {NAVIGATION_CARDS.map((card) => (
+          <Pressable
+            key={card.id}
+            style={({ pressed }) => [
+              styles.navCard,
+              pressed && styles.navCardPressed,
+            ]}
+            onPress={() => handleCardPress(card.route)}
+            accessibilityRole="button"
+            accessibilityLabel={`Go to ${card.title}`}
+          >
+            {/* Card Image */}
+            <View style={styles.cardImageContainer}>
+              <Image
+                source={card.image}
+                style={styles.cardImage}
+                resizeMode="cover"
+              />
+              <LinearGradient
+                colors={['transparent', 'rgba(10, 10, 15, 0.95)']}
+                style={styles.cardGradient}
+              />
+            </View>
 
-      {/* Current Phase */}
-      {profile && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Current Phase</Text>
-          <Text style={styles.phaseNumber}>Phase {profile.currentPhase}</Text>
-          <Text style={styles.phaseDescription}>
-            {getPhaseDescription(profile.currentPhase)}
-          </Text>
-        </View>
-      )}
+            {/* Card Content */}
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>{card.title}</Text>
+              <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
+            </View>
+          </Pressable>
+        ))}
+      </View>
 
       {/* Daily Inspiration */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Daily Inspiration</Text>
+      <View style={styles.inspirationCard}>
+        <Text style={styles.inspirationLabel}>Daily Inspiration</Text>
         <Text style={styles.quote}>
           "The energy you put out is the energy you get back. Stay positive."
         </Text>
         <Text style={styles.quoteAuthor}>- Manifest the Unseen</Text>
       </View>
 
-      {/* Quick Actions */}
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Quick Actions</Text>
-        <Text style={styles.action} onPress={() => navigation.navigate('Journal')}>
-          📝 Start Journal Entry
-        </Text>
-        <Text style={styles.action} onPress={() => navigation.navigate('Meditate')}>
-          🧘 Begin Meditation
-        </Text>
-        <Text style={styles.action} onPress={() => navigation.navigate('Workbook')}>
-          📖 Continue Workbook
-        </Text>
-      </View>
-
-      {/* Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>0</Text>
-          <Text style={styles.statLabel}>Journal Entries</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>0</Text>
-          <Text style={styles.statLabel}>Meditations</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>0</Text>
-          <Text style={styles.statLabel}>Days Streak</Text>
-        </View>
-      </View>
+      {/* Bottom Spacing */}
+      <View style={styles.bottomSpacer} />
     </ScrollView>
   );
-};
-
-/**
- * Helper: Get Phase Description
- */
-const getPhaseDescription = (phase: number): string => {
-  const descriptions: Record<number, string> = {
-    1: 'Self-Evaluation',
-    2: 'Values & Vision',
-    3: 'Goal Setting',
-    4: 'Facing Fears & Limiting Beliefs',
-    5: 'Cultivating Self-Love & Self-Care',
-    6: 'Manifestation Techniques',
-    7: 'Practicing Gratitude',
-    8: 'Turning Envy Into Inspiration',
-    9: 'Trust & Surrender',
-    10: 'Trust & Letting Go',
-  };
-  return descriptions[phase] || 'Unknown Phase';
 };
 
 /**
@@ -131,10 +133,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.primary,
   },
   content: {
-    padding: 16,
+    padding: spacing.md,
   },
   header: {
-    marginBottom: 24,
+    marginBottom: spacing.lg,
   },
   greeting: {
     fontSize: 28,
@@ -146,48 +148,76 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text.secondary,
   },
-  card: {
-    backgroundColor: colors.background.secondary,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: colors.border.default,
+
+  // Navigation Cards
+  cardsContainer: {
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  navCard: {
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: colors.brand.gold,
+    backgroundColor: colors.background.elevated,
+    ...shadows.lg,
+  },
+  navCardPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+  cardImageContainer: {
+    height: 140,
+    position: 'relative',
+  },
+  cardImage: {
+    width: '100%',
+    height: '100%',
+  },
+  cardGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 80,
+  },
+  cardContent: {
+    padding: spacing.md,
+    paddingTop: spacing.sm,
   },
   cardTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: 4,
+  },
+  cardSubtitle: {
     fontSize: 14,
+    color: colors.text.secondary,
+    fontStyle: 'italic',
+  },
+
+  // Daily Inspiration
+  inspirationCard: {
+    backgroundColor: colors.background.elevated,
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border.gold,
+  },
+  inspirationLabel: {
+    fontSize: 12,
     fontWeight: '600',
     color: colors.text.golden,
-    marginBottom: 8,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  tier: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.primary[500],
-    marginBottom: 4,
-  },
-  status: {
-    fontSize: 14,
-    color: colors.success[400],
-    textTransform: 'capitalize',
-  },
-  phaseNumber: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: colors.primary[500],
-    marginBottom: 4,
-  },
-  phaseDescription: {
-    fontSize: 16,
-    color: colors.text.secondary,
+    letterSpacing: 1,
+    marginBottom: spacing.sm,
   },
   quote: {
     fontSize: 18,
     fontStyle: 'italic',
     color: colors.text.primary,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
     lineHeight: 28,
   },
   quoteAuthor: {
@@ -195,42 +225,9 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     textAlign: 'right',
   },
-  action: {
-    fontSize: 16,
-    color: colors.text.golden,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.gold,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-    marginTop: 8,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.background.secondary,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border.default,
-  },
-  statNumber: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.primary[500],
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: colors.text.secondary,
-    textAlign: 'center',
-  },
-  text: {
-    fontSize: 16,
-    color: colors.text.primary,
+
+  bottomSpacer: {
+    height: spacing.xl,
   },
 });
 
