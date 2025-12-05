@@ -3,6 +3,8 @@
  *
  * Main meditation hub showing guided meditations, breathing exercises,
  * and ambient music with tab-based navigation.
+ *
+ * Design matches the workbook exercise cards with golden borders and full-width images.
  */
 
 import React, { useState, useCallback } from 'react';
@@ -13,6 +15,7 @@ import {
   Pressable,
   FlatList,
   RefreshControl,
+  ImageSourcePropType,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -29,6 +32,11 @@ import { MeditationCard } from '../components/meditation/MeditationCard';
 import { Loading } from '../components/Loading';
 import type { Meditation } from '../types/meditation';
 import { useSettingsStore } from '../stores/settingsStore';
+import {
+  GuidedMeditationImages,
+  BreathingImages,
+  InstrumentalImages,
+} from '../assets';
 
 type MeditateNavProp = NativeStackNavigationProp<MeditateStackParamList>;
 
@@ -45,6 +53,54 @@ const TABS: TabConfig[] = [
   { key: 'breathing', label: 'Breathing', icon: 'leaf-outline' },
   { key: 'music', label: 'Music', icon: 'musical-notes-outline' },
 ];
+
+// Image arrays for each category (ordered to match content)
+const GUIDED_IMAGES = [
+  GuidedMeditationImages.morningAwakening,
+  GuidedMeditationImages.mindBody,
+  GuidedMeditationImages.innerPeace,
+];
+
+const BREATHING_IMAGES = [
+  BreathingImages.boxBreathing,
+  BreathingImages.deepCalm,
+  BreathingImages.energyBoost,
+];
+
+const INSTRUMENTAL_IMAGES = [
+  InstrumentalImages.track01,
+  InstrumentalImages.track02,
+  InstrumentalImages.track03,
+  InstrumentalImages.track04,
+  InstrumentalImages.track05,
+  InstrumentalImages.track06,
+  InstrumentalImages.track07,
+  InstrumentalImages.track08,
+  InstrumentalImages.track09,
+  InstrumentalImages.track10,
+  InstrumentalImages.track11,
+  InstrumentalImages.track12,
+  InstrumentalImages.track13,
+];
+
+/**
+ * Get image for a meditation based on type and index
+ */
+const getMeditationImage = (
+  type: TabType,
+  index: number
+): ImageSourcePropType | undefined => {
+  switch (type) {
+    case 'guided':
+      return GUIDED_IMAGES[index % GUIDED_IMAGES.length];
+    case 'breathing':
+      return BREATHING_IMAGES[index % BREATHING_IMAGES.length];
+    case 'music':
+      return INSTRUMENTAL_IMAGES[index % INSTRUMENTAL_IMAGES.length];
+    default:
+      return undefined;
+  }
+};
 
 /**
  * Meditate Screen Component
@@ -225,10 +281,12 @@ const MeditateScreen = () => {
         <FlatList
           data={currentData}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <MeditationCard
               meditation={item}
               onPress={handleMeditationPress}
+              image={getMeditationImage(activeTab, index)}
+              index={index}
             />
           )}
           contentContainerStyle={styles.listContent}

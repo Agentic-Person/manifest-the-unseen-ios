@@ -1,7 +1,8 @@
 /**
  * MeditationCard Component
  *
- * Displays a meditation item with optional thumbnail image.
+ * Displays a meditation item with full-width image card design.
+ * Matches the workbook exercise card style with golden borders.
  * Used for guided meditations, breathing exercises, and music tracks.
  */
 
@@ -18,6 +19,8 @@ interface MeditationCardProps {
   onPress: (meditation: Meditation) => void;
   showType?: boolean;
   image?: ImageSourcePropType;
+  /** Index for fallback display when no image */
+  index?: number;
 }
 
 /**
@@ -38,258 +41,177 @@ const getTypeColor = (type: MeditationType): string => {
 
 /**
  * MeditationCard Component
+ *
+ * Renders meditation cards with full-width images matching workbook style.
  */
 export const MeditationCard: React.FC<MeditationCardProps> = ({
   meditation,
   onPress,
   showType = false,
   image,
+  index = 0,
 }) => {
   const iconColor = getTypeColor(meditation.type);
   const iconName = getMeditationIcon(meditation.type) as keyof typeof Ionicons.glyphMap;
 
-  // If image is provided, render card with image
-  if (image) {
-    return (
-      <Pressable
-        style={({ pressed }) => [
-          styles.imageCardContainer,
-          pressed && styles.pressed,
-        ]}
-        onPress={() => onPress(meditation)}
-        accessibilityRole="button"
-        accessibilityLabel={`Play ${meditation.title}, ${formatDuration(meditation.duration_seconds)}`}
-      >
-        <Image source={image} style={styles.cardImage} resizeMode="cover" />
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.85)']}
-          style={styles.cardGradient}
-        />
-        <View style={styles.cardOverlay}>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle} numberOfLines={1}>
-              {meditation.title}
-            </Text>
-            <View style={styles.cardMeta}>
-              <Ionicons name={iconName} size={14} color={iconColor} />
-              <Text style={styles.cardDuration}>
-                {formatDuration(meditation.duration_seconds)}
-              </Text>
-              {meditation.narrator_gender && meditation.type === 'guided' && (
-                <>
-                  <Text style={styles.cardDot}>•</Text>
-                  <Text style={styles.cardNarrator}>
-                    {meditation.narrator_gender === 'female' ? 'Female' : 'Male'}
-                  </Text>
-                </>
-              )}
-            </View>
-          </View>
-          <View style={styles.cardPlayButton}>
-            <Ionicons name="play" size={20} color={colors.white} />
-          </View>
-        </View>
-      </Pressable>
-    );
-  }
-
-  // Default card without image
+  // Always render the new card style (with or without image)
   return (
     <Pressable
       style={({ pressed }) => [
-        styles.container,
-        pressed && styles.pressed,
+        styles.cardContainer,
+        pressed && styles.cardPressed,
       ]}
       onPress={() => onPress(meditation)}
       accessibilityRole="button"
       accessibilityLabel={`Play ${meditation.title}, ${formatDuration(meditation.duration_seconds)}`}
     >
-      {/* Icon */}
-      <View style={[styles.iconContainer, { backgroundColor: `${iconColor}20` }]}>
-        <Ionicons name={iconName} size={24} color={iconColor} />
-      </View>
-
-      {/* Content */}
-      <View style={styles.content}>
-        <Text style={styles.title} numberOfLines={1}>
-          {meditation.title}
-        </Text>
-        <View style={styles.meta}>
-          <Text style={styles.duration}>
+      {/* Image Section */}
+      <View style={styles.imageSection}>
+        {image ? (
+          <Image source={image} style={styles.cardImage} resizeMode="cover" />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor: `${iconColor}30` }]}>
+            <Ionicons name={iconName} size={48} color={iconColor} />
+          </View>
+        )}
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.8)']}
+          style={styles.imageGradient}
+        />
+        {/* Duration Badge - Bottom Right */}
+        <View style={styles.durationBadge}>
+          <Ionicons name="time-outline" size={12} color={colors.white} />
+          <Text style={styles.durationText}>
             {formatDuration(meditation.duration_seconds)}
           </Text>
-          {showType && (
-            <>
-              <Text style={styles.dot}>•</Text>
-              <Text style={styles.type}>
-                {getMeditationTypeLabel(meditation.type)}
-              </Text>
-            </>
-          )}
-          {meditation.narrator_gender && meditation.type === 'guided' && (
-            <>
-              <Text style={styles.dot}>•</Text>
-              <Text style={styles.narrator}>
-                {meditation.narrator_gender === 'female' ? 'Female' : 'Male'} voice
-              </Text>
-            </>
-          )}
         </View>
-        {meditation.description && (
-          <Text style={styles.description} numberOfLines={2}>
-            {meditation.description}
-          </Text>
-        )}
       </View>
 
-      {/* Play indicator */}
-      <View style={styles.playIcon}>
-        <Ionicons name="play-circle" size={32} color={colors.dark.accentGold} />
+      {/* Content Section */}
+      <View style={styles.contentSection}>
+        <View style={styles.contentInfo}>
+          <View style={styles.titleRow}>
+            <Text style={styles.cardTitle} numberOfLines={1}>
+              {meditation.title}
+            </Text>
+            {meditation.narrator_gender && meditation.type === 'guided' && (
+              <Text style={styles.narratorBadge}>
+                {meditation.narrator_gender === 'female' ? '♀' : '♂'}
+              </Text>
+            )}
+          </View>
+          {meditation.description && (
+            <Text style={styles.cardDescription} numberOfLines={1}>
+              {meditation.description}
+            </Text>
+          )}
+        </View>
+        <View style={styles.playButton}>
+          <Ionicons name="play" size={18} color={colors.white} />
+        </View>
       </View>
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  // Default card styles
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  // Card container - matches workbook exercise cards
+  cardContainer: {
     backgroundColor: colors.background.elevated,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border.default,
-    ...shadows.sm,
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+    marginBottom: spacing.md,
+    borderWidth: 2,
+    borderColor: colors.brand.gold,
+    ...shadows.md,
   },
-  pressed: {
-    opacity: 0.8,
+  cardPressed: {
+    opacity: 0.9,
     transform: [{ scale: 0.98 }],
-    borderColor: colors.border.gold,
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(196, 160, 82, 0.2)',
-  },
-  content: {
-    flex: 1,
-    marginRight: spacing.sm,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text.primary,
-    marginBottom: 2,
-  },
-  meta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  duration: {
-    fontSize: 13,
-    color: colors.text.secondary,
-  },
-  dot: {
-    fontSize: 13,
-    color: colors.text.tertiary,
-    marginHorizontal: 6,
-  },
-  type: {
-    fontSize: 13,
-    color: colors.text.secondary,
-  },
-  narrator: {
-    fontSize: 13,
-    color: colors.text.secondary,
-  },
-  description: {
-    fontSize: 13,
-    color: colors.text.tertiary,
-    marginTop: 4,
-    lineHeight: 18,
-    fontStyle: 'italic',
-  },
-  playIcon: {
-    marginLeft: spacing.xs,
   },
 
-  // Image card styles
-  imageCardContainer: {
-    height: 160,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border.default,
-    ...shadows.md,
+  // Image section
+  imageSection: {
+    height: 120,
+    position: 'relative',
+    backgroundColor: colors.background.tertiary,
   },
   cardImage: {
     width: '100%',
     height: '100%',
   },
-  cardGradient: {
+  placeholderImage: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageGradient: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: '70%',
+    height: 60,
   },
-  cardOverlay: {
+
+  // Duration badge - bottom right of image
+  durationBadge: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    padding: spacing.md,
-  },
-  cardContent: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.white,
-    marginBottom: 4,
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
-  cardMeta: {
+    bottom: 10,
+    right: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: borderRadius.md,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    gap: 4,
   },
-  cardDuration: {
+  durationText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.white,
+  },
+
+  // Content section
+  contentSection: {
+    padding: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  contentInfo: {
+    flex: 1,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  cardTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: colors.text.primary,
+    flex: 1,
+  },
+  narratorBadge: {
+    fontSize: 14,
+    color: colors.dark.accentGold,
+    marginLeft: spacing.xs,
+  },
+  cardDescription: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.85)',
-    fontWeight: '500',
+    color: colors.text.secondary,
+    fontStyle: 'italic',
   },
-  cardDot: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.6)',
-  },
-  cardNarrator: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.85)',
-  },
-  cardPlayButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  playButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: colors.dark.accentGold,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: spacing.md,
-    ...shadows.md,
+    ...shadows.sm,
   },
 });
 
