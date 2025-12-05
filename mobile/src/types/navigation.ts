@@ -37,7 +37,7 @@ export type MainTabParamList = {
   Workbook: undefined;
   Meditate: undefined;
   Journal: undefined;
-  Wisdom: undefined; // AI Chat screen
+  // Wisdom: undefined; // AI Chat screen - removed, will be integrated into Journal
   Profile: undefined;
   NewJournalEntry: undefined;
 };

@@ -17,7 +17,7 @@ import HomeScreen from '../screens/HomeScreen';
 import { WorkbookNavigator } from './WorkbookNavigator';
 import { MeditateNavigator } from './MeditateNavigator';
 import JournalScreen from '../screens/JournalScreen';
-import { AIChatScreen } from '../screens/AIChatScreen';
+// import { AIChatScreen } from '../screens/AIChatScreen'; // Wisdom tab removed - will be integrated into Journal
 import ProfileScreen from '../screens/ProfileScreen';
 import NewJournalEntryScreen from '../screens/NewJournalEntryScreen';
 
@@ -50,14 +50,18 @@ export const MainTabNavigator = () => {
           backgroundColor: colors.background.primary, // Deep Void (#0A0A0F)
           borderTopColor: colors.border.default, // Subtle gold border rgba(196, 160, 82, 0.15)
           borderTopWidth: 1,
-          height: 80, // Generous spacing like temple courtyard
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 70, // Compact height
+          paddingBottom: 4,
+          paddingTop: 2,
         },
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',
           letterSpacing: 0.5, // Refined spacing
+          marginTop: -2, // Tighter gap between icon and label
+        },
+        tabBarIconStyle: {
+          marginBottom: -4, // Pull icon down closer to label
         },
         // Header styling - DARK MODE
         headerStyle: {
@@ -100,10 +104,16 @@ export const MainTabNavigator = () => {
           title: 'Workbook',
           tabBarLabel: 'Workbook',
           headerShown: false, // WorkbookNavigator handles its own headers
-          // TODO: Add icon when design system is ready
-          // tabBarIcon: ({ color, size }) => (
-          //   <BookIcon color={color} size={size} />
-          // ),
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={BackgroundImages.workbook}
+              style={[
+                styles.tabIcon,
+                { opacity: focused ? 1 : 0.5 },
+              ]}
+              resizeMode="contain"
+            />
+          ),
         }}
       />
 
@@ -116,7 +126,7 @@ export const MainTabNavigator = () => {
           headerShown: false, // MeditateNavigator handles its own headers
           tabBarIcon: ({ focused }) => (
             <Image
-              source={BackgroundImages.meditation}
+              source={BackgroundImages.meditate}
               style={[
                 styles.tabIcon,
                 { opacity: focused ? 1 : 0.5 },
@@ -146,18 +156,7 @@ export const MainTabNavigator = () => {
         }}
       />
 
-      <Tab.Screen
-        name="Wisdom"
-        component={AIChatScreen}
-        options={{
-          title: 'Wisdom',
-          tabBarLabel: 'Wisdom',
-          // TODO: Add icon when design system is ready
-          // tabBarIcon: ({ color, size }) => (
-          //   <WisdomIcon color={color} size={size} />
-          // ),
-        }}
-      />
+      {/* Wisdom tab removed - will be integrated into Journal */}
 
       <Tab.Screen
         name="Profile"
@@ -201,8 +200,8 @@ export const MainTabNavigator = () => {
 
 const styles = StyleSheet.create({
   tabIcon: {
-    width: 26,
-    height: 26,
+    width: 30,
+    height: 30,
   },
 });
 
