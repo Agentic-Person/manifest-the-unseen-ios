@@ -3,6 +3,7 @@
  *
  * Main journal screen showing recent entries with voice recording option.
  * Features:
+ * - Beautiful header with journal image (matching workbook style)
  * - List of journal entries with preview
  * - Pull-to-refresh
  * - Empty state
@@ -18,9 +19,13 @@ import {
   FlatList,
   Pressable,
   ActivityIndicator,
+  Image,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import type { MainTabScreenProps } from '@/types/navigation';
-import { colors, spacing, typography, shadows } from '@/theme';
+import { colors, spacing, typography, shadows, borderRadius } from '@/theme';
+import { BackgroundImages } from '@/assets';
 import {
   useJournalEntries,
   useDeleteJournalEntry,
@@ -88,28 +93,43 @@ const JournalScreen = ({ navigation }: Props) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View>
+      {/* Beautiful Header with Journal Image */}
+      <View style={styles.headerSection}>
+        {/* Image Container with Golden Border */}
+        <View style={styles.headerImageContainer}>
+          <Image
+            source={BackgroundImages.journal}
+            style={styles.headerImage}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={['transparent', 'rgba(10, 10, 15, 0.9)']}
+            style={styles.headerGradient}
+          />
+        </View>
+
+        {/* Title Section */}
+        <View style={styles.titleSection}>
           <Text style={styles.title}>Journal</Text>
           <Text style={styles.subtitle}>
             {entries && entries.length > 0
-              ? `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`
-              : 'Capture your thoughts'}
+              ? `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'} written`
+              : 'Capture your thoughts and reflections'}
           </Text>
         </View>
 
-        {/* Add Button */}
+        {/* Add New Entry Button */}
         <Pressable
           style={({ pressed }) => [
-            styles.addButton,
-            pressed && styles.addButtonPressed,
+            styles.newEntryButton,
+            pressed && styles.newEntryButtonPressed,
           ]}
           onPress={handleNewEntry}
           accessibilityRole="button"
           accessibilityLabel="Create new journal entry"
         >
-          <Text style={styles.addButtonText}>+</Text>
+          <Ionicons name="add" size={20} color={colors.white} />
+          <Text style={styles.newEntryButtonText}>Add New Entry</Text>
         </Pressable>
       </View>
 
@@ -131,7 +151,7 @@ const JournalScreen = ({ navigation }: Props) => {
         onRefresh={refetch}
       />
 
-      {/* Floating Action Button (alternative to header button) */}
+      {/* Floating Action Button (visible when scrolling through entries) */}
       {entries && entries.length > 0 && (
         <Pressable
           style={({ pressed }) => [
@@ -142,7 +162,7 @@ const JournalScreen = ({ navigation }: Props) => {
           accessibilityRole="button"
           accessibilityLabel="Create new journal entry"
         >
-          <Text style={styles.fabText}>+</Text>
+          <Ionicons name="add" size={28} color={colors.white} />
         </Pressable>
       )}
     </View>
@@ -165,48 +185,80 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     marginTop: spacing.md,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+
+  // New Header Section
+  headerSection: {
     alignItems: 'center',
-    padding: spacing.md,
-    paddingBottom: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.default,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.lg,
+  },
+  headerImageContainer: {
+    width: '100%',
+    height: 180,
+    borderRadius: borderRadius.xl,
+    borderWidth: 2,
+    borderColor: colors.brand.gold,
+    overflow: 'hidden',
+    marginBottom: spacing.md,
+    ...shadows.md,
+  },
+  headerImage: {
+    width: '100%',
+    height: '100%',
+  },
+  headerGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 80,
+  },
+  titleSection: {
+    alignItems: 'center',
+    marginBottom: spacing.md,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: colors.text.primary,
-    marginBottom: 4,
+    marginBottom: spacing.xs,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: typography.body.fontSize,
+    fontSize: 15,
     color: colors.text.secondary,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
-  addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.primary[600],
+  newEntryButton: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.brand.gold,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.full,
+    gap: spacing.xs,
     ...shadows.md,
   },
-  addButtonPressed: {
-    opacity: 0.8,
-    transform: [{ scale: 0.95 }],
+  newEntryButtonPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
   },
-  addButtonText: {
-    fontSize: 28,
-    fontWeight: '700',
+  newEntryButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
     color: colors.white,
-    lineHeight: 28,
   },
+
+  // List Content
   listContent: {
     padding: spacing.md,
-    paddingBottom: spacing.xl * 2, // Extra space for FAB
+    paddingBottom: spacing.xl * 2,
   },
+
+  // Empty State
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -235,6 +287,8 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
     textAlign: 'center',
   },
+
+  // Floating Action Button (kept as secondary option)
   fab: {
     position: 'absolute',
     bottom: spacing.xl,
@@ -242,7 +296,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.primary[600],
+    backgroundColor: colors.brand.gold,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadows.lg,

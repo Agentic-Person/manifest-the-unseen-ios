@@ -208,8 +208,7 @@ export function getPhaseExerciseImages(phaseNumber: number) {
 // BACKGROUND IMAGES - General app backgrounds
 // =============================================================================
 export const BackgroundImages = {
-  // Add general backgrounds as you upload them
-  // mainBackground: require('./images-compressed/backgrounds/main-background.png'),
+  journal: require('./images-compressed/backgrounds/journal.png'),
 } as const;
 
 export type BackgroundImageKey = keyof typeof BackgroundImages;
