@@ -211,7 +211,8 @@ export const BackgroundImages = {
   journal: require('./images-compressed/backgrounds/journal.png'),
   scroll: require('./images-compressed/backgrounds/scroll.png'),
   home: require('./images-compressed/backgrounds/home.png'),
-  meditation: require('./images-compressed/backgrounds/meditation.png'),
+  meditate: require('./images-compressed/backgrounds/meditate.png'),
+  workbook: require('./images-compressed/backgrounds/workbook.png'),
 } as const;
 
 export type BackgroundImageKey = keyof typeof BackgroundImages;
