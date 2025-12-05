@@ -80,10 +80,16 @@ export const MainTabNavigator = () => {
         options={{
           title: 'Home',
           tabBarLabel: 'Home',
-          // TODO: Add icon when design system is ready
-          // tabBarIcon: ({ color, size }) => (
-          //   <HomeIcon color={color} size={size} />
-          // ),
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={BackgroundImages.home}
+              style={[
+                styles.tabIcon,
+                { opacity: focused ? 1 : 0.5 },
+              ]}
+              resizeMode="contain"
+            />
+          ),
         }}
       />
 
@@ -108,10 +114,16 @@ export const MainTabNavigator = () => {
           title: 'Meditate',
           tabBarLabel: 'Meditate',
           headerShown: false, // MeditateNavigator handles its own headers
-          // TODO: Add icon when design system is ready
-          // tabBarIcon: ({ color, size }) => (
-          //   <MeditateIcon color={color} size={size} />
-          // ),
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={BackgroundImages.meditation}
+              style={[
+                styles.tabIcon,
+                { opacity: focused ? 1 : 0.5 },
+              ]}
+              resizeMode="contain"
+            />
+          ),
         }}
       />
 
