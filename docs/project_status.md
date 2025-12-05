@@ -27,6 +27,7 @@
 - CRITICAL: Fixing workbook progress tracking
 - CRITICAL: Building 7 missing Phase 1 screens
 - Phase 3: Testing AI Chat with real knowledge base
+- Phase 2: Testing audio on iPhone via Expo Go (meditation playback + voice recording)
 
 **What's Next** 🎯:
 - Fix workbook progress tracking in all existing screens
@@ -161,8 +162,8 @@
 - **Navigation**: React Navigation 6+
 - **State Management**: Zustand + TanStack Query (React Query)
 - **Forms**: React Hook Form + Zod validation
-- **Audio**: expo-av (meditation playback)
-- **Voice Transcription**: Whisper on-device (react-native-whisper)
+- **Audio**: expo-av (meditation playback + voice recording - Expo Go compatible)
+- **Voice Transcription**: whisper.rn (on-device - requires EAS development build)
 - **Backend**: Supabase
   - PostgreSQL database with pgvector extension
   - Authentication (Apple Sign-In primary)
@@ -385,6 +386,11 @@
 - ✅ **Asset Management**
   - Added BackgroundImages export (journal, scroll, home, meditate, workbook)
   - All images organized in images-compressed/backgrounds/
+- ✅ **Audio Testing Plan Created**
+  - Plan for testing meditation playback on iPhone via Expo Go
+  - Plan for testing voice recording on iPhone via Expo Go
+  - Note: Whisper transcription requires EAS development build (native module)
+  - Audio confirmed Expo Go compatible via expo-av
 
 ### 2025-12-02
 - ❌ **CRITICAL DISCOVERY**: Workbook 70% dysfunctional
