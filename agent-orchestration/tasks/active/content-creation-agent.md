@@ -55,7 +55,7 @@ This agent provides scripts, prompts, and creative direction for all meditation 
   | Ocean Waves             | 20 min   | Pure ocean soundscape              |
   | Crystal Bowl Harmonics  | (bonus)  | Quartz tones, angelic              |
   | Earth Frequency         | (bonus)  | 7.83hz Schumann resonance          |
-  
+
 
 ---
 
@@ -805,7 +805,7 @@ ocean waves meditation ambient, realistic sea sounds, gentle waves rolling, dist
 
 **5. Crystal Bowl Harmonics**
 ```
-crystal singing bowls meditation, pure quartz tones, high frequency healing, angelic harmonics, chakra balancing frequencies, ethereal celestial, sacred sound bath, clear pristine notes, layered resonance, slow gentle, spa relaxation, crystal clarity, ascending tones, peaceful floating, instrumental only no vocals
+crystal singing bowls meditation, pure quartz tones, high frequency healing, angelic harmonics, chakra balancing frequencies, ethereal celestial, sacred sound bath, clear pristine notes, light steal tibetan drums, layered resonance, slow gentle, spa relaxation, crystal clarity, ascending tones, peaceful floating, instrumental only no vocals
 ```
 
 **6. Earth Frequency Grounding**

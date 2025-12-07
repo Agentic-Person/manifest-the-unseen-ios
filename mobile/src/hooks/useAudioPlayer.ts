@@ -229,6 +229,7 @@ export function useAudioPlayer(
         const errorMsg = `Failed to load audio: ${
           err instanceof Error ? err.message : 'Unknown error'
         }`;
+        console.error('[useAudioPlayer] Audio load failed:', { uri, error: err });
         setError(errorMsg);
         setState('error');
         setIsLoaded(false);

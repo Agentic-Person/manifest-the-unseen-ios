@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, shadows, borderRadius } from '../../theme';
 import type { Meditation, MeditationType } from '../../types/meditation';
-import { formatDuration, getMeditationIcon, getMeditationTypeLabel } from '../../types/meditation';
+import { formatDuration, getMeditationIcon } from '../../types/meditation';
 
 interface MeditationCardProps {
   meditation: Meditation;
@@ -47,9 +47,9 @@ const getTypeColor = (type: MeditationType): string => {
 export const MeditationCard: React.FC<MeditationCardProps> = ({
   meditation,
   onPress,
-  showType = false,
+  showType: _showType = false,
   image,
-  index = 0,
+  index: _index = 0,
 }) => {
   const iconColor = getTypeColor(meditation.type);
   const iconName = getMeditationIcon(meditation.type) as keyof typeof Ionicons.glyphMap;

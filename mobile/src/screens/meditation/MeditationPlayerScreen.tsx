@@ -11,11 +11,11 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  SafeAreaView,
   Animated,
   Easing,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, shadows, borderRadius } from '../../theme';
@@ -55,6 +55,7 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
     state,
     progress,
     isLoaded,
+    error: audioError,
     load,
     play,
     pause,
@@ -121,6 +122,11 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
   useEffect(() => {
     if (meditation?.audio_url) {
       const audioUrl = getMeditationAudioUrl(meditation.audio_url);
+      console.log('[MeditationPlayer] Loading audio:', {
+        title: meditation.title,
+        rawPath: meditation.audio_url,
+        fullUrl: audioUrl,
+      });
       load(audioUrl);
     }
 
@@ -348,6 +354,16 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
         )}
 
+        {/* Audio Error Banner */}
+        {audioError && (
+          <View style={styles.errorBanner}>
+            <Ionicons name="alert-circle" size={18} color={colors.error[400]} />
+            <Text style={styles.errorBannerText} numberOfLines={3}>
+              {audioError}
+            </Text>
+          </View>
+        )}
+
         {/* Session Complete Message */}
         {sessionCompleted && (
           <View style={styles.completedBanner}>
@@ -530,6 +546,21 @@ const styles = StyleSheet.create({
   webWarningText: {
     fontSize: 12,
     color: colors.warning[400],
+    flex: 1,
+  },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: `${colors.error[500]}15`,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.md,
+    marginTop: spacing.lg,
+    gap: spacing.xs,
+  },
+  errorBannerText: {
+    fontSize: 12,
+    color: colors.error[400],
     flex: 1,
   },
 });

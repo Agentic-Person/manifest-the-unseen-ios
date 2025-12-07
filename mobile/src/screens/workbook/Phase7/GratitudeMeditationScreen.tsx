@@ -312,7 +312,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
     setSessions(updatedSessions);
     calculateStats(updatedSessions);
 
-    await saveNow();
+    saveNow({ completed: true });
 
     setShowReflection(false);
     setReflectionText('');

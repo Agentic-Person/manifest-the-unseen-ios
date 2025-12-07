@@ -231,7 +231,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleSaveAndContinue = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow();
+    saveNow({ completed: true });
     navigation.goBack();
   };
 

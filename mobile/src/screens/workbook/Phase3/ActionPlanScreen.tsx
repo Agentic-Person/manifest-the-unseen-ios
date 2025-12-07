@@ -77,27 +77,17 @@ const generateId = (): string => {
   return `step_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 };
 
-// Mock goals for demo (in real app, would load from Supabase)
-const MOCK_GOALS: SMARTGoal[] = [
-  {
-    id: 'goal_1',
-    title: 'Learn to meditate daily for 20 minutes',
-    category: 'Health',
-    createdAt: '2024-01-15T10:00:00Z',
-  },
-  {
-    id: 'goal_2',
-    title: 'Read 24 books this year',
-    category: 'Personal',
-    createdAt: '2024-01-10T08:00:00Z',
-  },
-  {
-    id: 'goal_3',
-    title: 'Save $10,000 for emergency fund',
-    category: 'Financial',
-    createdAt: '2024-01-01T09:00:00Z',
-  },
-];
+/** Data structure for SMART Goals from workbook_progress */
+interface SMARTGoalsData {
+  goals: Array<{
+    id: string;
+    title: string;
+    category: string;
+    createdAt: string;
+    [key: string]: unknown;
+  }>;
+  updatedAt: string;
+}
 
 type Props = WorkbookStackScreenProps<'ActionPlan'>;
 
@@ -113,14 +103,14 @@ interface ActionPlanData {
  */
 const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-  const { data: savedProgress, } = useWorkbookProgress(3, WORKSHEET_IDS.ACTION_PLAN);
+  const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.ACTION_PLAN);
+  const { data: smartGoalsProgress, isLoading: isLoadingGoals } = useWorkbookProgress(3, WORKSHEET_IDS.SMART_GOALS);
   const { mutate: saveWorkbook, isPending: isSavingWorkbook } = useSaveWorkbook();
 
   // State
   const [goals, setGoals] = useState<SMARTGoal[]>([]);
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [steps, setSteps] = useState<ActionStepData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
   const [showGoalPicker, setShowGoalPicker] = useState(false);
@@ -141,10 +131,9 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   const isAllComplete = steps.length > 0 && completedCount === steps.length;
 
   /**
-   * Load goals and action plan data on mount
+   * Cleanup on unmount
    */
   useEffect(() => {
-    loadData();
     return () => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
@@ -152,7 +141,25 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, []);
 
-  // Load saved data from Supabase
+  // Load goals from SMART Goals worksheet
+  useEffect(() => {
+    if (smartGoalsProgress?.data) {
+      const data = smartGoalsProgress.data as unknown as SMARTGoalsData;
+      if (data.goals && Array.isArray(data.goals)) {
+        console.log('[ActionPlan] Loaded goals from Supabase:', data.goals.length);
+        setGoals(data.goals);
+      } else {
+        console.log('[ActionPlan] No goals found in SMART Goals worksheet');
+        setGoals([]);
+      }
+    } else if (!isLoadingGoals) {
+      // If not loading and no data, set empty array
+      console.log('[ActionPlan] No SMART Goals data available');
+      setGoals([]);
+    }
+  }, [smartGoalsProgress, isLoadingGoals]);
+
+  // Load saved action plan data from Supabase
   useEffect(() => {
     if (savedProgress?.data) {
       const data = savedProgress.data as unknown as ActionPlanData;
@@ -160,20 +167,6 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
       if (data.steps) setSteps(data.steps);
     }
   }, [savedProgress]);
-
-  /**
-   * Auto-save when steps change (debounced)
-   */
-  useEffect(() => {
-    if (!isLoading && selectedGoalId) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 1500); // 1.5 second debounce
-    }
-  }, [steps, isLoading, selectedGoalId]);
 
   /**
    * Check for completion celebration
@@ -184,47 +177,6 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [isAllComplete, steps.length]);
 
-  /**
-   * Load initial data
-   */
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Load from Supabase
-      // const { data: goalsData } = await supabase.from('smart_goals').select('*');
-      // setGoals(goalsData);
-
-      // Simulate loading delay
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      setGoals(MOCK_GOALS);
-      console.log('Loaded goals data');
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Load steps for selected goal
-   */
-  const loadStepsForGoal = async (goalId: string) => {
-    try {
-      // TODO: Load from Supabase
-      // const { data } = await supabase
-      //   .from('action_steps')
-      //   .select('*')
-      //   .eq('goal_id', goalId)
-      //   .order('order');
-      // setSteps(data || []);
-
-      // For demo, start with empty steps
-      setSteps([]);
-      console.log('Loaded steps for goal:', goalId);
-    } catch (error) {
-      console.error('Failed to load steps:', error);
-    }
-  };
 
   /**
    * Auto-save action plan to Supabase
@@ -254,6 +206,20 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
       }
     );
   }, [selectedGoalId, steps, saveWorkbook]);
+
+  /**
+   * Auto-save when steps change (debounced)
+   */
+  useEffect(() => {
+    if (!isLoadingGoals && selectedGoalId) {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      saveTimeoutRef.current = setTimeout(() => {
+        autoSave();
+      }, 1500); // 1.5 second debounce
+    }
+  }, [steps, isLoadingGoals, selectedGoalId, autoSave]);
 
   /**
    * Trigger celebration animation
@@ -294,8 +260,11 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   const handleSelectGoal = (goalId: string) => {
     setSelectedGoalId(goalId);
     setShowGoalPicker(false);
-    loadStepsForGoal(goalId);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    // Note: Steps are persisted across goal selections in the action plan
+    // If you want to load goal-specific steps, you would filter them here
+    // For now, all steps are shown regardless of selected goal
   };
 
   /**
@@ -424,8 +393,8 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   // Get selected goal
   const selectedGoal = goals.find((g) => g.id === selectedGoalId);
 
-  // Loading state
-  if (isLoading) {
+  // Loading state - show loader while fetching goals from Supabase
+  if (isLoadingGoals) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size={50} color={DESIGN_COLORS.accentGold} />

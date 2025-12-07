@@ -12,9 +12,9 @@ import {
   FlatList,
   ActivityIndicator,
   Text,
-  SafeAreaView,
   StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAIChat } from '../hooks/useAIChat';
 import { MessageBubble } from '../components/chat/MessageBubble';
 import { ChatInput } from '../components/chat/ChatInput';

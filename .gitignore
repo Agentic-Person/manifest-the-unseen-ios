@@ -112,8 +112,3 @@ mobile/.bundle/
 # Expo web build output
 mobile/web/
 
-# Large images (exclude until resized)
-# TODO: Remove these exclusions after images are optimized
-mobile/src/assets/images/phases/
-mobile/src/assets/images/meditation/
-mobile/src/assets/images/workbook/

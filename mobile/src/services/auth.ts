@@ -9,6 +9,7 @@ import { supabase } from './supabase';
 import type { User, Session, AuthError } from '@supabase/supabase-js';
 import type { UserProfile } from '../types/store';
 import type { Database } from '../types/database';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 type UserRow = Database['public']['Tables']['users']['Row'];
 
@@ -166,14 +167,37 @@ export const authService = {
    */
   signInWithApple: async (): Promise<AuthResult> => {
     try {
-      // TODO: Implement native Apple Sign-In
-      // Requires: react-native-apple-authentication
-      // See: docs/auth-providers-config.md
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      // Sign in via Supabase with Apple credential
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: credential.identityToken!,
+      });
+
+      if (error) {
+        return { error };
+      }
+
+      // Fetch user profile
+      const profile = await authService.fetchUserProfile(data.user.id);
 
       return {
-        error: new Error('Apple Sign-In not yet implemented'),
+        user: data.user,
+        session: data.session,
+        profile,
       };
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 'ERR_REQUEST_CANCELED') {
+        return {
+          error: new Error('Apple Sign-In was cancelled'),
+        };
+      }
       return {
         error: error instanceof Error ? error : new Error('Apple Sign-In failed'),
       };

@@ -25,8 +25,10 @@ import {
   TextInput,
   Pressable,
   Image,
+  Alert,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import * as ImagePicker from 'expo-image-picker';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -190,15 +192,28 @@ export const SignCard: React.FC<SignCardProps> = ({
   };
 
   /**
-   * Handle photo add (placeholder)
+   * Handle photo add
    */
-  const handleAddPhoto = () => {
+  const handleAddPhoto = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // TODO: Implement image picker
-    console.log('Photo picker would open here');
-    if (onPhotoChange) {
-      // Simulating photo selection
-      onPhotoChange(entry.id, undefined);
+
+    // Request permissions
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'We need access to your photos to add images.');
+      return;
+    }
+
+    // Launch image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      onPhotoChange?.(entry.id, result.assets[0].uri);
     }
   };
 

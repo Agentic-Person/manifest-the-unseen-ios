@@ -164,8 +164,42 @@ export const SignupScreen: React.FC = () => {
    * Handle Apple Sign In
    */
   const handleAppleSignIn = async () => {
-    setErrorMessage('Apple Sign-In coming soon! Use email for now.');
-    // TODO: Implement Apple Sign-In
+    try {
+      setIsSubmitting(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setLoading(true);
+
+      const result = await authService.signInWithApple();
+
+      if (result.error) {
+        const message = result.error.message;
+        if (message.includes('cancelled')) {
+          setErrorMessage('Apple Sign-In was cancelled');
+        } else {
+          setErrorMessage(message);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Update auth store
+      if (result.user) setUser(result.user);
+      if (result.session) setSession(result.session);
+      if (result.profile) setProfile(result.profile);
+
+      setLoading(false);
+      setError(null);
+
+      // Navigation handled by RootNavigator based on auth state
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Apple Sign-In failed';
+      setErrorMessage(message);
+      setError(message);
+      setLoading(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   /**

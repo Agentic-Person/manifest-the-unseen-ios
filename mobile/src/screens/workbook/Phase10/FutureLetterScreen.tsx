@@ -248,7 +248,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
             };
 
             setExistingLetter(newLetter);
-            saveNow();
+            saveNow({ completed: true });
           },
         },
       ]

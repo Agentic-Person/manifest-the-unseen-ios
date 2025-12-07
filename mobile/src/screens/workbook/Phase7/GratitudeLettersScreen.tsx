@@ -233,7 +233,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
       return [letter, ...prev];
     });
 
-    await saveNow();
+    saveNow({ completed: true });
     setShowEditor(false);
   };
 

@@ -249,7 +249,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
             });
 
             // Save graduation data
-            saveNow();
+            saveNow({ completed: true });
 
             // Show certificate after celebration
             setTimeout(() => {

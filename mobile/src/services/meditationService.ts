@@ -98,7 +98,7 @@ export async function getMeditationMusic(): Promise<Meditation[]> {
 
 /**
  * Get the full public URL for a meditation audio file
- * Audio files are stored in Supabase Storage 'meditations' bucket
+ * Audio files are stored in Supabase Storage 'meditation-audio' bucket
  */
 export function getMeditationAudioUrl(audioPath: string): string {
   // If already a full URL, return as-is
@@ -107,7 +107,7 @@ export function getMeditationAudioUrl(audioPath: string): string {
   }
 
   // Otherwise, get public URL from Supabase Storage
-  return getPublicUrl('meditations', audioPath);
+  return getPublicUrl('meditation-audio', audioPath);
 }
 
 // =============================================================================
