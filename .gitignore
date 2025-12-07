@@ -112,3 +112,21 @@ mobile/.bundle/
 # Expo web build output
 mobile/web/
 
+# Audio content (stored in Supabase Storage, not git)
+meditation-audio/
+*.m4a
+*.mp3
+*.wav
+
+# Screenshots and snips (local development only)
+snips/
+test-screenshots/
+Screenshot*.png
+
+# Misc temp files
+nul
+temp_*.txt
+design-mockup.html
+mobile/test-imports.ts
+mobile/android/
+
