@@ -34,6 +34,14 @@ export interface WorkbookProgressInsert {
 }
 
 /**
+ * Extended type with calculated progress field
+ * Used by hooks that compute progress on-the-fly
+ */
+export interface WorkbookProgressWithCalculated extends WorkbookProgress {
+  progress: number; // 0, 50, or 100 (calculated from completed flag and data)
+}
+
+/**
  * Phase progress summary
  */
 export interface PhaseProgress {

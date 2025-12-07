@@ -5,8 +5,10 @@
  * Provides caching, optimistic updates, and automatic refetching.
  */
 
+import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../stores/authStore';
+import type { WorkbookProgressWithCalculated } from '../types/workbook';
 import {
   getWorkbookProgress,
   getAllWorkbookProgress,
@@ -37,6 +39,7 @@ export const workbookKeys = {
  * @example
  * ```tsx
  * const { data, isLoading } = useWorkbookProgress(1, 'wheel-of-life');
+ * // data.progress will be 0, 50, or 100
  * ```
  */
 export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
@@ -49,7 +52,7 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
     enabled: !!user?.id
   });
 
-  return useQuery({
+  const query = useQuery({
     queryKey: workbookKeys.worksheet(user?.id || '', phaseNumber, worksheetId),
     queryFn: async () => {
       console.log('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId, userId: user!.id });
@@ -60,6 +63,25 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // Calculate progress on-the-fly (0%, 50%, or 100%)
+  const dataWithProgress = useMemo<WorkbookProgressWithCalculated | undefined>(() => {
+    if (!query.data) return undefined;
+
+    let progress = 0;
+    if (query.data.completed) {
+      progress = 100;
+    } else if (query.data.data && Object.keys(query.data.data).length > 0) {
+      progress = 50;
+    }
+
+    return { ...query.data, progress };
+  }, [query.data]);
+
+  return {
+    ...query,
+    data: dataWithProgress,
+  };
 }
 
 /**
