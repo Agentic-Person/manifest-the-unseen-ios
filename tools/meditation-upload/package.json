@@ -1,0 +1,14 @@
+{
+  "name": "meditation-upload",
+  "version": "1.0.0",
+  "description": "Upload meditation audio files to Supabase Storage",
+  "main": "upload.js",
+  "scripts": {
+    "upload": "node upload.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "dotenv": "^16.3.1",
+    "music-metadata": "^7.14.0"
+  }
+}

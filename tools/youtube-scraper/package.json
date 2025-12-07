@@ -1,0 +1,28 @@
+{
+  "name": "youtube-scraper",
+  "version": "1.0.0",
+  "description": "Scrape YouTube transcripts and add them to the RAG knowledge base",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "youtube",
+    "transcript",
+    "rag",
+    "knowledge-base",
+    "embeddings"
+  ],
+  "author": "Manifest the Unseen",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "youtube-captions-scraper": "^2.0.3",
+    "youtube-transcript": "^1.2.1",
+    "youtubei.js": "^16.0.1"
+  }
+}
