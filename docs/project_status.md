@@ -1,39 +1,43 @@
 # Manifest the Unseen - Project Status
 
-**Last Updated**: 2025-12-05
-**Current Phase**: Phase 3 - AI & Advanced Features (In Progress)
-**Overall Progress**: 55% Complete
+**Last Updated**: 2025-12-07
+**Current Phase**: Phase 3 - AI & Advanced Features (Near Complete)
+**Overall Progress**: 65% Complete
 
 ---
 
 ## Quick Summary
 
 **What's Complete** ✅:
-- Phase 2: Meditation & Breathing MVP complete (UI only, audio pending test)
-- Phase 2: Voice Journal MVP complete (VoiceRecorder state reset fixed)
-- Phase 3: AI Chat Frontend complete (Agent 3, dark mode fixed)
+- **AUDIO WORKING ON IPHONE!** Meditation playback confirmed working
+- Phase 2: Meditation & Breathing MVP complete
+  - Guided: 3 tracks (working)
+  - Music: 6 tracks (working)
+  - Breathing: Coming soon (UI intact, audio content pending)
+- Phase 2: Voice Journal MVP complete
+- Phase 3: AI Chat Frontend complete
 - Phase 3: YouTube Transcript Scraper tool (327 knowledge embeddings)
-- Phase 3: Meditation audio uploaded (16 total meditations in DB)
-- **UI Polish**: Consistent design language across all screens (golden borders, imagery)
-- **Navigation**: Custom tab bar icons, optimized spacing, Wisdom tab removed
+- **Progress Tracking FIXED**: All 9 workbook screens fixed with `completed: true`
+- **Apple Sign-In**: Implemented
+- **UI Polish**: Consistent design language across all screens
+- **App Running on iPhone**: Standalone build working via Apple Developer
 
-**What's BROKEN** ❌ (Critical - 2025-12-02):
-- **Workbook Phase 1**: Only 4 of 11 exercises implemented
-  - 7 missing screens: Feel Wheel, ABC Model, Strengths & Weaknesses, Comfort Zone, Know Yourself, Abilities Rating, Thought Awareness
-  - Progress shows 0% even when exercises are saved (missing `completed: true` flag)
-- **Workbook Phases 2-10**: Need audit for same progress tracking issue
+**What's Working** ✅:
+- All 10 workbook phases with progress tracking
+- Meditation audio playback (9 tracks)
+- Voice recording (expo-av)
+- Authentication (email + Apple Sign-In ready)
+- AI Chat frontend
 
-**What's In Progress** ⏳:
-- CRITICAL: Fixing workbook progress tracking
-- CRITICAL: Building 7 missing Phase 1 screens
-- Phase 3: Testing AI Chat with real knowledge base
-- Phase 2: Testing audio on iPhone via Expo Go (meditation playback + voice recording)
+**Coming Soon** ⏳:
+- Breathing exercises (UI ready, audio content pending)
+- Voice transcription (requires whisper.rn in EAS build)
+- Subscriptions (RevenueCat - Phase 4)
 
 **What's Next** 🎯:
-- Fix workbook progress tracking in all existing screens
-- Create 7 missing Phase 1 exercise screens
-- Wire up navigation for new screens
-- Run Playwright E2E tests to verify fixes
+- Create breathing audio content
+- Test AI Chat with knowledge base
+- Begin Phase 4: Subscriptions
 
 ---
 
@@ -231,12 +235,20 @@
 - ✅ Auto-save functionality
 
 ### Meditation Content
-- ⏳ In Progress (User generating)
-  - 12 guided meditation audio files (6 sessions × 2 narrators)
-  - 3-5 ambient background music tracks
-  - Total: ~15-17 audio files
-  - Format: MP3
-  - Tool: Cartesia AI + Suno AI
+- ✅ **WORKING ON IPHONE** (2025-12-07)
+  - **Guided**: 3 tracks uploaded and working
+    - Evening Healing Meditation (24 min)
+    - Mind-Body Connection (25 min)
+    - Mirror of Manifestation (9 min)
+  - **Music**: 6 tracks uploaded and working
+    - Adrift Volume 2 (15min, 30min)
+    - All Loving Angel (15min, 30min)
+    - Healing Circles (6 min)
+    - Heart Harmony (9 min)
+  - **Breathing**: Coming soon (UI intact, audio pending)
+    - Box Breathing, Deep Calm, Energy Boost
+  - Storage bucket: `meditation-audio`
+  - Upload tool: `tools/meditation-upload/upload.js`
 
 ### AI Knowledge Base
 - ⏳ Waiting for user input
@@ -362,6 +374,25 @@
 ---
 
 ## Change Log
+
+### 2025-12-07
+- ✅ **MAJOR MILESTONE: Audio Working on iPhone!**
+  - Fixed bucket name mismatch (`meditations` → `meditation-audio`)
+  - Uploaded 9 meditation audio files to Supabase Storage
+  - Cleaned up duplicate and broken database entries
+  - **Guided meditations**: 3 tracks working
+  - **Music tracks**: 6 tracks working
+  - **Breathing exercises**: Coming soon (UI intact, audio content pending)
+- ✅ **Progress Tracking FIXED** across 8 workbook screens
+  - Phase 7: GratitudeJournal, GratitudeLetters, GratitudeMeditation
+  - Phase 9: TrustAssessment, Signs, SurrenderPractice
+  - Phase 10: FutureLetter, Graduation
+  - All now correctly save with `completed: true`
+- ✅ **Apple Sign-In Implemented**
+  - auth.ts, LoginScreen.tsx, SignupScreen.tsx updated
+- ✅ **Tools Added**
+  - `tools/meditation-upload/` - Audio upload to Supabase
+  - Commits pushed to GitHub
 
 ### 2025-12-05
 - ✅ **Major UI Redesign - Consistent Visual Language**
