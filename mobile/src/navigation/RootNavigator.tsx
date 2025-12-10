@@ -13,6 +13,7 @@ import type { RootStackParamList } from '../types/navigation';
 // Import navigators and screens
 import { MainTabNavigator } from './MainTabNavigator';
 import { AuthNavigator } from './AuthNavigator';
+import { PaywallScreen } from '../screens/subscription/PaywallScreen';
 import { useAuthStore } from '../stores/authStore';
 import { supabase } from '../services/supabase';
 
@@ -89,6 +90,18 @@ export const RootNavigator = () => {
           // Not authenticated: Show auth flow
           <Stack.Screen name="Auth" component={AuthNavigator} />
         )}
+
+        {/* Modal Screens - Available from anywhere */}
+        <Stack.Group screenOptions={{ presentation: 'modal' }}>
+          <Stack.Screen
+            name="Paywall"
+            component={PaywallScreen}
+            options={{
+              headerShown: false,
+              gestureEnabled: true,
+            }}
+          />
+        </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
   );

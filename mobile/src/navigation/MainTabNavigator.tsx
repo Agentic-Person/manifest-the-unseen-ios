@@ -2,12 +2,13 @@
  * Main Tab Navigator
  *
  * Bottom tab navigation for the main app screens.
- * Matches the PRD wireframes with 5 primary tabs.
+ * 4 primary tabs: Home, Workbook, Meditate, Guru, Profile
  */
 
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import type { MainTabParamList } from '../types/navigation';
 import { colors } from '../theme';
 import { BackgroundImages } from '../assets';
@@ -16,10 +17,8 @@ import { BackgroundImages } from '../assets';
 import HomeScreen from '../screens/HomeScreen';
 import { WorkbookNavigator } from './WorkbookNavigator';
 import { MeditateNavigator } from './MeditateNavigator';
-import JournalScreen from '../screens/JournalScreen';
-// import { AIChatScreen } from '../screens/AIChatScreen'; // Wisdom tab removed - will be integrated into Journal
+import GuruScreen from '../screens/GuruScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import NewJournalEntryScreen from '../screens/NewJournalEntryScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -138,25 +137,21 @@ export const MainTabNavigator = () => {
       />
 
       <Tab.Screen
-        name="Journal"
-        component={JournalScreen}
+        name="Guru"
+        component={GuruScreen}
         options={{
-          title: 'Journal',
-          tabBarLabel: 'Journal',
-          tabBarIcon: ({ focused }) => (
-            <Image
-              source={BackgroundImages.scroll}
-              style={[
-                styles.tabIcon,
-                { opacity: focused ? 1 : 0.5 },
-              ]}
-              resizeMode="contain"
+          title: 'Guru',
+          tabBarLabel: 'Guru',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name="bulb-outline"
+              size={26}
+              color={focused ? colors.primary[500] : color}
+              style={{ opacity: focused ? 1 : 0.5 }}
             />
           ),
         }}
       />
-
-      {/* Wisdom tab removed - will be integrated into Journal */}
 
       <Tab.Screen
         name="Profile"
@@ -168,30 +163,6 @@ export const MainTabNavigator = () => {
           // tabBarIcon: ({ color, size }) => (
           //   <ProfileIcon color={color} size={size} />
           // ),
-        }}
-      />
-
-      {/* NewJournalEntry Screen - Hidden from tab bar */}
-      <Tab.Screen
-        name="NewJournalEntry"
-        component={NewJournalEntryScreen}
-        options={{
-          title: 'New Entry',
-          tabBarButton: () => null, // Hide from tab bar
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: colors.background.primary,
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border.default,
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.text.primary,
-          },
-          headerTintColor: colors.text.primary,
         }}
       />
     </Tab.Navigator>

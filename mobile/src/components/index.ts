@@ -17,3 +17,11 @@ export * from './Text';
 
 // Form components for workbook exercises
 export * from './forms';
+
+// Subscription upgrade prompts
+export * from './UpgradePrompt';
+
+// Guru components
+export * from './guru/PhaseCard';
+export * from './guru/PhaseSelector';
+export * from './guru/GuruEmptyState';

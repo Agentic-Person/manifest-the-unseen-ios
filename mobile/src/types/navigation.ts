@@ -16,6 +16,9 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
+  Paywall: {
+    lockedFeature?: string;
+  } | undefined;
 };
 
 /**
@@ -36,10 +39,8 @@ export type MainTabParamList = {
   Home: undefined;
   Workbook: undefined;
   Meditate: undefined;
-  Journal: undefined;
-  // Wisdom: undefined; // AI Chat screen - removed, will be integrated into Journal
+  Guru: undefined; // Phase-based AI analysis - Enlightenment tier exclusive
   Profile: undefined;
-  NewJournalEntry: undefined;
 };
 
 /**
@@ -115,16 +116,6 @@ export type WorkbookStackParamList = {
 };
 
 /**
- * Journal Stack Navigator Param List
- * Nested navigation for journal features
- */
-export type JournalStackParamList = {
-  JournalHome: undefined;
-  JournalEntry: { entryId?: string };
-  VoiceRecorder: undefined;
-};
-
-/**
  * Meditate Stack Navigator Param List
  * Nested navigation for meditation features
  */
@@ -134,6 +125,10 @@ export type MeditateStackParamList = {
     meditationId: string;
     title: string;
     duration: number;
+    /** Index of the meditation in its category list (for image lookup) */
+    imageIndex?: number;
+    /** Type of meditation for image category selection */
+    meditationType?: 'guided' | 'breathing' | 'music';
   };
   BreathingExercise: { exerciseType: 'box' | 'deep' | 'calm' };
 };
@@ -183,13 +178,6 @@ export type WorkbookStackScreenProps<T extends keyof WorkbookStackParamList> =
   CompositeScreenProps<
     NativeStackScreenProps<WorkbookStackParamList, T>,
     MainTabScreenProps<'Workbook'>
-  >;
-
-// Journal Stack Screen Props
-export type JournalStackScreenProps<T extends keyof JournalStackParamList> =
-  CompositeScreenProps<
-    NativeStackScreenProps<JournalStackParamList, T>,
-    MainTabScreenProps<'Journal'>
   >;
 
 // Meditate Stack Screen Props

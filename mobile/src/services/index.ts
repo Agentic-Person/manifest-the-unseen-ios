@@ -28,7 +28,6 @@ export {
   queryKeys,
   invalidateUserQueries,
   invalidateWorkbookQueries,
-  invalidateJournalQueries,
   invalidateMeditationQueries,
   clearAllCaches,
 } from './queryClient';
@@ -47,17 +46,6 @@ export {
   resetAllProgress,
 } from './workbook';
 
-// Journal service
-export {
-  createJournalEntry,
-  getJournalEntries,
-  getJournalEntry,
-  updateJournalEntry,
-  deleteJournalEntry,
-  uploadJournalImage,
-  deleteJournalImage,
-} from './journalService';
-
 // Whisper service
 export {
   isModelDownloaded,
@@ -71,3 +59,6 @@ export {
 
 // AI Chat service
 export { aiChatService } from './aiChatService';
+
+// Guru service
+export * as guruService from './guruService';

@@ -25,14 +25,6 @@ export type {
 
 export { WORKSHEET_IDS, WORKSHEETS_PER_PHASE } from './workbook';
 
-// Journal types
-export type {
-  JournalEntry,
-  CreateJournalEntry,
-  UpdateJournalEntry,
-  JournalEntryDisplay,
-} from './journal';
-
 // Database types
 export type { Database } from './database';
 
@@ -60,3 +52,17 @@ export {
   getMeditationIcon,
   getMeditationTypeLabel,
 } from './meditation';
+
+// Guru types
+export type {
+  GuruMessage,
+  GuruConversation,
+  GuruConversationInsert,
+  GuruAnalysisRequest,
+  GuruAnalysisResponse,
+  PhaseAnalysis,
+  CompletedPhase,
+  GuruState,
+} from './guru';
+
+export { PHASE_NAMES } from './guru';
