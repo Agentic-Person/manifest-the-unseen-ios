@@ -1,8 +1,8 @@
 # Manifest the Unseen - Project Status
 
-**Last Updated**: 2025-12-07
-**Current Phase**: Phase 3 - AI & Advanced Features (Near Complete)
-**Overall Progress**: 65% Complete
+**Last Updated**: 2025-12-10
+**Current Phase**: Phase 4 - Subscriptions & Polish (In Progress)
+**Overall Progress**: 70% Complete
 
 ---
 
@@ -14,30 +14,33 @@
   - Guided: 3 tracks (working)
   - Music: 6 tracks (working)
   - Breathing: Coming soon (UI intact, audio content pending)
-- Phase 2: Voice Journal MVP complete
 - Phase 3: AI Chat Frontend complete
 - Phase 3: YouTube Transcript Scraper tool (327 knowledge embeddings)
-- **Progress Tracking FIXED**: All 9 workbook screens fixed with `completed: true`
+- **Progress Tracking FIXED**: All workbook screens fixed with `completed: true`
 - **Apple Sign-In**: Implemented
 - **UI Polish**: Consistent design language across all screens
 - **App Running on iPhone**: Standalone build working via Apple Developer
+- **HomeScreen Redesigned**: Mystical forest background, "MANIFEST THE UNSEEN" title, graphical nav cards
+- **Workbook Progress Meters**: Color-coded progress bars (red→orange→yellow→green) on all phases
+- **Journal Feature Removed**: Streamlined app focus
+- **RevenueCat Integration Started**: Subscription service, stores, and hooks scaffolded
 
 **What's Working** ✅:
-- All 10 workbook phases with progress tracking
+- All 10 workbook phases with visual progress tracking
 - Meditation audio playback (9 tracks)
-- Voice recording (expo-av)
 - Authentication (email + Apple Sign-In ready)
 - AI Chat frontend
+- Guru tab with Tree of Life icon
 
 **Coming Soon** ⏳:
 - Breathing exercises (UI ready, audio content pending)
-- Voice transcription (requires whisper.rn in EAS build)
-- Subscriptions (RevenueCat - Phase 4)
+- RevenueCat paywall completion
+- Subscription tier gating
 
 **What's Next** 🎯:
+- Complete RevenueCat paywall UI
+- Test subscription purchase flow
 - Create breathing audio content
-- Test AI Chat with knowledge base
-- Begin Phase 4: Subscriptions
 
 ---
 
@@ -135,10 +138,19 @@
 - [ ] Shortcuts app support
 
 ### Phase 4: Subscriptions & Polish (Weeks 21-24)
-**Status**: Not Started
-- [ ] RevenueCat integration
-- [ ] Subscription tiers (Novice, Awakening, Enlightenment)
-- [ ] Paywall UI
+**Status**: ⏳ In Progress
+- [x] RevenueCat integration scaffolded
+  - subscriptionService.ts created
+  - subscriptionStore.ts (Zustand) created
+  - useSubscription.ts hook created
+  - PaywallScreen.tsx created
+  - Subscription types defined
+- [x] Journal feature removed (streamlined focus)
+- [x] HomeScreen redesigned with mystical theme
+- [x] Workbook progress meters with color gradients
+- [x] Guru tab with Tree of Life icon
+- [ ] Subscription tiers (Novice, Awakening, Enlightenment) - IN PROGRESS
+- [ ] Paywall UI completion
 - [ ] Feature gating
 - [ ] Analytics (TelemetryDeck)
 - [ ] Error tracking (Sentry)
@@ -374,6 +386,33 @@
 ---
 
 ## Change Log
+
+### 2025-12-10
+- ✅ **HomeScreen Complete Redesign**
+  - Mystical forest meditation background (hero-monk-mobile-03.png)
+  - "MANIFEST THE UNSEEN" title in 3 rows with ethereal gold typography
+  - Graphical navigation cards for Workbook and Meditate
+  - Nikola Tesla quote in Daily Inspiration section
+  - Tab bar transparency with safe area handling
+- ✅ **Workbook Progress Meters Implemented**
+  - New `useAllPhasesProgress` hook for efficient progress fetching
+  - New `GradientProgressBar` component with dynamic colors:
+    - Red (0-25%) → Orange (26-50%) → Yellow (51-75%) → Green (76-100%)
+  - Header shows overall completion percentage with motivational messages
+  - Per-phase progress bars (only shown when started)
+  - "Complete ✓" badge for finished phases
+- ✅ **Journal Feature Removed**
+  - Streamlined app focus on Workbook, Meditation, and Guru
+  - Deleted JournalScreen, NewJournalEntryScreen, journal components
+  - Removed journal hooks, services, and types
+- ✅ **Navigation Updates**
+  - Guru tab now uses Tree of Life icon (tree_of_life_blue_02.png)
+  - Removed Ionicons dependency from MainTabNavigator
+  - Updated workbook2.png for Workbook nav card
+- ✅ **RevenueCat Integration Started**
+  - Subscription service scaffolded
+  - Subscription store and hooks created
+  - PaywallScreen registered in navigation
 
 ### 2025-12-07
 - ✅ **MAJOR MILESTONE: Audio Working on iPhone!**
