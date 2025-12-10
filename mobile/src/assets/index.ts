@@ -209,10 +209,16 @@ export function getPhaseExerciseImages(phaseNumber: number) {
 // =============================================================================
 export const BackgroundImages = {
   journal: require('./images-compressed/backgrounds/journal.png'),
-  scroll: require('./images-compressed/backgrounds/scroll.png'),
   home: require('./images-compressed/backgrounds/home.png'),
   meditate: require('./images-compressed/backgrounds/meditate.png'),
   workbook: require('./images-compressed/backgrounds/workbook.png'),
+  workbook2: require('./images-compressed/backgrounds/workbook2.png'),
+  guru: require('./images-compressed/backgrounds/tree_of_life_blue_02.png'),
+  // Card images for HomeScreen navigation
+  meditateCard: require('./images-compressed/backgrounds/meditate-card.png'),
+  workbookCard: require('./images-compressed/backgrounds/workbook-card.png'),
+  // Global app background - mystical forest meditation scene
+  mysticalForest: require('./images-compressed/backgrounds/hero-monk-mobile-03.png'),
 } as const;
 
 export type BackgroundImageKey = keyof typeof BackgroundImages;

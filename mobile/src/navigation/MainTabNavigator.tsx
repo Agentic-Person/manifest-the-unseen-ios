@@ -8,7 +8,7 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { MainTabParamList } from '../types/navigation';
 import { colors } from '../theme';
 import { BackgroundImages } from '../assets';
@@ -39,19 +39,22 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
  * ```
  */
 export const MainTabNavigator = () => {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
-        // Tab bar styling - Ancient Mystical Design
+        // Tab bar styling - Ancient Mystical Design with transparency
         tabBarActiveTintColor: colors.primary[500], // Aged Gold (#C4A052)
         tabBarInactiveTintColor: colors.text.tertiary, // Muted gray (#6B6B6B)
         tabBarStyle: {
-          backgroundColor: colors.background.primary, // Deep Void (#0A0A0F)
-          borderTopColor: colors.border.default, // Subtle gold border rgba(196, 160, 82, 0.15)
+          backgroundColor: 'rgba(10, 10, 15, 0.85)', // Semi-transparent Deep Void
+          borderTopColor: colors.border.default, // Subtle gold border
           borderTopWidth: 1,
-          height: 70, // Compact height
-          paddingBottom: 4,
-          paddingTop: 2,
+          height: 60 + insets.bottom, // Dynamic height based on safe area
+          paddingBottom: insets.bottom, // Safe area padding for home indicator
+          paddingTop: 8,
+          position: 'absolute', // Float above content
         },
         tabBarLabelStyle: {
           fontSize: 11,
@@ -62,14 +65,14 @@ export const MainTabNavigator = () => {
         tabBarIconStyle: {
           marginBottom: -4, // Pull icon down closer to label
         },
-        // Header styling - DARK MODE
+        // Header styling - Transparent to show global background
         headerStyle: {
-          backgroundColor: colors.background.primary,
+          backgroundColor: 'transparent',
           elevation: 0,
           shadowOpacity: 0,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.border.default,
+          borderBottomWidth: 0,
         },
+        headerTransparent: true,
         headerTitleStyle: {
           fontSize: 18,
           fontWeight: '700',
@@ -83,6 +86,7 @@ export const MainTabNavigator = () => {
         options={{
           title: 'Home',
           tabBarLabel: 'Home',
+          headerShown: false, // HomeScreen handles its own layout
           tabBarIcon: ({ focused }) => (
             <Image
               source={BackgroundImages.home}
@@ -142,12 +146,14 @@ export const MainTabNavigator = () => {
         options={{
           title: 'Guru',
           tabBarLabel: 'Guru',
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons
-              name="bulb-outline"
-              size={26}
-              color={focused ? colors.primary[500] : color}
-              style={{ opacity: focused ? 1 : 0.5 }}
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={BackgroundImages.guru}
+              style={[
+                styles.tabIcon,
+                { opacity: focused ? 1 : 0.5 },
+              ]}
+              resizeMode="contain"
             />
           ),
         }}

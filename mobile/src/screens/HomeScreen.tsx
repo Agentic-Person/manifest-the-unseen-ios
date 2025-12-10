@@ -1,8 +1,9 @@
 /**
  * Home Screen
  *
- * Beautiful landing page with main navigation cards:
- * Workbook and Meditate - plus daily inspiration.
+ * Landing page with "Manifest the Unseen" title,
+ * navigation buttons, and daily inspiration.
+ * Features mystical forest background.
  */
 
 import React from 'react';
@@ -10,110 +11,103 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  Image,
   Pressable,
+  ImageBackground,
+  Image,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { MainTabScreenProps } from '../types/navigation';
-import { useUser } from '../stores/authStore';
-import { colors, spacing, borderRadius, shadows } from '../theme';
+import { colors, spacing, borderRadius } from '../theme';
 import { BackgroundImages } from '../assets';
 
 type Props = MainTabScreenProps<'Home'>;
 
 /**
- * Navigation card data
- */
-const NAVIGATION_CARDS = [
-  {
-    id: 'workbook',
-    title: 'Workbook',
-    subtitle: 'Your transformation journey',
-    image: BackgroundImages.workbook,
-    route: 'Workbook' as const,
-  },
-  {
-    id: 'meditate',
-    title: 'Meditate',
-    subtitle: 'Find peace and clarity',
-    image: BackgroundImages.meditate,
-    route: 'Meditate' as const,
-  },
-];
-
-/**
  * Home Screen Component
  */
 const HomeScreen = ({ navigation }: Props) => {
-  const user = useUser();
+  const insets = useSafeAreaInsets();
 
   /**
-   * Handle card press - navigate to the selected section
+   * Handle button press - navigate to the selected section
    */
-  const handleCardPress = (route: 'Workbook' | 'Meditate') => {
+  const handleNavPress = (route: 'Workbook' | 'Meditate') => {
     navigation.navigate(route);
   };
 
   return (
-    <ScrollView
+    <ImageBackground
+      source={BackgroundImages.mysticalForest}
       style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
+      resizeMode="contain"
+      imageStyle={styles.backgroundImage}
     >
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.greeting}>Welcome back!</Text>
-        {user && <Text style={styles.userName}>{user.email}</Text>}
-      </View>
+      <View style={styles.content}>
+        {/* Title Section - "MANIFEST THE UNSEEN" in 3 rows */}
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleLine}>MANIFEST</Text>
+          <Text style={styles.titleLine}>THE</Text>
+          <Text style={styles.titleLine}>UNSEEN</Text>
+        </View>
 
-      {/* Navigation Cards */}
-      <View style={styles.cardsContainer}>
-        {NAVIGATION_CARDS.map((card) => (
+        {/* Spacer to push content down */}
+        <View style={styles.spacer} />
+
+        {/* Daily Inspiration - positioned in middle area */}
+        <View style={styles.inspirationCard}>
+          <Text style={styles.inspirationLabel}>Daily Inspiration</Text>
+          <Text style={styles.quote}>
+            "If you want to find the secrets of the universe, think in terms of energy, frequency and vibration."
+          </Text>
+          <Text style={styles.quoteAuthor}>- Nikola Tesla</Text>
+        </View>
+
+        {/* Navigation Cards - graphical card buttons */}
+        <View style={[styles.navCardsContainer, { marginBottom: 70 + insets.bottom }]}>
+          {/* Workbook Card */}
           <Pressable
-            key={card.id}
             style={({ pressed }) => [
               styles.navCard,
               pressed && styles.navCardPressed,
             ]}
-            onPress={() => handleCardPress(card.route)}
+            onPress={() => handleNavPress('Workbook')}
             accessibilityRole="button"
-            accessibilityLabel={`Go to ${card.title}`}
+            accessibilityLabel="Go to Workbook"
           >
-            {/* Card Image */}
-            <View style={styles.cardImageContainer}>
-              <Image
-                source={card.image}
-                style={styles.cardImage}
-                resizeMode="cover"
-              />
-              <LinearGradient
-                colors={['transparent', 'rgba(10, 10, 15, 0.95)']}
-                style={styles.cardGradient}
-              />
-            </View>
-
-            {/* Card Content */}
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{card.title}</Text>
-              <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
+            <Image
+              source={BackgroundImages.workbook2}
+              style={styles.navCardImage}
+              resizeMode="cover"
+            />
+            <View style={styles.navCardContent}>
+              <Text style={styles.navCardTitle}>Workbook</Text>
+              <Text style={styles.navCardSubtitle}>Your transformation journey</Text>
             </View>
           </Pressable>
-        ))}
-      </View>
 
-      {/* Daily Inspiration */}
-      <View style={styles.inspirationCard}>
-        <Text style={styles.inspirationLabel}>Daily Inspiration</Text>
-        <Text style={styles.quote}>
-          "The energy you put out is the energy you get back. Stay positive."
-        </Text>
-        <Text style={styles.quoteAuthor}>- Manifest the Unseen</Text>
+          {/* Meditate Card */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.navCard,
+              pressed && styles.navCardPressed,
+            ]}
+            onPress={() => handleNavPress('Meditate')}
+            accessibilityRole="button"
+            accessibilityLabel="Go to Meditate"
+          >
+            <Image
+              source={BackgroundImages.meditate}
+              style={styles.navCardImage}
+              resizeMode="cover"
+            />
+            <View style={styles.navCardContent}>
+              <Text style={styles.navCardTitle}>Meditate</Text>
+              <Text style={styles.navCardSubtitle}>Find peace and clarity</Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
-
-      {/* Bottom Spacing */}
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+    </ImageBackground>
   );
 };
 
@@ -123,104 +117,134 @@ const HomeScreen = ({ navigation }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background.primary,
+    backgroundColor: '#0A0A0F', // Deep void behind image
   },
-  content: {
-    padding: spacing.md,
-  },
-  header: {
-    marginBottom: spacing.lg,
-  },
-  greeting: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text.golden,
-    marginBottom: 4,
-  },
-  userName: {
-    fontSize: 16,
-    color: colors.text.secondary,
-  },
-
-  // Navigation Cards
-  cardsContainer: {
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  navCard: {
-    borderRadius: borderRadius.xl,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: colors.brand.gold,
-    backgroundColor: colors.background.elevated,
-    ...shadows.lg,
-  },
-  navCardPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  cardImageContainer: {
-    height: 140,
-    position: 'relative',
-  },
-  cardImage: {
+  backgroundImage: {
     width: '100%',
     height: '100%',
   },
-  cardGradient: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 80,
-  },
-  cardContent: {
-    padding: spacing.md,
-    paddingTop: spacing.sm,
-  },
-  cardTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.text.primary,
-    marginBottom: 4,
-  },
-  cardSubtitle: {
-    fontSize: 14,
-    color: colors.text.secondary,
-    fontStyle: 'italic',
+  content: {
+    flex: 1,
+    paddingTop: 50, // Safe area + some breathing room
   },
 
-  // Daily Inspiration
+  // Title Section - Style Option 1: Ethereal/Mystical
+  // Try different styles by uncommenting alternatives below
+  titleContainer: {
+    alignItems: 'center',
+    marginTop: spacing.md,
+    marginBottom: spacing.md,
+  },
+  titleLine: {
+    // OPTION 1: Ethereal thin (current)
+    fontSize: 32,
+    fontWeight: '200', // Extra light for ethereal feel
+    color: '#E8D5A3', // Warmer, softer gold
+    letterSpacing: 12,
+    textTransform: 'uppercase',
+    lineHeight: 42,
+    textShadowColor: 'rgba(232, 213, 163, 0.3)', // Subtle glow
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+
+    // OPTION 2: Bold & Mystical - uncomment to try:
+    // fontSize: 36,
+    // fontWeight: '700',
+    // color: '#C4A052',
+    // letterSpacing: 6,
+    // textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    // textShadowOffset: { width: 0, height: 3 },
+    // textShadowRadius: 6,
+
+    // OPTION 3: Serif-like elegant - uncomment to try:
+    // fontSize: 28,
+    // fontWeight: '400',
+    // fontStyle: 'italic',
+    // color: '#D4B896',
+    // letterSpacing: 4,
+    // lineHeight: 38,
+  },
+
+  // Spacer
+  spacer: {
+    flex: 1,
+  },
+
+  // Daily Inspiration - Reduced padding by 60%
   inspirationCard: {
-    backgroundColor: colors.background.elevated,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
+    backgroundColor: 'rgba(10, 10, 15, 0.7)', // Semi-transparent
+    borderRadius: borderRadius.lg,
+    paddingVertical: spacing.sm, // Reduced from spacing.lg
+    paddingHorizontal: spacing.md, // Reduced from spacing.lg
+    marginHorizontal: spacing.md, // Match navCardsContainer paddingHorizontal
     borderWidth: 1,
-    borderColor: colors.border.gold,
+    borderColor: 'rgba(196, 160, 82, 0.3)',
   },
   inspirationLabel: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '600',
     color: colors.text.golden,
     textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: spacing.sm,
+    letterSpacing: 1.5,
+    marginBottom: spacing.xs,
   },
   quote: {
-    fontSize: 18,
+    fontSize: 15,
     fontStyle: 'italic',
     color: colors.text.primary,
-    marginBottom: spacing.sm,
-    lineHeight: 28,
+    marginBottom: spacing.xs,
+    lineHeight: 22,
   },
   quoteAuthor: {
-    fontSize: 14,
+    fontSize: 12,
     color: colors.text.secondary,
     textAlign: 'right',
   },
 
-  bottomSpacer: {
-    height: spacing.xl,
+  // Navigation Cards - Graphical card buttons
+  navCardsContainer: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    paddingHorizontal: spacing.md,
+    marginTop: spacing.lg,
+  },
+  navCard: {
+    flex: 1,
+    height: 120,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(196, 160, 82, 0.4)',
+  },
+  navCardPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+  navCardImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  navCardContent: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    padding: spacing.sm,
+    backgroundColor: 'rgba(10, 10, 15, 0.5)',
+  },
+  navCardTitle: {
+    color: '#E8D5A3',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  navCardSubtitle: {
+    color: colors.text.secondary,
+    fontSize: 11,
+    marginTop: 2,
+    textAlign: 'center',
   },
 });
 
