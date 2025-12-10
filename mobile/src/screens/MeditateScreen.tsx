@@ -148,14 +148,16 @@ const MeditateScreen = () => {
    * Handle meditation press
    */
   const handleMeditationPress = useCallback(
-    (meditation: Meditation) => {
+    (meditation: Meditation, index: number) => {
       navigation.navigate('MeditationPlayer', {
         meditationId: meditation.id,
         title: meditation.title,
         duration: meditation.duration_seconds,
+        imageIndex: index,
+        meditationType: activeTab,
       });
     },
-    [navigation]
+    [navigation, activeTab]
   );
 
   /**
@@ -284,7 +286,7 @@ const MeditateScreen = () => {
           renderItem={({ item, index }) => (
             <MeditationCard
               meditation={item}
-              onPress={handleMeditationPress}
+              onPress={(meditation) => handleMeditationPress(meditation, index)}
               image={getMeditationImage(activeTab, index)}
               index={index}
             />

@@ -130,3 +130,6 @@ design-mockup.html
 mobile/test-imports.ts
 mobile/android/
 
+# RevenueCat setup files with API keys
+docs/REVENUECAT_IOS_SWIFT_SETUP.md
+

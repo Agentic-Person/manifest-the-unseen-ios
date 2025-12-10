@@ -16,8 +16,6 @@ export type {
   RootStackScreenProps,
   WorkbookStackParamList,
   WorkbookStackScreenProps,
-  JournalStackParamList,
-  JournalStackScreenProps,
   MeditateStackParamList,
   MeditateStackScreenProps,
   ProfileStackParamList,

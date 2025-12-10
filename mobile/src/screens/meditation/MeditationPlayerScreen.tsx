@@ -14,9 +14,12 @@ import {
   Animated,
   Easing,
   Platform,
+  Image,
+  ImageSourcePropType,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, shadows, borderRadius } from '../../theme';
 import { useAudioPlayer } from '../../hooks/useAudioPlayer';
@@ -29,6 +32,61 @@ import {
 import { formatTime, getMeditationIcon, getMeditationTypeLabel } from '../../types/meditation';
 import type { MeditateStackScreenProps } from '../../types/navigation';
 import { Loading } from '../../components/Loading';
+import {
+  GuidedMeditationImages,
+  BreathingImages,
+  InstrumentalImages,
+} from '../../assets';
+
+// Image arrays for each category (same order as MeditateScreen)
+const GUIDED_IMAGES = [
+  GuidedMeditationImages.morningAwakening,
+  GuidedMeditationImages.mindBody,
+  GuidedMeditationImages.innerPeace,
+];
+
+const BREATHING_IMAGES = [
+  BreathingImages.boxBreathing,
+  BreathingImages.deepCalm,
+  BreathingImages.energyBoost,
+];
+
+const INSTRUMENTAL_IMAGES = [
+  InstrumentalImages.track01,
+  InstrumentalImages.track02,
+  InstrumentalImages.track03,
+  InstrumentalImages.track04,
+  InstrumentalImages.track05,
+  InstrumentalImages.track06,
+  InstrumentalImages.track07,
+  InstrumentalImages.track08,
+  InstrumentalImages.track09,
+  InstrumentalImages.track10,
+  InstrumentalImages.track11,
+  InstrumentalImages.track12,
+  InstrumentalImages.track13,
+];
+
+/**
+ * Get image for meditation based on type and index
+ */
+const getMeditationImage = (
+  type: 'guided' | 'breathing' | 'music' | undefined,
+  index: number | undefined
+): ImageSourcePropType | undefined => {
+  if (index === undefined || type === undefined) return undefined;
+
+  switch (type) {
+    case 'guided':
+      return GUIDED_IMAGES[index % GUIDED_IMAGES.length];
+    case 'breathing':
+      return BREATHING_IMAGES[index % BREATHING_IMAGES.length];
+    case 'music':
+      return INSTRUMENTAL_IMAGES[index % INSTRUMENTAL_IMAGES.length];
+    default:
+      return undefined;
+  }
+};
 
 type Props = MeditateStackScreenProps<'MeditationPlayer'>;
 
@@ -36,7 +94,10 @@ type Props = MeditateStackScreenProps<'MeditationPlayer'>;
  * MeditationPlayerScreen Component
  */
 const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { meditationId } = route.params;
+  const { meditationId, imageIndex, meditationType } = route.params;
+
+  // Get the meditation image based on type and index
+  const meditationImage = getMeditationImage(meditationType, imageIndex);
 
   // Fetch meditation details
   const { data: meditation, isLoading, error } = useMeditation(meditationId);
@@ -50,6 +111,9 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
   // Track if session was completed
   const [sessionCompleted, setSessionCompleted] = useState(false);
 
+  // Track if user is seeking (to prevent progress updates during seek)
+  const [isSeeking, setIsSeeking] = useState(false);
+
   // Audio player
   const {
     state,
@@ -59,6 +123,7 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
     load,
     play,
     pause,
+    seek,
     seekRelative,
     unload,
   } = useAudioPlayer({
@@ -193,6 +258,22 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [seekRelative]);
 
   /**
+   * Handle slider seek start
+   */
+  const handleSeekStart = useCallback(() => {
+    setIsSeeking(true);
+  }, []);
+
+  /**
+   * Handle slider seek complete
+   */
+  const handleSeekComplete = useCallback(async (value: number) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await seek(value);
+    setIsSeeking(false);
+  }, [seek]);
+
+  /**
    * Handle close
    */
   const handleClose = useCallback(() => {
@@ -257,7 +338,7 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
 
       {/* Main Content */}
       <View style={styles.content}>
-        {/* Album Art / Icon */}
+        {/* Album Art / Image */}
         <Animated.View
           style={[
             styles.artwork,
@@ -269,7 +350,15 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
             },
           ]}
         >
-          <Ionicons name={iconName} size={80} color={colors.dark.accentGold} />
+          {meditationImage ? (
+            <Image
+              source={meditationImage}
+              style={styles.artworkImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <Ionicons name={iconName} size={80} color={colors.dark.accentGold} />
+          )}
         </Animated.View>
 
         {/* Title & Description */}
@@ -280,23 +369,20 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
           </Text>
         )}
 
-        {/* Progress Bar */}
+        {/* Progress Slider */}
         <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${progress.progress * 100}%` },
-              ]}
-            />
-            <Pressable
-              style={[
-                styles.progressThumb,
-                { left: `${progress.progress * 100}%` },
-              ]}
-              onPress={() => {}}
-            />
-          </View>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={progress.duration || 1}
+            value={isSeeking ? undefined : progress.position}
+            onSlidingStart={handleSeekStart}
+            onSlidingComplete={handleSeekComplete}
+            minimumTrackTintColor={colors.dark.accentGold}
+            maximumTrackTintColor={colors.background.elevated}
+            thumbTintColor={colors.dark.accentGold}
+            disabled={!isLoaded}
+          />
           <View style={styles.timeContainer}>
             <Text style={styles.timeText}>{formatTime(progress.position)}</Text>
             <Text style={styles.timeText}>{formatTime(progress.duration)}</Text>
@@ -411,14 +497,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   artwork: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
+    width: 220,
+    height: 220,
+    borderRadius: 20,
     backgroundColor: colors.background.elevated,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.xl,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: colors.brand.gold,
     ...shadows.lg,
+  },
+  artworkImage: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontSize: 24,
@@ -439,26 +532,9 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: spacing.xl,
   },
-  progressBar: {
-    height: 4,
-    backgroundColor: colors.background.elevated,
-    borderRadius: 2,
-    overflow: 'visible',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.dark.accentGold,
-    borderRadius: 2,
-  },
-  progressThumb: {
-    position: 'absolute',
-    top: -6,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: colors.dark.accentGold,
-    marginLeft: -8,
-    ...shadows.sm,
+  slider: {
+    width: '100%',
+    height: 40,
   },
   timeContainer: {
     flexDirection: 'row',

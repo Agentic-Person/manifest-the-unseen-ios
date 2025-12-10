@@ -79,54 +79,6 @@ export function useMeditationAccess(meditationIndex: number): boolean {
 }
 
 /**
- * Get Journal Quota
- * Returns journal entry quota information for current tier
- *
- * @param currentMonthCount - Number of journal entries created this month
- * @returns Quota information
- *
- * @example
- * const { hasQuota, limit, remaining } = useJournalQuota(45);
- * if (!hasQuota) {
- *   // Show upgrade prompt
- * }
- */
-export function useJournalQuota(currentMonthCount: number): {
-  hasQuota: boolean;
-  limit: number;
-  remaining: number;
-  isUnlimited: boolean;
-} {
-  const tier = useSubscriptionStore((state) => state.tier);
-
-  return useMemo(() => {
-    const limits = FEATURE_LIMITS[tier];
-    const limit = limits.maxJournalsPerMonth;
-
-    // Unlimited (-1 means unlimited)
-    if (limit === -1) {
-      return {
-        hasQuota: true,
-        limit: -1,
-        remaining: -1,
-        isUnlimited: true,
-      };
-    }
-
-    // Check if under quota
-    const hasQuota = currentMonthCount < limit;
-    const remaining = Math.max(0, limit - currentMonthCount);
-
-    return {
-      hasQuota,
-      limit,
-      remaining,
-      isUnlimited: false,
-    };
-  }, [tier, currentMonthCount]);
-}
-
-/**
  * Get AI Chat Quota
  * Returns AI chat quota information for current tier
  *
@@ -175,24 +127,6 @@ export function useAIChatQuota(todayCount: number): {
 }
 
 /**
- * Check Voice Transcription Access
- * Returns true if user's tier includes voice transcription feature
- *
- * @returns True if user has voice transcription access
- *
- * @example
- * const hasVoiceTranscription = useVoiceTranscriptionAccess();
- */
-export function useVoiceTranscriptionAccess(): boolean {
-  const tier = useSubscriptionStore((state) => state.tier);
-
-  return useMemo(() => {
-    const limits = FEATURE_LIMITS[tier];
-    return limits.hasVoiceTranscription;
-  }, [tier]);
-}
-
-/**
  * Check Vision Board Access
  * Returns true if user's tier includes vision board feature
  *
@@ -232,11 +166,8 @@ export function useFeatureAccess() {
       tier,
       maxPhase: limits.maxPhase,
       maxMeditations: limits.maxMeditations,
-      maxJournalsPerMonth: limits.maxJournalsPerMonth,
       maxAIChatPerDay: limits.maxAIChatPerDay,
-      hasVoiceTranscription: limits.hasVoiceTranscription,
       hasVisionBoard: limits.hasVisionBoard,
-      isUnlimitedJournals: limits.maxJournalsPerMonth === -1,
       isUnlimitedAIChat: limits.maxAIChatPerDay === -1,
     };
   }, [tier]);

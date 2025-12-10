@@ -1,8 +1,8 @@
 /**
  * Home Screen
  *
- * Beautiful landing page with three main navigation cards:
- * Workbook, Meditate, and Journal - plus daily inspiration.
+ * Beautiful landing page with main navigation cards:
+ * Workbook and Meditate - plus daily inspiration.
  */
 
 import React from 'react';
@@ -40,13 +40,6 @@ const NAVIGATION_CARDS = [
     image: BackgroundImages.meditate,
     route: 'Meditate' as const,
   },
-  {
-    id: 'journal',
-    title: 'Journal',
-    subtitle: 'Capture your thoughts',
-    image: BackgroundImages.journal,
-    route: 'Journal' as const,
-  },
 ];
 
 /**
@@ -58,7 +51,7 @@ const HomeScreen = ({ navigation }: Props) => {
   /**
    * Handle card press - navigate to the selected section
    */
-  const handleCardPress = (route: 'Workbook' | 'Meditate' | 'Journal') => {
+  const handleCardPress = (route: 'Workbook' | 'Meditate') => {
     navigation.navigate(route);
   };
 

@@ -142,13 +142,6 @@ export const queryKeys = {
       ['workbook', 'phases', phaseId, 'exercises', exerciseId] as const,
   },
 
-  // Journal queries
-  journal: {
-    all: ['journal'] as const,
-    entries: (userId: string) => ['journal', 'entries', userId] as const,
-    entry: (id: string) => ['journal', 'entries', id] as const,
-  },
-
   // Meditation queries
   meditations: {
     all: ['meditations'] as const,
@@ -204,17 +197,6 @@ export const invalidateWorkbookQueries = (userId?: string) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.workbook.progress(userId) });
   } else {
     queryClient.invalidateQueries({ queryKey: queryKeys.workbook.all });
-  }
-};
-
-/**
- * Invalidate Journal Queries
- */
-export const invalidateJournalQueries = (userId?: string) => {
-  if (userId) {
-    queryClient.invalidateQueries({ queryKey: queryKeys.journal.entries(userId) });
-  } else {
-    queryClient.invalidateQueries({ queryKey: queryKeys.journal.all });
   }
 };
 

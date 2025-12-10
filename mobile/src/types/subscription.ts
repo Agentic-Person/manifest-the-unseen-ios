@@ -129,7 +129,6 @@ export const TIER_PRICING = {
     features: [
       'Phases 1-5',
       '3 guided meditations',
-      '50 journal entries per month',
       'AI wisdom chat (10 per day)',
       'Progress tracking',
     ],
@@ -140,7 +139,6 @@ export const TIER_PRICING = {
     features: [
       'Phases 1-8',
       '6 guided meditations',
-      '200 journal entries per month',
       'AI wisdom chat (50 per day)',
       'Vision board creation',
       'Daily inspiration',
@@ -153,9 +151,7 @@ export const TIER_PRICING = {
     features: [
       'All 10 phases',
       'All 18 guided meditations',
-      'Unlimited journal entries',
       'Unlimited AI wisdom chat',
-      'Voice transcription',
       'Priority support',
       'Early access to new features',
     ],
@@ -174,33 +170,25 @@ export const FEATURE_LIMITS = {
   free: {
     maxPhase: 2,
     maxMeditations: 0,
-    maxJournalsPerMonth: 5,
     maxAIChatPerDay: 3,
-    hasVoiceTranscription: false,
     hasVisionBoard: false,
   },
   novice: {
     maxPhase: 5,
     maxMeditations: 3,
-    maxJournalsPerMonth: 50,
     maxAIChatPerDay: 10,
-    hasVoiceTranscription: false,
     hasVisionBoard: false,
   },
   awakening: {
     maxPhase: 8,
     maxMeditations: 6,
-    maxJournalsPerMonth: 200,
     maxAIChatPerDay: 50,
-    hasVoiceTranscription: true,
     hasVisionBoard: true,
   },
   enlightenment: {
     maxPhase: 10,
     maxMeditations: 18,
-    maxJournalsPerMonth: -1,
     maxAIChatPerDay: -1,
-    hasVoiceTranscription: true,
     hasVisionBoard: true,
   },
 } as const;

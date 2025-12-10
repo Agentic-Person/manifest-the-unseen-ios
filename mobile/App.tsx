@@ -14,15 +14,21 @@ import { StyleSheet } from 'react-native';
 // Import services and navigation
 import { queryClient } from './src/services/queryClient';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { configurePurchases, setUserId } from './src/services/subscriptionService';
 
 // Import stores for initialization
 import { useAppStore } from './src/stores/appStore';
+import { useSubscriptionStore } from './src/stores/subscriptionStore';
+import { useAuthStore } from './src/stores/authStore';
 
 /**
  * App Component
  */
 const App = () => {
   const setAppReady = useAppStore((state) => state.setAppReady);
+  const loadSubscription = useSubscriptionStore((state) => state.loadSubscription);
+  const loadOfferings = useSubscriptionStore((state) => state.loadOfferings);
+  const user = useAuthStore((state) => state.user);
 
   /**
    * Initialize App
@@ -30,7 +36,27 @@ const App = () => {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // TODO: Add any initialization logic here
+        console.log('🚀 Initializing Manifest the Unseen...');
+
+        // 1. Initialize RevenueCat SDK
+        await configurePurchases();
+        console.log('✅ RevenueCat initialized');
+
+        // 2. If user is logged in, sync their ID with RevenueCat
+        if (user?.id) {
+          await setUserId(user.id);
+          console.log('✅ RevenueCat user ID synced:', user.id);
+        }
+
+        // 3. Load subscription state
+        await loadSubscription();
+        console.log('✅ Subscription state loaded');
+
+        // 4. Load available subscription offerings
+        await loadOfferings();
+        console.log('✅ Subscription offerings loaded');
+
+        // TODO: Add any other initialization logic here
         // - Load cached data
         // - Check for updates
         // - Initialize analytics
@@ -38,15 +64,16 @@ const App = () => {
 
         // Mark app as ready
         setAppReady(true);
+        console.log('✅ App ready');
       } catch (error) {
-        console.error('App initialization error:', error);
+        console.error('❌ App initialization error:', error);
         // Still mark as ready to show error screen
         setAppReady(true);
       }
     };
 
     initializeApp();
-  }, [setAppReady]);
+  }, [setAppReady, loadSubscription, loadOfferings, user]);
 
   return (
     <GestureHandlerRootView style={styles.container}>
