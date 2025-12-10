@@ -5,13 +5,15 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, ImageSourcePropType, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps, WorkbookStackParamList } from '../types/navigation';
 import { useProfile } from '../stores/authStore';
 import { colors } from '../theme';
 import { PhaseImages } from '../assets';
+import { useAllPhasesProgress, getProgressMessage } from '../hooks';
+import { GradientProgressBar, getProgressColor } from '../components/workbook';
 
 type Props = WorkbookStackScreenProps<'WorkbookHome'>;
 
@@ -40,6 +42,14 @@ const WorkbookScreen = ({ navigation }: Props) => {
   const currentPhase = profile?.currentPhase || 1;
   const allPhasesUnlocked = true;
 
+  // Fetch progress for all phases
+  const { phases: phasesProgress, overallPercentage, isLoading } = useAllPhasesProgress();
+
+  // Helper to get phase progress
+  const getPhaseProgress = (phaseNumber: number) => {
+    return phasesProgress.find((p) => p.phaseNumber === phaseNumber);
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
@@ -51,17 +61,22 @@ const WorkbookScreen = ({ navigation }: Props) => {
 
       <View style={styles.progressCard}>
         <Text style={styles.progressTitle}>Your Progress</Text>
-        <View style={styles.progressBar}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${(currentPhase / 10) * 100}%` },
-            ]}
-          />
-        </View>
-        <Text style={styles.progressText}>
-          Phase {currentPhase} of 10 • {Math.round((currentPhase / 10) * 100)}% Complete
-        </Text>
+        {isLoading ? (
+          <ActivityIndicator size="small" color={colors.primary[500]} style={styles.loader} />
+        ) : (
+          <>
+            <View style={styles.overallProgressRow}>
+              <Text style={[styles.overallPercentage, { color: getProgressColor(overallPercentage) }]}>
+                {overallPercentage}%
+              </Text>
+              <Text style={styles.overallLabel}>Journey Complete</Text>
+            </View>
+            <GradientProgressBar progress={overallPercentage} height={10} showPercentage={false} />
+            <Text style={styles.motivationalText}>
+              {getProgressMessage(overallPercentage)}
+            </Text>
+          </>
+        )}
       </View>
 
       <View style={styles.phasesList}>
@@ -69,6 +84,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
           const isUnlocked = allPhasesUnlocked || phase.id <= currentPhase;
           const isCurrent = phase.id === currentPhase;
           const isCompleted = phase.id < currentPhase;
+          const phaseProgress = getPhaseProgress(phase.id);
 
           return (
             <TouchableOpacity
@@ -155,6 +171,24 @@ const WorkbookScreen = ({ navigation }: Props) => {
                 <Text style={styles.phaseArrow}>›</Text>
               </View>
 
+              {/* Phase Progress Bar - only show if started and not 100% complete */}
+              {phaseProgress?.hasStarted && phaseProgress.percentage < 100 && (
+                <View style={styles.phaseProgressContainer}>
+                  <GradientProgressBar
+                    progress={phaseProgress.percentage}
+                    height={6}
+                    compact
+                  />
+                </View>
+              )}
+
+              {/* Complete Badge - show if 100% complete */}
+              {phaseProgress?.percentage === 100 && (
+                <View style={styles.completeBadge}>
+                  <Text style={styles.completeBadgeText}>Complete ✓</Text>
+                </View>
+              )}
+
               {isCurrent && (
                 <View style={styles.currentBadge}>
                   <Text style={styles.currentBadgeText}>Current Phase</Text>
@@ -206,21 +240,30 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  progressBar: {
-    height: 8,
-    backgroundColor: colors.border.default,
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: 8,
+  loader: {
+    marginVertical: 20,
   },
-  progressFill: {
-    height: '100%',
-    backgroundColor: colors.primary[500],
-    borderRadius: 4,
+  overallProgressRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 12,
   },
-  progressText: {
-    fontSize: 14,
+  overallPercentage: {
+    fontSize: 48,
+    fontWeight: '700',
+    marginRight: 12,
+  },
+  overallLabel: {
+    fontSize: 16,
     color: colors.text.secondary,
+    fontWeight: '500',
+  },
+  motivationalText: {
+    fontSize: 14,
+    color: colors.text.golden,
+    fontStyle: 'italic',
+    marginTop: 12,
+    textAlign: 'center',
   },
   phasesList: {
     gap: 16,
@@ -326,6 +369,23 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: colors.text.tertiary,
     marginLeft: 12,
+  },
+  phaseProgressContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    paddingTop: 4,
+  },
+  completeBadge: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    paddingTop: 4,
+  },
+  completeBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#2d5a4a', // Green
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   currentBadge: {
     paddingHorizontal: 16,

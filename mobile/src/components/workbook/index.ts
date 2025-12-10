@@ -140,3 +140,7 @@ export { PhaseHeader } from './PhaseHeader';
 
 // Exercise Header Component (for individual exercise screens)
 export { ExerciseHeader } from './ExerciseHeader';
+
+// Gradient Progress Bar (color-coded by percentage)
+export { GradientProgressBar, getProgressColor } from './GradientProgressBar';
+export type { GradientProgressBarProps } from './GradientProgressBar';
