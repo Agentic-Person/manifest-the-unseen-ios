@@ -1,8 +1,22 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Cormorant_Garamond, Raleway } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+// Elegant serif for headings - classical, meditative feel
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-heading',
+  display: 'swap',
+})
+
+// Clean sans-serif for body - modern, readable
+const raleway = Raleway({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-body',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Manifest the Unseen | Your Personal Manifestation Companion',
@@ -34,8 +48,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} bg-deep-void text-enlightened antialiased`}>
+    <html lang="en" className={`scroll-smooth ${cormorant.variable} ${raleway.variable}`}>
+      <body className="font-body bg-deep-void text-enlightened antialiased">
         {children}
       </body>
     </html>

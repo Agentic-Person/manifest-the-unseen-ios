@@ -31,8 +31,10 @@ const config: Config = {
         'root-crimson': '#7A3333',
       },
       fontFamily: {
-        serif: ['Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
-        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        heading: ['var(--font-heading)', 'Georgia', 'Cambria', 'serif'],
+        body: ['var(--font-body)', 'system-ui', '-apple-system', 'sans-serif'],
+        serif: ['var(--font-heading)', 'Georgia', 'Cambria', 'serif'],
+        sans: ['var(--font-body)', 'system-ui', '-apple-system', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
