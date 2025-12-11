@@ -8,7 +8,6 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { colors, spacing } from '../../theme';
 import type { SubscriptionTier } from '../../types/subscription';
-import { TIER_PRICING } from '../../types/subscription';
 
 interface FeatureComparisonProps {
   currentTier?: SubscriptionTier;
@@ -17,51 +16,48 @@ interface FeatureComparisonProps {
 interface FeatureRow {
   label: string;
   novice: string;
-  awakening: string;
   enlightenment: string;
 }
 
+/**
+ * Two-tier model:
+ * - Novice: All features EXCEPT Guru AI chat
+ * - Enlightenment: All features INCLUDING Guru AI chat
+ */
 const FEATURES: FeatureRow[] = [
   {
     label: 'Workbook Phases',
-    novice: 'Phases 1-5',
-    awakening: 'Phases 1-8',
+    novice: 'All 10 Phases',
     enlightenment: 'All 10 Phases',
   },
   {
     label: 'Guided Meditations',
-    novice: '3 sessions',
-    awakening: '6 sessions',
+    novice: 'All 18 sessions',
     enlightenment: 'All 18 sessions',
   },
   {
-    label: 'Journal Entries',
-    novice: '50 per month',
-    awakening: '200 per month',
-    enlightenment: 'Unlimited',
+    label: 'Breathing Exercises',
+    novice: 'All exercises',
+    enlightenment: 'All exercises',
   },
   {
-    label: 'AI Wisdom Chat',
-    novice: '10 per day',
-    awakening: '50 per day',
-    enlightenment: 'Unlimited',
+    label: 'Meditation Music',
+    novice: 'All tracks',
+    enlightenment: 'All tracks',
   },
   {
-    label: 'Voice Transcription',
+    label: 'AI Guru Chat',
     novice: '✗',
-    awakening: '✓',
-    enlightenment: '✓',
+    enlightenment: 'Unlimited',
   },
   {
     label: 'Vision Board',
-    novice: '✗',
-    awakening: '✓',
+    novice: '✓',
     enlightenment: '✓',
   },
   {
-    label: 'Priority Support',
-    novice: '✗',
-    awakening: '✗',
+    label: 'Progress Tracking',
+    novice: '✓',
     enlightenment: '✓',
   },
 ];
@@ -92,8 +88,9 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
 
         {/* Novice Column */}
         <View style={styles.tierColumn}>
-          <View style={[styles.headerCell, styles.tierHeader]}>
-            <Text style={styles.tierHeaderText}>Novice</Text>
+          <View style={[styles.headerCell, styles.tierHeader, styles.popularTier]}>
+            <Text style={styles.tierHeaderTextHighlight}>Novice</Text>
+            <Text style={styles.popularLabel}>★ Most Popular</Text>
             {currentTier === 'novice' && (
               <View style={styles.currentBadge}>
                 <Text style={styles.currentBadgeText}>Current</Text>
@@ -103,24 +100,6 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
           {FEATURES.map((feature, index) => (
             <View key={index} style={styles.featureCell}>
               <Text style={styles.featureText}>{feature.novice}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Awakening Column */}
-        <View style={styles.tierColumn}>
-          <View style={[styles.headerCell, styles.tierHeader, styles.popularTier]}>
-            <Text style={styles.tierHeaderTextHighlight}>Awakening</Text>
-            <Text style={styles.popularLabel}>★ Popular</Text>
-            {currentTier === 'awakening' && (
-              <View style={styles.currentBadge}>
-                <Text style={styles.currentBadgeText}>Current</Text>
-              </View>
-            )}
-          </View>
-          {FEATURES.map((feature, index) => (
-            <View key={index} style={styles.featureCell}>
-              <Text style={styles.featureText}>{feature.awakening}</Text>
             </View>
           ))}
         </View>

@@ -25,16 +25,16 @@ interface SubscriptionCardProps {
   isPurchasing?: boolean;
 }
 
-const TIER_NAMES = {
+const TIER_NAMES: Record<string, string> = {
   novice: 'Novice Path',
-  awakening: 'Awakening Path',
   enlightenment: 'Enlightenment Path',
+  free: 'Free',
 };
 
-const TIER_DESCRIPTIONS = {
-  novice: 'Begin your journey',
-  awakening: 'Deepen your practice',
-  enlightenment: 'Full enlightenment',
+const TIER_DESCRIPTIONS: Record<string, string> = {
+  novice: 'Full access to all features',
+  enlightenment: 'Full access + AI Guru',
+  free: 'Limited access',
 };
 
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
@@ -47,14 +47,25 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   onPurchase,
   isPurchasing = false,
 }) => {
-  const tierData = TIER_PRICING[tier];
-  const price = packageData?.price || `$${tierData[period]}`;
+  // Only show pricing for paid tiers
+  const tierData = tier === 'free' ? null : TIER_PRICING[tier as 'novice' | 'enlightenment'];
+
+  // Get price - packageData takes priority, fallback to tier pricing for monthly/yearly
+  const getPrice = (): string => {
+    if (packageData?.price) return packageData.price;
+    if (!tierData) return '$0';
+    if (period === 'monthly') return `$${tierData.monthly}`;
+    if (period === 'yearly') return `$${tierData.yearly}`;
+    return '$0'; // lifetime handled by packageData
+  };
+
+  const price = getPrice();
   const pricePerMonth = packageData?.pricePerMonth || (
-    period === 'yearly' ? `$${(tierData.yearly / 12).toFixed(2)}/mo` : price
+    tierData && period === 'yearly' ? `$${(tierData.yearly / 12).toFixed(2)}/mo` : price
   );
 
   // Calculate savings for yearly
-  const savingsPercent = period === 'yearly'
+  const savingsPercent = period === 'yearly' && tierData
     ? Math.round((1 - (tierData.yearly / 12) / tierData.monthly) * 100)
     : 0;
 
@@ -68,7 +79,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       onPress={onPurchase}
       disabled={isPurchasing || isCurrentTier}
       accessibilityRole="button"
-      accessibilityLabel={`Subscribe to ${TIER_NAMES[tier]}`}
+      accessibilityLabel={`Subscribe to ${TIER_NAMES[tier] || tier}`}
     >
       <LinearGradient
         colors={
@@ -87,8 +98,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           {!isCurrentTier && <TrialBadge />}
 
           {/* Tier Name */}
-          <Text style={styles.tierName}>{TIER_NAMES[tier]}</Text>
-          <Text style={styles.tierDescription}>{TIER_DESCRIPTIONS[tier]}</Text>
+          <Text style={styles.tierName}>{TIER_NAMES[tier] || tier}</Text>
+          <Text style={styles.tierDescription}>{TIER_DESCRIPTIONS[tier] || ''}</Text>
 
           {/* Pricing */}
           <View style={styles.pricingContainer}>
@@ -110,7 +121,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
           {/* Features List */}
           <View style={styles.featuresContainer}>
-            {tierData.features.map((feature, index) => (
+            {(tierData?.features || []).map((feature: string, index: number) => (
               <View key={index} style={styles.featureRow}>
                 <Text style={styles.checkmark}>✓</Text>
                 <Text style={styles.featureText}>{feature}</Text>

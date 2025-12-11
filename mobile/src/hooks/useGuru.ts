@@ -12,18 +12,12 @@ import { getAllWorkbookProgress } from '../services/workbook';
 import { guruService } from '../services';
 import { supabase } from '../services/supabase';
 import type { GuruMessage } from '../types/guru';
-import { FEATURE_LIMITS } from '../types/subscription';
+import { useGuruAccess } from './useSubscription';
 
 export interface UseGuruReturn {
-  // Subscription check
+  // Subscription check - ONLY Enlightenment tier has access
   hasAccess: boolean;
   subscriptionTier: string;
-
-  // Quota info
-  dailyQuota: number;
-  messagesUsedToday: number;
-  hasQuotaRemaining: boolean;
-  isUnlimited: boolean;
 
   // Phase data
   completedPhases: number[];
@@ -49,18 +43,13 @@ export interface UseGuruReturn {
 export function useGuru(): UseGuruReturn {
   const queryClient = useQueryClient();
   const [selectedPhase, setSelectedPhase] = useState<number | null>(null);
-  const [messagesUsedToday, setMessagesUsedToday] = useState(0);
 
   // Get subscription tier
   const tier = useSubscriptionStore((state) => state.tier);
 
-  // All tiers have access to Guru (with different quotas)
-  const hasAccess = true;
-
-  // Get quota limits for current tier
-  const dailyQuota = FEATURE_LIMITS[tier].maxAIChatPerDay;
-  const isUnlimited = dailyQuota === -1;
-  const hasQuotaRemaining = isUnlimited || messagesUsedToday < dailyQuota;
+  // ONLY Enlightenment tier has Guru access
+  // Novice users do NOT have access
+  const hasAccess = useGuruAccess();
 
   // Get current user ID
   const [userId, setUserId] = useState<string | undefined>();
@@ -223,20 +212,12 @@ export function useGuru(): UseGuruReturn {
     setSelectedPhase(null);
   }, []);
 
-  // Action: Send message (with quota check)
+  // Action: Send message
   const sendMessage = useCallback(
     async (message: string) => {
-      // Check quota before sending
-      if (!isUnlimited && messagesUsedToday >= dailyQuota) {
-        throw new Error(`Daily message limit reached (${dailyQuota} messages/day). Upgrade for more.`);
-      }
-
       await sendMessageMutation.mutateAsync(message);
-
-      // Increment daily message count
-      setMessagesUsedToday((prev) => prev + 1);
     },
-    [sendMessageMutation, isUnlimited, messagesUsedToday, dailyQuota]
+    [sendMessageMutation]
   );
 
   // Action: Start new conversation
@@ -253,15 +234,9 @@ export function useGuru(): UseGuruReturn {
   }, [userId, selectedPhase, queryClient]);
 
   return {
-    // Subscription
+    // Subscription - ONLY Enlightenment has access
     hasAccess,
     subscriptionTier: tier,
-
-    // Quota info
-    dailyQuota,
-    messagesUsedToday,
-    hasQuotaRemaining,
-    isUnlimited,
 
     // Phase data
     completedPhases,

@@ -9,8 +9,13 @@ import type { PurchasesPackage, CustomerInfo, PurchasesError } from 'react-nativ
 
 /**
  * Subscription Tier Levels
+ * - free: No subscription (before trial or after expiration)
+ * - novice: Full app access EXCEPT Guru AI chat ($7.99/mo, $59.99/yr)
+ * - enlightenment: Full app access INCLUDING Guru AI chat ($19.99/mo, $149.99/yr)
+ *
+ * Note: 7-day free trial gives Novice-level access (everything except Guru)
  */
-export type SubscriptionTier = 'free' | 'novice' | 'awakening' | 'enlightenment';
+export type SubscriptionTier = 'free' | 'novice' | 'enlightenment';
 
 /**
  * Subscription Period (Monthly or Annual)
@@ -91,10 +96,10 @@ export interface SubscriptionInfo {
 
 /**
  * Entitlement IDs (matches RevenueCat dashboard configuration)
+ * Only two tiers: Novice and Enlightenment
  */
 export const ENTITLEMENT_IDS = {
   NOVICE: 'novice_path',
-  AWAKENING: 'awakening_path',
   ENLIGHTENMENT: 'enlightenment_path',
 } as const;
 
@@ -109,49 +114,42 @@ export const PRODUCT_IDS = {
 
 /**
  * Product IDs - Production (for App Store Connect)
+ * Only two tiers: Novice and Enlightenment
  */
 export const PRODUCTION_PRODUCT_IDS = {
   NOVICE_MONTHLY: 'manifest_novice_monthly',
   NOVICE_YEARLY: 'manifest_novice_yearly',
-  AWAKENING_MONTHLY: 'manifest_awakening_monthly',
-  AWAKENING_YEARLY: 'manifest_awakening_yearly',
   ENLIGHTENMENT_MONTHLY: 'manifest_enlightenment_monthly',
   ENLIGHTENMENT_YEARLY: 'manifest_enlightenment_yearly',
 } as const;
 
 /**
  * Subscription Tier Pricing
+ *
+ * Two tiers:
+ * - Novice: Full app access EXCEPT Guru AI chat
+ * - Enlightenment: Full app access INCLUDING Guru AI chat
  */
 export const TIER_PRICING = {
   novice: {
     monthly: 7.99,
     yearly: 59.99,
     features: [
-      'Phases 1-5',
-      '3 guided meditations',
-      'AI wisdom chat (10 per day)',
+      'All 10 workbook phases',
+      'All guided meditations',
+      'All breathing exercises',
+      'All meditation music',
       'Progress tracking',
-    ],
-  },
-  awakening: {
-    monthly: 12.99,
-    yearly: 99.99,
-    features: [
-      'Phases 1-8',
-      '6 guided meditations',
-      'AI wisdom chat (50 per day)',
-      'Vision board creation',
       'Daily inspiration',
     ],
   },
   enlightenment: {
     monthly: 19.99,
     yearly: 149.99,
-    lifetime: 299.99,
     features: [
-      'All 10 phases',
-      'All 18 guided meditations',
-      'Unlimited AI wisdom chat',
+      'Everything in Novice, plus:',
+      'AI Guru - Personalized wisdom chat',
+      'Phase-based insights & analysis',
       'Priority support',
       'Early access to new features',
     ],
@@ -165,30 +163,31 @@ export const TRIAL_DURATION_DAYS = 7;
 
 /**
  * Feature Access Limits by Tier
+ *
+ * Simplified two-tier model:
+ * - Free: No access (pre-trial or expired)
+ * - Novice: Full app access EXCEPT Guru AI chat
+ * - Enlightenment: Full app access INCLUDING Guru AI chat
+ *
+ * 7-day free trial = Novice-level access
  */
 export const FEATURE_LIMITS = {
   free: {
-    maxPhase: 2,
+    maxPhase: 0,
     maxMeditations: 0,
-    maxAIChatPerDay: 3,
+    hasGuru: false,
     hasVisionBoard: false,
   },
   novice: {
-    maxPhase: 5,
-    maxMeditations: 3,
-    maxAIChatPerDay: 10,
-    hasVisionBoard: false,
-  },
-  awakening: {
-    maxPhase: 8,
-    maxMeditations: 6,
-    maxAIChatPerDay: 50,
+    maxPhase: 10,        // All phases
+    maxMeditations: 18,  // All meditations
+    hasGuru: false,      // NO Guru access
     hasVisionBoard: true,
   },
   enlightenment: {
-    maxPhase: 10,
-    maxMeditations: 18,
-    maxAIChatPerDay: -1,
+    maxPhase: 10,        // All phases
+    maxMeditations: 18,  // All meditations
+    hasGuru: true,       // YES Guru access
     hasVisionBoard: true,
   },
 } as const;

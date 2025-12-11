@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing } from '../../theme';
-import type { SubscriptionPeriod, SubscriptionTier } from '../../types/subscription';
+import type { SubscriptionPeriod } from '../../types/subscription';
 
 // Import all components
 import { TrialBadge } from '../../components/subscription/TrialBadge';
@@ -26,11 +26,9 @@ import { FeatureComparison } from '../../components/subscription/FeatureComparis
  */
 export const ComponentShowcase: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<SubscriptionPeriod>('monthly');
-  const [isLoading, setIsLoading] = useState(false);
 
   const handlePurchase = () => {
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2000);
+    // Mock purchase handler for showcase
   };
 
   return (
@@ -100,7 +98,7 @@ export const ComponentShowcase: React.FC = () => {
 
         {/* Feature Comparison */}
         <Section title="FeatureComparison">
-          <FeatureComparison currentTier="awakening" />
+          <FeatureComparison currentTier="novice" />
         </Section>
 
         {/* Color Swatches */}
@@ -184,7 +182,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.lg,
-    paddingBottom: spacing.xxl,
+    paddingBottom: spacing['4xl'],
   },
   title: {
     fontSize: 28,

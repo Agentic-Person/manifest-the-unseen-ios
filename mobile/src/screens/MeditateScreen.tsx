@@ -113,13 +113,12 @@ const MeditateScreen = () => {
   const [activeTab, setActiveTab] = useState<TabType>('guided');
   const [refreshing, setRefreshing] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
-  const [lockedMeditationIndex, setLockedMeditationIndex] = useState<number>(0);
 
   // Get preferred narrator from settings
   const preferredNarrator = useSettingsStore((state) => state.preferredNarrator);
 
-  // Subscription access
-  const { tier, maxMeditations } = useFeatureAccess();
+  // Subscription access - simplified: tier is all we need
+  const { tier } = useFeatureAccess();
 
   // Fetch data for each tab
   const {
@@ -154,30 +153,24 @@ const MeditateScreen = () => {
 
   /**
    * Check if meditation is accessible based on subscription
+   * Simplified: Any subscriber (Novice or Enlightenment) has access to all meditations
    */
   const isMeditationAccessible = useCallback(
-    (index: number): boolean => {
+    (): boolean => {
       // Free tier has no meditation access
-      if (tier === 'free') {
-        return false;
-      }
-      // Check against max meditations for tier (18 means unlimited)
-      if (maxMeditations === 18) {
-        return true; // Unlimited
-      }
-      return index < maxMeditations;
+      // Both Novice and Enlightenment have full access
+      return tier !== 'free';
     },
-    [tier, maxMeditations]
+    [tier]
   );
 
   /**
    * Get required tier for locked meditation
+   * Simplified: All meditations unlocked with Novice
    */
   const getRequiredTier = useCallback(
-    (index: number): 'novice' | 'awakening' | 'enlightenment' => {
-      if (index < 3) return 'novice';
-      if (index < 6) return 'awakening';
-      return 'enlightenment';
+    (): 'novice' | 'enlightenment' => {
+      return 'novice';
     },
     []
   );
@@ -187,9 +180,8 @@ const MeditateScreen = () => {
    */
   const handleMeditationPress = useCallback(
     (meditation: Meditation, index: number) => {
-      // Check subscription access
-      if (!isMeditationAccessible(index)) {
-        setLockedMeditationIndex(index);
+      // Check subscription access - any subscription gives full access
+      if (!isMeditationAccessible()) {
         setShowUpgradePrompt(true);
         return;
       }
@@ -353,13 +345,9 @@ const MeditateScreen = () => {
         visible={showUpgradePrompt}
         onClose={() => setShowUpgradePrompt(false)}
         title="Unlock Meditations"
-        description={
-          tier === 'free'
-            ? 'Start your subscription to access guided meditations, breathing exercises, and ambient music for your practice.'
-            : `Upgrade to access more meditations. You currently have access to ${maxMeditations} meditations.`
-        }
-        requiredTier={getRequiredTier(lockedMeditationIndex)}
-        benefits={TIER_PRICING[getRequiredTier(lockedMeditationIndex)].features}
+        description="Subscribe to access all guided meditations, breathing exercises, and ambient music for your practice."
+        requiredTier={getRequiredTier()}
+        benefits={TIER_PRICING[getRequiredTier()].features}
       />
     </View>
   );

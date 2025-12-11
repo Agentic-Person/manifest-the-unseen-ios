@@ -11,7 +11,7 @@
  * - conversation: Show chat interface
  */
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -31,12 +31,9 @@ import { GuruEmptyState } from '../components/guru/GuruEmptyState';
 import GuruLockedScreen from './GuruLockedScreen';
 import { colors, spacing, shadows } from '../theme';
 import type { GuruMessage } from '../types/guru';
-import { UpgradePrompt } from '../components/UpgradePrompt';
-import { TIER_PRICING } from '../types/subscription';
 
 export function GuruScreen() {
   const flatListRef = useRef<FlatList>(null);
-  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const {
     hasAccess,
     completedPhases,
@@ -49,12 +46,6 @@ export function GuruScreen() {
     selectPhase,
     clearSelectedPhase,
     sendMessage,
-    // Quota info
-    dailyQuota,
-    messagesUsedToday,
-    hasQuotaRemaining,
-    isUnlimited,
-    subscriptionTier,
   } = useGuru();
 
   // Auto-scroll to bottom when new messages arrive
@@ -78,27 +69,7 @@ export function GuruScreen() {
 
   // Handle send message
   const handleSend = async (message: string) => {
-    // Check quota before sending
-    if (!hasQuotaRemaining) {
-      setShowUpgradePrompt(true);
-      return;
-    }
-
-    try {
-      await sendMessage(message);
-    } catch (err) {
-      // If quota exceeded error, show upgrade prompt
-      if (err instanceof Error && err.message.includes('limit reached')) {
-        setShowUpgradePrompt(true);
-      }
-    }
-  };
-
-  // Get recommended upgrade tier
-  const getRecommendedTier = (): 'novice' | 'awakening' | 'enlightenment' => {
-    if (subscriptionTier === 'free') return 'novice';
-    if (subscriptionTier === 'novice') return 'awakening';
-    return 'enlightenment';
+    await sendMessage(message);
   };
 
   // STATE: Locked (no access)
@@ -155,8 +126,13 @@ export function GuruScreen() {
   }
 
   // STATE: Conversation (phase selected)
+  // Filter out system messages as MessageBubble only handles user/assistant
+  const displayMessages = messages.filter(
+    (msg) => msg.role === 'user' || msg.role === 'assistant'
+  );
+
   const renderMessage = ({ item }: { item: GuruMessage }) => (
-    <MessageBubble message={item} />
+    <MessageBubble message={item as { role: 'user' | 'assistant'; content: string; timestamp: string }} />
   );
 
   const renderError = () => {
@@ -219,7 +195,7 @@ export function GuruScreen() {
       <View style={styles.messagesContainer}>
         <FlatList
           ref={flatListRef}
-          data={messages}
+          data={displayMessages}
           renderItem={renderMessage}
           keyExtractor={(item, index) => `${item.timestamp}-${index}`}
           contentContainerStyle={styles.listContent}
@@ -240,32 +216,8 @@ export function GuruScreen() {
         )}
       </View>
 
-      {/* Quota indicator */}
-      {!isUnlimited && (
-        <View style={styles.quotaIndicator}>
-          <Text style={[
-            styles.quotaText,
-            !hasQuotaRemaining && styles.quotaTextWarning,
-          ]}>
-            {hasQuotaRemaining
-              ? `${dailyQuota - messagesUsedToday} messages remaining today`
-              : `Daily limit reached (${dailyQuota}/day)`}
-          </Text>
-        </View>
-      )}
-
       {/* Input */}
-      <ChatInput onSend={handleSend} disabled={isSending || !hasQuotaRemaining} />
-
-      {/* Upgrade Prompt Modal */}
-      <UpgradePrompt
-        visible={showUpgradePrompt}
-        onClose={() => setShowUpgradePrompt(false)}
-        title="Daily Message Limit Reached"
-        description={`You've used all ${dailyQuota} daily messages. Upgrade to get more messages per day.`}
-        requiredTier={getRecommendedTier()}
-        benefits={TIER_PRICING[getRecommendedTier()].features}
-      />
+      <ChatInput onSend={handleSend} disabled={isSending} />
     </SafeAreaView>
   );
 }
@@ -400,22 +352,6 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     textAlign: 'center',
     lineHeight: 24,
-  },
-  quotaIndicator: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    backgroundColor: colors.background.elevated,
-    borderTopWidth: 1,
-    borderTopColor: colors.border.default,
-  },
-  quotaText: {
-    fontSize: 12,
-    color: colors.text.tertiary,
-    textAlign: 'center',
-  },
-  quotaTextWarning: {
-    color: colors.error[400],
-    fontWeight: '600',
   },
 });
 

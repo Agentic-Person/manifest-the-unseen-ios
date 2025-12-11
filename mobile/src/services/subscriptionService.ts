@@ -289,6 +289,10 @@ export async function checkEntitlement(
 /**
  * Get User's Current Subscription Tier
  * Determines tier from active entitlements
+ *
+ * Two-tier model:
+ * - Enlightenment: Full access including Guru AI chat
+ * - Novice: Full access EXCEPT Guru AI chat
  */
 export function getTierFromCustomerInfo(
   customerInfo: CustomerInfo | null
@@ -302,10 +306,6 @@ export function getTierFromCustomerInfo(
   // Check in priority order (highest tier first)
   if (activeEntitlements[ENTITLEMENT_IDS.ENLIGHTENMENT]) {
     return 'enlightenment';
-  }
-
-  if (activeEntitlements[ENTITLEMENT_IDS.AWAKENING]) {
-    return 'awakening';
   }
 
   if (activeEntitlements[ENTITLEMENT_IDS.NOVICE]) {
@@ -326,12 +326,10 @@ function getSubscriptionStatus(
     return 'none';
   }
 
-  // Find the active entitlement for current tier
+  // Find the active entitlement for current tier (two-tier model)
   const entitlementId =
     tier === 'enlightenment'
       ? ENTITLEMENT_IDS.ENLIGHTENMENT
-      : tier === 'awakening'
-      ? ENTITLEMENT_IDS.AWAKENING
       : ENTITLEMENT_IDS.NOVICE;
 
   const entitlement = customerInfo.entitlements.active[entitlementId];
@@ -379,12 +377,10 @@ function getSubscriptionPeriod(
     return null;
   }
 
-  // Find the active entitlement for current tier
+  // Find the active entitlement for current tier (two-tier model)
   const entitlementId =
     tier === 'enlightenment'
       ? ENTITLEMENT_IDS.ENLIGHTENMENT
-      : tier === 'awakening'
-      ? ENTITLEMENT_IDS.AWAKENING
       : ENTITLEMENT_IDS.NOVICE;
 
   const entitlement = customerInfo.entitlements.active[entitlementId];
@@ -434,8 +430,6 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
       const entitlementId =
         tier === 'enlightenment'
           ? ENTITLEMENT_IDS.ENLIGHTENMENT
-          : tier === 'awakening'
-          ? ENTITLEMENT_IDS.AWAKENING
           : ENTITLEMENT_IDS.NOVICE;
 
       const entitlement = customerInfo.entitlements.active[entitlementId];
@@ -487,8 +481,6 @@ function getTierDisplayName(tier: SubscriptionTier): string {
   switch (tier) {
     case 'novice':
       return 'Novice Path';
-    case 'awakening':
-      return 'Awakening Path';
     case 'enlightenment':
       return 'Enlightenment Path';
     default:

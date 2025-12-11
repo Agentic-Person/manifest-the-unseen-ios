@@ -277,7 +277,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
             <View style={styles.subscribedContainer}>
               <Text style={styles.subscribedIcon}>✓</Text>
               <Text style={styles.subscribedText}>
-                You're subscribed to {currentTier === 'enlightenment' ? 'Enlightenment Path' : currentTier === 'awakening' ? 'Awakening Path' : 'Novice Path'}
+                You're subscribed to {currentTier === 'enlightenment' ? 'Enlightenment Path' : 'Novice Path'}
                 {isInTrial && ' (Trial)'}
               </Text>
             </View>

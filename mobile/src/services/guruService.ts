@@ -13,7 +13,6 @@ import type {
   GuruAnalysisRequest,
   GuruAnalysisResponse,
   CompletedPhase,
-  PHASE_NAMES,
 } from '../types/guru';
 import type { WorkbookProgress } from '../types/workbook';
 import { WORKSHEETS_PER_PHASE } from '../types/workbook';

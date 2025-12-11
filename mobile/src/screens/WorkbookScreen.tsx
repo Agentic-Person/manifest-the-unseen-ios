@@ -64,12 +64,11 @@ const WorkbookScreen = ({ navigation }: Props) => {
 
   /**
    * Get required tier for locked phase
+   * Simplified: All phases need at least Novice subscription
    */
   const getRequiredTier = useCallback(
-    (phaseNumber: number): 'novice' | 'awakening' | 'enlightenment' => {
-      if (phaseNumber <= 5) return 'novice';
-      if (phaseNumber <= 8) return 'awakening';
-      return 'enlightenment';
+    (): 'novice' | 'enlightenment' => {
+      return 'novice'; // All phases are unlocked with Novice
     },
     []
   );
@@ -232,9 +231,9 @@ const WorkbookScreen = ({ navigation }: Props) => {
         visible={showUpgradePrompt}
         onClose={() => setShowUpgradePrompt(false)}
         title={`Unlock Phase ${lockedPhaseNumber}`}
-        description={`Phase ${lockedPhaseNumber} (${PHASES.find(p => p.id === lockedPhaseNumber)?.name || ''}) is part of your advanced transformation journey. Upgrade to continue your path.`}
-        requiredTier={getRequiredTier(lockedPhaseNumber)}
-        benefits={TIER_PRICING[getRequiredTier(lockedPhaseNumber)].features}
+        description={`Phase ${lockedPhaseNumber} (${PHASES.find(p => p.id === lockedPhaseNumber)?.name || ''}) is part of your transformation journey. Subscribe to access all 10 phases.`}
+        requiredTier={getRequiredTier()}
+        benefits={TIER_PRICING[getRequiredTier()].features}
       />
     </ScrollView>
   );

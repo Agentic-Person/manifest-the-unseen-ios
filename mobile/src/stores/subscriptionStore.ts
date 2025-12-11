@@ -225,25 +225,26 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   checkAccess: (feature: string): boolean => {
     const { tier } = get();
 
-    // Feature access rules
-    // This is a simple example - use subscriptionGating.ts for complex logic
+    // Feature access rules (Two-tier model: Novice and Enlightenment)
+    // Novice: All features EXCEPT Guru AI chat
+    // Enlightenment: All features INCLUDING Guru AI chat
     switch (feature) {
       case 'all_phases':
-        return tier === 'enlightenment';
+        return tier === 'novice' || tier === 'enlightenment';
 
-      case 'advanced_phases':
-        return tier === 'awakening' || tier === 'enlightenment';
+      case 'meditations':
+        return tier === 'novice' || tier === 'enlightenment';
 
       case 'voice_transcription':
-        return tier === 'awakening' || tier === 'enlightenment';
+        return tier === 'novice' || tier === 'enlightenment';
 
       case 'vision_board':
-        return tier === 'awakening' || tier === 'enlightenment';
+        return tier === 'novice' || tier === 'enlightenment';
 
       case 'unlimited_journals':
-        return tier === 'enlightenment';
+        return tier === 'novice' || tier === 'enlightenment';
 
-      case 'unlimited_ai_chat':
+      case 'guru_chat':
         return tier === 'enlightenment';
 
       default:

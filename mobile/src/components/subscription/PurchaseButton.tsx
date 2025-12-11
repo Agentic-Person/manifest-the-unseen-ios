@@ -10,7 +10,6 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
-  View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing } from '../../theme';

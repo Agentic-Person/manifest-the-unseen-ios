@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { colors, spacing } from '../../theme';
 import type { SubscriptionPeriod } from '../../types/subscription';
 
