@@ -2,15 +2,18 @@
 
 Complete step-by-step guide to set up RevenueCat for Manifest the Unseen iOS app.
 
+**Last Updated**: 2025-12-10
+**Subscription Model**: Two-Tier (Novice + Enlightenment)
+
 ---
 
 ## ✅ Checklist Overview
 
-- [ ] **Step 1:** Create RevenueCat Dashboard account and iOS app configuration
-- [ ] **Step 2:** Add RevenueCat API key to mobile/.env file
-- [ ] **Step 3:** Configure 3 entitlements in RevenueCat dashboard
-- [ ] **Step 4:** Create 6 products in RevenueCat dashboard with pricing and trials
-- [ ] **Step 5:** Initialize RevenueCat in App.tsx with configurePurchases()
+- [x] **Step 1:** Create RevenueCat Dashboard account and iOS app configuration
+- [x] **Step 2:** Add RevenueCat API key to mobile/.env file
+- [x] **Step 3:** Configure 2 entitlements in RevenueCat dashboard
+- [x] **Step 4:** Create 4 products in RevenueCat dashboard with pricing and trials
+- [x] **Step 5:** Initialize RevenueCat in App.tsx with configurePurchases()
 - [ ] **Step 6:** Build and test with EAS development build on iPhone
 
 ---
@@ -88,11 +91,18 @@ The subscription service is already configured to read this variable:
 
 ---
 
-## Step 3: Configure 3 Entitlements in RevenueCat Dashboard
+## Step 3: Configure 2 Entitlements in RevenueCat Dashboard
 
 ### What are Entitlements?
 
 Entitlements represent the **access level** a user has, regardless of which product they purchased. This allows you to change products without changing your app code.
+
+### Two-Tier Model
+
+| Tier | Features |
+|------|----------|
+| **Novice** | All features EXCEPT Guru AI chat |
+| **Enlightenment** | All features INCLUDING Guru AI chat |
 
 ### 3.1: Create Novice Path Entitlement
 
@@ -101,37 +111,30 @@ Entitlements represent the **access level** a user has, regardless of which prod
 3. **Entitlement Identifier:** `novice_path`
    - ⚠️ **MUST MATCH EXACTLY** - this is hardcoded in your app
 4. **Display Name:** `Novice Path`
-5. **Description:** `Access to Phases 1-5, 3 meditations, 50 journals/month`
+5. **Description:** `All workbook phases, meditations, and features (except Guru AI)`
 6. Click **"Save"**
 
-### 3.2: Create Awakening Path Entitlement
-
-1. Click **"+ New Entitlement"** again
-2. **Entitlement Identifier:** `awakening_path`
-3. **Display Name:** `Awakening Path`
-4. **Description:** `Access to Phases 1-8, 6 meditations, 200 journals/month`
-5. Click **"Save"**
-
-### 3.3: Create Enlightenment Path Entitlement
+### 3.2: Create Enlightenment Path Entitlement
 
 1. Click **"+ New Entitlement"** again
 2. **Entitlement Identifier:** `enlightenment_path`
 3. **Display Name:** `Enlightenment Path`
-4. **Description:** `All 10 phases, 18 meditations, unlimited journals`
+4. **Description:** `All features including Guru AI chat`
 5. Click **"Save"**
 
 ### ✅ Verify Entitlements
 
-You should now see 3 entitlements:
+You should now see 2 entitlements:
 - ✓ `novice_path`
-- ✓ `awakening_path`
 - ✓ `enlightenment_path`
 
-**Status:** ☐ Complete
+> ⚠️ **Note:** If you have `awakening_path` from an older setup, you can remove it or leave it (it won't be used by the app).
+
+**Status:** ✅ Complete
 
 ---
 
-## Step 4: Create 6 Products in RevenueCat Dashboard
+## Step 4: Create 4 Products in RevenueCat Dashboard
 
 ### Prerequisites
 
@@ -142,9 +145,9 @@ Before creating products in RevenueCat, you need to create them in **App Store C
 1. Go to **[App Store Connect](https://appstoreconnect.apple.com/)**
 2. Select your app
 3. Go to **"In-App Purchases"** section
-4. Create these **6 auto-renewable subscription products:**
+4. Create these **4 auto-renewable subscription products:**
 
-#### Product 1: Novice Monthly
+#### Product 1: Novice Monthly ⭐ Most Popular
 - **Product ID:** `manifest_novice_monthly`
 - **Reference Name:** Novice Path Monthly
 - **Type:** Auto-Renewable Subscription
@@ -153,7 +156,7 @@ Before creating products in RevenueCat, you need to create them in **App Store C
 - **Price:** $7.99 USD
 - **Free Trial:** 7 days
 - **Localized Name:** "Novice Path"
-- **Localized Description:** "Begin your journey with Phases 1-5, 3 meditations, and 50 journal entries per month."
+- **Localized Description:** "Full access to all 10 workbook phases, 18 meditations, and all app features."
 
 #### Product 2: Novice Yearly
 - **Product ID:** `manifest_novice_yearly`
@@ -164,31 +167,9 @@ Before creating products in RevenueCat, you need to create them in **App Store C
 - **Price:** $59.99 USD (saves 37%)
 - **Free Trial:** 7 days
 - **Localized Name:** "Novice Path (Annual)"
-- **Localized Description:** "Annual access to Phases 1-5, 3 meditations, and 50 journal entries per month."
+- **Localized Description:** "Annual access to all workbook phases, meditations, and features."
 
-#### Product 3: Awakening Monthly ⭐ Most Popular
-- **Product ID:** `manifest_awakening_monthly`
-- **Reference Name:** Awakening Path Monthly
-- **Type:** Auto-Renewable Subscription
-- **Subscription Group:** `manifest_subscriptions`
-- **Duration:** 1 month
-- **Price:** $12.99 USD
-- **Free Trial:** 7 days
-- **Localized Name:** "Awakening Path"
-- **Localized Description:** "Accelerate your growth with Phases 1-8, 6 meditations, and 200 journal entries per month."
-
-#### Product 4: Awakening Yearly
-- **Product ID:** `manifest_awakening_yearly`
-- **Reference Name:** Awakening Path Yearly
-- **Type:** Auto-Renewable Subscription
-- **Subscription Group:** `manifest_subscriptions`
-- **Duration:** 1 year
-- **Price:** $99.99 USD (saves 36%)
-- **Free Trial:** 7 days
-- **Localized Name:** "Awakening Path (Annual)"
-- **Localized Description:** "Annual access to Phases 1-8, 6 meditations, and 200 journal entries per month."
-
-#### Product 5: Enlightenment Monthly
+#### Product 3: Enlightenment Monthly
 - **Product ID:** `manifest_enlightenment_monthly`
 - **Reference Name:** Enlightenment Path Monthly
 - **Type:** Auto-Renewable Subscription
@@ -197,9 +178,9 @@ Before creating products in RevenueCat, you need to create them in **App Store C
 - **Price:** $19.99 USD
 - **Free Trial:** 7 days
 - **Localized Name:** "Enlightenment Path"
-- **Localized Description:** "Complete access to all 10 phases, 18 meditations, and unlimited journal entries."
+- **Localized Description:** "Everything in Novice plus AI Guru for personalized insights and guidance."
 
-#### Product 6: Enlightenment Yearly
+#### Product 4: Enlightenment Yearly
 - **Product ID:** `manifest_enlightenment_yearly`
 - **Reference Name:** Enlightenment Path Yearly
 - **Type:** Auto-Renewable Subscription
@@ -208,9 +189,11 @@ Before creating products in RevenueCat, you need to create them in **App Store C
 - **Price:** $149.99 USD (saves 37%)
 - **Free Trial:** 7 days
 - **Localized Name:** "Enlightenment Path (Annual)"
-- **Localized Description:** "Annual complete access to all 10 phases, 18 meditations, and unlimited journal entries."
+- **Localized Description:** "Annual access to all features including AI Guru."
 
 > ⚠️ **Important:** Products need to be submitted for review in App Store Connect, but you can test them with sandbox accounts before approval.
+
+> ⚠️ **Note:** If you have awakening products from an older setup, you can remove them from the offering (they won't be used).
 
 ### 4.2: Connect App Store Connect to RevenueCat
 
@@ -226,7 +209,7 @@ Before creating products in RevenueCat, you need to create them in **App Store C
 
 1. In RevenueCat Dashboard, go to **"Products"** (left sidebar)
 2. Click **"Import from App Store Connect"**
-3. Select all 6 products
+3. Select all 4 products (novice + enlightenment only)
 4. Click **"Import"**
 
 ### 4.4: Map Products to Entitlements
@@ -240,8 +223,6 @@ For each product, you need to attach it to the correct entitlement:
 Repeat for all products:
 - `manifest_novice_monthly` → `novice_path`
 - `manifest_novice_yearly` → `novice_path`
-- `manifest_awakening_monthly` → `awakening_path`
-- `manifest_awakening_yearly` → `awakening_path`
 - `manifest_enlightenment_monthly` → `enlightenment_path`
 - `manifest_enlightenment_yearly` → `enlightenment_path`
 
@@ -258,12 +239,9 @@ Repeat for all products:
 ### 4.6: Add Packages to Offering
 
 1. In the `current` offering, click **"+ Add Package"**
-2. Add all 6 products as separate packages
-3. Organize them by tier:
+2. Add all 4 products as separate packages:
    - **Package:** `novice_monthly` → Product: `manifest_novice_monthly`
    - **Package:** `novice_yearly` → Product: `manifest_novice_yearly`
-   - **Package:** `awakening_monthly` → Product: `manifest_awakening_monthly`
-   - **Package:** `awakening_yearly` → Product: `manifest_awakening_yearly`
    - **Package:** `enlightenment_monthly` → Product: `manifest_enlightenment_monthly`
    - **Package:** `enlightenment_yearly` → Product: `manifest_enlightenment_yearly`
 
@@ -275,12 +253,12 @@ Repeat for all products:
 ### ✅ Verify Product Configuration
 
 You should now have:
-- ✓ 6 products imported from App Store Connect
+- ✓ 4 products imported from App Store Connect
 - ✓ Each product mapped to correct entitlement
-- ✓ "current" offering created with all 6 packages
+- ✓ "current" offering created with all 4 packages
 - ✓ Offering set as default
 
-**Status:** ☐ Complete
+**Status:** ✅ Complete
 
 ---
 
@@ -509,19 +487,21 @@ After purchase:
 
 Review all steps:
 
-- [ ] ✅ RevenueCat account created
-- [ ] ✅ iOS app configured in RevenueCat
-- [ ] ✅ API key added to `.env` file
-- [ ] ✅ 3 entitlements created: `novice_path`, `awakening_path`, `enlightenment_path`
-- [ ] ✅ 6 products created in App Store Connect
-- [ ] ✅ Products imported to RevenueCat
-- [ ] ✅ Products mapped to entitlements
-- [ ] ✅ "current" offering created
-- [ ] ✅ RevenueCat initialized in App.tsx
-- [ ] ✅ Development build created
-- [ ] ✅ Tested on iPhone
-- [ ] ✅ Purchase flow working
-- [ ] ✅ Restore purchases working
+- [x] RevenueCat account created
+- [x] iOS app configured in RevenueCat
+- [x] API key added to `.env` file (test key: `test_BNBlDdtGQwZdpmfspkxtempIcYP`)
+- [x] 2 entitlements created: `novice_path`, `enlightenment_path`
+- [x] 4 products created in App Store Connect
+- [x] Products imported to RevenueCat
+- [x] Products mapped to entitlements
+- [x] "current" offering created
+- [x] RevenueCat initialized in App.tsx
+- [ ] Development build created
+- [ ] Tested on iPhone
+- [ ] Purchase flow working
+- [ ] Restore purchases working
+- [ ] Production API key (appl_) obtained
+- [ ] Production build submitted
 
 ---
 

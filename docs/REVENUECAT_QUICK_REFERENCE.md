@@ -2,6 +2,9 @@
 
 Quick copy-paste reference for setting up RevenueCat.
 
+**Last Updated**: 2025-12-10
+**Model**: Two-Tier (Novice + Enlightenment)
+
 ---
 
 ## 📋 Required Information
@@ -9,7 +12,6 @@ Quick copy-paste reference for setting up RevenueCat.
 ### Entitlement IDs (Must Match Exactly)
 ```
 novice_path
-awakening_path
 enlightenment_path
 ```
 
@@ -17,8 +19,6 @@ enlightenment_path
 ```
 manifest_novice_monthly
 manifest_novice_yearly
-manifest_awakening_monthly
-manifest_awakening_yearly
 manifest_enlightenment_monthly
 manifest_enlightenment_yearly
 ```
@@ -35,8 +35,7 @@ current
 
 | Tier | Monthly | Yearly | Savings |
 |------|---------|--------|---------|
-| **Novice Path** | $7.99 | $59.99 | 37% |
-| **Awakening Path** | $12.99 | $99.99 | 36% |
+| **Novice Path** ⭐ | $7.99 | $59.99 | 37% |
 | **Enlightenment Path** | $19.99 | $149.99 | 37% |
 
 **Trial:** 7 days (all products)
@@ -46,33 +45,27 @@ current
 ## 🎯 Feature Access by Tier
 
 ### Free (No Subscription)
-- ✓ Phases 1-2
-- ✓ 0 meditations
-- ✓ 5 journal entries/month
-- ✓ 3 AI chats/day
+- ✗ No workbook phases
+- ✗ No meditations
+- ✗ No Guru AI chat
 
-### Novice Path
-- ✓ Phases 1-5
-- ✓ 3 guided meditations
-- ✓ 50 journal entries/month
-- ✓ 10 AI chats/day
-
-### Awakening Path ⭐ Most Popular
-- ✓ Phases 1-8
-- ✓ 6 guided meditations
-- ✓ 200 journal entries/month
-- ✓ 50 AI chats/day
-- ✓ Voice transcription
+### Novice Path ⭐ Most Popular
+- ✓ All 10 workbook phases
+- ✓ All 18 guided meditations
+- ✓ All breathing exercises
+- ✓ All meditation music
 - ✓ Vision boards
+- ✓ Progress tracking
+- ✗ **NO Guru AI chat**
 
 ### Enlightenment Path 👑 Premium
-- ✓ All 10 phases
-- ✓ 18 guided meditations (all)
-- ✓ Unlimited journal entries
-- ✓ Unlimited AI chats
-- ✓ Voice transcription
+- ✓ All 10 workbook phases
+- ✓ All 18 guided meditations
+- ✓ All breathing exercises
+- ✓ All meditation music
 - ✓ Vision boards
-- ✓ Priority support
+- ✓ Progress tracking
+- ✓ **Guru AI chat** (exclusive)
 
 ---
 
@@ -87,8 +80,7 @@ Manifest the Unseen
 
 **Entitlements:**
 1. Identifier: `novice_path`, Display: "Novice Path"
-2. Identifier: `awakening_path`, Display: "Awakening Path"
-3. Identifier: `enlightenment_path`, Display: "Enlightenment Path"
+2. Identifier: `enlightenment_path`, Display: "Enlightenment Path"
 
 **Offering:**
 - Identifier: `current`
@@ -107,8 +99,6 @@ manifest_subscriptions
 ```
 Novice Path Monthly
 Novice Path Yearly
-Awakening Path Monthly
-Awakening Path Yearly
 Enlightenment Path Monthly
 Enlightenment Path Yearly
 ```
@@ -118,10 +108,8 @@ Enlightenment Path Yearly
 ## 🔗 Product → Entitlement Mapping
 
 ```
-manifest_novice_monthly       → novice_path
-manifest_novice_yearly        → novice_path
-manifest_awakening_monthly    → awakening_path
-manifest_awakening_yearly     → awakening_path
+manifest_novice_monthly        → novice_path
+manifest_novice_yearly         → novice_path
 manifest_enlightenment_monthly → enlightenment_path
 manifest_enlightenment_yearly  → enlightenment_path
 ```
@@ -133,30 +121,34 @@ manifest_enlightenment_yearly  → enlightenment_path
 **File:** `mobile/.env`
 
 ```env
-EXPO_PUBLIC_REVENUECAT_IOS_KEY=your_api_key_here
+# Test key (current)
+EXPO_PUBLIC_REVENUECAT_IOS_KEY=test_BNBlDdtGQwZdpmfspkxtempIcYP
+
+# Production key (get from RevenueCat dashboard)
+# EXPO_PUBLIC_REVENUECAT_IOS_KEY=appl_YOUR_PRODUCTION_KEY_HERE
 ```
 
 ---
 
 ## ✅ Implementation Checklist
 
-Copy this to track your progress:
-
 ```markdown
-- [ ] RevenueCat account created
-- [ ] iOS app added to RevenueCat project
-- [ ] API key copied and saved
-- [ ] API key added to mobile/.env
-- [ ] 3 entitlements created in RevenueCat
-- [ ] 6 products created in App Store Connect
-- [ ] App Store Connect integrated with RevenueCat
-- [ ] 6 products imported to RevenueCat
-- [ ] Products mapped to entitlements
-- [ ] "current" offering created
-- [ ] 6 packages added to offering
-- [ ] App.tsx updated with initialization
+- [x] RevenueCat account created
+- [x] iOS app added to RevenueCat project
+- [x] API key copied and saved
+- [x] API key added to mobile/.env
+- [x] 2 entitlements created in RevenueCat
+- [x] 4 products created in App Store Connect
+- [x] App Store Connect integrated with RevenueCat
+- [x] 4 products imported to RevenueCat
+- [x] Products mapped to entitlements
+- [x] "current" offering created
+- [x] 4 packages added to offering
+- [x] App.tsx updated with initialization
 - [ ] EAS development build created
 - [ ] Tested on iPhone
+- [ ] Production API key obtained
+- [ ] Production build submitted
 ```
 
 ---
@@ -172,6 +164,16 @@ eas build --profile development --platform ios
 **Start dev server:**
 ```bash
 npx expo start --dev-client
+```
+
+**Production build:**
+```bash
+eas build --profile production --platform ios
+```
+
+**Submit to App Store:**
+```bash
+eas submit --platform ios
 ```
 
 ---
@@ -200,4 +202,4 @@ npx expo start --dev-client
 
 ---
 
-**Last Updated:** December 8, 2025
+**Last Updated:** December 10, 2025
