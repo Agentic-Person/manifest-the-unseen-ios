@@ -7,9 +7,13 @@
   "license": "UNLICENSED",
   "workspaces": [
     "mobile",
-    "packages/*"
+    "packages/*",
+    "web"
   ],
   "scripts": {
+    "web": "cd web && npm run dev",
+    "web:build": "cd web && npm run build",
+    "web:start": "cd web && npm run start",
     "mobile": "cd mobile && npm start",
     "mobile:ios": "cd mobile && npm run ios",
     "mobile:android": "cd mobile && npm run android",
