@@ -21,6 +21,10 @@
     "production": {
       "ios": {
         "resourceClass": "default"
+      },
+      "env": {
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_syRiYucCEYWABHxxiKjporBRJVM",
+        "EXPO_PUBLIC_DEV_SKIP_AUTH": "false"
       }
     }
   },
