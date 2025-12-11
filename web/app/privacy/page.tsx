@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Footer from '@/components/Footer'
 
 export const metadata = {
   title: 'Privacy Policy | Manifest the Unseen',
@@ -192,12 +193,7 @@ export default function PrivacyPolicy() {
         </div>
       </article>
 
-      {/* Footer */}
-      <footer className="border-t border-elevated py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-muted-wisdom text-sm">
-          <p>© {new Date().getFullYear()} Manifest the Unseen. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </main>
   )
 }
