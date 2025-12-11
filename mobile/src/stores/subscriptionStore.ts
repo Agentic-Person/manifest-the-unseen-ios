@@ -219,33 +219,57 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
    * @param feature - Feature identifier
    * @returns True if user has access
    *
+   * Three-tier model:
+   * - Novice: Workbook, progress, music meditations
+   * - Awakening: + Guided meditations, Guru workbook analysis, analytics
+   * - Enlightenment: + Coming Soon features (full AI chat, journaling, etc.)
+   *
    * @example
-   * const hasAccess = checkAccess('phase_6');
+   * const hasAccess = checkAccess('guided_meditations');
    */
   checkAccess: (feature: string): boolean => {
     const { tier } = get();
+    const isPaid = tier === 'novice' || tier === 'awakening' || tier === 'enlightenment';
+    const isAwakeningPlus = tier === 'awakening' || tier === 'enlightenment';
 
-    // Feature access rules (Two-tier model: Novice and Enlightenment)
-    // Novice: All features EXCEPT Guru AI chat
-    // Enlightenment: All features INCLUDING Guru AI chat
     switch (feature) {
+      // All paid tiers (Novice+)
       case 'all_phases':
-        return tier === 'novice' || tier === 'enlightenment';
-
-      case 'meditations':
-        return tier === 'novice' || tier === 'enlightenment';
-
-      case 'voice_transcription':
-        return tier === 'novice' || tier === 'enlightenment';
-
+        return isPaid;
+      case 'music_meditations':
+        return isPaid;
+      case 'progress_tracking':
+        return isPaid;
       case 'vision_board':
-        return tier === 'novice' || tier === 'enlightenment';
+        return isPaid;
+      case 'pdf_manuscript':
+        return isPaid;
 
-      case 'unlimited_journals':
-        return tier === 'novice' || tier === 'enlightenment';
+      // Awakening+ only
+      case 'guided_meditations':
+        return isAwakeningPlus;
+      case 'guru_workbook_analysis':
+        return isAwakeningPlus;
+      case 'advanced_analytics':
+        return isAwakeningPlus;
 
+      // Enlightenment only (Coming Soon)
+      case 'full_guru_chat':
+        return false; // Coming Soon
+      case 'journaling':
+        return false; // Coming Soon
+      case 'all_meditation_tracks':
+        return false; // Coming Soon
+
+      // Legacy feature names (for backwards compatibility)
+      case 'meditations':
+        return isPaid; // Basic meditations for all paid tiers
       case 'guru_chat':
-        return tier === 'enlightenment';
+        return isAwakeningPlus; // Guru workbook analysis for Awakening+
+      case 'voice_transcription':
+        return false; // Coming Soon with journaling
+      case 'unlimited_journals':
+        return false; // Coming Soon
 
       default:
         return false;

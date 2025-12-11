@@ -6,40 +6,43 @@ import type { SubscriptionTier, TierLimits, WorkbookPhase } from '../models';
 
 /**
  * Subscription tier limits
+ *
+ * All paid tiers get ALL 10 phases (no phase-based gating)
+ * Tier differentiation is via meditations and Guru access
  */
 export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
   free: {
-    phases: 1, // Only Phase 1 preview
-    meditations: 1, // One intro meditation
-    journalEntriesPerMonth: 10,
-    aiMessagesPerDay: 5,
+    phases: 0, // No access
+    meditations: 0, // No meditations
+    journalEntriesPerMonth: 0,
+    aiMessagesPerDay: 0,
     visionBoards: 0,
     hasAdvancedAnalytics: false,
     hasPrioritySupport: false,
   },
   novice: {
-    phases: 5, // Phases 1-5
-    meditations: 3,
-    journalEntriesPerMonth: 50,
-    aiMessagesPerDay: 30,
+    phases: 10, // ALL phases
+    meditations: 6, // Music tracks only
+    journalEntriesPerMonth: 0, // Coming Soon
+    aiMessagesPerDay: 0, // No Guru access
     visionBoards: 1,
     hasAdvancedAnalytics: false,
     hasPrioritySupport: false,
   },
   awakening: {
-    phases: 8, // Phases 1-8
-    meditations: 6,
-    journalEntriesPerMonth: 200,
-    aiMessagesPerDay: 100,
+    phases: 10, // ALL phases
+    meditations: 12, // Music + 6 guided meditations
+    journalEntriesPerMonth: 0, // Coming Soon
+    aiMessagesPerDay: 50, // Guru workbook analysis
     visionBoards: 3,
     hasAdvancedAnalytics: true,
     hasPrioritySupport: true,
   },
   enlightenment: {
-    phases: 10, // All phases
-    meditations: 12, // All meditations (6 × 2 narrators)
-    journalEntriesPerMonth: -1, // Unlimited
-    aiMessagesPerDay: -1, // Unlimited
+    phases: 10, // ALL phases
+    meditations: 18, // All meditations (Coming Soon: 12+)
+    journalEntriesPerMonth: -1, // Coming Soon: Unlimited
+    aiMessagesPerDay: -1, // Coming Soon: Unlimited full AI chat
     visionBoards: -1, // Unlimited
     hasAdvancedAnalytics: true,
     hasPrioritySupport: true,
@@ -48,19 +51,20 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
 
 /**
  * Subscription pricing (in USD)
+ * Yearly = 2 months free (~17% discount)
  */
 export const SUBSCRIPTION_PRICING = {
   novice: {
     monthly: 7.99,
-    yearly: 59.99,
+    yearly: 79.92,
   },
   awakening: {
-    monthly: 12.99,
-    yearly: 99.99,
+    monthly: 19.99,
+    yearly: 199.90,
   },
   enlightenment: {
-    monthly: 19.99,
-    yearly: 149.99,
+    monthly: 49.99,
+    yearly: 499.90,
   },
 } as const;
 
@@ -71,6 +75,9 @@ export const FREE_TRIAL_DAYS = 7;
 
 /**
  * Workbook phases metadata
+ *
+ * Note: ALL paid tiers (novice+) get access to ALL 10 phases
+ * requiredTier is set to 'novice' for all phases (no phase-based gating)
  */
 export const WORKBOOK_PHASES: WorkbookPhase[] = [
   {
@@ -79,7 +86,7 @@ export const WORKBOOK_PHASES: WorkbookPhase[] = [
     description: 'Assess your current state with Wheel of Life, SWOT analysis, values identification, and habit tracking.',
     worksheets: ['wheel-of-life', 'swot-analysis', 'core-values', 'daily-habits'],
     estimatedMinutes: 45,
-    requiredTier: 'free',
+    requiredTier: 'novice',
   },
   {
     id: 2,
@@ -119,7 +126,7 @@ export const WORKBOOK_PHASES: WorkbookPhase[] = [
     description: 'Learn powerful manifestation methods: 3-6-9, WOOP, scripting, and visualization.',
     worksheets: ['369-method', 'woop-framework', 'scripting-exercises', 'visualization-practice'],
     estimatedMinutes: 70,
-    requiredTier: 'awakening',
+    requiredTier: 'novice',
   },
   {
     id: 7,
@@ -127,7 +134,7 @@ export const WORKBOOK_PHASES: WorkbookPhase[] = [
     description: 'Cultivate deep gratitude through daily practices and reflection.',
     worksheets: ['gratitude-journal', 'gratitude-meditation', 'appreciation-letters'],
     estimatedMinutes: 40,
-    requiredTier: 'awakening',
+    requiredTier: 'novice',
   },
   {
     id: 8,
@@ -135,7 +142,7 @@ export const WORKBOOK_PHASES: WorkbookPhase[] = [
     description: 'Transform jealousy and envy into motivation and inspiration.',
     worksheets: ['envy-inventory', 'inspiration-reframe', 'role-model-analysis'],
     estimatedMinutes: 50,
-    requiredTier: 'awakening',
+    requiredTier: 'novice',
   },
   {
     id: 9,
@@ -143,7 +150,7 @@ export const WORKBOOK_PHASES: WorkbookPhase[] = [
     description: 'Learn to trust the process and surrender control.',
     worksheets: ['trust-exercises', 'surrender-practice', 'faith-building'],
     estimatedMinutes: 45,
-    requiredTier: 'enlightenment',
+    requiredTier: 'novice',
   },
   {
     id: 10,
@@ -151,7 +158,7 @@ export const WORKBOOK_PHASES: WorkbookPhase[] = [
     description: 'Master the art of letting go and trusting in divine timing.',
     worksheets: ['letting-go-ritual', 'detachment-practice', 'integration-reflection'],
     estimatedMinutes: 55,
-    requiredTier: 'enlightenment',
+    requiredTier: 'novice',
   },
 ];
 

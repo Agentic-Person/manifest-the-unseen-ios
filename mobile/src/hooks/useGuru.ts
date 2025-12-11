@@ -3,6 +3,9 @@
  *
  * Manages phase-based analysis conversations with the AI Guru.
  * Handles subscription checking, phase selection, and message sending.
+ *
+ * Access: Awakening+ tiers get Guru workbook analysis
+ * (Full conversational AI chat is Coming Soon for Enlightenment)
  */
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -15,7 +18,7 @@ import type { GuruMessage } from '../types/guru';
 import { useGuruAccess } from './useSubscription';
 
 export interface UseGuruReturn {
-  // Subscription check - ONLY Enlightenment tier has access
+  // Subscription check - Awakening+ tiers have access to workbook analysis
   hasAccess: boolean;
   subscriptionTier: string;
 
@@ -47,8 +50,8 @@ export function useGuru(): UseGuruReturn {
   // Get subscription tier
   const tier = useSubscriptionStore((state) => state.tier);
 
-  // ONLY Enlightenment tier has Guru access
-  // Novice users do NOT have access
+  // Awakening+ tiers have Guru workbook analysis access
+  // Novice and free users do NOT have access
   const hasAccess = useGuruAccess();
 
   // Get current user ID
@@ -234,7 +237,7 @@ export function useGuru(): UseGuruReturn {
   }, [userId, selectedPhase, queryClient]);
 
   return {
-    // Subscription - ONLY Enlightenment has access
+    // Subscription - Awakening+ has workbook analysis access
     hasAccess,
     subscriptionTier: tier,
 

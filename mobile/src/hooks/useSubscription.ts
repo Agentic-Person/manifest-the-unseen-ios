@@ -3,11 +3,12 @@
  *
  * React hooks for accessing subscription state and checking feature access.
  *
- * Simplified two-tier model:
- * - Novice: Full app access EXCEPT Guru AI chat
- * - Enlightenment: Full app access INCLUDING Guru AI chat
+ * Three-tier model:
+ * - Novice: Workbook + progress tracking + music meditations
+ * - Awakening: + Guided meditations + Guru workbook analysis + Analytics
+ * - Enlightenment: + Coming Soon features (journaling, full AI chat, 12+ tracks)
  *
- * 7-day free trial = Novice-level access (everything except Guru)
+ * 7-day free trial = Novice-level access
  */
 
 import { useEffect, useMemo } from 'react';
@@ -40,8 +41,8 @@ export function useHasSubscription(): boolean {
 }
 
 /**
- * Check Guru Access
- * Returns true ONLY for Enlightenment tier
+ * Check Guru Workbook Analysis Access
+ * Returns true for Awakening+ tiers
  * Novice and free users do NOT have Guru access
  */
 export function useGuruAccess(): boolean {
@@ -49,14 +50,28 @@ export function useGuruAccess(): boolean {
 
   return useMemo(() => {
     const limits = FEATURE_LIMITS[tier];
-    return limits.hasGuru;
+    return limits.hasGuruAnalysis;
+  }, [tier]);
+}
+
+/**
+ * Check Guided Meditation Access
+ * Returns true for Awakening+ tiers
+ * Novice gets only music meditations
+ */
+export function useGuidedMeditationAccess(): boolean {
+  const tier = useSubscriptionStore((state) => state.tier);
+
+  return useMemo(() => {
+    const limits = FEATURE_LIMITS[tier];
+    return limits.hasGuidedMeditations;
   }, [tier]);
 }
 
 /**
  * Check Phase Access
- * Returns true if user has any subscription (Novice or Enlightenment)
- * Both tiers have access to all 10 phases
+ * Returns true if user has any paid subscription
+ * All paid tiers have access to all 10 phases
  */
 export function usePhaseAccess(phaseNumber: number): boolean {
   const tier = useSubscriptionStore((state) => state.tier);
@@ -68,9 +83,8 @@ export function usePhaseAccess(phaseNumber: number): boolean {
 }
 
 /**
- * Check Meditation Access
- * Returns true if user has any subscription (Novice or Enlightenment)
- * Both tiers have access to all meditations
+ * Check Basic Meditation Access (music tracks)
+ * Returns true if user has any paid subscription
  */
 export function useMeditationAccess(_meditationIndex?: number): boolean {
   const tier = useSubscriptionStore((state) => state.tier);
@@ -80,7 +94,7 @@ export function useMeditationAccess(_meditationIndex?: number): boolean {
     if (tier === 'free') {
       return false;
     }
-    // Both Novice and Enlightenment have access to all meditations
+    // All paid tiers have access to music meditations
     return true;
   }, [tier]);
 }
@@ -113,7 +127,11 @@ export function useFeatureAccess() {
       isSubscribed: tier !== 'free',
       maxPhase: limits.maxPhase,
       maxMeditations: limits.maxMeditations,
-      hasGuru: limits.hasGuru,
+      hasGuidedMeditations: limits.hasGuidedMeditations,
+      hasGuruAnalysis: limits.hasGuruAnalysis,
+      hasFullGuruChat: limits.hasFullGuruChat,
+      hasJournaling: limits.hasJournaling,
+      hasAdvancedAnalytics: limits.hasAdvancedAnalytics,
       hasVisionBoard: limits.hasVisionBoard,
     };
   }, [tier]);
@@ -137,6 +155,7 @@ export function useSubscriptionSummary() {
     const tierNames: Record<SubscriptionTier, string> = {
       free: 'Free',
       novice: 'Novice Path',
+      awakening: 'Awakening Path',
       enlightenment: 'Enlightenment Path',
     };
 
@@ -167,9 +186,10 @@ export function useSubscriptionSummary() {
 
 /**
  * Get Upgrade Tier Recommendation
- * Simplified: Only two upgrade paths
- * - Free -> Novice (for app access)
- * - Novice -> Enlightenment (for Guru access)
+ * Three-tier upgrade paths:
+ * - Free -> Novice (for workbook, music meditations)
+ * - Novice -> Awakening (for guided meditations, Guru analysis)
+ * - Awakening -> Enlightenment (for Coming Soon features)
  */
 export function useUpgradeTierRecommendation(
   feature: string
@@ -182,17 +202,29 @@ export function useUpgradeTierRecommendation(
       return null;
     }
 
-    // Guru feature requires Enlightenment
-    if (feature === 'guru' || feature === 'ai_chat') {
+    // Enlightenment-only features (Coming Soon)
+    if (feature === 'full_guru_chat' || feature === 'journaling' || feature === 'all_meditation_tracks') {
       return 'enlightenment';
     }
 
-    // All other features just need Novice subscription
+    // Awakening+ features
+    if (feature === 'guided_meditations' || feature === 'guru' || feature === 'guru_analysis' || feature === 'advanced_analytics') {
+      if (currentTier === 'awakening') {
+        return null; // Already has access
+      }
+      return 'awakening';
+    }
+
+    // Basic features just need Novice
     if (currentTier === 'free') {
       return 'novice';
     }
 
-    // Novice users wanting to upgrade
-    return 'enlightenment';
+    // Novice users - recommend Awakening for next level
+    if (currentTier === 'novice') {
+      return 'awakening';
+    }
+
+    return null;
   }, [currentTier, feature]);
 }

@@ -1,8 +1,8 @@
 /**
  * Guru Locked Screen
  *
- * Displayed when non-Enlightenment tier users try to access the Guru feature.
- * Shows feature benefits and prompts upgrade to Enlightenment tier.
+ * Displayed when non-Awakening tier users try to access the Guru feature.
+ * Shows feature benefits and prompts upgrade to Awakening tier.
  */
 
 import React from 'react';
@@ -21,8 +21,8 @@ import { TIER_PRICING } from '../types/subscription';
 /**
  * Guru Locked Screen Component
  *
- * Premium feature lock screen for Guru personalized wisdom feature.
- * Requires Enlightenment tier subscription.
+ * Premium feature lock screen for Guru workbook analysis.
+ * Requires Awakening tier subscription.
  */
 const GuruLockedScreen = () => {
   const navigation = useNavigation();
@@ -40,7 +40,8 @@ const GuruLockedScreen = () => {
     'Personalized insights based on your completed phases',
     'Deep analysis of your unique journey and progress',
     'AI-powered guidance tailored to your growth areas',
-    'Unlimited wisdom conversations with your Guru',
+    '6 guided meditations for deeper practice',
+    'Advanced analytics to track your progress',
   ];
 
   return (
@@ -82,7 +83,7 @@ const GuruLockedScreen = () => {
         {/* Tier Badge */}
         <View style={styles.tierBadge}>
           <Ionicons name="star" size={16} color={colors.white} />
-          <Text style={styles.tierBadgeText}>Enlightenment Path Exclusive</Text>
+          <Text style={styles.tierBadgeText}>Awakening Path Feature</Text>
         </View>
 
         {/* Benefits List */}
@@ -106,10 +107,10 @@ const GuruLockedScreen = () => {
         <View style={styles.pricingContainer}>
           <Text style={styles.pricingLabel}>Starting at</Text>
           <Text style={styles.pricingAmount}>
-            ${TIER_PRICING.enlightenment.monthly}/month
+            ${TIER_PRICING.awakening.monthly}/month
           </Text>
           <Text style={styles.pricingSubtext}>
-            or ${TIER_PRICING.enlightenment.yearly}/year
+            or ${TIER_PRICING.awakening.yearly}/year
           </Text>
         </View>
 
@@ -119,10 +120,10 @@ const GuruLockedScreen = () => {
           onPress={handleUpgrade}
           activeOpacity={0.8}
           accessibilityRole="button"
-          accessibilityLabel="Upgrade to Enlightenment Path"
+          accessibilityLabel="Upgrade to Awakening Path"
         >
           <Text style={styles.upgradeButtonText}>
-            Upgrade to Enlightenment
+            Upgrade to Awakening
           </Text>
           <Ionicons name="arrow-forward" size={20} color={colors.background.primary} />
         </TouchableOpacity>

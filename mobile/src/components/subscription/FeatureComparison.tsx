@@ -16,49 +16,70 @@ interface FeatureComparisonProps {
 interface FeatureRow {
   label: string;
   novice: string;
+  awakening: string;
   enlightenment: string;
 }
 
 /**
- * Two-tier model:
- * - Novice: All features EXCEPT Guru AI chat
- * - Enlightenment: All features INCLUDING Guru AI chat
+ * Three-tier model:
+ * - Novice: Workbook, progress, music meditations
+ * - Awakening: + Guided meditations, Guru workbook analysis, Analytics
+ * - Enlightenment: + Coming Soon features (journaling, full AI chat, 12+ tracks)
  */
 const FEATURES: FeatureRow[] = [
   {
     label: 'Workbook Phases',
     novice: 'All 10 Phases',
+    awakening: 'All 10 Phases',
     enlightenment: 'All 10 Phases',
-  },
-  {
-    label: 'Guided Meditations',
-    novice: 'All 18 sessions',
-    enlightenment: 'All 18 sessions',
-  },
-  {
-    label: 'Breathing Exercises',
-    novice: 'All exercises',
-    enlightenment: 'All exercises',
-  },
-  {
-    label: 'Meditation Music',
-    novice: 'All tracks',
-    enlightenment: 'All tracks',
-  },
-  {
-    label: 'AI Guru Chat',
-    novice: '✗',
-    enlightenment: 'Unlimited',
-  },
-  {
-    label: 'Vision Board',
-    novice: '✓',
-    enlightenment: '✓',
   },
   {
     label: 'Progress Tracking',
     novice: '✓',
+    awakening: '✓',
     enlightenment: '✓',
+  },
+  {
+    label: 'PDF Manuscript',
+    novice: '✓',
+    awakening: '✓',
+    enlightenment: '✓',
+  },
+  {
+    label: 'Music Meditations',
+    novice: '6 tracks',
+    awakening: '6 tracks',
+    enlightenment: '6 tracks',
+  },
+  {
+    label: 'Guided Meditations',
+    novice: '✗',
+    awakening: '6 sessions',
+    enlightenment: '6 sessions',
+  },
+  {
+    label: 'Guru Analysis',
+    novice: '✗',
+    awakening: '✓ Workbook',
+    enlightenment: '✓ Workbook',
+  },
+  {
+    label: 'Advanced Analytics',
+    novice: '✗',
+    awakening: '✓',
+    enlightenment: '✓',
+  },
+  {
+    label: 'Full AI Chat',
+    novice: '✗',
+    awakening: '✗',
+    enlightenment: 'Coming Soon',
+  },
+  {
+    label: 'Journaling',
+    novice: '✗',
+    awakening: '✗',
+    enlightenment: 'Coming Soon',
   },
 ];
 
@@ -88,9 +109,8 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
 
         {/* Novice Column */}
         <View style={styles.tierColumn}>
-          <View style={[styles.headerCell, styles.tierHeader, styles.popularTier]}>
-            <Text style={styles.tierHeaderTextHighlight}>Novice</Text>
-            <Text style={styles.popularLabel}>★ Most Popular</Text>
+          <View style={[styles.headerCell, styles.tierHeader]}>
+            <Text style={styles.tierHeaderText}>Novice</Text>
             {currentTier === 'novice' && (
               <View style={styles.currentBadge}>
                 <Text style={styles.currentBadgeText}>Current</Text>
@@ -100,6 +120,24 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
           {FEATURES.map((feature, index) => (
             <View key={index} style={styles.featureCell}>
               <Text style={styles.featureText}>{feature.novice}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Awakening Column - MOST POPULAR */}
+        <View style={styles.tierColumn}>
+          <View style={[styles.headerCell, styles.tierHeader, styles.popularTier]}>
+            <Text style={styles.tierHeaderTextHighlight}>Awakening</Text>
+            <Text style={styles.popularLabel}>★ Most Popular</Text>
+            {currentTier === 'awakening' && (
+              <View style={styles.currentBadge}>
+                <Text style={styles.currentBadgeText}>Current</Text>
+              </View>
+            )}
+          </View>
+          {FEATURES.map((feature, index) => (
+            <View key={index} style={styles.featureCell}>
+              <Text style={styles.featureText}>{feature.awakening}</Text>
             </View>
           ))}
         </View>

@@ -27,13 +27,15 @@ interface SubscriptionCardProps {
 
 const TIER_NAMES: Record<string, string> = {
   novice: 'Novice Path',
+  awakening: 'Awakening Path',
   enlightenment: 'Enlightenment Path',
   free: 'Free',
 };
 
 const TIER_DESCRIPTIONS: Record<string, string> = {
-  novice: 'Full access to all features',
-  enlightenment: 'Full access + AI Guru',
+  novice: 'Begin your journey',
+  awakening: 'Deepen your practice',
+  enlightenment: 'Complete experience',
   free: 'Limited access',
 };
 
@@ -48,7 +50,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   isPurchasing = false,
 }) => {
   // Only show pricing for paid tiers
-  const tierData = tier === 'free' ? null : TIER_PRICING[tier as 'novice' | 'enlightenment'];
+  const tierData = tier === 'free' ? null : TIER_PRICING[tier as 'novice' | 'awakening' | 'enlightenment'];
 
   // Get price - packageData takes priority, fallback to tier pricing for monthly/yearly
   const getPrice = (): string => {

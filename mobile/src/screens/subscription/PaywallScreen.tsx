@@ -3,10 +3,10 @@
  *
  * Beautiful subscription paywall with pricing display and purchase flow.
  *
- * TEST MODE: Simplified for RevenueCat Test Store with monthly/yearly/lifetime products.
- * All products grant 'enlightenment' tier for testing.
- *
- * PRODUCTION: Will be updated to show 3-tier pricing (novice/awakening/enlightenment)
+ * Three-tier subscription model:
+ * - Novice: $7.99/mo - Workbook, progress, music meditations
+ * - Awakening: $19.99/mo - + Guided meditations, Guru workbook analysis, Analytics
+ * - Enlightenment: $49.99/mo - + Coming Soon features (journaling, full AI chat)
  */
 
 import React, { useState, useEffect } from 'react';

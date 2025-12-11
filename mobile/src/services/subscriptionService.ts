@@ -290,9 +290,10 @@ export async function checkEntitlement(
  * Get User's Current Subscription Tier
  * Determines tier from active entitlements
  *
- * Two-tier model:
- * - Enlightenment: Full access including Guru AI chat
- * - Novice: Full access EXCEPT Guru AI chat
+ * Three-tier model:
+ * - Enlightenment: Everything + Coming Soon features
+ * - Awakening: + Guided meditations + Guru workbook analysis + Analytics
+ * - Novice: Workbook + music meditations + progress tracking
  */
 export function getTierFromCustomerInfo(
   customerInfo: CustomerInfo | null
@@ -306,6 +307,10 @@ export function getTierFromCustomerInfo(
   // Check in priority order (highest tier first)
   if (activeEntitlements[ENTITLEMENT_IDS.ENLIGHTENMENT]) {
     return 'enlightenment';
+  }
+
+  if (activeEntitlements[ENTITLEMENT_IDS.AWAKENING]) {
+    return 'awakening';
   }
 
   if (activeEntitlements[ENTITLEMENT_IDS.NOVICE]) {
@@ -326,11 +331,8 @@ function getSubscriptionStatus(
     return 'none';
   }
 
-  // Find the active entitlement for current tier (two-tier model)
-  const entitlementId =
-    tier === 'enlightenment'
-      ? ENTITLEMENT_IDS.ENLIGHTENMENT
-      : ENTITLEMENT_IDS.NOVICE;
+  // Find the active entitlement for current tier (three-tier model)
+  const entitlementId = getEntitlementIdForTier(tier);
 
   const entitlement = customerInfo.entitlements.active[entitlementId];
 
@@ -377,11 +379,8 @@ function getSubscriptionPeriod(
     return null;
   }
 
-  // Find the active entitlement for current tier (two-tier model)
-  const entitlementId =
-    tier === 'enlightenment'
-      ? ENTITLEMENT_IDS.ENLIGHTENMENT
-      : ENTITLEMENT_IDS.NOVICE;
+  // Find the active entitlement for current tier (three-tier model)
+  const entitlementId = getEntitlementIdForTier(tier);
 
   const entitlement = customerInfo.entitlements.active[entitlementId];
 
@@ -427,11 +426,7 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
     let willRenew = false;
 
     if (customerInfo && tier !== 'free') {
-      const entitlementId =
-        tier === 'enlightenment'
-          ? ENTITLEMENT_IDS.ENLIGHTENMENT
-          : ENTITLEMENT_IDS.NOVICE;
-
+      const entitlementId = getEntitlementIdForTier(tier);
       const entitlement = customerInfo.entitlements.active[entitlementId];
 
       if (entitlement) {
@@ -475,12 +470,30 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
 }
 
 /**
+ * Helper: Get Entitlement ID for Tier
+ */
+function getEntitlementIdForTier(tier: SubscriptionTier): string {
+  switch (tier) {
+    case 'enlightenment':
+      return ENTITLEMENT_IDS.ENLIGHTENMENT;
+    case 'awakening':
+      return ENTITLEMENT_IDS.AWAKENING;
+    case 'novice':
+      return ENTITLEMENT_IDS.NOVICE;
+    default:
+      return '';
+  }
+}
+
+/**
  * Helper: Get Display Name for Tier
  */
 function getTierDisplayName(tier: SubscriptionTier): string {
   switch (tier) {
     case 'novice':
       return 'Novice Path';
+    case 'awakening':
+      return 'Awakening Path';
     case 'enlightenment':
       return 'Enlightenment Path';
     default:

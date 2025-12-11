@@ -1,8 +1,8 @@
 # Manifest the Unseen - Project Status
 
-**Last Updated**: 2025-12-10
+**Last Updated**: 2025-12-11
 **Current Phase**: Phase 5 - Final Testing & App Store Submission
-**Overall Progress**: 90% Complete
+**Overall Progress**: 92% Complete
 
 ---
 
@@ -10,29 +10,29 @@
 
 **What's Complete** ✅:
 - **ALL APP FEATURES COMPLETE** - Ready for App Store submission
-- **Two-Tier Subscription Model** - Novice + Enlightenment (code refactored)
+- **Three-Tier Subscription Model** - Novice ($7.99) + Awakening ($19.99) + Enlightenment ($49.99)
 - **Feature Gating Implemented** - UpgradePrompts working throughout app
-- **RevenueCat SDK Integrated** - Test API key configured
+- **RevenueCat SDK Integrated** - Production API key configured
 - **AUDIO WORKING ON IPHONE!** Meditation playback confirmed working
 - All 10 workbook phases with visual progress tracking
 - Meditation & Breathing MVP complete (9 tracks)
-- AI Chat Frontend complete (Guru feature)
+- AI Chat Frontend complete (Guru workbook analysis for Awakening+)
 - YouTube Transcript Scraper tool (327 knowledge embeddings)
 - Apple Sign-In implemented
 - HomeScreen redesigned with mystical theme
 - Workbook Progress Meters with color gradients
-- Journal Feature Removed (streamlined focus)
+- Journal Feature (Coming Soon for Enlightenment tier)
 
 **What's Working** ✅:
 - All 10 workbook phases
 - Meditation audio playback (9 tracks)
 - Authentication (email + Apple Sign-In)
-- AI Guru chat (Enlightenment tier only)
+- AI Guru workbook analysis (Awakening+ tiers)
 - Feature gating based on subscription tier
 - Paywall and UpgradePrompt modals
 
 **What's Left** 🎯:
-- RevenueCat dashboard: Remove awakening tier products
+- RevenueCat dashboard: Add awakening tier products (6 total products)
 - App Store Connect: Complete listing, screenshots
 - Production build and submission
 
