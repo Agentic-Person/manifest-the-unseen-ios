@@ -37,6 +37,9 @@ import {
   BreathingImages,
   InstrumentalImages,
 } from '../assets';
+import { useFeatureAccess } from '../hooks/useSubscription';
+import { UpgradePrompt } from '../components/UpgradePrompt';
+import { TIER_PRICING } from '../types/subscription';
 
 type MeditateNavProp = NativeStackNavigationProp<MeditateStackParamList>;
 
@@ -109,9 +112,14 @@ const MeditateScreen = () => {
   const navigation = useNavigation<MeditateNavProp>();
   const [activeTab, setActiveTab] = useState<TabType>('guided');
   const [refreshing, setRefreshing] = useState(false);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [lockedMeditationIndex, setLockedMeditationIndex] = useState<number>(0);
 
   // Get preferred narrator from settings
   const preferredNarrator = useSettingsStore((state) => state.preferredNarrator);
+
+  // Subscription access
+  const { tier, maxMeditations } = useFeatureAccess();
 
   // Fetch data for each tab
   const {
@@ -145,10 +153,47 @@ const MeditateScreen = () => {
   }, [refetchGuided, refetchBreathing, refetchMusic]);
 
   /**
+   * Check if meditation is accessible based on subscription
+   */
+  const isMeditationAccessible = useCallback(
+    (index: number): boolean => {
+      // Free tier has no meditation access
+      if (tier === 'free') {
+        return false;
+      }
+      // Check against max meditations for tier (18 means unlimited)
+      if (maxMeditations === 18) {
+        return true; // Unlimited
+      }
+      return index < maxMeditations;
+    },
+    [tier, maxMeditations]
+  );
+
+  /**
+   * Get required tier for locked meditation
+   */
+  const getRequiredTier = useCallback(
+    (index: number): 'novice' | 'awakening' | 'enlightenment' => {
+      if (index < 3) return 'novice';
+      if (index < 6) return 'awakening';
+      return 'enlightenment';
+    },
+    []
+  );
+
+  /**
    * Handle meditation press
    */
   const handleMeditationPress = useCallback(
     (meditation: Meditation, index: number) => {
+      // Check subscription access
+      if (!isMeditationAccessible(index)) {
+        setLockedMeditationIndex(index);
+        setShowUpgradePrompt(true);
+        return;
+      }
+
       navigation.navigate('MeditationPlayer', {
         meditationId: meditation.id,
         title: meditation.title,
@@ -157,7 +202,7 @@ const MeditateScreen = () => {
         meditationType: activeTab,
       });
     },
-    [navigation, activeTab]
+    [navigation, activeTab, isMeditationAccessible]
   );
 
   /**
@@ -302,6 +347,20 @@ const MeditateScreen = () => {
           }
         />
       )}
+
+      {/* Upgrade Prompt Modal */}
+      <UpgradePrompt
+        visible={showUpgradePrompt}
+        onClose={() => setShowUpgradePrompt(false)}
+        title="Unlock Meditations"
+        description={
+          tier === 'free'
+            ? 'Start your subscription to access guided meditations, breathing exercises, and ambient music for your practice.'
+            : `Upgrade to access more meditations. You currently have access to ${maxMeditations} meditations.`
+        }
+        requiredTier={getRequiredTier(lockedMeditationIndex)}
+        benefits={TIER_PRICING[getRequiredTier(lockedMeditationIndex)].features}
+      />
     </View>
   );
 };

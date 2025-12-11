@@ -12,11 +12,18 @@ import { getAllWorkbookProgress } from '../services/workbook';
 import { guruService } from '../services';
 import { supabase } from '../services/supabase';
 import type { GuruMessage } from '../types/guru';
+import { FEATURE_LIMITS } from '../types/subscription';
 
 export interface UseGuruReturn {
   // Subscription check
   hasAccess: boolean;
   subscriptionTier: string;
+
+  // Quota info
+  dailyQuota: number;
+  messagesUsedToday: number;
+  hasQuotaRemaining: boolean;
+  isUnlimited: boolean;
 
   // Phase data
   completedPhases: number[];
@@ -42,10 +49,18 @@ export interface UseGuruReturn {
 export function useGuru(): UseGuruReturn {
   const queryClient = useQueryClient();
   const [selectedPhase, setSelectedPhase] = useState<number | null>(null);
+  const [messagesUsedToday, setMessagesUsedToday] = useState(0);
 
   // Get subscription tier
   const tier = useSubscriptionStore((state) => state.tier);
-  const hasAccess = tier === 'enlightenment';
+
+  // All tiers have access to Guru (with different quotas)
+  const hasAccess = true;
+
+  // Get quota limits for current tier
+  const dailyQuota = FEATURE_LIMITS[tier].maxAIChatPerDay;
+  const isUnlimited = dailyQuota === -1;
+  const hasQuotaRemaining = isUnlimited || messagesUsedToday < dailyQuota;
 
   // Get current user ID
   const [userId, setUserId] = useState<string | undefined>();
@@ -190,7 +205,7 @@ export function useGuru(): UseGuruReturn {
         );
       }
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Update conversation with AI response
       queryClient.invalidateQueries({
         queryKey: ['guru-conversation', userId, selectedPhase],
@@ -208,12 +223,20 @@ export function useGuru(): UseGuruReturn {
     setSelectedPhase(null);
   }, []);
 
-  // Action: Send message
+  // Action: Send message (with quota check)
   const sendMessage = useCallback(
     async (message: string) => {
+      // Check quota before sending
+      if (!isUnlimited && messagesUsedToday >= dailyQuota) {
+        throw new Error(`Daily message limit reached (${dailyQuota} messages/day). Upgrade for more.`);
+      }
+
       await sendMessageMutation.mutateAsync(message);
+
+      // Increment daily message count
+      setMessagesUsedToday((prev) => prev + 1);
     },
-    [sendMessageMutation]
+    [sendMessageMutation, isUnlimited, messagesUsedToday, dailyQuota]
   );
 
   // Action: Start new conversation
@@ -233,6 +256,12 @@ export function useGuru(): UseGuruReturn {
     // Subscription
     hasAccess,
     subscriptionTier: tier,
+
+    // Quota info
+    dailyQuota,
+    messagesUsedToday,
+    hasQuotaRemaining,
+    isUnlimited,
 
     // Phase data
     completedPhases,

@@ -4,8 +4,8 @@
  * Main workbook screen showing all 10 phases and user progress.
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, ImageSourcePropType, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ImageSourcePropType, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps, WorkbookStackParamList } from '../types/navigation';
@@ -14,6 +14,9 @@ import { colors } from '../theme';
 import { PhaseImages } from '../assets';
 import { useAllPhasesProgress, getProgressMessage } from '../hooks';
 import { GradientProgressBar, getProgressColor } from '../components/workbook';
+import { useFeatureAccess } from '../hooks/useSubscription';
+import { UpgradePrompt } from '../components/UpgradePrompt';
+import { TIER_PRICING } from '../types/subscription';
 
 type Props = WorkbookStackScreenProps<'WorkbookHome'>;
 
@@ -40,10 +43,36 @@ const PHASES: Phase[] = [
 const WorkbookScreen = ({ navigation }: Props) => {
   const profile = useProfile();
   const currentPhase = profile?.currentPhase || 1;
-  const allPhasesUnlocked = true;
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [lockedPhaseNumber, setLockedPhaseNumber] = useState<number>(3);
+
+  // Subscription access
+  const { maxPhase } = useFeatureAccess();
 
   // Fetch progress for all phases
   const { phases: phasesProgress, overallPercentage, isLoading } = useAllPhasesProgress();
+
+  /**
+   * Check if phase is accessible based on subscription
+   */
+  const isPhaseAccessible = useCallback(
+    (phaseNumber: number): boolean => {
+      return phaseNumber <= maxPhase;
+    },
+    [maxPhase]
+  );
+
+  /**
+   * Get required tier for locked phase
+   */
+  const getRequiredTier = useCallback(
+    (phaseNumber: number): 'novice' | 'awakening' | 'enlightenment' => {
+      if (phaseNumber <= 5) return 'novice';
+      if (phaseNumber <= 8) return 'awakening';
+      return 'enlightenment';
+    },
+    []
+  );
 
   // Helper to get phase progress
   const getPhaseProgress = (phaseNumber: number) => {
@@ -81,7 +110,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
 
       <View style={styles.phasesList}>
         {PHASES.map((phase) => {
-          const isUnlocked = allPhasesUnlocked || phase.id <= currentPhase;
+          const isUnlocked = isPhaseAccessible(phase.id);
           const isCurrent = phase.id === currentPhase;
           const isCompleted = phase.id < currentPhase;
           const phaseProgress = getPhaseProgress(phase.id);
@@ -97,10 +126,9 @@ const WorkbookScreen = ({ navigation }: Props) => {
               onPress={() => {
                 if (!isUnlocked) {
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-                  Alert.alert(
-                    'Phase Locked',
-                    `Complete Phase ${phase.id - 1} first to unlock this phase.`
-                  );
+                  // Show upgrade prompt instead of alert
+                  setLockedPhaseNumber(phase.id);
+                  setShowUpgradePrompt(true);
                   return;
                 }
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -198,6 +226,16 @@ const WorkbookScreen = ({ navigation }: Props) => {
           );
         })}
       </View>
+
+      {/* Upgrade Prompt Modal */}
+      <UpgradePrompt
+        visible={showUpgradePrompt}
+        onClose={() => setShowUpgradePrompt(false)}
+        title={`Unlock Phase ${lockedPhaseNumber}`}
+        description={`Phase ${lockedPhaseNumber} (${PHASES.find(p => p.id === lockedPhaseNumber)?.name || ''}) is part of your advanced transformation journey. Upgrade to continue your path.`}
+        requiredTier={getRequiredTier(lockedPhaseNumber)}
+        benefits={TIER_PRICING[getRequiredTier(lockedPhaseNumber)].features}
+      />
     </ScrollView>
   );
 };

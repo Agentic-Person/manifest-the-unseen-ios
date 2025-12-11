@@ -69,7 +69,7 @@ export function useMeditationAccess(meditationIndex: number): boolean {
     }
 
     // Enlightenment tier has access to all 18 meditations
-    if (limits.maxMeditations === 18 || limits.maxMeditations === -1) {
+    if (limits.maxMeditations === 18) {
       return true;
     }
 
