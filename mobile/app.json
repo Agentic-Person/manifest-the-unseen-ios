@@ -13,11 +13,16 @@
       "backgroundColor": "#9333ea"
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/icon.png",
+      "assets/splash.png",
+      "assets/adaptive-icon.png",
+      "src/assets/images-compressed/**/*",
+      "src/assets/icons/**/*"
     ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manifesttheunseen.app",
+      "buildNumber": "2",
       "infoPlist": {
         "UIBackgroundModes": [
           "audio",

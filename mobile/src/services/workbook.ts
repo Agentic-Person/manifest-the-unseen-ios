@@ -10,6 +10,7 @@ import type {
   WorkbookProgress,
   WorkbookProgressInsert,
 } from '../types/workbook';
+import { JournalEncryption } from '../utils/secureStorage';
 
 /**
  * Timeout helper for web platform where Supabase queries can hang
@@ -261,4 +262,218 @@ export const resetAllProgress = async (userId: string): Promise<void> => {
     .eq('user_id', userId);
 
   if (error) throw error;
+};
+
+/**
+ * ========================================
+ * JOURNAL ENTRY ENCRYPTION HELPERS
+ * ========================================
+ * These functions help encrypt/decrypt sensitive journal entries
+ * before storing them in the database.
+ */
+
+/**
+ * Identify fields that should be encrypted in worksheet data
+ */
+const ENCRYPTED_FIELD_PATTERNS = [
+  'journal',
+  'reflection',
+  'thoughts',
+  'notes',
+  'entry',
+  'answer',
+  'response',
+  'description',
+  'story',
+  'experience',
+];
+
+/**
+ * Check if a field name indicates sensitive content
+ */
+const isSensitiveField = (fieldName: string): boolean => {
+  const lowerFieldName = fieldName.toLowerCase();
+  return ENCRYPTED_FIELD_PATTERNS.some(pattern => lowerFieldName.includes(pattern));
+};
+
+/**
+ * Recursively encrypt sensitive fields in worksheet data
+ *
+ * @param data - Worksheet data object
+ * @returns Data with sensitive fields encrypted
+ */
+export const encryptWorksheetData = async (
+  data: Record<string, unknown>
+): Promise<Record<string, unknown>> => {
+  const encrypted: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    // Skip null/undefined values
+    if (value === null || value === undefined) {
+      encrypted[key] = value;
+      continue;
+    }
+
+    // Encrypt string fields that match sensitive patterns
+    if (typeof value === 'string' && isSensitiveField(key)) {
+      try {
+        encrypted[key] = await JournalEncryption.encrypt(value);
+        console.log(`[workbook.service] Encrypted field: ${key}`);
+      } catch (error) {
+        console.error(`[workbook.service] Failed to encrypt field ${key}:`, error);
+        // Fall back to unencrypted if encryption fails
+        encrypted[key] = value;
+      }
+      continue;
+    }
+
+    // Recursively handle nested objects
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      encrypted[key] = await encryptWorksheetData(value as Record<string, unknown>);
+      continue;
+    }
+
+    // Handle arrays of objects
+    if (Array.isArray(value)) {
+      encrypted[key] = await Promise.all(
+        value.map(async (item) => {
+          if (typeof item === 'object' && item !== null) {
+            return await encryptWorksheetData(item as Record<string, unknown>);
+          }
+          return item;
+        })
+      );
+      continue;
+    }
+
+    // Pass through other types unchanged
+    encrypted[key] = value;
+  }
+
+  return encrypted;
+};
+
+/**
+ * Recursively decrypt sensitive fields in worksheet data
+ *
+ * @param data - Worksheet data object (with encrypted fields)
+ * @returns Data with sensitive fields decrypted
+ */
+export const decryptWorksheetData = async (
+  data: Record<string, unknown>
+): Promise<Record<string, unknown>> => {
+  const decrypted: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    // Skip null/undefined values
+    if (value === null || value === undefined) {
+      decrypted[key] = value;
+      continue;
+    }
+
+    // Decrypt string fields that match sensitive patterns
+    if (typeof value === 'string' && isSensitiveField(key)) {
+      try {
+        decrypted[key] = await JournalEncryption.decrypt(value);
+        console.log(`[workbook.service] Decrypted field: ${key}`);
+      } catch (error) {
+        console.error(`[workbook.service] Failed to decrypt field ${key}:`, error);
+        // Fall back to raw value if decryption fails (might not be encrypted)
+        decrypted[key] = value;
+      }
+      continue;
+    }
+
+    // Recursively handle nested objects
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      decrypted[key] = await decryptWorksheetData(value as Record<string, unknown>);
+      continue;
+    }
+
+    // Handle arrays of objects
+    if (Array.isArray(value)) {
+      decrypted[key] = await Promise.all(
+        value.map(async (item) => {
+          if (typeof item === 'object' && item !== null) {
+            return await decryptWorksheetData(item as Record<string, unknown>);
+          }
+          return item;
+        })
+      );
+      continue;
+    }
+
+    // Pass through other types unchanged
+    decrypted[key] = value;
+  }
+
+  return decrypted;
+};
+
+/**
+ * Upsert worksheet progress WITH encryption for sensitive fields
+ *
+ * This is a wrapper around upsertWorkbookProgress that automatically
+ * encrypts sensitive journal/reflection fields before saving.
+ *
+ * @param userId - User ID
+ * @param phaseNumber - Phase number (1-10)
+ * @param worksheetId - Worksheet identifier
+ * @param data - Worksheet data (will be encrypted)
+ * @param completed - Whether worksheet is completed
+ * @returns Saved progress with decrypted data
+ */
+export const upsertWorkbookProgressEncrypted = async (
+  userId: string,
+  phaseNumber: number,
+  worksheetId: string,
+  data: Record<string, unknown>,
+  completed: boolean = false
+): Promise<WorkbookProgress> => {
+  // Encrypt sensitive fields before saving
+  const encryptedData = await encryptWorksheetData(data);
+
+  // Save to database with encrypted data
+  const savedProgress = await upsertWorkbookProgress(
+    userId,
+    phaseNumber,
+    worksheetId,
+    encryptedData,
+    completed
+  );
+
+  // Return with decrypted data for immediate use
+  return {
+    ...savedProgress,
+    data: await decryptWorksheetData(savedProgress.data as Record<string, unknown>),
+  };
+};
+
+/**
+ * Get worksheet progress WITH decryption for sensitive fields
+ *
+ * This is a wrapper around getWorkbookProgress that automatically
+ * decrypts sensitive journal/reflection fields after loading.
+ *
+ * @param userId - User ID
+ * @param phaseNumber - Phase number (1-10)
+ * @param worksheetId - Worksheet identifier
+ * @returns Progress with decrypted data, or null if not found
+ */
+export const getWorkbookProgressDecrypted = async (
+  userId: string,
+  phaseNumber: number,
+  worksheetId: string
+): Promise<WorkbookProgress | null> => {
+  const progress = await getWorkbookProgress(userId, phaseNumber, worksheetId);
+
+  if (!progress) {
+    return null;
+  }
+
+  // Decrypt sensitive fields
+  return {
+    ...progress,
+    data: await decryptWorksheetData(progress.data as Record<string, unknown>),
+  };
 };

@@ -12,6 +12,7 @@ import type {
   SendMessageResponse,
   ConversationListItem,
 } from '../types/aiChat';
+import { logger } from '../utils/logger';
 
 export const aiChatService = {
   /**
@@ -31,7 +32,7 @@ export const aiChatService = {
     });
 
     if (error) {
-      console.error('[aiChatService] Error sending message:', error);
+      logger.error('aiChatService: Error sending message', error);
       throw new Error(error.message || 'Failed to send message');
     }
 
@@ -54,7 +55,7 @@ export const aiChatService = {
       .single();
 
     if (error) {
-      console.error('[aiChatService] Error fetching conversation:', error);
+      logger.error('aiChatService: Error fetching conversation', error);
       throw new Error(error.message || 'Failed to load conversation');
     }
 
@@ -77,7 +78,7 @@ export const aiChatService = {
       .order('updated_at', { ascending: false });
 
     if (error) {
-      console.error('[aiChatService] Error listing conversations:', error);
+      logger.error('aiChatService: Error listing conversations', error);
       throw new Error(error.message || 'Failed to load conversations');
     }
 
@@ -104,7 +105,7 @@ export const aiChatService = {
       .eq('id', conversationId);
 
     if (error) {
-      console.error('[aiChatService] Error deleting conversation:', error);
+      logger.error('aiChatService: Error deleting conversation', error);
       throw new Error(error.message || 'Failed to delete conversation');
     }
   },

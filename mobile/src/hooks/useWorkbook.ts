@@ -17,6 +17,7 @@ import {
   markWorksheetComplete,
   deleteWorkbookProgress,
 } from '../services/workbook';
+import { logger } from '../utils/logger';
 
 /**
  * Query keys for cache management
@@ -45,7 +46,7 @@ export const workbookKeys = {
 export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
   const user = useAuthStore((state) => state.user);
 
-  console.log('[useWorkbookProgress] Hook called:', {
+  logger.debug('useWorkbookProgress hook called', {
     phaseNumber,
     worksheetId,
     userId: user?.id,
@@ -55,9 +56,9 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
   const query = useQuery({
     queryKey: workbookKeys.worksheet(user?.id || '', phaseNumber, worksheetId),
     queryFn: async () => {
-      console.log('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId, userId: user!.id });
+      logger.debug('useWorkbookProgress query executing', { phaseNumber, worksheetId, userId: user!.id });
       const result = await getWorkbookProgress(user!.id, phaseNumber, worksheetId);
-      console.log('[useWorkbookProgress] Query result:', result);
+      logger.debug('useWorkbookProgress query result', { phaseNumber, worksheetId, hasData: !!result });
       return result;
     },
     enabled: !!user?.id,
@@ -175,8 +176,8 @@ export function useSaveWorkbook() {
     },
     onError: (error, variables) => {
       // Log mutation errors for debugging
-      console.error(
-        `[useSaveWorkbook] Mutation failed for phase ${variables.phaseNumber}, worksheet ${variables.worksheetId}:`,
+      logger.error(
+        `useSaveWorkbook mutation failed for phase ${variables.phaseNumber}, worksheet ${variables.worksheetId}`,
         error
       );
     },
