@@ -5,7 +5,7 @@ const tiers = [
     name: 'Novice',
     tagline: 'Begin your journey',
     monthlyPrice: 7.99,
-    yearlyPrice: 59.99,
+    yearlyPrice: 79.99,
     features: [
       'All 10 workbook phases',
       'Progress tracking',
@@ -17,7 +17,7 @@ const tiers = [
     name: 'Awakening',
     tagline: 'Deepen your practice',
     monthlyPrice: 19.99,
-    yearlyPrice: 149.99,
+    yearlyPrice: 199.99,
     features: [
       'Everything in Novice',
       '6+ guided meditations',
@@ -31,7 +31,7 @@ const tiers = [
     name: 'Enlightenment',
     tagline: 'The complete experience',
     monthlyPrice: 49.99,
-    yearlyPrice: 449.99,
+    yearlyPrice: 499.99,
     features: [
       'Everything in Awakening',
       'Voice journaling + Guru feedback',
