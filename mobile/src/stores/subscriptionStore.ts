@@ -96,6 +96,25 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
    * Fetches current subscription status from RevenueCat
    */
   loadSubscription: async () => {
+    // DEV bypass - match authStore demo user behavior
+    // When DEV_SKIP_AUTH is true, grant full access (enlightenment tier)
+    if (process.env.EXPO_PUBLIC_DEV_SKIP_AUTH === 'true') {
+      console.log('[Subscription] DEV mode - granting enlightenment tier access');
+      set({
+        tier: 'enlightenment',
+        status: 'active',
+        isSubscribed: true,
+        isInTrial: false,
+        period: 'yearly',
+        trialEndDate: null,
+        expirationDate: null,
+        willRenew: true,
+        isLoading: false,
+        error: null,
+      });
+      return;
+    }
+
     set({ isLoading: true, error: null });
 
     try {

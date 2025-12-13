@@ -14,11 +14,15 @@ import {
   Pressable,
   ImageBackground,
   Image,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { MainTabScreenProps } from '../types/navigation';
 import { colors, spacing, borderRadius } from '../theme';
 import { BackgroundImages } from '../assets';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type Props = MainTabScreenProps<'Home'>;
 
@@ -35,6 +39,20 @@ const HomeScreen = ({ navigation }: Props) => {
     navigation.navigate(route);
   };
 
+  /**
+   * Handle navigation to root stack screens (Manuscript, ObservableScience)
+   */
+  const handleRootNavPress = (route: 'Manuscript' | 'ObservableScience') => {
+    navigation.navigate(route);
+  };
+
+  // Calculate spacer height to position Row 1 buttons just above bottom tab bar
+  const TAB_BAR_HEIGHT = 70;
+  const TITLE_AREA_HEIGHT = 120;
+  const NAV_CARDS_HEIGHT = 120;
+  const BOTTOM_MARGIN = 70 + insets.bottom;
+  const spacerHeight = SCREEN_HEIGHT - TITLE_AREA_HEIGHT - NAV_CARDS_HEIGHT - BOTTOM_MARGIN - TAB_BAR_HEIGHT - insets.top;
+
   return (
     <ImageBackground
       source={BackgroundImages.mysticalForest}
@@ -42,7 +60,12 @@ const HomeScreen = ({ navigation }: Props) => {
       resizeMode="contain"
       imageStyle={styles.backgroundImage}
     >
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+      >
         {/* Title Section - "MANIFEST THE UNSEEN" in 3 rows */}
         <View style={styles.titleContainer}>
           <Text style={styles.titleLine}>MANIFEST</Text>
@@ -50,20 +73,11 @@ const HomeScreen = ({ navigation }: Props) => {
           <Text style={styles.titleLine}>UNSEEN</Text>
         </View>
 
-        {/* Spacer to push content down */}
-        <View style={styles.spacer} />
+        {/* Spacer to show monk image - fills screen to push Row 1 to bottom */}
+        <View style={{ height: Math.max(spacerHeight, 200) }} />
 
-        {/* Daily Inspiration - positioned in middle area */}
-        <View style={styles.inspirationCard}>
-          <Text style={styles.inspirationLabel}>Daily Inspiration</Text>
-          <Text style={styles.quote}>
-            "If you want to find the secrets of the universe, think in terms of energy, frequency and vibration."
-          </Text>
-          <Text style={styles.quoteAuthor}>- Nikola Tesla</Text>
-        </View>
-
-        {/* Navigation Cards - graphical card buttons */}
-        <View style={[styles.navCardsContainer, { marginBottom: 70 + insets.bottom }]}>
+        {/* Row 1: Navigation Cards - Workbook & Meditate (visible above fold) */}
+        <View style={styles.navCardsContainer}>
           {/* Workbook Card */}
           <Pressable
             style={({ pressed }) => [
@@ -106,7 +120,58 @@ const HomeScreen = ({ navigation }: Props) => {
             </View>
           </Pressable>
         </View>
-      </View>
+
+        {/* Row 2: Navigation Cards - Manuscript & Observable Science (scroll to see) */}
+        <View style={styles.navCardsContainer}>
+          {/* Manuscript Card */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.navCard,
+              pressed && styles.navCardPressed,
+            ]}
+            onPress={() => handleRootNavPress('Manuscript')}
+            accessibilityRole="button"
+            accessibilityLabel="Go to Manuscript"
+          >
+            <View style={styles.navCardPlaceholder}>
+              <View style={styles.navCardContent}>
+                <Text style={styles.navCardTitleSmall}>Manifest the Unseen</Text>
+                <Text style={styles.navCardSubtitleSmall}>Manuscript</Text>
+              </View>
+            </View>
+          </Pressable>
+
+          {/* Observable Science Card */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.navCard,
+              pressed && styles.navCardPressed,
+            ]}
+            onPress={() => handleRootNavPress('ObservableScience')}
+            accessibilityRole="button"
+            accessibilityLabel="Go to Observable Science"
+          >
+            <View style={styles.navCardPlaceholder}>
+              <View style={styles.navCardContent}>
+                <Text style={styles.navCardTitleSmall}>Observable</Text>
+                <Text style={styles.navCardSubtitleSmall}>Science</Text>
+              </View>
+            </View>
+          </Pressable>
+        </View>
+
+        {/* Daily Inspiration - below all buttons (scroll to see) */}
+        <View style={styles.inspirationCard}>
+          <Text style={styles.inspirationLabel}>Daily Inspiration</Text>
+          <Text style={styles.quote}>
+            "If you want to find the secrets of the universe, think in terms of energy, frequency and vibration."
+          </Text>
+          <Text style={styles.quoteAuthor}>- Nikola Tesla</Text>
+        </View>
+
+        {/* Bottom padding for safe area and future content */}
+        <View style={{ height: 100 + insets.bottom }} />
+      </ScrollView>
     </ImageBackground>
   );
 };
@@ -123,8 +188,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  scrollContent: {
     paddingTop: 50, // Safe area + some breathing room
   },
 
@@ -163,11 +230,6 @@ const styles = StyleSheet.create({
     // color: '#D4B896',
     // letterSpacing: 4,
     // lineHeight: 38,
-  },
-
-  // Spacer
-  spacer: {
-    flex: 1,
   },
 
   // Daily Inspiration - Reduced padding by 60%
@@ -243,6 +305,26 @@ const styles = StyleSheet.create({
   navCardSubtitle: {
     color: colors.text.secondary,
     fontSize: 11,
+    marginTop: 2,
+    textAlign: 'center',
+  },
+  navCardPlaceholder: {
+    flex: 1,
+    backgroundColor: 'rgba(10, 10, 15, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navCardTitleSmall: {
+    color: '#E8D5A3',
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  navCardSubtitleSmall: {
+    color: colors.text.secondary,
+    fontSize: 10,
     marginTop: 2,
     textAlign: 'center',
   },

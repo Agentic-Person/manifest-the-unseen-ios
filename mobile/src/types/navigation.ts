@@ -16,6 +16,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
+  Manuscript: undefined;
+  ObservableScience: undefined;
   Paywall: {
     lockedFeature?: string;
   } | undefined;
