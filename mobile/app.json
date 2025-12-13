@@ -22,7 +22,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manifesttheunseen.app",
-      "buildNumber": "3",
+      "buildNumber": "11",
       "infoPlist": {
         "UIBackgroundModes": [
           "audio",
@@ -58,8 +58,9 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "dc531e3e-af7f-409e-b3fc-145058bbfbad"
+        "projectId": "78b679f0-a4c2-4ed5-94c6-6338dd3d9c70"
       }
-    }
+    },
+    "owner": "agentic-personnel"
   }
 }
