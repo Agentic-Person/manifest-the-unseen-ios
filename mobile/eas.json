@@ -32,7 +32,7 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://zbyszxtwzoylyygtexdr.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpieXN6eHR3em95bHl5Z3RleGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3MDE1MDcsImV4cCI6MjA3NzI3NzUwN30.z4NDPLi_njS8Y_7T_9JQn9pdLyoJWlFuc2lnZJDXTu4",
         "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_syRiYucCEYWABHxxiKjporBRJVM",
-        "EXPO_PUBLIC_DEV_SKIP_AUTH": "false"
+        "EXPO_PUBLIC_DEV_SKIP_AUTH": "true"
       }
     }
   },
