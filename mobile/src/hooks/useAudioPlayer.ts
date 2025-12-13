@@ -9,7 +9,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import type { PlaybackState, AudioProgress } from '../types/meditation';
-import { logger } from '../utils/logger';
 
 /**
  * Hook options
@@ -230,7 +229,7 @@ export function useAudioPlayer(
         const errorMsg = `Failed to load audio: ${
           err instanceof Error ? err.message : 'Unknown error'
         }`;
-        logger.error('useAudioPlayer: Audio load failed', { uri, error: err });
+        console.error('[useAudioPlayer] Audio load failed:', { uri, error: err });
         setError(errorMsg);
         setState('error');
         setIsLoaded(false);
@@ -387,7 +386,7 @@ export function useAudioPlayer(
       setState('idle');
       setProgress({ position: 0, duration: 0, progress: 0 });
     } catch (err) {
-      logger.error('Error unloading audio', err);
+      console.error('Error unloading audio:', err);
       // Best effort cleanup
       soundRef.current = null;
       setIsLoaded(false);
@@ -405,7 +404,7 @@ export function useAudioPlayer(
       isMountedRef.current = false;
       if (soundRef.current) {
         soundRef.current.unloadAsync().catch((err) => {
-          logger.error('Error cleaning up audio on unmount', err);
+          console.error('Error cleaning up audio on unmount:', err);
         });
       }
     };

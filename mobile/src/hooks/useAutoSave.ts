@@ -7,7 +7,6 @@
 
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { useSaveWorkbook } from './useWorkbook';
-import { logger } from '../utils/logger';
 
 interface UseAutoSaveOptions<T> {
   /** The data to save */
@@ -93,8 +92,8 @@ export function useAutoSave<T extends Record<string, unknown>>({
           onSaveSuccess?.(now);
         },
         onError: (err) => {
-          // Always log errors for debugging
-          logger.error(`useAutoSave failed to save phase ${phaseNumber}, worksheet ${worksheetId}`, err);
+          // Always log errors to console for debugging
+          console.error(`[useAutoSave] Failed to save phase ${phaseNumber}, worksheet ${worksheetId}:`, err);
           onSaveError?.(err as Error);
         },
       }

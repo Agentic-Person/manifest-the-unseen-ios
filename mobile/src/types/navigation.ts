@@ -19,8 +19,6 @@ export type RootStackParamList = {
   Paywall: {
     lockedFeature?: string;
   } | undefined;
-  Manuscript: undefined;
-  ObservableScience: undefined;
 };
 
 /**

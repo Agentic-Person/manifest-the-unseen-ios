@@ -14,8 +14,6 @@ import type { RootStackParamList } from '../types/navigation';
 import { MainTabNavigator } from './MainTabNavigator';
 import { AuthNavigator } from './AuthNavigator';
 import { PaywallScreen } from '../screens/subscription/PaywallScreen';
-import ManuscriptScreen from '../screens/ManuscriptScreen';
-import ObservableScienceScreen from '../screens/ObservableScienceScreen';
 import { useAuthStore } from '../stores/authStore';
 import { supabase } from '../services/supabase';
 
@@ -92,24 +90,6 @@ export const RootNavigator = () => {
           // Not authenticated: Show auth flow
           <Stack.Screen name="Auth" component={AuthNavigator} />
         )}
-
-        {/* Stack Screens - Accessible from HomeScreen */}
-        <Stack.Screen
-          name="Manuscript"
-          component={ManuscriptScreen}
-          options={{
-            headerShown: false,
-            animation: 'slide_from_right',
-          }}
-        />
-        <Stack.Screen
-          name="ObservableScience"
-          component={ObservableScienceScreen}
-          options={{
-            headerShown: false,
-            animation: 'slide_from_right',
-          }}
-        />
 
         {/* Modal Screens - Available from anywhere */}
         <Stack.Group screenOptions={{ presentation: 'modal' }}>

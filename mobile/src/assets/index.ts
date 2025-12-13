@@ -218,7 +218,7 @@ export const BackgroundImages = {
   meditateCard: require('./images-compressed/backgrounds/meditate-card.png'),
   workbookCard: require('./images-compressed/backgrounds/workbook-card.png'),
   // Global app background - mystical forest meditation scene
-  mysticalForest: require('./images-compressed/backgrounds/hero-monk-mobile.png'),
+  mysticalForest: require('./images-compressed/backgrounds/hero-monk-mobile-03.png'),
 } as const;
 
 export type BackgroundImageKey = keyof typeof BackgroundImages;

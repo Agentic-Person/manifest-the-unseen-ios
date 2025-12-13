@@ -15,18 +15,11 @@ import { Platform } from 'react-native';
  * Font families
  */
 export const fontFamilies = {
-  // System font (default for iOS/Android) - used for body text
+  // System font (default for iOS/Android)
   primary: Platform.select({
     ios: 'System',
     android: 'Roboto',
     default: 'System',
-  }),
-
-  // Serif font for headings - classical, meditative aesthetic
-  heading: Platform.select({
-    ios: 'Baskerville',
-    android: 'serif',
-    default: 'serif',
   }),
 
   // Monospace for code or technical content
@@ -95,16 +88,16 @@ export const typography = {
     lineHeight: fontSizes['6xl'] * lineHeights.tight,
     fontWeight: fontWeights.bold,
     letterSpacing: letterSpacing.tight,
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
   },
 
-  // Headings - use Baskerville for classical, meditative aesthetic
+  // Headings
   h1: {
     fontSize: fontSizes['5xl'],
     lineHeight: fontSizes['5xl'] * lineHeights.tight,
     fontWeight: fontWeights.bold,
     letterSpacing: letterSpacing.tight,
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
   },
 
   h2: {
@@ -112,7 +105,7 @@ export const typography = {
     lineHeight: fontSizes['4xl'] * lineHeights.tight,
     fontWeight: fontWeights.bold,
     letterSpacing: letterSpacing.tight,
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
   },
 
   h3: {
@@ -120,7 +113,7 @@ export const typography = {
     lineHeight: fontSizes['3xl'] * lineHeights.tight,
     fontWeight: fontWeights.semibold,
     letterSpacing: letterSpacing.normal,
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
   },
 
   h4: {
@@ -128,7 +121,7 @@ export const typography = {
     lineHeight: fontSizes['2xl'] * lineHeights.tight,
     fontWeight: fontWeights.semibold,
     letterSpacing: letterSpacing.normal,
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
   },
 
   h5: {
@@ -136,7 +129,7 @@ export const typography = {
     lineHeight: fontSizes.xl * lineHeights.tight,
     fontWeight: fontWeights.semibold,
     letterSpacing: letterSpacing.normal,
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
   },
 
   h6: {
@@ -144,7 +137,7 @@ export const typography = {
     lineHeight: fontSizes.lg * lineHeights.tight,
     fontWeight: fontWeights.semibold,
     letterSpacing: letterSpacing.normal,
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
   },
 
   // Body text

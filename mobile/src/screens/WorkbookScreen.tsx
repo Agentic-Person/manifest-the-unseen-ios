@@ -17,7 +17,6 @@ import { GradientProgressBar, getProgressColor } from '../components/workbook';
 import { useFeatureAccess } from '../hooks/useSubscription';
 import { UpgradePrompt } from '../components/UpgradePrompt';
 import { TIER_PRICING } from '../types/subscription';
-import { logger } from '../utils/logger';
 
 type Props = WorkbookStackScreenProps<'WorkbookHome'>;
 
@@ -155,8 +154,8 @@ const WorkbookScreen = ({ navigation }: Props) => {
                   source={phase.image}
                   style={styles.phaseImage}
                   resizeMode="cover"
-                  onError={(e) => logger.warn(`Phase ${phase.id} image failed to load`, { error: e.nativeEvent.error })}
-                  onLoad={() => logger.debug(`Phase ${phase.id} image loaded`)}
+                  onError={(e) => console.warn(`WorkbookScreen phase ${phase.id} image failed:`, e.nativeEvent.error)}
+                  onLoad={() => console.log(`WorkbookScreen phase ${phase.id} image loaded`)}
                 />
                 <LinearGradient
                   colors={['transparent', 'rgba(0,0,0,0.7)']}
