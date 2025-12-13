@@ -99,6 +99,9 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedArea, setSelectedArea] = useState<LifeAreaKey | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
+  // Track if we've done the initial data load (prevents overwriting user changes on save)
+  const hasLoadedInitialData = useRef(false);
+
   // Screen dimensions
   const screenWidth = Dimensions.get('window').width;
   const chartSize = Math.min(screenWidth - 32, 340);
@@ -114,11 +117,13 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
     debounceMs: 1500,
   });
 
-  // Load saved data into state when fetched
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const savedData = savedProgress.data as unknown as WheelOfLifeValues;
       setValues(savedData);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

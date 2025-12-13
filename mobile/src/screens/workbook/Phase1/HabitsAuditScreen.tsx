@@ -13,7 +13,7 @@
  * - Progress tracking integration
  */
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -67,6 +67,9 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State for habits data
   const [habitsData, setHabitsData] = useState<HabitsData>(INITIAL_DATA);
 
+  // Track if we've done the initial data load (prevents overwriting user changes on save)
+  const hasLoadedInitialData = useRef(false);
+
   // Load saved data from Supabase
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.HABITS_AUDIT);
 
@@ -78,11 +81,13 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     debounceMs: 1500,
   });
 
-  // Load saved data into state when fetched
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const saved = savedProgress.data as unknown as HabitsData;
       setHabitsData(saved);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

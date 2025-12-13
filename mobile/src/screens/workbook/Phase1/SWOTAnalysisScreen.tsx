@@ -11,7 +11,7 @@
  * earth connection, sacred geometry.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -112,6 +112,9 @@ const CentralMandala: React.FC<{ totalItems: number }> = ({ totalItems }) => {
 const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
   const [swotData, setSWOTData] = useState<SWOTData>(getDefaultSWOTData());
 
+  // Track if we've done the initial data load (prevents overwriting user changes on save)
+  const hasLoadedInitialData = useRef(false);
+
   // Load saved data from Supabase
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.SWOT_ANALYSIS);
 
@@ -123,11 +126,13 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
     debounceMs: 2000,
   });
 
-  // Load saved data into state when fetched
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const saved = savedProgress.data as unknown as SWOTData;
       setSWOTData(saved);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

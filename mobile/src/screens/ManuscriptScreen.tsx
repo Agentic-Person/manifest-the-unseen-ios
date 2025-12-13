@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   title: {
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
     fontSize: 28,
     fontWeight: '400',
     color: '#E8D5A3',
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontFamily: fontFamilies.heading,
+    fontFamily: fontFamilies.primary,
     fontSize: 20,
     fontWeight: '400',
     color: colors.text.golden,
