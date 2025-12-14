@@ -15,7 +15,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -93,6 +93,7 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
   const [envyItems, setEnvyItems] = useState<EnvyItem[]>(SAMPLE_ENVY_ITEMS);
   const [reframes, setReframes] = useState<ReframeData[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'complete'>('all');
+  const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
   const formData: InspirationReframeData = useMemo(() => ({ reframes, envyItems }), [reframes, envyItems]);
@@ -103,9 +104,10 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
     debounceMs: 1500,
   });
 
-  // Load saved data
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as InspirationReframeData;
       if (data.reframes) {
         setReframes(data.reframes);
@@ -113,6 +115,7 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
       if (data.envyItems) {
         setEnvyItems(data.envyItems);
       }
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

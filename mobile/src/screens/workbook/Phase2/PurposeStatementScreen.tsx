@@ -18,7 +18,7 @@
  * - Question text: #e8e8e8 (off-white), larger font
  */
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -144,12 +144,16 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   // Whether statement is in edit mode
   const [isEditingStatement, setIsEditingStatement] = useState(false);
 
-  // Load saved data on mount
+  const hasLoadedInitialData = useRef(false);
+
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as PurposeStatementData;
       if (data.answers) setAnswers(data.answers);
       if (data.finalStatement) setFinalStatement(data.finalStatement);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

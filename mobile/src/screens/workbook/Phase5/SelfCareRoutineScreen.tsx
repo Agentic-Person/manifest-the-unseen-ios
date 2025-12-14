@@ -8,7 +8,7 @@
  * Design: Dark spiritual theme with nurturing accents
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -142,6 +142,8 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
     debounceMs: 1500,
   });
 
+  const hasLoadedInitialData = useRef(false);
+
   // Current activities based on tab
   const currentActivities = activeTab === 'morning' ? morningActivities : eveningActivities;
   const setCurrentActivities = activeTab === 'morning' ? setMorningActivities : setEveningActivities;
@@ -162,9 +164,8 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
     return Math.round((completed / currentActivities.length) * 100);
   }, [currentActivities]);
 
-  /**
-   * Load saved progress
-   */
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     // Error state
     if (isLoadError) {
@@ -175,7 +176,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
     // Only initialize once when loading completes
     if (isLoading) return;
 
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SelfCareFormData;
       setMorningActivities(data.morningActivities || []);
       setEveningActivities(data.eveningActivities || []);
@@ -183,6 +184,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
       setEveningStreak(data.eveningStreak || 0);
       setBestMorningStreak(data.bestMorningStreak || 0);
       setBestEveningStreak(data.bestEveningStreak || 0);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress, isLoading]);
 

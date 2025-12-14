@@ -147,6 +147,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   // Animation
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const hasLoadedInitialData = useRef(false);
 
   // Supabase hooks
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(5, WORKSHEET_IDS.INNER_CHILD);
@@ -163,9 +164,8 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     debounceMs: 2000,
   });
 
-  /**
-   * Load saved progress and animate on mount
-   */
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     // Error state
     if (isLoadError) {
@@ -176,9 +176,10 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     // Only initialize once when loading completes
     if (isLoading) return;
 
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as InnerChildFormData;
       setLetters(data.letters || []);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress, isLoading]);
 

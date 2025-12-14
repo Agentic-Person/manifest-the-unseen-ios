@@ -11,7 +11,7 @@
  * - Hand-drawn decorative elements
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -80,6 +80,7 @@ type Props = WorkbookStackScreenProps<'PersonalValues'>;
 const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
   // State for selected values (ordered list)
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const hasLoadedInitialData = useRef(false);
 
   // Load saved data from Supabase
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.VALUES_ASSESSMENT);
@@ -92,13 +93,15 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
     debounceMs: 1500,
   });
 
-  // Load saved data into state when fetched
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const saved = savedProgress.data as unknown as ValuesData;
       if (saved.selectedValues) {
         setSelectedValues(saved.selectedValues);
       }
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

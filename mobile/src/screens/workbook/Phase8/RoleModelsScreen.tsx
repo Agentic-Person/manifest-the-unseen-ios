@@ -16,7 +16,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -74,6 +74,7 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState<RoleModelCategory | 'all'>('all');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<RoleModel | null>(null);
+  const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
   const formData: RoleModelsData = useMemo(() => ({ roleModels }), [roleModels]);
@@ -84,13 +85,15 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     debounceMs: 1500,
   });
 
-  // Load saved data
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as RoleModelsData;
       if (data.roleModels) {
         setRoleModels(data.roleModels);
       }
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

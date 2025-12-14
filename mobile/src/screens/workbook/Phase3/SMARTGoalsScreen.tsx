@@ -101,11 +101,15 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     debounceMs: 1500,
   });
 
-  // Load saved data on mount
+  const hasLoadedInitialData = useRef(false);
+
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SMARTGoalsData;
       if (data.goals) setGoals(data.goals);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

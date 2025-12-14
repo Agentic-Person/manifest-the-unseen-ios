@@ -99,18 +99,21 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
   const [newText, setNewText] = useState('');
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasLoadedInitialData = useRef(false);
 
   /**
-   * Load board data on mount
+   * Load board data into state ONLY on initial fetch (not after saves)
+   * This prevents race condition where save completion overwrites pending user changes
    */
   useEffect(() => {
     // Check if we have saved progress from Supabase
-    if (!isLoadingProgress) {
+    if (!isLoadingProgress && !hasLoadedInitialData.current) {
       if (savedProgress?.data) {
         const data = savedProgress.data as unknown as VisionBoardData;
         setBoard(data);
       }
       setIsLoading(false);
+      hasLoadedInitialData.current = true;
     }
     return () => {
       if (saveTimeoutRef.current) {

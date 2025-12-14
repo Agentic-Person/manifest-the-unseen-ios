@@ -152,6 +152,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const fabScale = useRef(new Animated.Value(1)).current;
   const celebrationScale = useRef(new Animated.Value(0)).current;
   const celebrationOpacity = useRef(new Animated.Value(0)).current;
+  const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
   const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
@@ -161,11 +162,13 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     debounceMs: 1500,
   });
 
-  // Load saved data on mount
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as FearFacingPlanData;
       if (data.plans) setPlans(data.plans);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

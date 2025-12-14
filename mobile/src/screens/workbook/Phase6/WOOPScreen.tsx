@@ -96,6 +96,7 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   // Refs
   const scrollViewRef = useRef<ScrollView>(null);
+  const hasLoadedInitialData = useRef(false);
 
   // Supabase hooks
   const { data: savedProgress, isLoading: _isLoading } = useWorkbookProgress(6, WORKSHEET_IDS.WOOP);
@@ -113,14 +114,14 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     debounceMs: 2000,
   });
 
-  /**
-   * Load saved progress
-   */
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as WOOPFormData;
       if (data.currentWOOP) setCurrentWOOP(data.currentWOOP);
       if (data.savedWOOPs) setSavedWOOPs(data.savedWOOPs);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

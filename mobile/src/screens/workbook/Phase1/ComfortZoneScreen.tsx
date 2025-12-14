@@ -11,7 +11,7 @@
  * - Auto-save to Supabase
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -174,6 +174,7 @@ const ZoneSection: React.FC<{
  */
 const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
   const [data, setData] = useState<ComfortZoneData>(DEFAULT_DATA);
+  const hasLoadedInitialData = useRef(false);
 
   // Load saved data from Supabase
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.COMFORT_ZONE);
@@ -186,11 +187,13 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
     debounceMs: 2000,
   });
 
-  // Load saved data into state when fetched
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const savedData = savedProgress.data as unknown as ComfortZoneData;
       setData(savedData);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

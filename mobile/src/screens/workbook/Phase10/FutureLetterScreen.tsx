@@ -18,7 +18,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -137,7 +137,10 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
     debounceMs: 1500,
   });
 
-  // Load saved data
+  const hasLoadedInitialData = useRef(false);
+
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     // Error state
     if (isLoadError) {
@@ -145,7 +148,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
       // Continue with default data instead of blocking the UI
     }
 
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as FutureLetterData;
       if (data.letterContent) {
         setLetterContent(data.letterContent);
@@ -156,6 +159,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
       if (data.existingLetter) {
         setExistingLetter(data.existingLetter);
       }
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress, isLoadError, loadError]);
 

@@ -18,7 +18,7 @@
  * Navigation: WorkbookNavigator -> ThreeSixNine
  */
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -117,6 +117,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     evening: 0,
   });
   const [showExplanation, setShowExplanation] = useState(false);
+  const hasLoadedInitialData = useRef(false);
 
   // Supabase hooks
   const { data: savedProgress } = useWorkbookProgress(6, WORKSHEET_IDS.THREE_SIX_NINE);
@@ -134,11 +135,10 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     debounceMs: 2000,
   });
 
-  /**
-   * Load saved progress
-   */
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as ThreeSixNineFormData;
       if (data.practice) setPractice(data.practice);
       if (data.todayProgress) {
@@ -147,6 +147,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           setTodayProgress(data.todayProgress);
         }
       }
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
 

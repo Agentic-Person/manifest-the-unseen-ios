@@ -141,6 +141,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(0)).current;
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const hasLoadedInitialData = useRef(false);
 
   // Supabase hooks
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(5, WORKSHEET_IDS.SELF_LOVE_AFFIRMATIONS);
@@ -159,14 +160,13 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
     debounceMs: 1500,
   });
 
-  /**
-   * Load saved progress
-   */
+  // Load saved data into state ONLY on initial fetch (not after saves)
+  // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     // Only initialize once when loading completes
     if (isLoading) return;
 
-    if (savedProgress?.data) {
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as AffirmationsFormData;
       // Merge saved data with defaults
       const favoriteIds = new Set(data.favorites || []);
@@ -185,7 +185,8 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
       }));
 
       setAffirmations([...customWithFavorites, ...initialized]);
-    } else {
+      hasLoadedInitialData.current = true;
+    } else if (!savedProgress?.data && !hasLoadedInitialData.current && !isLoading) {
       // Initialize with defaults if no saved data
       const initialized: AffirmationData[] = DEFAULT_AFFIRMATIONS.map((a) => ({
         ...a,
@@ -193,6 +194,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
         createdAt: new Date().toISOString(),
       }));
       setAffirmations(initialized);
+      hasLoadedInitialData.current = true;
     }
   }, [savedProgress, isLoading]);
 
