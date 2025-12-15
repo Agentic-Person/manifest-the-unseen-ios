@@ -73,9 +73,10 @@ interface WorkbookProgress {
 // Constants
 // =============================================================================
 
-// Total worksheets per phase (from workbook.ts)
+// Total worksheets per phase (actual implemented count)
+// Phase 1 has more worksheets due to comprehensive self-evaluation
 const WORKSHEETS_PER_PHASE: Record<number, number> = {
-  1: 4,
+  1: 11, // WheelOfLife, FeelWheel, SWOT, Habits, Values, ABC, StrengthsWeaknesses, ComfortZone, KnowYourself, AbilitiesRating, ThoughtAwareness
   2: 3,
   3: 3,
   4: 3,

@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-13
+**Last Updated**: 2025-12-14
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🍎 **SUBMITTED TO APP STORE** - Waiting for Apple Review
+**Status**: 🍎 **SUBMITTED TO APP STORE** - Waiting for Apple Review (Build 16 on TestFlight)
 
 ---
 
@@ -13,23 +13,26 @@
 | Item | Value |
 |------|-------|
 | **Version** | 1.0.0 |
-| **Build** | 13 |
+| **Build** | 16 |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | Waiting for Review |
-| **TestFlight** | Available (Build 13) |
+| **TestFlight** | Available (Build 16) |
 | **Submission Date** | December 13, 2025 |
 
-**What's Included in Build 13:**
-- ✅ All 10 Workbook Phases (30 screens)
+**What's Included in Build 16:**
+- ✅ All 10 Workbook Phases (35 screens)
 - ✅ Voice Journal with Whisper transcription
 - ✅ AI Guru Chat (Claude-powered)
 - ✅ Meditation Player with guided sessions
 - ✅ Breathing Exercises (Box, Deep, Calm)
 - ✅ Dark Mode UI throughout
 - ✅ RevenueCat subscription integration
+- ✅ **Auto-save race condition fix** (all 35 workbook screens)
+- ✅ **Guru Analysis Edge Function fixes** (function name, request format, worksheet counts)
 
-**Known Issue (Post-Launch Fix):**
-- Habit tracking progress not saving properly in workbook
+**Known Issues:**
+- ✅ ~~Habit tracking progress not saving~~ - **FIXED in Build 15**
+- ✅ ~~Guru not recognizing completed phases~~ - **FIXED in Build 16**
 
 ---
 
@@ -42,6 +45,31 @@
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 14, 2025 - Guru Feature Debugging & Fixes
+- **Duration**: ~3 hours
+- **What Was Done**: Fixed Guru Analysis feature - Edge Function deployment, service integration, and test data setup
+- **Completed**:
+  - ✅ **Function Name Mismatch Fixed** - Service now calls `guru-analysis` (was `guru-analyze`)
+  - ✅ **Request Format Fixed** - Service transforms `userMessage` → `message` for Edge Function
+  - ✅ **Worksheet Count Fixed** - `WORKSHEETS_PER_PHASE[1]` corrected from 4 → 11
+  - ✅ **Edge Function Deployed** - `guru-analysis` v2 deployed to Supabase
+  - ✅ **Test Data Created** - `test@manifest.app` now has 11/11 Phase 1 worksheets completed
+  - ✅ **Build 16 Deployed** - TestFlight build with all Guru fixes
+
+### Previous Activity
+- **Date**: December 14, 2025 - Auto-Save Bug Fix
+- **Duration**: ~2 hours
+- **What Was Done**: Fixed critical auto-save race condition across all 35 workbook screens
+- **Completed**:
+  - ✅ **Root Cause Identified** - Race condition in load/save cycle causing data loss
+  - ✅ **Fix Pattern Applied** - Added `hasLoadedInitialData` useRef to prevent overwrites
+  - ✅ **35 Screens Fixed** - All workbook screens across 10 phases updated
+  - ✅ **TypeScript Errors Resolved** - Fixed missing useRef imports in 7 files
+  - ✅ **Build 14 Deployed** - Initial fix for 3 screens + typography fixes
+  - ✅ **Build 15 Deployed** - Complete fix across all remaining screens
+  - ✅ **EAS Build Complete** - Build 15 available on TestFlight
+
+### Previous Session
 - **Date**: December 13, 2025 - App Store Submission
 - **Duration**: ~2 hours
 - **What Was Done**: Submitted Build 13 to Apple App Store for review
@@ -927,6 +955,141 @@ cp agent-orchestration/tasks/templates/implementation-task.md \
 
 ## Change Log
 
+### 2025-12-14 - GURU ANALYSIS FEATURE FIXES 🧘
+
+**Duration**: ~3 hours
+**Focus**: Debug and fix Guru feature not working properly
+
+**Problems Identified**:
+1. **Function Name Mismatch** - `guruService.ts` was calling `guru-analyze` but Edge Function was named `guru-analysis`
+2. **Request Format Mismatch** - Service was sending `userMessage` but Edge Function expected `message`
+3. **Worksheet Count Wrong** - `WORKSHEETS_PER_PHASE[1]` was set to 4, but Phase 1 actually has 11 worksheets
+4. **Edge Function Not Deployed** - `guru-analysis` function wasn't deployed to Supabase
+
+**Fixes Applied**:
+
+**1. guruService.ts** (`mobile/src/services/guruService.ts`):
+```typescript
+// Changed function name from 'guru-analyze' to 'guru-analysis'
+// Added request transformation:
+const edgeFunctionRequest = {
+  message: request.userMessage,  // Transform userMessage → message
+  phaseNumber: request.phaseNumber,
+  conversationId: request.conversationId,
+  isInitialAnalysis: !request.conversationId,
+};
+```
+
+**2. workbook.ts** (`mobile/src/types/workbook.ts`):
+```typescript
+// Fixed Phase 1 worksheet count
+WORKSHEETS_PER_PHASE[1] = 11;  // Was 4, now correctly 11
+```
+
+**3. guru-analysis Edge Function** (`supabase/functions/guru-analysis/index.ts`):
+- Updated `WORKSHEETS_PER_PHASE[1]` from 4 → 11
+- Deployed v2 to Supabase production
+
+**4. Test Data Setup**:
+- Marked all existing Phase 1 worksheets as `completed: true`
+- Inserted missing worksheets (strengths-weaknesses, know-yourself, thought-awareness)
+- `test@manifest.app` now has 11/11 Phase 1 worksheets completed
+
+**Files Modified**:
+| File | Change |
+|------|--------|
+| `mobile/src/services/guruService.ts` | Fixed function name + request format |
+| `mobile/src/types/workbook.ts` | Fixed WORKSHEETS_PER_PHASE[1]: 4 → 11 |
+| `supabase/functions/guru-analysis/index.ts` | Fixed worksheet counts + deployed v2 |
+| `mobile/app.json` | Incremented buildNumber: 15 → 16 |
+
+**Database Changes**:
+- `workbook_progress` table: Updated/inserted Phase 1 worksheets for `test@manifest.app`
+
+**Build Deployed**:
+- **Build 16** submitted to TestFlight
+- Build URL: https://expo.dev/accounts/agentic-personnel/projects/manifest-the-unseen/builds/3b540ea2-8a0a-4f0c-89ef-96f1063c323a
+
+**Test Account Ready**:
+| Email | Tier | Phase 1 Status |
+|-------|------|----------------|
+| `test@manifest.app` | enlightenment | 11/11 complete |
+
+---
+
+### 2025-12-14 - AUTO-SAVE BUG FIX COMPLETE 🔧
+
+**Duration**: ~2 hours
+**Focus**: Fix critical workbook data loss issue
+
+**Problem Identified**:
+Users reported habit tracking progress not saving properly. Root cause was a race condition in the auto-save cycle: when save completes, the TanStack Query cache update triggers the load useEffect, which overwrites user changes made between save trigger and completion.
+
+**Solution Applied**:
+Added `hasLoadedInitialData` useRef pattern to all 35 workbook screens:
+```typescript
+const hasLoadedInitialData = useRef(false);
+
+useEffect(() => {
+  if (savedProgress?.data && !hasLoadedInitialData.current) {
+    setLocalData(savedProgress.data);
+    hasLoadedInitialData.current = true;
+  }
+}, [savedProgress]);
+```
+
+**Files Fixed** (35 screens across all 10 phases):
+
+**Phase 1** (11 screens):
+- HabitsAuditScreen, WheelOfLifeScreen, SWOTAnalysisScreen
+- FeelWheelScreen, ValuesScreen, ABCModelScreen
+- StrengthsWeaknessesScreen, ComfortZoneScreen, KnowYourselfScreen
+- AbilitiesRatingScreen, ThoughtAwarenessScreen
+
+**Phase 2** (3 screens):
+- PurposeScreen, VisionBoardScreen, LifeMissionScreen
+
+**Phase 3** (3 screens):
+- SMARTGoalsScreen, ActionPlanScreen, TimelineScreen
+
+**Phase 4** (3 screens):
+- FearInventoryScreen, LimitingBeliefsScreen, FearFacingPlanScreen
+
+**Phase 5** (3 screens):
+- SelfLoveAffirmationsScreen, SelfCareRoutineScreen, InnerChildScreen
+
+**Phase 6** (3 screens):
+- ThreeSixNineScreen, ScriptingScreen, WOOPScreen
+
+**Phase 7** (3 screens):
+- GratitudeJournalScreen, GratitudeLettersScreen, GratitudeMeditationScreen
+
+**Phase 8** (3 screens):
+- EnvyInventoryScreen, InspirationReframeScreen, RoleModelsScreen
+
+**Phase 9** (3 screens):
+- TrustAssessmentScreen, SurrenderPracticeScreen, SignsScreen
+
+**Phase 10** (3 screens):
+- JourneyReviewScreen, FutureLetterScreen, GraduationScreen
+
+**Also Fixed**:
+- Typography errors in ManuscriptScreen.tsx and ObservableScienceScreen.tsx (`fontFamilies.heading` → `fontFamilies.primary`)
+- Missing `useRef` imports in 7 files after parallel agent execution
+
+**Build History**:
+| Build | Date | Notes |
+|-------|------|-------|
+| 15 | Dec 14, 2025 | Complete auto-save fix (all 35 screens) |
+| 14 | Dec 14, 2025 | Initial fix (3 screens) + typography |
+| 13 | Dec 13, 2025 | MVP Beta - App Store Submission |
+
+**Testing Notes**:
+- Delete app from device before installing Build 15 to clear cached data
+- Verify data persists after editing, navigating away, and returning
+
+---
+
 ### 2025-12-13 - APP STORE SUBMISSION COMPLETE 🍎
 
 **Duration**: ~2 hours
@@ -1537,7 +1700,7 @@ npm run type-check
 
 ---
 
-**Last Updated by**: Claude Code (App Store Submission Session)
-**Session Date**: December 13, 2025
-**Next Scheduled Review**: After Apple review completes
-**Document Version**: 1.5.0
+**Last Updated by**: Claude Code (Guru Feature Fixes Session)
+**Session Date**: December 14, 2025
+**Next Scheduled Review**: After Guru testing on Build 16
+**Document Version**: 1.7.0

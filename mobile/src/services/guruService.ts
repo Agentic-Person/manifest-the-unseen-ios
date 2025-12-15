@@ -90,12 +90,29 @@ export const upsertGuruConversation = async (
 export const sendGuruMessage = async (
   request: GuruAnalysisRequest
 ): Promise<GuruAnalysisResponse> => {
-  const { data, error } = await supabase.functions.invoke('guru-analyze', {
-    body: request,
+  // Transform request to match Edge Function expected format
+  const edgeFunctionRequest = {
+    message: request.userMessage,
+    phaseNumber: request.phaseNumber,
+    conversationId: request.conversationId,
+    isInitialAnalysis: !request.conversationId,
+  };
+
+  const { data, error } = await supabase.functions.invoke('guru-analysis', {
+    body: edgeFunctionRequest,
   });
 
   if (error) throw error;
-  return data as GuruAnalysisResponse;
+
+  // Transform response to match expected format
+  return {
+    conversationId: data.conversationId,
+    message: {
+      role: 'assistant',
+      content: data.reply,
+      timestamp: new Date().toISOString(),
+    },
+  } as GuruAnalysisResponse;
 };
 
 /**

@@ -118,10 +118,11 @@ export const WORKSHEET_IDS = {
 export type WorksheetId = (typeof WORKSHEET_IDS)[keyof typeof WORKSHEET_IDS];
 
 /**
- * Total worksheets per phase (from PRD)
+ * Total worksheets per phase (actual implemented count)
+ * Phase 1 has more worksheets due to comprehensive self-evaluation
  */
 export const WORKSHEETS_PER_PHASE: Record<number, number> = {
-  1: 4,
+  1: 11, // WheelOfLife, FeelWheel, SWOT, Habits, Values, ABC, StrengthsWeaknesses, ComfortZone, KnowYourself, AbilitiesRating, ThoughtAwareness
   2: 3,
   3: 3,
   4: 3,
