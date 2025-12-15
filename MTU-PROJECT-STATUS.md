@@ -4,7 +4,7 @@
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🍎 **SUBMITTED TO APP STORE** - Waiting for Apple Review (Build 17 on TestFlight)
+**Status**: 🍎 **SUBMITTED TO APP STORE** - Waiting for Apple Review (Build 18 on TestFlight)
 
 ---
 
@@ -13,13 +13,13 @@
 | Item | Value |
 |------|-------|
 | **Version** | 1.0.0 |
-| **Build** | 17 |
+| **Build** | 18 |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | Waiting for Review |
-| **TestFlight** | Available (Build 17) |
+| **TestFlight** | Available (Build 18) |
 | **Submission Date** | December 13, 2025 |
 
-**What's Included in Build 17:**
+**What's Included in Build 18:**
 - ✅ All 10 Workbook Phases (35 screens)
 - ✅ Voice Journal with Whisper transcription
 - ✅ AI Guru Chat (Claude-powered)
@@ -29,6 +29,7 @@
 - ✅ RevenueCat subscription integration
 - ✅ **Auto-save race condition fix** (all 35 workbook screens)
 - ✅ **Guru Analysis Edge Function fixes** (function name, request format, worksheet counts)
+- ✅ **Purple splash screen fix** (was 1x1 red pixel causing flash on launch)
 
 **Known Issues:**
 - ✅ ~~Habit tracking progress not saving~~ - **FIXED in Build 15**
@@ -1080,6 +1081,7 @@ useEffect(() => {
 **Build History**:
 | Build | Date | Notes |
 |-------|------|-------|
+| 18 | Dec 14, 2025 | Purple splash screen fix (was 1x1 red pixel) |
 | 17 | Dec 14, 2025 | Guru fixes committed & pushed before build |
 | 16 | Dec 14, 2025 | Guru Analysis fixes (function name, request format, worksheet counts) |
 | 15 | Dec 14, 2025 | Complete auto-save fix (all 35 screens) |
@@ -1087,7 +1089,8 @@ useEffect(() => {
 | 13 | Dec 13, 2025 | MVP Beta - App Store Submission |
 
 **Testing Notes**:
-- Build 17 includes all Guru fixes - test with `test@manifest.app` (11/11 Phase 1 complete)
+- Build 18 includes purple splash screen (no more red flash on launch)
+- Test Guru with `test@manifest.app` (11/11 Phase 1 complete)
 - Delete app from device before installing to clear cached data
 
 ---
@@ -1702,7 +1705,7 @@ npm run type-check
 
 ---
 
-**Last Updated by**: Claude Code (Build 17 Session)
+**Last Updated by**: Claude Code (Build 18 Session)
 **Session Date**: December 14, 2025
-**Next Scheduled Review**: After Guru testing on Build 17
-**Document Version**: 1.7.1
+**Next Scheduled Review**: After testing Build 18 on TestFlight
+**Document Version**: 1.7.2
