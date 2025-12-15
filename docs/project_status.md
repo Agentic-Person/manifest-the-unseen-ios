@@ -1,6 +1,6 @@
 # Manifest the Unseen - Project Status
 
-**Last Updated**: 2025-12-11
+**Last Updated**: 2025-12-14
 **Current Phase**: Phase 5 - Final Testing & App Store Submission
 **Overall Progress**: 92% Complete
 
@@ -32,6 +32,7 @@
 - Paywall and UpgradePrompt modals
 
 **What's Left** 🎯:
+- **Guru AI fixes** (3 critical bugs blocking feature)
 - RevenueCat dashboard: Add awakening tier products (6 total products)
 - App Store Connect: Complete listing, screenshots
 - Production build and submission
@@ -321,7 +322,7 @@
 ### Feature Completion
 - **Workbook**: 100% - All 10 phases complete with progress tracking
 - **Meditation**: 100% - 9 tracks working on iPhone
-- **AI Guru Chat**: 100% - Frontend complete, Enlightenment-tier exclusive
+- **AI Guru Chat**: 80% - Frontend complete, 3 critical bugs need fixing (see 2025-12-14 changelog)
 - **Subscriptions**: 90% - Code complete, awaiting production key
 - **Feature Gating**: 100% - Two-tier model (Novice/Enlightenment)
 - **Polish**: 90% - HomeScreen, progress meters, consistent UI
@@ -415,7 +416,18 @@ Once connected, Playwright can automate RevenueCat dashboard tasks:
 
 ## Change Log
 
-### 2025-12-10 (Latest)
+### 2025-12-14 (Latest)
+- **Guru AI Feature Investigation & Planning**
+  - Discovered 3 critical bugs preventing Guru from working:
+    1. **Phase 1 worksheet count mismatch**: Client expects 4, Edge Function expects 11
+    2. **Subscription tier mismatch**: Edge Function only allows Enlightenment, client allows Awakening+
+    3. **Timestamp type mismatch**: Edge Function sends number, client expects string
+  - Created detailed implementation plan: `docs/Guru AI System Prompt & Configuration Plan.md`
+  - New feature planned: Meditation & breathing suggestions in Guru responses
+  - Phase-to-practice mapping designed for all 10 phases
+  - Enhanced response structure: Observation → Wisdom → Reflection → Practice
+
+### 2025-12-10
 - ✅ **Two-Tier Subscription Model Complete**
   - Refactored from 3 tiers to 2 tiers (removed Awakening)
   - **Novice** ($7.99/mo): All features EXCEPT Guru AI chat

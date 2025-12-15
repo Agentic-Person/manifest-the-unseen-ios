@@ -1,12 +1,12 @@
 /**
  * Supabase Edge Function: Guru Analysis
  *
- * Premium feature (Enlightenment tier only) that provides AI-guided phase analysis
+ * Premium feature (Awakening+ tiers) that provides AI-guided phase analysis
  * after users complete workbook phases.
  *
  * Flow:
  * 1. Authenticate user via JWT
- * 2. Verify user has Enlightenment tier subscription
+ * 2. Verify user has Awakening or Enlightenment tier subscription
  * 3. Verify requested phase is fully completed
  * 4. Fetch user's workbook data for the phase
  * 5. Generate embedding for user message
@@ -49,7 +49,7 @@ interface GuruRequest {
 interface Message {
   role: 'user' | 'assistant';
   content: string;
-  timestamp: number;
+  timestamp: string; // ISO format string to match client GuruMessage type
 }
 
 interface KnowledgeMatch {
@@ -86,6 +86,60 @@ const WORKSHEETS_PER_PHASE: Record<number, number> = {
   8: 3,
   9: 3,
   10: 3,
+};
+
+// Phase-to-practice mapping for meditation and breathing suggestions
+const PHASE_PRACTICE_SUGGESTIONS: Record<number, { meditation: string; breathing: string; reason: string }> = {
+  1: {
+    meditation: 'Evening Healing Meditation',
+    breathing: 'Box Breathing (4-4-4-4)',
+    reason: 'clarity and centering for self-reflection',
+  },
+  2: {
+    meditation: 'Mirror of Manifestation',
+    breathing: 'Coherent Breathing (5-5)',
+    reason: 'heart-centered awareness for vision clarity',
+  },
+  3: {
+    meditation: 'Mind-Body Connection',
+    breathing: 'Energy Boost (quick rhythmic)',
+    reason: 'focus and motivation for goal pursuit',
+  },
+  4: {
+    meditation: 'Evening Healing Meditation',
+    breathing: 'Deep Calm (5-2-5-2)',
+    reason: 'calming the nervous system when facing fears',
+  },
+  5: {
+    meditation: 'Evening Healing Meditation',
+    breathing: '4-7-8 Relaxation',
+    reason: 'self-nurturing and deep rest',
+  },
+  6: {
+    meditation: 'Mirror of Manifestation',
+    breathing: 'Box Breathing (4-4-4-4)',
+    reason: 'focus and clarity for visualization practices',
+  },
+  7: {
+    meditation: 'Mirror of Manifestation',
+    breathing: 'Coherent Breathing (5-5)',
+    reason: 'heart opening and gratitude amplification',
+  },
+  8: {
+    meditation: 'Mind-Body Connection',
+    breathing: 'Deep Calm (5-2-5-2)',
+    reason: 'grounding when processing shadow emotions',
+  },
+  9: {
+    meditation: 'Evening Healing Meditation',
+    breathing: '4-7-8 Relaxation',
+    reason: 'cultivating surrender and letting go',
+  },
+  10: {
+    meditation: 'Mirror of Manifestation',
+    breathing: 'Coherent Breathing (5-5)',
+    reason: 'integration and celebration of your journey',
+  },
 };
 
 // =============================================================================
@@ -359,9 +413,9 @@ async function searchKnowledge(
 }
 
 /**
- * Verify user has Enlightenment tier subscription
+ * Verify user has Awakening+ tier subscription (Awakening or Enlightenment)
  */
-async function verifyEnlightenmentTier(
+async function verifyGuruAccess(
   supabase: any,
   userId: string
 ): Promise<boolean> {
@@ -376,7 +430,8 @@ async function verifyEnlightenmentTier(
     return false;
   }
 
-  return data.subscription_tier === 'enlightenment';
+  // Awakening and Enlightenment tiers have Guru access
+  return ['awakening', 'enlightenment'].includes(data.subscription_tier);
 }
 
 /**
@@ -478,6 +533,9 @@ async function callClaude(
   // Get phase-specific system prompt
   const phasePrompt = PHASE_PROMPTS[phaseNumber] || PHASE_PROMPTS[1];
 
+  // Get practice suggestions for this phase
+  const practiceSuggestions = PHASE_PRACTICE_SUGGESTIONS[phaseNumber] || PHASE_PRACTICE_SUGGESTIONS[1];
+
   // Build complete system prompt
   const systemPrompt = `${phasePrompt}
 
@@ -487,10 +545,20 @@ ${workbookContext}
 **Relevant Wisdom from Knowledge Base:**
 ${ragContext || 'No specific knowledge matches retrieved for this query.'}
 
+**Suggested Practices for This Phase:**
+- Meditation: "${practiceSuggestions.meditation}" - ${practiceSuggestions.reason}
+- Breathing: "${practiceSuggestions.breathing}" - ${practiceSuggestions.reason}
+
+**Response Structure:**
+Your responses should flow through these stages:
+1. **Observation** - What patterns do you notice in their workbook answers? Reference specific data points.
+2. **Wisdom** - What teachings from the knowledge base apply here? Draw from Shi Heng Yi, manifestation principles, or Tesla's 3-6-9.
+3. **Reflection** - Pose a thought-provoking question for deeper self-inquiry.
+4. **Practice** - Suggest exploring the recommended meditation or breathing exercise in the app's Meditate section.
+
 **Remember:**
 - Reference specific details from their workbook data
 - Provide actionable insights and practices
-- Ask thoughtful follow-up questions
 - Maintain a balance of wisdom, compassion, and practical guidance
 - Keep responses focused and digestible (3-5 paragraphs)`;
 
@@ -633,12 +701,12 @@ serve(async (req) => {
 
     console.log(`Guru Analysis request from user: ${user.id}, Phase: ${phaseNumber}`);
 
-    // Step 2: Verify Enlightenment tier subscription
-    const hasEnlightenmentTier = await verifyEnlightenmentTier(supabase, user.id);
-    if (!hasEnlightenmentTier) {
+    // Step 2: Verify Awakening+ tier subscription
+    const hasGuruAccess = await verifyGuruAccess(supabase, user.id);
+    if (!hasGuruAccess) {
       return new Response(
         JSON.stringify({
-          error: 'Guru feature requires Enlightenment tier subscription',
+          error: 'Guru feature requires Awakening or Enlightenment tier subscription',
           code: 'SUBSCRIPTION_REQUIRED',
         }),
         {
@@ -709,12 +777,12 @@ serve(async (req) => {
       {
         role: 'user',
         content: message,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
       },
       {
         role: 'assistant',
         content: assistantReply,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
       },
     ];
 

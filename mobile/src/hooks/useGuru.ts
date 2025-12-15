@@ -81,9 +81,9 @@ export function useGuru(): UseGuruReturn {
 
     const phaseMap = new Map<number, { completed: number; total: number }>();
 
-    // Total worksheets per phase
+    // Total worksheets per phase (must match Edge Function WORKSHEETS_PER_PHASE)
     const totalPerPhase: Record<number, number> = {
-      1: 4, 2: 3, 3: 3, 4: 3, 5: 3,
+      1: 11, 2: 3, 3: 3, 4: 3, 5: 3,
       6: 3, 7: 3, 8: 3, 9: 3, 10: 3,
     };
 
