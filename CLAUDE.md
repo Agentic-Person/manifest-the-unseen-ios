@@ -90,6 +90,26 @@ manifest-the-unseen/
 └── supabase/                 # Database migrations, Edge Functions, seed data
 ```
 
+## TestFlight Build Checklist
+
+**IMPORTANT: Before creating a TestFlight build, ALWAYS complete these steps:**
+
+1. ✅ **Commit all changes** - `git add . && git commit -m "message"`
+2. ✅ **Push to GitHub** - `git push origin main`
+3. ✅ **Increment build number** - Update `mobile/app.json` → `expo.ios.buildNumber`
+4. ✅ **Commit the build number** - `git commit -am "build: increment iOS build number to X"`
+5. ✅ **Push again** - `git push origin main`
+6. ✅ **Run EAS build** - `cd mobile && eas build --platform ios --profile production`
+
+**Why this matters**: EAS Build pulls from the GitHub repository. If you don't commit and push, your build won't include your latest changes!
+
+```bash
+# Quick pre-build check
+git status                    # Should show "nothing to commit, working tree clean"
+git log --oneline -1          # Verify your latest commit is what you expect
+git push origin main          # Ensure remote is up to date
+```
+
 ## Development Commands (When Implemented)
 
 These commands will be standard for a React Native + Supabase project:
