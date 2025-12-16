@@ -1,6 +1,6 @@
 # Manifest the Unseen - Project Status
 
-**Last Updated**: 2025-12-14
+**Last Updated**: 2025-12-15
 **Current Phase**: Phase 5 - Final Testing & App Store Submission
 **Overall Progress**: 95% Complete
 
@@ -416,7 +416,25 @@ Once connected, Playwright can automate RevenueCat dashboard tasks:
 
 ## Change Log
 
-### 2025-12-14 (Latest) - Build 19
+### 2025-12-15 (Latest)
+- ✅ **Build 19 Submitted to TestFlight**
+  - Successfully uploaded to App Store Connect
+  - Processing by Apple (5-10 min)
+  - TestFlight link: https://appstoreconnect.apple.com/apps/6756403109/testflight/ios
+- ✅ **Local Development Bypass Improved**
+  - Changed `subscriptionStore.ts` to use `__DEV__` global instead of env vars
+  - `__DEV__` is automatically true in Expo Go/Metro, false in production builds
+  - Enables local browser/Expo Go testing with full enlightenment tier access
+  - No risk of leaking to production (build-time constant)
+- ✅ **Database Setup for Testing**
+  - User `jimmy@agenticpersonnel.com` set to enlightenment tier
+  - Phase 1 worksheets (11/11) marked complete for Guru testing
+- ⏳ **Local Dev Server Cleanup Needed**
+  - Multiple Metro bundler instances accumulated (70+ node processes)
+  - User needs to kill all node processes and restart fresh
+  - Run: `Get-Process node | Stop-Process -Force` then `npx expo start --clear`
+
+### 2025-12-14 - Build 19
 - ✅ **Guru AI Feature FIXED & DEPLOYED**
   - **Bug 1 FIXED**: Phase 1 worksheet count - `useGuru.ts` changed from 4 to 11
   - **Bug 2 FIXED**: Subscription tier - Edge Function now accepts Awakening + Enlightenment
