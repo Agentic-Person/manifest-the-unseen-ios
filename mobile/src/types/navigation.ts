@@ -141,9 +141,15 @@ export type MeditateStackParamList = {
  */
 export type ProfileStackParamList = {
   ProfileHome: undefined;
-  Settings: undefined;
-  Subscription: undefined;
+  AccountSettings: undefined;
+  Notifications: undefined;
+  Appearance: undefined;
+  PrivacySecurity: undefined;
+  HelpCenter: undefined;
   About: undefined;
+  PrivacyPolicy: undefined;
+  TermsOfService: undefined;
+  Subscription: undefined;
 };
 
 /**

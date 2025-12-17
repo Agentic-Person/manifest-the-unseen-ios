@@ -18,7 +18,7 @@ import HomeScreen from '../screens/HomeScreen';
 import { WorkbookNavigator } from './WorkbookNavigator';
 import { MeditateNavigator } from './MeditateNavigator';
 import GuruScreen from '../screens/GuruScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import { ProfileNavigator } from './ProfileNavigator';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -161,14 +161,11 @@ export const MainTabNavigator = () => {
 
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileNavigator}
         options={{
           title: 'Profile',
           tabBarLabel: 'Profile',
-          // TODO: Add icon when design system is ready
-          // tabBarIcon: ({ color, size }) => (
-          //   <ProfileIcon color={color} size={size} />
-          // ),
+          headerShown: false, // ProfileNavigator handles its own headers
         }}
       />
     </Tab.Navigator>

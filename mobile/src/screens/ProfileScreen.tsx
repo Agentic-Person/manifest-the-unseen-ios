@@ -6,21 +6,26 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import type { MainTabScreenProps } from '../types/navigation';
+import Constants from 'expo-constants';
+import type { ProfileStackScreenProps } from '../types/navigation';
 import { useUser, useProfile, useSignOut } from '../stores/authStore';
 import { useUserProfile } from '../hooks/useUser';
 import { colors } from '../theme';
 
-type Props = MainTabScreenProps<'Profile'>;
+type Props = ProfileStackScreenProps<'ProfileHome'>;
 
 /**
  * Profile Screen Component
  */
-const ProfileScreen = (_props: Props) => {
+const ProfileScreen = ({ navigation }: Props) => {
   const user = useUser();
   const profile = useProfile();
   const signOut = useSignOut();
   const { isLoading } = useUserProfile();
+
+  // Get app version from expo-constants
+  const appVersion = Constants.expoConfig?.version || '1.0.0';
+  const buildNumber = Constants.expoConfig?.ios?.buildNumber || '1';
 
   const handleSignOut = async () => {
     try {
@@ -65,7 +70,10 @@ const ProfileScreen = (_props: Props) => {
                 Status: {profile.subscriptionStatus ?? 'active'}
               </Text>
             </View>
-            <TouchableOpacity style={styles.upgradeButton}>
+            <TouchableOpacity
+              style={styles.upgradeButton}
+              onPress={() => navigation.navigate('Subscription')}
+            >
               <Text style={styles.upgradeButtonText}>Manage</Text>
             </TouchableOpacity>
           </View>
@@ -76,22 +84,34 @@ const ProfileScreen = (_props: Props) => {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Settings</Text>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate('AccountSettings')}
+        >
           <Text style={styles.optionText}>Account Settings</Text>
           <Text style={styles.optionArrow}>›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate('Notifications')}
+        >
           <Text style={styles.optionText}>Notifications</Text>
           <Text style={styles.optionArrow}>›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate('Appearance')}
+        >
           <Text style={styles.optionText}>Appearance</Text>
           <Text style={styles.optionArrow}>›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate('PrivacySecurity')}
+        >
           <Text style={styles.optionText}>Privacy & Security</Text>
           <Text style={styles.optionArrow}>›</Text>
         </TouchableOpacity>
@@ -101,12 +121,18 @@ const ProfileScreen = (_props: Props) => {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Support</Text>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate('HelpCenter')}
+        >
           <Text style={styles.optionText}>Help Center</Text>
           <Text style={styles.optionArrow}>›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.option}>
+        <TouchableOpacity
+          style={styles.option}
+          onPress={() => navigation.navigate('About')}
+        >
           <Text style={styles.optionText}>About</Text>
           <Text style={styles.optionArrow}>›</Text>
         </TouchableOpacity>
@@ -121,7 +147,7 @@ const ProfileScreen = (_props: Props) => {
       </TouchableOpacity>
 
       {/* Version Info */}
-      <Text style={styles.versionText}>Version 1.0.0</Text>
+      <Text style={styles.versionText}>Version {appVersion} ({buildNumber})</Text>
     </ScrollView>
   );
 };
