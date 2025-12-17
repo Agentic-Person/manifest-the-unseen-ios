@@ -8,7 +8,6 @@
 import { supabase } from './supabase';
 import type {
   GuruConversation,
-  GuruConversationInsert,
   GuruMessage,
   GuruAnalysisRequest,
   GuruAnalysisResponse,
@@ -26,10 +25,11 @@ export const getGuruConversation = async (
   phaseNumber: number
 ): Promise<GuruConversation | null> => {
   const { data, error } = await supabase
-    .from('guru_conversations')
+    .from('ai_conversations')
     .select('*')
     .eq('user_id', userId)
-    .eq('phase_number', phaseNumber)
+    .eq('conversation_type', 'guru')
+    .eq('guru_phase', phaseNumber)
     .single();
 
   // PGRST116 means no rows found - this is OK for first conversation
@@ -47,10 +47,11 @@ export const getAllGuruConversations = async (
   userId: string
 ): Promise<GuruConversation[]> => {
   const { data, error } = await supabase
-    .from('guru_conversations')
+    .from('ai_conversations')
     .select('*')
     .eq('user_id', userId)
-    .order('phase_number', { ascending: true });
+    .eq('conversation_type', 'guru')
+    .order('guru_phase', { ascending: true });
 
   if (error) throw error;
   return (data as GuruConversation[]) || [];
@@ -64,17 +65,19 @@ export const upsertGuruConversation = async (
   phaseNumber: number,
   messages: GuruMessage[]
 ): Promise<GuruConversation> => {
-  const payload: GuruConversationInsert = {
+  const payload = {
     user_id: userId,
-    phase_number: phaseNumber,
+    conversation_type: 'guru' as const,
+    guru_phase: phaseNumber,
+    title: `Phase ${phaseNumber} Guru Analysis`,
     messages,
     updated_at: new Date().toISOString(),
   };
 
   const { data, error } = await supabase
-    .from('guru_conversations')
+    .from('ai_conversations')
     .upsert(payload as any, {
-      onConflict: 'user_id,phase_number',
+      onConflict: 'user_id,conversation_type,guru_phase',
     })
     .select()
     .single();
@@ -98,11 +101,33 @@ export const sendGuruMessage = async (
     isInitialAnalysis: !request.conversationId,
   };
 
+  console.log('[Guru] Calling Edge Function with:', {
+    phaseNumber: request.phaseNumber,
+    hasConversationId: !!request.conversationId,
+    messageLength: request.userMessage?.length,
+  });
+
+  // Check auth state before calling
+  const { data: { session } } = await supabase.auth.getSession();
+  console.log('[Guru] Auth session exists:', !!session);
+  if (session) {
+    console.log('[Guru] User ID:', session.user.id);
+    console.log('[Guru] Token expires:', new Date(session.expires_at! * 1000).toISOString());
+  } else {
+    console.error('[Guru] NO SESSION - Edge Function will fail with 401');
+  }
+
   const { data, error } = await supabase.functions.invoke('guru-analysis', {
     body: edgeFunctionRequest,
   });
 
-  if (error) throw error;
+  if (error) {
+    console.error('[Guru] Edge Function error:', error);
+    console.error('[Guru] Error details:', JSON.stringify(error, null, 2));
+    throw error;
+  }
+
+  console.log('[Guru] Edge Function success, conversationId:', data?.conversationId);
 
   // Transform response to match expected format
   return {
@@ -123,10 +148,11 @@ export const deleteGuruConversation = async (
   phaseNumber: number
 ): Promise<void> => {
   const { error } = await supabase
-    .from('guru_conversations')
+    .from('ai_conversations')
     .delete()
     .eq('user_id', userId)
-    .eq('phase_number', phaseNumber);
+    .eq('conversation_type', 'guru')
+    .eq('guru_phase', phaseNumber);
 
   if (error) throw error;
 };
@@ -136,9 +162,10 @@ export const deleteGuruConversation = async (
  */
 export const resetAllGuruConversations = async (userId: string): Promise<void> => {
   const { error } = await supabase
-    .from('guru_conversations')
+    .from('ai_conversations')
     .delete()
-    .eq('user_id', userId);
+    .eq('user_id', userId)
+    .eq('conversation_type', 'guru');
 
   if (error) throw error;
 };

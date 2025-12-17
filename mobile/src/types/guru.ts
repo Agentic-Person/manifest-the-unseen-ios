@@ -22,8 +22,10 @@ export interface GuruMessage {
 export interface GuruConversation {
   id: string;
   user_id: string;
-  phase_number: number;
+  title: string;
   messages: GuruMessage[];
+  conversation_type: 'guru';
+  guru_phase: number;
   created_at: string;
   updated_at: string;
 }
@@ -58,6 +60,26 @@ export interface GuruAnalysisResponse {
   conversationId: string;
   message: GuruMessage;
   error?: string;
+}
+
+/**
+ * Meditation Suggestion
+ * Recommended meditation and breathing based on low life areas
+ */
+export interface MeditationSuggestion {
+  meditation: string;
+  breathing: string;
+  reason: string;
+  lifeAreas: string[];
+}
+
+/**
+ * Enhanced Guru Analysis Response
+ * Extended response with meditation/breathing suggestions
+ */
+export interface EnhancedGuruAnalysisResponse extends GuruAnalysisResponse {
+  suggestions?: MeditationSuggestion;
+  lowAreas?: string[];
 }
 
 /**

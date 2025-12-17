@@ -69,6 +69,17 @@ interface WorkbookProgress {
   completed_at: string | null;
 }
 
+interface WheelOfLifeData {
+  career: number;
+  health: number;
+  relationships: number;
+  finance: number;
+  personalGrowth: number;
+  family: number;
+  recreation: number;
+  spirituality: number;
+}
+
 // =============================================================================
 // Constants
 // =============================================================================
@@ -140,6 +151,18 @@ const PHASE_PRACTICE_SUGGESTIONS: Record<number, { meditation: string; breathing
     breathing: 'Coherent Breathing (5-5)',
     reason: 'integration and celebration of your journey',
   },
+};
+
+// Life area to breathing exercise mapping for dynamic suggestions
+const LIFE_AREA_TO_BREATHING: Record<string, { breathing: string; reason: string }> = {
+  career: { breathing: 'Energy Boost (quick rhythmic)', reason: 'increases focus and motivation' },
+  health: { breathing: 'Deep Calm (5-2-5-2)', reason: 'activates healing response' },
+  relationships: { breathing: 'Coherent Breathing (5-5)', reason: 'opens heart center' },
+  finance: { breathing: 'Box Breathing (4-4-4-4)', reason: 'reduces anxiety around money' },
+  personalGrowth: { breathing: 'Box Breathing (4-4-4-4)', reason: 'enhances clarity' },
+  family: { breathing: 'Coherent Breathing (5-5)', reason: 'cultivates compassion' },
+  recreation: { breathing: 'Deep Calm (5-2-5-2)', reason: 'promotes relaxation' },
+  spirituality: { breathing: '4-7-8 Relaxation', reason: 'deepens spiritual connection' }
 };
 
 // =============================================================================
@@ -472,6 +495,31 @@ async function verifyPhaseCompletion(
 }
 
 /**
+ * Extract low-scoring life areas from Wheel of Life worksheet
+ */
+function extractLowLifeAreas(worksheets: WorkbookProgress[]): string[] {
+  const wheelOfLife = worksheets.find(w => w.worksheet_id === 'wheel-of-life');
+  if (!wheelOfLife?.data) return [];
+
+  const data = wheelOfLife.data as WheelOfLifeData;
+  const LOW_THRESHOLD = 5;
+  const lowAreas: string[] = [];
+
+  const areaNames: Record<string, string> = {
+    career: 'Career', health: 'Health', relationships: 'Relationships',
+    finance: 'Finance', personalGrowth: 'Personal Growth', family: 'Family',
+    recreation: 'Recreation', spirituality: 'Spirituality'
+  };
+
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof value === 'number' && value < LOW_THRESHOLD && areaNames[key]) {
+      lowAreas.push(`${areaNames[key]} (${value}/10)`);
+    }
+  }
+  return lowAreas;
+}
+
+/**
  * Fetch user's workbook data for a phase
  */
 async function fetchPhaseWorkbookData(
@@ -523,7 +571,8 @@ async function callClaude(
   phaseNumber: number,
   workbookContext: string,
   knowledgeContext: KnowledgeMatch[],
-  conversationHistory: Message[] = []
+  conversationHistory: Message[] = [],
+  lowAreas: string[] = []
 ): Promise<string> {
   // Build knowledge context
   const ragContext = knowledgeContext
@@ -534,10 +583,37 @@ async function callClaude(
   const phasePrompt = PHASE_PROMPTS[phaseNumber] || PHASE_PROMPTS[1];
 
   // Get practice suggestions for this phase
-  const practiceSuggestions = PHASE_PRACTICE_SUGGESTIONS[phaseNumber] || PHASE_PRACTICE_SUGGESTIONS[1];
+  let practiceSuggestions = PHASE_PRACTICE_SUGGESTIONS[phaseNumber] || PHASE_PRACTICE_SUGGESTIONS[1];
+
+  // Override breathing suggestion if low areas detected
+  let lowAreasSection = '';
+  if (lowAreas && lowAreas.length > 0) {
+    // Extract the key from the first low area (e.g., "Career (3/10)" -> "career")
+    const firstLowArea = lowAreas[0].split(' ')[0].toLowerCase();
+    const matchedKey = Object.keys(LIFE_AREA_TO_BREATHING).find(
+      key => firstLowArea.includes(key.toLowerCase()) ||
+             key.toLowerCase().includes(firstLowArea)
+    );
+
+    if (matchedKey && LIFE_AREA_TO_BREATHING[matchedKey]) {
+      const dynamicBreathing = LIFE_AREA_TO_BREATHING[matchedKey];
+      practiceSuggestions = {
+        ...practiceSuggestions,
+        breathing: dynamicBreathing.breathing,
+        reason: dynamicBreathing.reason
+      };
+    }
+
+    lowAreasSection = `
+
+**User's Low-Scoring Life Areas (below 5/10):**
+${lowAreas.map(a => `- ${a}`).join('\n')}
+
+Focus your analysis on these areas. The breathing exercise has been dynamically selected to address their primary weak area.`;
+  }
 
   // Build complete system prompt
-  const systemPrompt = `${phasePrompt}
+  const systemPrompt = `${phasePrompt}${lowAreasSection}
 
 **User's Workbook Data for Phase ${phaseNumber}:**
 ${workbookContext}
@@ -736,6 +812,10 @@ serve(async (req) => {
     const worksheets = await fetchPhaseWorkbookData(supabase, user.id, phaseNumber);
     const workbookContext = buildWorkbookContext(worksheets);
 
+    // Step 4.5: Extract low-scoring life areas from Wheel of Life
+    const lowAreas = extractLowLifeAreas(worksheets);
+    console.log(`Found ${lowAreas.length} low-scoring life areas:`, lowAreas);
+
     // Step 5: Generate embedding for user message
     console.log('Generating embedding...');
     const embedding = await generateEmbedding(message);
@@ -769,7 +849,8 @@ serve(async (req) => {
       phaseNumber,
       workbookContext,
       knowledgeMatches,
-      conversationHistory
+      conversationHistory,
+      lowAreas
     );
 
     // Step 9: Save conversation
