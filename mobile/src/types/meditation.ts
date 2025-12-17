@@ -48,6 +48,7 @@ export interface Meditation {
   tags: string[];
   order_index: number;
   created_at: string;
+  life_areas?: string[]; // Life areas this meditation addresses
 }
 
 /**

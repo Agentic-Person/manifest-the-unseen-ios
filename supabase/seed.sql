@@ -234,6 +234,23 @@ ON CONFLICT (user_id, phase_number, worksheet_id) DO NOTHING;
 */
 
 -- =============================================================================
+-- MEDITATION LIFE AREAS (Smart Suggestions)
+-- =============================================================================
+-- Update meditations with life_areas tags for dynamic Guru suggestions
+
+-- Beginner Meditations
+UPDATE meditations SET life_areas = ARRAY['spirituality', 'health', 'personalGrowth'] WHERE title ILIKE '%Grounding%';
+UPDATE meditations SET life_areas = ARRAY['spirituality', 'relationships', 'family'] WHERE title ILIKE '%Gratitude%';
+UPDATE meditations SET life_areas = ARRAY['personalGrowth', 'career', 'finance'] WHERE title ILIKE '%Fear%';
+
+-- Intermediate Meditations
+UPDATE meditations SET life_areas = ARRAY['relationships', 'family', 'health'] WHERE title ILIKE '%Self-Love%' OR title ILIKE '%Compassion%';
+UPDATE meditations SET life_areas = ARRAY['career', 'finance', 'personalGrowth'] WHERE title ILIKE '%Vision%' OR title ILIKE '%Manifestation%';
+
+-- Advanced Meditations
+UPDATE meditations SET life_areas = ARRAY['spirituality', 'personalGrowth', 'recreation'] WHERE title ILIKE '%Trust%' OR title ILIKE '%Surrender%';
+
+-- =============================================================================
 -- KNOWLEDGE EMBEDDINGS (To be populated via script)
 -- =============================================================================
 -- Knowledge base embeddings will be inserted via a separate ingestion script
