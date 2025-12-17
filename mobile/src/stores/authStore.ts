@@ -92,8 +92,10 @@ export const useAuthStore = create<AuthState>()(
             }
 
             // Sign in as demo user to get a valid JWT for RLS
-            const devEmail = 'test@manifest.app';
+            // Uses env var if set, otherwise falls back to jimmy@agenticpersonnel.com
+            const devEmail = process.env.EXPO_PUBLIC_DEV_EMAIL || 'jimmy@agenticpersonnel.com';
             const devPassword = process.env.EXPO_PUBLIC_DEV_PASSWORD || 'TestPassword123!';
+            console.log('[Auth] Attempting sign-in with:', devEmail);
 
             const { data, error } = await supabase.auth.signInWithPassword({
               email: devEmail,
@@ -102,8 +104,11 @@ export const useAuthStore = create<AuthState>()(
 
             if (error) {
               console.error('[Auth] Demo user sign-in failed:', error.message);
-              console.log('[Auth] Hint: Ensure demo user exists in Supabase with password set');
-              set({ isLoading: false });
+              console.error('[Auth] Error code:', error.status, error.name);
+              console.log('[Auth] Attempted email:', devEmail);
+              console.log('[Auth] Hint: Ensure user exists in Supabase Auth with correct password');
+              console.log('[Auth] Supabase URL:', process.env.EXPO_PUBLIC_SUPABASE_URL);
+              set({ isLoading: false, error: error.message });
               return;
             }
 

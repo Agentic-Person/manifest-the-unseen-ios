@@ -39,6 +39,18 @@ const REVENUECAT_API_KEY_ANDROID =
  * @param userId - Optional user ID to sync with your backend
  */
 export async function configurePurchases(userId?: string): Promise<void> {
+  // Skip RevenueCat in web browser - it doesn't work and causes errors
+  if (Platform.OS === 'web') {
+    console.log('[Subscription] Web platform detected - skipping RevenueCat (use subscriptionStore DEV bypass)');
+    return;
+  }
+
+  // Skip in DEV mode to avoid API key issues during local testing
+  if (__DEV__) {
+    console.log('[Subscription] DEV mode - skipping RevenueCat configuration (subscriptionStore will grant enlightenment)');
+    return;
+  }
+
   try {
     const apiKey =
       Platform.OS === 'ios' ? REVENUECAT_API_KEY_IOS : REVENUECAT_API_KEY_ANDROID;
@@ -57,11 +69,7 @@ export async function configurePurchases(userId?: string): Promise<void> {
     });
 
     // Set log level (use ERROR in production)
-    if (__DEV__) {
-      Purchases.setLogLevel(LOG_LEVEL.DEBUG);
-    } else {
-      Purchases.setLogLevel(LOG_LEVEL.ERROR);
-    }
+    Purchases.setLogLevel(LOG_LEVEL.ERROR);
 
     console.log('RevenueCat configured successfully');
   } catch (error) {
@@ -411,6 +419,22 @@ function getSubscriptionPeriod(
  * Returns all subscription details for current user
  */
 export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
+  // DEV mode or web: return enlightenment tier without calling RevenueCat
+  if (__DEV__ || Platform.OS === 'web') {
+    console.log('[Subscription] DEV/Web mode - returning mock enlightenment subscription');
+    return {
+      tier: 'enlightenment',
+      status: 'active',
+      isSubscribed: true,
+      isInTrial: false,
+      trialEndDate: null,
+      expirationDate: null,
+      willRenew: true,
+      period: 'yearly',
+      customerInfo: null,
+    };
+  }
+
   try {
     const customerInfo = await getCustomerInfo();
     const tier = getTierFromCustomerInfo(customerInfo);

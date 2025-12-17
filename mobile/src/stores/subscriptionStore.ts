@@ -96,9 +96,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
    * Fetches current subscription status from RevenueCat
    */
   loadSubscription: async () => {
-    // DEV bypass - match authStore demo user behavior
-    // When DEV_SKIP_AUTH is true, grant full access (enlightenment tier)
-    if (process.env.EXPO_PUBLIC_DEV_SKIP_AUTH === 'true') {
+    // DEV bypass - grant full access in development mode
+    // __DEV__ is automatically true in Expo Go/Metro and false in production builds
+    if (__DEV__) {
       console.log('[Subscription] DEV mode - granting enlightenment tier access');
       set({
         tier: 'enlightenment',
