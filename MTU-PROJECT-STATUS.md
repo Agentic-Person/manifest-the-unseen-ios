@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-17
+**Last Updated**: 2025-12-18
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🚀 **PROFILE/SETTINGS COMPLETE** - Full settings functionality with iOS integrations (Build 19 on TestFlight)
+**Status**: 🚀 **SECURITY AUDIT + TESTFLIGHT FIX** - Database security hardened + full feature access in TestFlight (Build 23)
 
 ---
 
@@ -13,13 +13,13 @@
 | Item | Value |
 |------|-------|
 | **Version** | 1.0.0 |
-| **Build** | 19 |
+| **Build** | 23 |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | Waiting for Review |
-| **TestFlight** | Available (Build 19) |
+| **TestFlight** | Available (Build 23) |
 | **Submission Date** | December 13, 2025 |
 
-**What's Included in Build 19:**
+**What's Included in Build 23:**
 - ✅ All 10 Workbook Phases (35 screens)
 - ✅ Voice Journal with Whisper transcription
 - ✅ AI Guru Chat (Claude-powered)
@@ -27,15 +27,19 @@
 - ✅ Breathing Exercises (Box, Deep, Calm)
 - ✅ Dark Mode UI throughout
 - ✅ RevenueCat subscription integration
+- ✅ **Full Profile/Settings screens** (8 new screens with iOS integrations)
+- ✅ **Security hardening** (RLS enabled, function search_path fixed)
+- ✅ **TestFlight full access** (bypasses subscription gating for testing)
 - ✅ **Auto-save race condition fix** (all 35 workbook screens)
 - ✅ **Guru Analysis Edge Function fixes** (function name, request format, worksheet counts)
-- ✅ **Purple splash screen fix** (was 1x1 red pixel causing flash on launch)
 
 **Known Issues:**
 - ✅ ~~Habit tracking progress not saving~~ - **FIXED in Build 15**
 - ✅ ~~Guru not recognizing completed phases~~ - **FIXED in Build 16**
 - ✅ ~~Guru AI Authentication Error~~ - **FIXED**: `guruService.ts` now uses `ai_conversations` table with proper filters
 - ✅ ~~Guru AI Enhancement~~ - **COMPLETE**: Dynamic workbook analysis with life area detection deployed
+- ✅ ~~TestFlight features locked~~ - **FIXED in Build 23**: Added `EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS` env var
+- ⚠️ **Push notifications temporarily disabled** - Provisioning profile needs regeneration (Build 21+)
 
 ---
 
@@ -48,6 +52,32 @@
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 18, 2025 - Security Audit + TestFlight Feature Access Fix
+- **Duration**: ~3 hours
+- **What Was Done**: Supabase security audit + fixed feature locking in TestFlight builds
+- **Status**: ✅ **COMPLETE** - Build 23 on TestFlight with full feature access
+- **Security Fixes Applied** (Migration: `20251217000001_security_fixes.sql`):
+  1. **`meditations` table** - RLS enabled (policy existed but RLS was off)
+  2. **`knowledge_embeddings` table** - RLS enabled + service-role-only write policies
+  3. **Functions search_path fixed** - `update_updated_at_column()`, `match_knowledge()`, `handle_new_user()`
+  4. **Security issues reduced**: 8 → 2 (remaining: vector extension in public, leaked password protection)
+- **TestFlight Access Fix**:
+  - Problem: `__DEV__` = false in production builds → RevenueCat returned "free" tier → all features locked
+  - Solution: Added `EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS=true` env var in eas.json
+  - Updated: `subscriptionStore.ts`, `subscriptionService.ts` to check this env var
+  - Result: TestFlight builds get enlightenment tier access for testing
+- **Push Notifications Disabled** (Build 21+):
+  - Reason: Apple provisioning profile missing Push Notification capability
+  - Workaround: Removed `expo-notifications`, created mock `useNotifications` hook
+  - To re-enable: Regenerate provisioning profile via `eas credentials`
+- **Files Modified**:
+  - `mobile/eas.json` - Added `EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS`
+  - `mobile/src/stores/subscriptionStore.ts` - TestFlight bypass in `loadSubscription()`
+  - `mobile/src/services/subscriptionService.ts` - TestFlight bypass in `configurePurchases()` and `getSubscriptionInfo()`
+  - `mobile/src/hooks/useNotifications.ts` - Mock implementation (notifications disabled)
+  - `supabase/migrations/20251217000001_security_fixes.sql` - Security hardening
+
+### Previous Activity (Dec 18 PM)
 - **Date**: December 18, 2025 - Bug Fixes (Phase 1 Progress + Guru UI + Edge Function)
 - **Duration**: ~2 hours
 - **What Was Done**: Fixed multiple bugs discovered during Guru AI testing
