@@ -19,6 +19,7 @@ import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase9ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
 
 /**
  * Phase 9 exercises configuration
@@ -208,6 +209,13 @@ const Phase9Dashboard: React.FC<Props> = ({ navigation }) => {
           />
         ))}
       </View>
+
+      {/* Review with Guru Button */}
+      <ReviewWithGuruButton
+        phaseNumber={9}
+        phaseName="Trust & Surrender"
+        isPhaseComplete={overallProgress === 100}
+      />
 
       {/* Bottom Spacing */}
       <View style={styles.bottomSpacer} />

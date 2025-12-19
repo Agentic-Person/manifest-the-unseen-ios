@@ -19,6 +19,7 @@ import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase2ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
 
 /**
  * Phase 2 exercises configuration
@@ -193,6 +194,14 @@ const Phase2Dashboard: React.FC<Props> = ({ navigation }) => {
           />
         ))}
       </View>
+
+      {/* Review with Guru Button */}
+      <ReviewWithGuruButton
+        phaseNumber={2}
+        phaseName="Values & Vision"
+        isPhaseComplete={overallProgress === 100}
+      />
+
       {/* Bottom Spacing */}
       <View style={styles.bottomSpacer} />
     </ScrollView>

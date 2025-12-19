@@ -19,6 +19,7 @@ import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase6ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
 
 /**
  * Phase 6 exercises configuration
@@ -203,6 +204,14 @@ const Phase6Dashboard: React.FC<Props> = ({ navigation }) => {
           />
         ))}
       </View>
+
+      {/* Review with Guru Button */}
+      <ReviewWithGuruButton
+        phaseNumber={6}
+        phaseName="Manifestation Techniques"
+        isPhaseComplete={overallProgress === 100}
+      />
+
       {/* Bottom Spacing */}
       <View style={styles.bottomSpacer} />
     </ScrollView>

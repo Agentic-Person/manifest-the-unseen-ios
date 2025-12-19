@@ -18,6 +18,7 @@ import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase5ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
 
 /**
  * Phase 5 exercises configuration
@@ -202,6 +203,14 @@ const Phase5Dashboard: React.FC<Props> = ({ navigation }) => {
           />
         ))}
       </View>
+
+      {/* Review with Guru Button */}
+      <ReviewWithGuruButton
+        phaseNumber={5}
+        phaseName="Self-Love & Self-Care"
+        isPhaseComplete={overallProgress === 100}
+      />
+
       {/* Bottom Spacing */}
       <View style={styles.bottomSpacer} />
     </ScrollView>

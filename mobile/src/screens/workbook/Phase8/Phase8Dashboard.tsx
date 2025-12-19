@@ -19,6 +19,7 @@ import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase8ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
 
 /**
  * Phase 8 exercises configuration
@@ -208,6 +209,13 @@ const Phase8Dashboard: React.FC<Props> = ({ navigation }) => {
           />
         ))}
       </View>
+
+      {/* Review with Guru Button */}
+      <ReviewWithGuruButton
+        phaseNumber={8}
+        phaseName="Turning Envy Into Inspiration"
+        isPhaseComplete={overallProgress === 100}
+      />
 
       {/* Bottom Spacing */}
       <View style={styles.bottomSpacer} />
