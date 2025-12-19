@@ -111,6 +111,55 @@ export interface CompletedPhase {
 export type GuruState = 'locked' | 'selecting' | 'loading' | 'conversation';
 
 /**
+ * Prayer type (mirrors meditation structure)
+ */
+export interface Prayer {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  duration_seconds: number;
+  tier_required: 'novice' | 'awakening' | 'enlightenment';
+  life_areas: string[];
+  tags: string[];
+  order_index: number;
+  created_at: string;
+}
+
+/**
+ * Guru recommendations returned with analysis
+ */
+export interface GuruRecommendations {
+  meditations: Array<{
+    id: string;
+    title: string;
+    description: string;
+    life_areas: string[];
+  }>;
+  prayers: Array<{
+    id: string;
+    title: string;
+    description: string;
+    life_areas: string[];
+  }>;
+  breathing: {
+    name: string;
+    reason: string;
+  };
+}
+
+/**
+ * User insights extracted from worksheets
+ */
+export interface UserInsights {
+  lowLifeAreas: string[];
+  topWeaknesses: string[];
+  badHabits: string[];
+  highIntensityFears: string[];
+  unrestructuredBeliefs: string[];
+}
+
+/**
  * Phase Names
  */
 export const PHASE_NAMES: Record<number, string> = {

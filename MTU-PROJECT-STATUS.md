@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-16
+**Last Updated**: 2025-12-17
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
@@ -48,6 +48,31 @@
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 18, 2025 - Bug Fixes (Phase 1 Progress + Guru UI + Edge Function)
+- **Duration**: ~2 hours
+- **What Was Done**: Fixed multiple bugs discovered during Guru AI testing
+- **Status**: ✅ **COMPLETE** - Guru AI fully functional!
+- **Bugs Fixed**:
+  1. **0% Progress Display** - Habit Tracking and Personal Values showing 0% even with data
+     - Root cause: Worksheet ID mismatch (`habit-tracking` vs `habits-audit`, `personal-values` vs `values-assessment`)
+     - Fix: Updated `Phase1Dashboard.tsx` to use canonical IDs from `types/workbook.ts`
+  2. **Guru Chat Input Hidden** - Chat input positioned below bottom nav bar
+     - Root cause: `KeyboardAvoidingView` offset (90px) insufficient for tab bar (94px+)
+     - Fix: Increased offset to 100px, added 80px bottom margin wrapper in `GuruScreen.tsx`
+  3. **Edge Function 400 Error** - Guru analysis returning Bad Request
+     - Root cause #1: Test user had no worksheet data → Created test data via SQL
+     - Root cause #2: Missing API keys → Added `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` via Supabase CLI
+     - Fix: Redeployed Edge Function (v7) with both API keys configured
+- **Files Modified**:
+  - `mobile/src/screens/workbook/Phase1/Phase1Dashboard.tsx` - Fixed worksheet IDs (lines 42, 63, 197, 200)
+  - `mobile/src/components/chat/ChatInput.tsx` - Increased keyboard offset (line 48)
+  - `mobile/src/screens/GuruScreen.tsx` - Added inputWrapper with 80px marginBottom (lines 242, 358-360)
+  - Database: Created 11 Phase 1 worksheets for test user
+  - Supabase Secrets: Added `ANTHROPIC_API_KEY` and `OPENAI_API_KEY`
+  - Edge Function: Redeployed guru-analysis v7
+- **Result**: Guru AI now responds with personalized analysis based on user's workbook data!
+
+### Previous Activity
 - **Date**: December 16, 2025 - Profile/Settings Complete Implementation
 - **Duration**: ~2 hours
 - **What Was Done**: Complete Profile/Settings functionality with iOS integrations
@@ -67,11 +92,11 @@
   - useNotifications hook for iOS push notification scheduling
 - **TypeScript**: 0 errors after all fixes applied
 
-### Previous Activity
+### Previous Activity (Dec 16 AM)
 - **Date**: December 16, 2025 - Guru AI Enhancement (Swarm)
-- **Duration**: ~3 hours
-- **What Was Done**: Major enhancement to Guru AI system
-- **Status**: ✅ **COMPLETE** - All code deployed, ready for testing
+- **Duration**: ~4 hours
+- **What Was Done**: Major enhancement to Guru AI system + test data setup
+- **Status**: ✅ **COMPLETE** - All deployed, test data populated, ready for E2E testing
 - **Bug Fixed**:
   - `guruService.ts` now uses `ai_conversations` table with `conversation_type='guru'` filter
 - **Enhancements Deployed**:
@@ -79,6 +104,13 @@
   - ✅ Smart breathing suggestions based on user's actual weak areas
   - ✅ Life area tagging for meditations (database migration + seed data)
   - ✅ Edge Function enhanced with `extractLowLifeAreas()` and dynamic suggestions
+  - ✅ Documentation organized in `docs/guru/` folder
+  - ✅ Test data populated (11 Phase 1 worksheets with low scores)
+- **Test Data**:
+  - User: jimmy@agenticpersonnel.com (enlightenment tier)
+  - Phase 1: 11 worksheets completed
+  - Wheel of Life low scores: Career (3), Finance (2), Health (4)
+  - Expected: Guru suggests Energy Boost breathing for career/finance
 - **Files Modified**:
   - `mobile/src/services/guruService.ts` - Fixed table references
   - `mobile/src/types/guru.ts` - Updated types
@@ -86,6 +118,8 @@
   - `supabase/functions/guru-analysis/index.ts` - Enhanced with dynamic analysis
   - `supabase/migrations/20251217000000_meditation_life_areas.sql` - NEW: Added life_areas column
   - `supabase/seed.sql` - Updated with life area tags
+  - `docs/guru/README.md` - NEW: Feature documentation
+  - `docs/guru/test-data.sql` - NEW: Test data SQL scripts
 - **Working Document**: `docs/guru/GURU-AI-ENHANCEMENT-PROGRESS.md`
 
 ### Previous Activity
@@ -1071,9 +1105,15 @@ Implemented dynamic life area analysis using swarm (2 parallel agents).
 
 **Working Document**: `docs/guru/GURU-AI-ENHANCEMENT-PROGRESS.md`
 **Feature Documentation**: `docs/guru/README.md`
+**Test Data SQL**: `docs/guru/test-data.sql`
 
-**Status**: ✅ 100% Complete - All code deployed, documentation finalized
-**Next Step**: Test Guru AI flow in app to verify enhancements work end-to-end
+**Test Data Populated**:
+- User: jimmy@agenticpersonnel.com (enlightenment tier)
+- Phase 1: 11 worksheets completed
+- Wheel of Life: Career (3), Finance (2), Health (4) - all below threshold
+
+**Status**: ✅ 100% Complete - All deployed, test data ready
+**Next Step**: Test Guru AI at http://localhost:8081
 
 ---
 

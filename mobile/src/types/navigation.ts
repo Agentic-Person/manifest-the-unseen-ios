@@ -41,7 +41,7 @@ export type MainTabParamList = {
   Home: undefined;
   Workbook: undefined;
   Meditate: undefined;
-  Guru: undefined; // Phase-based AI analysis - Enlightenment tier exclusive
+  Guru: { preSelectedPhase?: number } | undefined; // Phase-based AI analysis - Awakening tier+
   Profile: undefined;
 };
 

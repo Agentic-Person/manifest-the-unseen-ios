@@ -81,6 +81,84 @@ interface WheelOfLifeData {
 }
 
 // =============================================================================
+// Structured Insights Interfaces
+// =============================================================================
+
+interface WheelOfLifeInsights {
+  scores: Record<string, number>;
+  lowAreas: Array<{ area: string; score: number }>; // < 5
+  highAreas: Array<{ area: string; score: number }>; // >= 8
+  averageScore: number;
+  lowestArea: { area: string; score: number };
+}
+
+interface SWOTInsights {
+  strengthCount: number;
+  weaknessCount: number;
+  opportunityCount: number;
+  threatCount: number;
+  topStrengths: string[];
+  topWeaknesses: string[];
+  opportunityThemes: string[];
+  threatThemes: string[];
+}
+
+interface HabitsInsights {
+  totalHabits: number;
+  goodHabits: number;
+  badHabits: number;
+  habitBalance: string; // "positive", "negative", "balanced"
+  worstTimeOfDay: string; // "morning", "afternoon", "evening"
+}
+
+interface FearsInsights {
+  totalFears: number;
+  highIntensityFears: Array<{ fear: string; intensity: number }>;
+  fearCategories: Record<string, number>; // category -> count
+  averageIntensity: number;
+  dominantCategory: string;
+}
+
+interface LimitingBeliefsInsights {
+  totalBeliefs: number;
+  restructuredCount: number;
+  restructuredPercentage: number;
+  unrestructuredBeliefs: string[];
+}
+
+interface GoalsInsights {
+  totalGoals: number;
+  completedGoals: number;
+  inProgressGoals: number;
+  notStartedGoals: number;
+  completionRate: number;
+}
+
+interface UserInsights {
+  wheelOfLife?: WheelOfLifeInsights;
+  swot?: SWOTInsights;
+  habits?: HabitsInsights;
+  fears?: FearsInsights;
+  limitingBeliefs?: LimitingBeliefsInsights;
+  goals?: GoalsInsights;
+}
+
+interface MeditationRecommendation {
+  id: string;
+  title: string;
+  description: string;
+  life_areas: string[];
+}
+
+interface PrayerRecommendation {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  life_areas: string[];
+}
+
+// =============================================================================
 // Constants
 // =============================================================================
 
@@ -495,7 +573,7 @@ async function verifyPhaseCompletion(
 }
 
 /**
- * Extract low-scoring life areas from Wheel of Life worksheet
+ * Extract low-scoring life areas from Wheel of Life worksheet (legacy function)
  */
 function extractLowLifeAreas(worksheets: WorkbookProgress[]): string[] {
   const wheelOfLife = worksheets.find(w => w.worksheet_id === 'wheel-of-life');
@@ -517,6 +595,265 @@ function extractLowLifeAreas(worksheets: WorkbookProgress[]): string[] {
     }
   }
   return lowAreas;
+}
+
+// =============================================================================
+// Insight Extraction Functions
+// =============================================================================
+
+/**
+ * Extract structured insights from Wheel of Life worksheet
+ */
+function extractWheelOfLifeInsights(data: any): WheelOfLifeInsights | null {
+  if (!data) return null;
+
+  const areaNames: Record<string, string> = {
+    career: 'Career', health: 'Health', relationships: 'Relationships',
+    finance: 'Finance', personalGrowth: 'Personal Growth', family: 'Family',
+    recreation: 'Recreation', spirituality: 'Spirituality'
+  };
+
+  const scores: Record<string, number> = {};
+  const lowAreas: Array<{ area: string; score: number }> = [];
+  const highAreas: Array<{ area: string; score: number }> = [];
+  let totalScore = 0;
+  let count = 0;
+  let lowestArea = { area: '', score: 10 };
+
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof value === 'number' && areaNames[key]) {
+      const areaName = areaNames[key];
+      scores[areaName] = value;
+      totalScore += value;
+      count++;
+
+      if (value < 5) {
+        lowAreas.push({ area: areaName, score: value });
+      }
+      if (value >= 8) {
+        highAreas.push({ area: areaName, score: value });
+      }
+      if (value < lowestArea.score) {
+        lowestArea = { area: areaName, score: value };
+      }
+    }
+  }
+
+  const averageScore = count > 0 ? Math.round((totalScore / count) * 10) / 10 : 0;
+
+  return {
+    scores,
+    lowAreas: lowAreas.sort((a, b) => a.score - b.score),
+    highAreas: highAreas.sort((a, b) => b.score - a.score),
+    averageScore,
+    lowestArea,
+  };
+}
+
+/**
+ * Extract structured insights from SWOT worksheet
+ */
+function extractSWOTInsights(data: any): SWOTInsights | null {
+  if (!data) return null;
+
+  // Handle different data formats
+  const strengths = Array.isArray(data.strengths) ? data.strengths :
+                   (typeof data.strengths === 'string' ? data.strengths.split('\n').filter(Boolean) : []);
+  const weaknesses = Array.isArray(data.weaknesses) ? data.weaknesses :
+                    (typeof data.weaknesses === 'string' ? data.weaknesses.split('\n').filter(Boolean) : []);
+  const opportunities = Array.isArray(data.opportunities) ? data.opportunities :
+                       (typeof data.opportunities === 'string' ? data.opportunities.split('\n').filter(Boolean) : []);
+  const threats = Array.isArray(data.threats) ? data.threats :
+                 (typeof data.threats === 'string' ? data.threats.split('\n').filter(Boolean) : []);
+
+  return {
+    strengthCount: strengths.length,
+    weaknessCount: weaknesses.length,
+    opportunityCount: opportunities.length,
+    threatCount: threats.length,
+    topStrengths: strengths.slice(0, 3),
+    topWeaknesses: weaknesses.slice(0, 3),
+    opportunityThemes: opportunities.slice(0, 3),
+    threatThemes: threats.slice(0, 3),
+  };
+}
+
+/**
+ * Extract structured insights from Habits worksheet
+ */
+function extractHabitsInsights(data: any): HabitsInsights | null {
+  if (!data) return null;
+
+  const morningHabits = Array.isArray(data.morning) ? data.morning : [];
+  const afternoonHabits = Array.isArray(data.afternoon) ? data.afternoon : [];
+  const eveningHabits = Array.isArray(data.evening) ? data.evening : [];
+
+  let goodHabits = 0;
+  let badHabits = 0;
+  const timeOfDayBadCounts = { morning: 0, afternoon: 0, evening: 0 };
+
+  const countHabits = (habits: any[], timeOfDay: string) => {
+    habits.forEach(habit => {
+      if (habit.type === 'good') goodHabits++;
+      if (habit.type === 'bad') {
+        badHabits++;
+        timeOfDayBadCounts[timeOfDay as keyof typeof timeOfDayBadCounts]++;
+      }
+    });
+  };
+
+  countHabits(morningHabits, 'morning');
+  countHabits(afternoonHabits, 'afternoon');
+  countHabits(eveningHabits, 'evening');
+
+  const totalHabits = goodHabits + badHabits;
+  let habitBalance = 'balanced';
+  if (goodHabits > badHabits * 1.5) habitBalance = 'positive';
+  if (badHabits > goodHabits * 1.5) habitBalance = 'negative';
+
+  const worstTimeOfDay = Object.entries(timeOfDayBadCounts)
+    .sort((a, b) => b[1] - a[1])[0][0];
+
+  return {
+    totalHabits,
+    goodHabits,
+    badHabits,
+    habitBalance,
+    worstTimeOfDay,
+  };
+}
+
+/**
+ * Extract structured insights from Fears worksheet
+ */
+function extractFearsInsights(data: any): FearsInsights | null {
+  if (!data || !Array.isArray(data.fears)) return null;
+
+  const fears = data.fears;
+  const totalFears = fears.length;
+  const highIntensityFears: Array<{ fear: string; intensity: number }> = [];
+  const fearCategories: Record<string, number> = {};
+  let totalIntensity = 0;
+
+  fears.forEach((fear: any) => {
+    if (fear.intensity >= 7) {
+      highIntensityFears.push({ fear: fear.description || fear.fear, intensity: fear.intensity });
+    }
+    if (fear.category) {
+      fearCategories[fear.category] = (fearCategories[fear.category] || 0) + 1;
+    }
+    totalIntensity += fear.intensity || 0;
+  });
+
+  const averageIntensity = totalFears > 0 ? Math.round((totalIntensity / totalFears) * 10) / 10 : 0;
+  const dominantCategory = Object.entries(fearCategories)
+    .sort((a, b) => b[1] - a[1])[0]?.[0] || 'Unknown';
+
+  return {
+    totalFears,
+    highIntensityFears: highIntensityFears.sort((a, b) => b.intensity - a.intensity),
+    fearCategories,
+    averageIntensity,
+    dominantCategory,
+  };
+}
+
+/**
+ * Extract structured insights from Limiting Beliefs worksheet
+ */
+function extractLimitingBeliefsInsights(data: any): LimitingBeliefsInsights | null {
+  if (!data || !Array.isArray(data.beliefs)) return null;
+
+  const beliefs = data.beliefs;
+  const totalBeliefs = beliefs.length;
+  let restructuredCount = 0;
+  const unrestructuredBeliefs: string[] = [];
+
+  beliefs.forEach((belief: any) => {
+    if (belief.restructured || belief.newBelief) {
+      restructuredCount++;
+    } else {
+      unrestructuredBeliefs.push(belief.belief || belief.description);
+    }
+  });
+
+  const restructuredPercentage = totalBeliefs > 0
+    ? Math.round((restructuredCount / totalBeliefs) * 100)
+    : 0;
+
+  return {
+    totalBeliefs,
+    restructuredCount,
+    restructuredPercentage,
+    unrestructuredBeliefs,
+  };
+}
+
+/**
+ * Extract structured insights from Goals worksheet
+ */
+function extractGoalsInsights(data: any): GoalsInsights | null {
+  if (!data || !Array.isArray(data.goals)) return null;
+
+  const goals = data.goals;
+  const totalGoals = goals.length;
+  let completedGoals = 0;
+  let inProgressGoals = 0;
+  let notStartedGoals = 0;
+
+  goals.forEach((goal: any) => {
+    if (goal.status === 'completed') completedGoals++;
+    else if (goal.status === 'in_progress') inProgressGoals++;
+    else notStartedGoals++;
+  });
+
+  const completionRate = totalGoals > 0
+    ? Math.round((completedGoals / totalGoals) * 100)
+    : 0;
+
+  return {
+    totalGoals,
+    completedGoals,
+    inProgressGoals,
+    notStartedGoals,
+    completionRate,
+  };
+}
+
+/**
+ * Main function to extract all insights from worksheets
+ */
+function extractInsights(worksheets: WorkbookProgress[]): UserInsights {
+  const insights: UserInsights = {};
+
+  worksheets.forEach(worksheet => {
+    switch (worksheet.worksheet_id) {
+      case 'wheel-of-life':
+        insights.wheelOfLife = extractWheelOfLifeInsights(worksheet.data);
+        break;
+      case 'swot':
+      case 'swot-analysis':
+        insights.swot = extractSWOTInsights(worksheet.data);
+        break;
+      case 'habits':
+      case 'daily-habits':
+        insights.habits = extractHabitsInsights(worksheet.data);
+        break;
+      case 'fears':
+      case 'facing-fears':
+        insights.fears = extractFearsInsights(worksheet.data);
+        break;
+      case 'limiting-beliefs':
+        insights.limitingBeliefs = extractLimitingBeliefsInsights(worksheet.data);
+        break;
+      case 'goals':
+      case 'goal-setting':
+        insights.goals = extractGoalsInsights(worksheet.data);
+        break;
+    }
+  });
+
+  return insights;
 }
 
 /**
@@ -542,8 +879,216 @@ async function fetchPhaseWorkbookData(
   return data || [];
 }
 
+// =============================================================================
+// Dynamic Query Functions
+// =============================================================================
+
 /**
- * Build workbook context summary for AI prompt
+ * Query meditations by life areas with tier filtering
+ */
+async function queryMeditationsByLifeAreas(
+  supabase: any,
+  lifeAreas: string[],
+  userTier: string,
+  limit: number = 3
+): Promise<MeditationRecommendation[]> {
+  if (lifeAreas.length === 0) return [];
+
+  // Map camelCase to snake_case for database
+  const dbLifeAreas = lifeAreas.map(area => {
+    const map: Record<string, string> = {
+      'career': 'career',
+      'health': 'health',
+      'relationships': 'relationships',
+      'finance': 'finance',
+      'personalGrowth': 'personal_growth',
+      'family': 'family',
+      'recreation': 'recreation',
+      'spirituality': 'spirituality'
+    };
+    return map[area] || area;
+  });
+
+  // Determine allowed tiers based on user tier
+  const tierHierarchy: Record<string, string[]> = {
+    'novice': ['novice'],
+    'awakening': ['novice', 'awakening'],
+    'enlightenment': ['novice', 'awakening', 'enlightenment']
+  };
+
+  const allowedTiers = tierHierarchy[userTier] || ['novice'];
+
+  const { data, error } = await supabase
+    .from('meditations')
+    .select('id, title, description, life_areas')
+    .overlaps('life_areas', dbLifeAreas)
+    .in('tier', allowedTiers)
+    .limit(limit);
+
+  if (error) {
+    console.error('Error querying meditations:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+/**
+ * Query prayers by life areas with tier filtering
+ */
+async function queryPrayersByLifeAreas(
+  supabase: any,
+  lifeAreas: string[],
+  userTier: string,
+  limit: number = 3
+): Promise<PrayerRecommendation[]> {
+  if (lifeAreas.length === 0) return [];
+
+  // Map camelCase to snake_case for database
+  const dbLifeAreas = lifeAreas.map(area => {
+    const map: Record<string, string> = {
+      'career': 'career',
+      'health': 'health',
+      'relationships': 'relationships',
+      'finance': 'finance',
+      'personalGrowth': 'personal_growth',
+      'family': 'family',
+      'recreation': 'recreation',
+      'spirituality': 'spirituality'
+    };
+    return map[area] || area;
+  });
+
+  // Determine allowed tiers
+  const tierHierarchy: Record<string, string[]> = {
+    'novice': ['novice'],
+    'awakening': ['novice', 'awakening'],
+    'enlightenment': ['novice', 'awakening', 'enlightenment']
+  };
+
+  const allowedTiers = tierHierarchy[userTier] || ['novice'];
+
+  const { data, error } = await supabase
+    .from('prayers')
+    .select('id, title, description, content, life_areas')
+    .overlaps('life_areas', dbLifeAreas)
+    .in('tier', allowedTiers)
+    .limit(limit);
+
+  if (error) {
+    console.error('Error querying prayers:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+// =============================================================================
+// Structured Prompt Building Functions
+// =============================================================================
+
+/**
+ * Build readable insights prompt from structured insights
+ */
+function buildInsightsPrompt(insights: UserInsights): string {
+  const sections: string[] = [];
+
+  // Wheel of Life
+  if (insights.wheelOfLife) {
+    const wol = insights.wheelOfLife;
+    sections.push(`**WHEEL OF LIFE ANALYSIS**
+- Average Life Score: ${wol.averageScore}/10
+- Lowest Area: ${wol.lowestArea.area} (${wol.lowestArea.score}/10)
+${wol.lowAreas.length > 0 ? `- Low Areas (below 5): ${wol.lowAreas.map(a => `${a.area} (${a.score}/10)`).join(', ')}` : ''}
+${wol.highAreas.length > 0 ? `- High Areas (8+): ${wol.highAreas.map(a => `${a.area} (${a.score}/10)`).join(', ')}` : ''}`);
+  }
+
+  // SWOT Analysis
+  if (insights.swot) {
+    const swot = insights.swot;
+    sections.push(`**SWOT ANALYSIS**
+- Strengths: ${swot.strengthCount} identified${swot.topStrengths.length > 0 ? ` (Top: ${swot.topStrengths.join(', ')})` : ''}
+- Weaknesses: ${swot.weaknessCount} identified${swot.topWeaknesses.length > 0 ? ` (Top: ${swot.topWeaknesses.join(', ')})` : ''}
+- Opportunities: ${swot.opportunityCount} identified
+- Threats: ${swot.threatCount} identified`);
+  }
+
+  // Habits
+  if (insights.habits) {
+    const habits = insights.habits;
+    sections.push(`**HABITS ANALYSIS**
+- Total Habits: ${habits.totalHabits} (${habits.goodHabits} good, ${habits.badHabits} bad)
+- Habit Balance: ${habits.habitBalance}
+- Worst Time of Day: ${habits.worstTimeOfDay}`);
+  }
+
+  // Fears
+  if (insights.fears) {
+    const fears = insights.fears;
+    sections.push(`**FEARS ANALYSIS**
+- Total Fears: ${fears.totalFears}
+- Average Intensity: ${fears.averageIntensity}/10
+- Dominant Category: ${fears.dominantCategory}
+${fears.highIntensityFears.length > 0 ? `- High Intensity Fears (7+): ${fears.highIntensityFears.map(f => `"${f.fear}" (${f.intensity}/10)`).join(', ')}` : ''}`);
+  }
+
+  // Limiting Beliefs
+  if (insights.limitingBeliefs) {
+    const beliefs = insights.limitingBeliefs;
+    sections.push(`**LIMITING BELIEFS ANALYSIS**
+- Total Beliefs: ${beliefs.totalBeliefs}
+- Restructured: ${beliefs.restructuredCount} (${beliefs.restructuredPercentage}%)
+${beliefs.unrestructuredBeliefs.length > 0 ? `- Still Need Work: ${beliefs.unrestructuredBeliefs.slice(0, 3).join('; ')}` : ''}`);
+  }
+
+  // Goals
+  if (insights.goals) {
+    const goals = insights.goals;
+    sections.push(`**GOALS ANALYSIS**
+- Total Goals: ${goals.totalGoals}
+- Completed: ${goals.completedGoals} (${goals.completionRate}%)
+- In Progress: ${goals.inProgressGoals}
+- Not Started: ${goals.notStartedGoals}`);
+  }
+
+  return sections.join('\n\n');
+}
+
+/**
+ * Build recommendations prompt from meditations, prayers, and breathing
+ */
+function buildRecommendationsPrompt(
+  meditations: MeditationRecommendation[],
+  prayers: PrayerRecommendation[],
+  breathingExercise: { breathing: string; reason: string }
+): string {
+  const sections: string[] = [];
+
+  // Meditations
+  if (meditations.length > 0) {
+    const meditationList = meditations.map(m =>
+      `  - "${m.title}": ${m.description} (addresses: ${m.life_areas.join(', ')})`
+    ).join('\n');
+    sections.push(`**RECOMMENDED MEDITATIONS**\n${meditationList}`);
+  }
+
+  // Prayers
+  if (prayers.length > 0) {
+    const prayerList = prayers.map(p =>
+      `  - "${p.title}": ${p.description} (addresses: ${p.life_areas.join(', ')})`
+    ).join('\n');
+    sections.push(`**RECOMMENDED PRAYERS**\n${prayerList}`);
+  }
+
+  // Breathing
+  sections.push(`**RECOMMENDED BREATHING EXERCISE**
+  - "${breathingExercise.breathing}" - ${breathingExercise.reason}`);
+
+  return sections.join('\n\n');
+}
+
+/**
+ * Build workbook context summary for AI prompt (legacy function)
  */
 function buildWorkbookContext(worksheets: WorkbookProgress[]): string {
   if (worksheets.length === 0) {
@@ -569,10 +1114,12 @@ function buildWorkbookContext(worksheets: WorkbookProgress[]): string {
 async function callClaude(
   userMessage: string,
   phaseNumber: number,
-  workbookContext: string,
+  insights: UserInsights,
   knowledgeContext: KnowledgeMatch[],
   conversationHistory: Message[] = [],
-  lowAreas: string[] = []
+  meditations: MeditationRecommendation[] = [],
+  prayers: PrayerRecommendation[] = [],
+  breathingExercise: { breathing: string; reason: string }
 ): Promise<string> {
   // Build knowledge context
   const ragContext = knowledgeContext
@@ -582,61 +1129,40 @@ async function callClaude(
   // Get phase-specific system prompt
   const phasePrompt = PHASE_PROMPTS[phaseNumber] || PHASE_PROMPTS[1];
 
-  // Get practice suggestions for this phase
-  let practiceSuggestions = PHASE_PRACTICE_SUGGESTIONS[phaseNumber] || PHASE_PRACTICE_SUGGESTIONS[1];
+  // Build structured insights prompt
+  const insightsPrompt = buildInsightsPrompt(insights);
 
-  // Override breathing suggestion if low areas detected
-  let lowAreasSection = '';
-  if (lowAreas && lowAreas.length > 0) {
-    // Extract the key from the first low area (e.g., "Career (3/10)" -> "career")
-    const firstLowArea = lowAreas[0].split(' ')[0].toLowerCase();
-    const matchedKey = Object.keys(LIFE_AREA_TO_BREATHING).find(
-      key => firstLowArea.includes(key.toLowerCase()) ||
-             key.toLowerCase().includes(firstLowArea)
-    );
+  // Build recommendations prompt
+  const recommendationsPrompt = buildRecommendationsPrompt(
+    meditations,
+    prayers,
+    breathingExercise
+  );
 
-    if (matchedKey && LIFE_AREA_TO_BREATHING[matchedKey]) {
-      const dynamicBreathing = LIFE_AREA_TO_BREATHING[matchedKey];
-      practiceSuggestions = {
-        ...practiceSuggestions,
-        breathing: dynamicBreathing.breathing,
-        reason: dynamicBreathing.reason
-      };
-    }
+  // Build complete system prompt with structured sections
+  const systemPrompt = `${phasePrompt}
 
-    lowAreasSection = `
+**USER'S WORKBOOK INSIGHTS:**
+${insightsPrompt || 'No structured insights available yet.'}
 
-**User's Low-Scoring Life Areas (below 5/10):**
-${lowAreas.map(a => `- ${a}`).join('\n')}
-
-Focus your analysis on these areas. The breathing exercise has been dynamically selected to address their primary weak area.`;
-  }
-
-  // Build complete system prompt
-  const systemPrompt = `${phasePrompt}${lowAreasSection}
-
-**User's Workbook Data for Phase ${phaseNumber}:**
-${workbookContext}
-
-**Relevant Wisdom from Knowledge Base:**
+**RELEVANT WISDOM FROM KNOWLEDGE BASE:**
 ${ragContext || 'No specific knowledge matches retrieved for this query.'}
 
-**Suggested Practices for This Phase:**
-- Meditation: "${practiceSuggestions.meditation}" - ${practiceSuggestions.reason}
-- Breathing: "${practiceSuggestions.breathing}" - ${practiceSuggestions.reason}
+${recommendationsPrompt}
 
-**Response Structure:**
+**RESPONSE STRUCTURE:**
 Your responses should flow through these stages:
-1. **Observation** - What patterns do you notice in their workbook answers? Reference specific data points.
+1. **Observation** - What patterns do you notice in their workbook insights? Reference specific data points.
 2. **Wisdom** - What teachings from the knowledge base apply here? Draw from Shi Heng Yi, manifestation principles, or Tesla's 3-6-9.
 3. **Reflection** - Pose a thought-provoking question for deeper self-inquiry.
-4. **Practice** - Suggest exploring the recommended meditation or breathing exercise in the app's Meditate section.
+4. **Practice** - Suggest exploring the recommended meditation, prayer, or breathing exercise in the app's Meditate section.
 
-**Remember:**
-- Reference specific details from their workbook data
+**REMEMBER:**
+- Reference specific details from their structured insights (scores, counts, percentages)
 - Provide actionable insights and practices
 - Maintain a balance of wisdom, compassion, and practical guidance
-- Keep responses focused and digestible (3-5 paragraphs)`;
+- Keep responses focused and digestible (3-5 paragraphs)
+- When recommending practices, reference the specific meditations and prayers listed above that address their low life areas`;
 
   // Build messages array
   const messages = [
@@ -807,14 +1333,63 @@ serve(async (req) => {
       );
     }
 
-    // Step 4: Fetch phase workbook data
+    // Step 4: Fetch phase workbook data and extract structured insights
     console.log('Fetching phase workbook data...');
     const worksheets = await fetchPhaseWorkbookData(supabase, user.id, phaseNumber);
-    const workbookContext = buildWorkbookContext(worksheets);
 
-    // Step 4.5: Extract low-scoring life areas from Wheel of Life
+    // Extract structured insights from all worksheets
+    const insights = extractInsights(worksheets);
+    console.log('Extracted insights:', JSON.stringify(insights, null, 2));
+
+    // Step 4.5: Get user's subscription tier for dynamic recommendations
+    const { data: userData } = await supabase
+      .from('users')
+      .select('subscription_tier')
+      .eq('id', user.id)
+      .single();
+
+    const userTier = userData?.subscription_tier || 'novice';
+
+    // Step 4.6: Get low-scoring life areas for dynamic meditation/prayer queries
+    const lowLifeAreas = insights.wheelOfLife?.lowAreas.map(a => {
+      // Convert display name back to key (e.g., "Personal Growth" -> "personalGrowth")
+      const areaMap: Record<string, string> = {
+        'Career': 'career',
+        'Health': 'health',
+        'Relationships': 'relationships',
+        'Finance': 'finance',
+        'Personal Growth': 'personalGrowth',
+        'Family': 'family',
+        'Recreation': 'recreation',
+        'Spirituality': 'spirituality'
+      };
+      return areaMap[a.area] || a.area;
+    }) || [];
+
+    console.log(`Found ${lowLifeAreas.length} low-scoring life areas:`, lowLifeAreas);
+
+    // Step 4.7: Query dynamic meditation and prayer recommendations
+    let meditations: MeditationRecommendation[] = [];
+    let prayers: PrayerRecommendation[] = [];
+
+    if (lowLifeAreas.length > 0) {
+      meditations = await queryMeditationsByLifeAreas(supabase, lowLifeAreas, userTier, 3);
+      prayers = await queryPrayersByLifeAreas(supabase, lowLifeAreas, userTier, 3);
+      console.log(`Found ${meditations.length} meditations and ${prayers.length} prayers for low areas`);
+    }
+
+    // Step 4.8: Determine breathing exercise (use dynamic if available, fallback to phase default)
+    let breathingExercise = PHASE_PRACTICE_SUGGESTIONS[phaseNumber]?.breathing || 'Box Breathing (4-4-4-4)';
+    let breathingReason = PHASE_PRACTICE_SUGGESTIONS[phaseNumber]?.reason || 'balance and focus';
+
+    if (lowLifeAreas.length > 0 && LIFE_AREA_TO_BREATHING[lowLifeAreas[0]]) {
+      const dynamicBreathing = LIFE_AREA_TO_BREATHING[lowLifeAreas[0]];
+      breathingExercise = dynamicBreathing.breathing;
+      breathingReason = dynamicBreathing.reason;
+    }
+
+    // Keep legacy for backwards compatibility with existing callClaude function
     const lowAreas = extractLowLifeAreas(worksheets);
-    console.log(`Found ${lowAreas.length} low-scoring life areas:`, lowAreas);
 
     // Step 5: Generate embedding for user message
     console.log('Generating embedding...');
@@ -842,15 +1417,17 @@ serve(async (req) => {
       conversationHistory = data?.messages || [];
     }
 
-    // Step 8: Call Claude API
+    // Step 8: Call Claude API with structured insights and dynamic recommendations
     console.log('Calling Claude API for Guru analysis...');
     const assistantReply = await callClaude(
       message,
       phaseNumber,
-      workbookContext,
+      insights,
       knowledgeMatches,
       conversationHistory,
-      lowAreas
+      meditations,
+      prayers,
+      { breathing: breathingExercise, reason: breathingReason }
     );
 
     // Step 9: Save conversation

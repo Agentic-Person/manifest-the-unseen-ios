@@ -19,6 +19,7 @@ import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase1ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
 
 /**
  * Phase 1 exercises configuration
@@ -39,7 +40,7 @@ const PHASE1_EXERCISES: ExerciseConfig[] = [
     estimatedTime: '5 min',
   },
   {
-    id: 'habit-tracking',
+    id: 'habits-audit',
     name: 'Habit Tracking',
     description: 'Assess your daily routines and habits',
     icon: Phase1ExerciseImages.habitTracking,
@@ -60,7 +61,7 @@ const PHASE1_EXERCISES: ExerciseConfig[] = [
     estimatedTime: '25 min',
   },
   {
-    id: 'personal-values',
+    id: 'values-assessment',
     name: 'Personal Values',
     description: 'Identify your core values',
     icon: Phase1ExerciseImages.personalValues,
@@ -194,10 +195,10 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
       case 'swot-analysis':
         navigation.navigate('SWOT');
         break;
-      case 'personal-values':
+      case 'values-assessment':
         navigation.navigate('PersonalValues');
         break;
-      case 'habit-tracking':
+      case 'habits-audit':
         navigation.navigate('HabitTracking');
         break;
       case 'abc-model':
@@ -292,6 +293,14 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
           />
         ))}
       </View>
+
+      {/* Review with Guru Button */}
+      <ReviewWithGuruButton
+        phaseNumber={1}
+        phaseName="Self-Evaluation"
+        isPhaseComplete={overallProgress === 100}
+      />
+
       {/* Bottom Spacing */}
       <View style={styles.bottomSpacer} />
     </ScrollView>

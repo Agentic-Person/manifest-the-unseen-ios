@@ -22,6 +22,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRoute } from '@react-navigation/native';
 import { useGuru } from '../hooks/useGuru';
 import { MessageBubble } from '../components/chat/MessageBubble';
 import { ChatInput } from '../components/chat/ChatInput';
@@ -31,8 +32,10 @@ import { GuruEmptyState } from '../components/guru/GuruEmptyState';
 import GuruLockedScreen from './GuruLockedScreen';
 import { colors, spacing, shadows } from '../theme';
 import type { GuruMessage } from '../types/guru';
+import type { MainTabScreenProps } from '../types/navigation';
 
 export function GuruScreen() {
+  const route = useRoute<MainTabScreenProps<'Guru'>['route']>();
   const flatListRef = useRef<FlatList>(null);
   const {
     hasAccess,
@@ -47,6 +50,25 @@ export function GuruScreen() {
     clearSelectedPhase,
     sendMessage,
   } = useGuru();
+
+  // Handle pre-selected phase from navigation params
+  useEffect(() => {
+    const preSelectedPhase = route.params?.preSelectedPhase;
+
+    // Only auto-select if:
+    // 1. User has access
+    // 2. Phase is provided in params
+    // 3. Phase is completed
+    // 4. No phase is currently selected
+    if (
+      hasAccess &&
+      preSelectedPhase &&
+      completedPhases.includes(preSelectedPhase) &&
+      !selectedPhase
+    ) {
+      selectPhase(preSelectedPhase);
+    }
+  }, [route.params?.preSelectedPhase, hasAccess, completedPhases, selectedPhase, selectPhase]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -216,8 +238,10 @@ export function GuruScreen() {
         )}
       </View>
 
-      {/* Input */}
-      <ChatInput onSend={handleSend} disabled={isSending} />
+      {/* Input - wrapped with bottom margin for tab bar clearance */}
+      <View style={styles.inputWrapper}>
+        <ChatInput onSend={handleSend} disabled={isSending} />
+      </View>
     </SafeAreaView>
   );
 }
@@ -308,7 +332,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: spacing.md,
     paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
+    paddingBottom: 100,
     flexGrow: 1,
   },
   errorContainer: {
@@ -330,6 +354,9 @@ const styles = StyleSheet.create({
   },
   typingContainer: {
     paddingHorizontal: spacing.md,
+  },
+  inputWrapper: {
+    marginBottom: 80,
   },
   emptyConversationContainer: {
     flex: 1,

@@ -49,10 +49,16 @@ Transforming the Guru AI from phase-based static analysis to a dynamic, conversa
 - [x] Update path references in `MTU-PROJECT-STATUS.md`
 - [x] Mark enhancement project as 100% complete
 
-### Phase F: Testing (Next Steps)
-- [ ] Test with Phase 1 completed (11 worksheets)
+### Phase F: Test Data Setup ✅ COMPLETE
+- [x] Create test user (jimmy@agenticpersonnel.com, enlightenment tier)
+- [x] Populate Phase 1 workbook data (11 worksheets)
+- [x] Set Wheel of Life with low scores: Career (3), Finance (2), Health (4)
+- [x] Create SQL scripts in `docs/guru/test-data.sql`
+
+### Phase G: End-to-End Testing (Ready)
+- [ ] Test Guru chat in app
 - [ ] Verify low areas detected correctly
-- [ ] Verify smart meditation suggestions work
+- [ ] Verify dynamic breathing suggestions (expect Energy Boost for career/finance)
 - [ ] Test conversation continuity
 
 ---
@@ -105,7 +111,13 @@ Transforming the Guru AI from phase-based static analysis to a dynamic, conversa
 ### 2025-12-16: Edge Function Deployed
 - ✅ Enhanced guru-analysis function deployed via CLI
 - ✅ Project ref: zbyszxtwzoylyygtexdr
-- **Remaining**: Test Guru AI flow in app
+
+### 2025-12-16: Test Data Populated
+- ✅ Test user set to enlightenment tier
+- ✅ 11 Phase 1 worksheets created (all completed)
+- ✅ Wheel of Life with low scores: Career (3), Finance (2), Health (4)
+- ✅ SQL scripts saved to `docs/guru/test-data.sql`
+- **Ready**: Test Guru AI flow in app at http://localhost:8081
 
 ---
 
