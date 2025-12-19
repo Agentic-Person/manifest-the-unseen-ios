@@ -45,9 +45,11 @@ export async function configurePurchases(userId?: string): Promise<void> {
     return;
   }
 
-  // Skip in DEV mode to avoid API key issues during local testing
-  if (__DEV__) {
-    console.log('[Subscription] DEV mode - skipping RevenueCat configuration (subscriptionStore will grant enlightenment)');
+  // Skip in DEV/TestFlight mode to avoid API key issues during testing
+  // EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS is set in eas.json for TestFlight builds
+  const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
+  if (__DEV__ || isTestFlight) {
+    console.log('[Subscription] DEV/TestFlight mode - skipping RevenueCat configuration');
     return;
   }
 
@@ -419,9 +421,10 @@ function getSubscriptionPeriod(
  * Returns all subscription details for current user
  */
 export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
-  // DEV mode or web: return enlightenment tier without calling RevenueCat
-  if (__DEV__ || Platform.OS === 'web') {
-    console.log('[Subscription] DEV/Web mode - returning mock enlightenment subscription');
+  // DEV/TestFlight/Web mode: return enlightenment tier without calling RevenueCat
+  const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
+  if (__DEV__ || isTestFlight || Platform.OS === 'web') {
+    console.log('[Subscription] DEV/TestFlight/Web mode - returning mock enlightenment subscription');
     return {
       tier: 'enlightenment',
       status: 'active',

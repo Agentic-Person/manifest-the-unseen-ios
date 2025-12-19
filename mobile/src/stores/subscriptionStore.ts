@@ -96,10 +96,12 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
    * Fetches current subscription status from RevenueCat
    */
   loadSubscription: async () => {
-    // DEV bypass - grant full access in development mode
-    // __DEV__ is automatically true in Expo Go/Metro and false in production builds
-    if (__DEV__) {
-      console.log('[Subscription] DEV mode - granting enlightenment tier access');
+    // DEV/TestFlight bypass - grant full access for testing
+    // __DEV__ is true in Expo Go/Metro, false in production builds
+    // EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS is set in eas.json for TestFlight builds
+    const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
+    if (__DEV__ || isTestFlight) {
+      console.log('[Subscription] DEV/TestFlight mode - granting enlightenment tier access');
       set({
         tier: 'enlightenment',
         status: 'active',
