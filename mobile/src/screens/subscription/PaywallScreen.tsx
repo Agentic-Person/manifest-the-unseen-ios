@@ -24,7 +24,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing } from '../../theme';
 import type { SubscriptionPeriod, SubscriptionPackage } from '../../types/subscription';
 import { TIER_PRICING } from '../../types/subscription';
-import { useSubscriptionStore, useOfferings, usePurchaseState } from '../../stores/subscriptionStore';
+import { useSubscriptionStore, useOfferings, usePurchaseState, usePromoCodeState } from '../../stores/subscriptionStore';
+import { PromoCodeInput } from '../../components/PromoCodeInput';
+import { recordPromoRedemption } from '../../services/promoService';
 
 interface PaywallScreenProps {
   navigation: any;
@@ -106,12 +108,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
 
   const { offerings, isLoading: isLoadingOfferings } = useOfferings();
   const { isRestoring } = usePurchaseState();
+  const { appliedPromoCode } = usePromoCodeState();
   const currentTier = useSubscriptionStore((state) => state.tier);
   const isInTrial = useSubscriptionStore((state) => state.isInTrial);
   const isSubscribed = useSubscriptionStore((state) => state.isSubscribed);
   const purchasePackage = useSubscriptionStore((state) => state.purchasePackage);
   const restorePurchases = useSubscriptionStore((state) => state.restorePurchases);
   const loadOfferings = useSubscriptionStore((state) => state.loadOfferings);
+  const clearPromo = useSubscriptionStore((state) => state.clearPromo);
 
   // Load offerings on mount
   useEffect(() => {
@@ -143,9 +147,24 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
       const result = await purchasePackage(packageData);
 
       if (result.success) {
+        // Record promo code redemption if one was applied
+        if (appliedPromoCode) {
+          try {
+            await recordPromoRedemption(appliedPromoCode, 'enlightenment');
+            console.log('[Paywall] Promo code redemption recorded:', appliedPromoCode);
+          } catch (promoError) {
+            // Don't fail the purchase if promo recording fails
+            console.error('[Paywall] Failed to record promo redemption:', promoError);
+          }
+          // Clear the promo code after successful purchase
+          clearPromo();
+        }
+
         Alert.alert(
           'Success!',
-          'Welcome to your free trial! Your subscription is now active.',
+          appliedPromoCode
+            ? 'Your discount has been applied! Welcome to your subscription.'
+            : 'Welcome to your free trial! Your subscription is now active.',
           [
             {
               text: 'Get Started',
@@ -281,6 +300,15 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 {isInTrial && ' (Trial)'}
               </Text>
             </View>
+          )}
+
+          {/* Promo Code Input */}
+          {!isSubscribed && (
+            <PromoCodeInput
+              onApplied={(code, discount) => {
+                console.log(`[Paywall] Promo code applied: ${code} (${discount}% off)`);
+              }}
+            />
           )}
 
           {/* Subscription Options */}

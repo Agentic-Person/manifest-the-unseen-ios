@@ -22,6 +22,10 @@ import {
   purchasePackage as purchaseSubscriptionPackage,
   restorePurchases as restoreSubscriptionPurchases,
 } from '../services/subscriptionService';
+import {
+  validatePromoCode,
+  type PromoValidationResult,
+} from '../services/promoService';
 import type { CustomerInfo } from 'react-native-purchases';
 
 /**
@@ -55,12 +59,20 @@ interface SubscriptionState {
   // Raw Customer Info (for advanced use)
   customerInfo: CustomerInfo | null;
 
+  // Promo Code State
+  appliedPromoCode: string | null;
+  promoCodeDiscount: number | null;
+  promoCodeValidation: PromoValidationResult | null;
+  isValidatingPromo: boolean;
+
   // Actions
   loadSubscription: () => Promise<void>;
   loadOfferings: () => Promise<void>;
   purchasePackage: (pkg: SubscriptionPackage) => Promise<PurchaseResult>;
   restorePurchases: () => Promise<RestoreResult>;
   checkAccess: (feature: string) => boolean;
+  validatePromo: (code: string, tier?: string) => Promise<PromoValidationResult>;
+  clearPromo: () => void;
   reset: () => void;
 }
 
@@ -83,6 +95,11 @@ const initialState = {
   isRestoring: false,
   error: null,
   customerInfo: null,
+  // Promo code initial state
+  appliedPromoCode: null,
+  promoCodeDiscount: null,
+  promoCodeValidation: null,
+  isValidatingPromo: false,
 };
 
 /**
@@ -298,6 +315,63 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   },
 
   /**
+   * Validate Promo Code
+   *
+   * Validates a promo code and stores the result if valid.
+   *
+   * @param code - Promo code to validate (e.g., "EARLY50")
+   * @param tier - Optional tier to check eligibility
+   * @returns Validation result
+   *
+   * @example
+   * const result = await validatePromo('EARLY50');
+   * if (result.valid) {
+   *   console.log(`${result.discountPercentage}% off applied!`);
+   * }
+   */
+  validatePromo: async (code: string, tier?: string): Promise<PromoValidationResult> => {
+    set({ isValidatingPromo: true });
+
+    try {
+      const result = await validatePromoCode(code, tier, true);
+
+      if (result.valid) {
+        set({
+          appliedPromoCode: code.toUpperCase(),
+          promoCodeDiscount: result.discountPercentage ?? null,
+          promoCodeValidation: result,
+          isValidatingPromo: false,
+        });
+      } else {
+        set({ isValidatingPromo: false });
+      }
+
+      return result;
+    } catch (error: any) {
+      console.error('[Subscription] Promo validation error:', error);
+      set({ isValidatingPromo: false });
+
+      return {
+        valid: false,
+        error: error.message || 'Failed to validate promo code',
+      };
+    }
+  },
+
+  /**
+   * Clear Applied Promo Code
+   *
+   * Removes the currently applied promo code.
+   */
+  clearPromo: () => {
+    set({
+      appliedPromoCode: null,
+      promoCodeDiscount: null,
+      promoCodeValidation: null,
+    });
+  },
+
+  /**
    * Reset Store to Initial State
    * Use when user logs out
    */
@@ -369,3 +443,29 @@ export const useTrialEndDate = () =>
  */
 export const useExpirationDate = () =>
   useSubscriptionStore((state) => state.expirationDate);
+
+/**
+ * Get Applied Promo Code
+ */
+export const useAppliedPromoCode = () =>
+  useSubscriptionStore((state) => state.appliedPromoCode);
+
+/**
+ * Get Promo Code State
+ */
+export const usePromoCodeState = () =>
+  useSubscriptionStore((state) => ({
+    appliedPromoCode: state.appliedPromoCode,
+    promoCodeDiscount: state.promoCodeDiscount,
+    promoCodeValidation: state.promoCodeValidation,
+    isValidatingPromo: state.isValidatingPromo,
+  }));
+
+/**
+ * Get Promo Code Actions
+ */
+export const usePromoActions = () =>
+  useSubscriptionStore((state) => ({
+    validatePromo: state.validatePromo,
+    clearPromo: state.clearPromo,
+  }));

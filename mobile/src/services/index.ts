@@ -62,3 +62,14 @@ export { aiChatService } from './aiChatService';
 
 // Guru service
 export * as guruService from './guruService';
+
+// Promo code service
+export {
+  validatePromoCode,
+  recordPromoRedemption,
+  getPromoCodeSlots,
+  isPromoValidForTier,
+  formatDiscountText,
+  calculateDiscountedPrice,
+  type PromoValidationResult,
+} from './promoService';
