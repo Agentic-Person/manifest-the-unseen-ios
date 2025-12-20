@@ -4,7 +4,7 @@
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🚀 **BUILD 25 READY** - Guru AI fully functional + APS branded splash screen
+**Status**: 🚀 **BUILD 26 READY** - Promo code system deployed (EARLY50 - 50% off for 30 early adopters)
 
 ---
 
@@ -13,17 +13,21 @@
 | Item | Value |
 |------|-------|
 | **Version** | 1.0.0 |
-| **Build (Local)** | 25 (ready, not yet on TestFlight) |
+| **Build (Local)** | 26 (ready, not yet on TestFlight) |
 | **Build (TestFlight)** | 24 |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | Waiting for Review |
 | **TestFlight** | Available (Build 24) |
 | **Submission Date** | December 13, 2025 |
 
-**What's Included in Build 25 (pending):**
+**What's Included in Build 26 (pending):**
 - ✅ APS branded splash screen (black background)
 - ✅ Guru AI fully functional with API keys configured
-- ✅ All bug fixes from Dec 18-19 sessions
+- ✅ All bug fixes from Dec 18-20 sessions
+- ✅ **Guru navigation loop bug fixed** - Phase selection no longer loops back
+- ✅ **Workbook update re-assessment** - Guru fetches fresh data after workbook changes
+- ✅ **3 permanent test accounts** - Novice, Awakening, Enlightenment tiers for QA
+- ✅ **Promo Code System** - EARLY50 code for 50% off first 3 months (30 user limit)
 
 **What's Included in Build 24 (current TestFlight):**
 - ✅ All 10 Workbook Phases (35 screens)
@@ -92,11 +96,11 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
+19f9330 feat(promo): add EARLY50 promo code system for early adopters
+e5da735 fix(guru): resolve navigation loop bug + add workbook update re-assessment
 8820282 feat(splash): Add APS branded splash screen on black background
 803afe0 🎉 feat(guru): Guru AI fully functional with dynamic workbook analysis
 568c117 fix: enable full feature access in TestFlight builds
-525d23c feat(meditation): add life areas for smart meditation suggestions
-896ebb2 refactor(guru): consolidate Guru AI to use ai_conversations table
 ```
 
 ---
@@ -110,6 +114,65 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 19, 2025 - Promo Code System Implementation
+- **Duration**: ~2 hours
+- **What Was Done**: Built and deployed complete promo code system for early adopter discounts
+- **Status**: ✅ **COMPLETE** - All code committed, database migrated, Edge Function deployed
+- **Commit**: `19f9330` - `feat(promo): add EARLY50 promo code system for early adopters`
+- **New Feature - Promo Code System**:
+  - **Database**: `promo_codes` and `promo_code_redemptions` tables with RLS (migrated to production)
+  - **Edge Function**: `validate-promo` deployed to Supabase for server-side validation
+  - **Mobile App**: `PromoCodeInput` component on PaywallScreen, records redemption after purchase
+  - **Landing Page**: 50% off banner with live slot counter, copy-to-clipboard promo code
+  - **EARLY50 Promo**: 50% off for 3 months, limited to first 30 users
+- **Files Created**:
+  - `supabase/migrations/20251219000000_promo_codes.sql` - Database schema + seed data
+  - `supabase/functions/validate-promo/index.ts` - Edge Function
+  - `mobile/src/components/PromoCodeInput.tsx` - UI component
+  - `mobile/src/services/promoService.ts` - Validation service
+- **Files Modified**:
+  - `mobile/src/screens/subscription/PaywallScreen.tsx` - Integrated promo input
+  - `mobile/src/stores/subscriptionStore.ts` - Added promo state + actions
+  - `mobile/src/services/index.ts` - Exported promoService
+  - `web/components/Pricing.tsx` - Added promo banner with discounted prices
+- **Next Step**: Configure Apple Offer Codes in App Store Connect after app approval
+
+### Previous Activity (Dec 20)
+- **Date**: December 20, 2025 - Guru Navigation Bug Fix + Workbook Re-assessment Feature
+- **Duration**: ~2 hours
+- **What Was Done**: Fixed Guru navigation loop bug + added workbook update triggering Guru re-assessment + created permanent test accounts
+- **Status**: ✅ **COMPLETE** - Guru fully tested with 3 tier-specific test accounts
+- **Bug Fixes**:
+  1. **Navigation Loop Bug** (`GuruScreen.tsx`) - When clicking "Review with Guru" after phase completion, user was looped back to Phase 1 instead of staying in conversation
+     - Root cause: `preSelectedPhase` route param was never cleared after consumption
+     - Fix: Added `navigation.setParams({ preSelectedPhase: undefined })` after selecting phase
+  2. **Navigation Type Bug** (`ReviewWithGuruButton.tsx`) - Cross-navigator navigation to Guru tab
+     - Root cause: Using wrong navigation type for sibling tab navigation
+     - Fix: Changed to `NavigationProp<MainTabParamList>` for proper cross-navigator navigation
+- **New Feature - Workbook Re-assessment**:
+  - Added `invalidateGuruQueries()` to `queryClient.ts`
+  - Call cache invalidation after workbook saves in `workbook.ts`
+  - Guru now fetches fresh data when user updates workbook exercises
+- **Test Accounts Created** (permanent QA fixtures):
+  | Email | Password | Tier | Workbook Data |
+  |-------|----------|------|---------------|
+  | test.novice@manifest.test | TestNovice123! | novice | 0 worksheets |
+  | test.awakening@manifest.test | TestAwakening123! | awakening | 5/11 Phase 1 |
+  | test.enlightenment@manifest.test | TestEnlightenment123! | enlightenment | 11/11 Phase 1 |
+- **Testing Results** (Playwright on localhost:8083):
+  - ✅ Guru correctly shows "1 of 10 phases completed" for enlightenment user
+  - ✅ Phase 1 "Analyze" button enabled, phases 2-10 disabled
+  - ✅ AI correctly detected low areas: Finance (2), Career (3), Health (4)
+  - ✅ AI recommended Box Breathing for finance anxiety
+  - ✅ Personalized response based on actual workbook data
+- **Files Modified**:
+  - `mobile/src/screens/GuruScreen.tsx` - Navigation loop fix
+  - `mobile/src/components/guru/ReviewWithGuruButton.tsx` - Navigation type fix
+  - `mobile/src/services/queryClient.ts` - Added `invalidateGuruQueries()`
+  - `mobile/src/services/workbook.ts` - Call cache invalidation after save
+  - `docs/guru/TESTING-PROGRESS-REPORT.md` - Comprehensive testing documentation
+
+### Previous Activity (Dec 19 AM)
 - **Date**: December 19, 2025 - Splash Screen Branding + Guru AI Fixes
 - **Duration**: ~3 hours
 - **What Was Done**: Fixed Guru AI Edge Function (missing API keys) + Added branded splash screen
@@ -134,7 +197,7 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
   - `mobile/src/screens/workbook/Phase1/Phase1Dashboard.tsx` - Worksheet ID fix
   - Supabase secrets: ANTHROPIC_API_KEY, OPENAI_API_KEY added
 
-### Previous Activity
+### Previous Activity (Dec 18)
 - **Date**: December 18, 2025 - Security Audit + TestFlight Feature Access Fix
 - **Duration**: ~3 hours
 - **What Was Done**: Supabase security audit + fixed feature locking in TestFlight builds
