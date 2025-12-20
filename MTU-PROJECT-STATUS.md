@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-18
+**Last Updated**: 2025-12-19
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🚀 **SECURITY AUDIT + TESTFLIGHT FIX** - Database security hardened + full feature access in TestFlight (Build 23)
+**Status**: 🚀 **BUILD 25 READY** - Guru AI fully functional + APS branded splash screen
 
 ---
 
@@ -13,13 +13,19 @@
 | Item | Value |
 |------|-------|
 | **Version** | 1.0.0 |
-| **Build** | 23 |
+| **Build (Local)** | 25 (ready, not yet on TestFlight) |
+| **Build (TestFlight)** | 24 |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | Waiting for Review |
-| **TestFlight** | Available (Build 23) |
+| **TestFlight** | Available (Build 24) |
 | **Submission Date** | December 13, 2025 |
 
-**What's Included in Build 23:**
+**What's Included in Build 25 (pending):**
+- ✅ APS branded splash screen (black background)
+- ✅ Guru AI fully functional with API keys configured
+- ✅ All bug fixes from Dec 18-19 sessions
+
+**What's Included in Build 24 (current TestFlight):**
 - ✅ All 10 Workbook Phases (35 screens)
 - ✅ Voice Journal with Whisper transcription
 - ✅ AI Guru Chat (Claude-powered)
@@ -39,7 +45,59 @@
 - ✅ ~~Guru AI Authentication Error~~ - **FIXED**: `guruService.ts` now uses `ai_conversations` table with proper filters
 - ✅ ~~Guru AI Enhancement~~ - **COMPLETE**: Dynamic workbook analysis with life area detection deployed
 - ✅ ~~TestFlight features locked~~ - **FIXED in Build 23**: Added `EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS` env var
+- ✅ ~~Splash screen red cube~~ - **FIXED in Build 25**: APS branded splash on black background
 - ⚠️ **Push notifications temporarily disabled** - Provisioning profile needs regeneration (Build 21+)
+
+---
+
+## ⚠️ Critical Dependencies & Breaking Change Risks
+
+### Supabase Edge Function Secrets (REQUIRED)
+The Guru AI feature **will not work** without these secrets set in Supabase:
+
+| Secret | Purpose | How to Set |
+|--------|---------|------------|
+| `ANTHROPIC_API_KEY` | Claude API for Guru responses | `npx supabase secrets set ANTHROPIC_API_KEY=sk-ant-... --project-ref zbyszxtwzoylyygtexdr` |
+| `OPENAI_API_KEY` | Embeddings for RAG search | `npx supabase secrets set OPENAI_API_KEY=sk-proj-... --project-ref zbyszxtwzoylyygtexdr` |
+
+**If these are missing/expired:** Guru AI returns 400 Bad Request errors.
+
+### Database Schema Dependencies
+| Table | Required For | Risk If Changed |
+|-------|--------------|-----------------|
+| `workbook_progress` | Guru analysis, phase completion | Breaking: Guru won't detect completed phases |
+| `ai_conversations` | Guru chat history | Breaking: Conversations won't persist |
+| `meditations` | Smart meditation suggestions | Medium: Falls back to phase-based suggestions |
+| `knowledge_embeddings` | RAG search for Guru | Medium: Guru has less context |
+
+### Worksheet ID Mappings (CRITICAL)
+Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
+
+| Display Name | Database ID | Screen |
+|--------------|-------------|--------|
+| Habit Tracking | `habits-audit` | HabitTracking |
+| Personal Values | `values-assessment` | PersonalValues |
+| Wheel of Life | `wheel-of-life` | WheelOfLife |
+
+**If mismatched:** Progress shows 0%, Guru can't analyze phase.
+
+### Subscription Tier Checks
+| Feature | Required Tier | Check Location |
+|---------|---------------|----------------|
+| Guru AI | Awakening+ | `useGuru.ts`, Edge Function |
+| All Meditations | Awakening+ | `MeditateScreen.tsx` |
+| Unlimited Journals | Enlightenment | `JournalScreen.tsx` |
+
+**TestFlight Bypass:** `EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS=true` grants enlightenment access.
+
+### Recent Commits Reference
+```
+8820282 feat(splash): Add APS branded splash screen on black background
+803afe0 🎉 feat(guru): Guru AI fully functional with dynamic workbook analysis
+568c117 fix: enable full feature access in TestFlight builds
+525d23c feat(meditation): add life areas for smart meditation suggestions
+896ebb2 refactor(guru): consolidate Guru AI to use ai_conversations table
+```
 
 ---
 
