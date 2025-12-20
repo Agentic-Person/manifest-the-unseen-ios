@@ -212,6 +212,18 @@ export const invalidateMeditationQueries = (userId?: string) => {
 };
 
 /**
+ * Invalidate Guru-Related Queries
+ * Use when workbook data is updated to trigger Guru re-assessment
+ * This ensures the Guru AI fetches fresh workbook data for analysis
+ */
+export const invalidateGuruQueries = (userId: string) => {
+  // Invalidate workbook progress (source data for Guru)
+  queryClient.invalidateQueries({ queryKey: ['workbook-progress', userId] });
+  // Invalidate all guru conversations so fresh data is fetched
+  queryClient.invalidateQueries({ queryKey: ['guru-conversation', userId] });
+};
+
+/**
  * Clear All Caches
  * Use when user signs out
  */

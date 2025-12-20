@@ -13,11 +13,11 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, shadows, borderRadius } from '../../theme';
 import { useGuruAccess } from '../../hooks/useSubscription';
-import type { MainTabScreenProps } from '../../types/navigation';
+import type { MainTabParamList } from '../../types/navigation';
 
 interface ReviewWithGuruButtonProps {
   phaseNumber: number;
@@ -45,7 +45,8 @@ export const ReviewWithGuruButton: React.FC<ReviewWithGuruButtonProps> = ({
   phaseName,
   isPhaseComplete,
 }) => {
-  const navigation = useNavigation<MainTabScreenProps<'Workbook'>['navigation']>();
+  // Use NavigationProp for cross-navigator navigation to sibling Guru tab
+  const navigation = useNavigation<NavigationProp<MainTabParamList>>();
   const hasGuruAccess = useGuruAccess();
 
   // Only render if phase is complete

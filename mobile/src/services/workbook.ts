@@ -6,6 +6,7 @@
  */
 
 import { supabase } from './supabase';
+import { invalidateGuruQueries } from './queryClient';
 import type {
   WorkbookProgress,
   WorkbookProgressInsert,
@@ -183,6 +184,12 @@ export const upsertWorkbookProgress = async (
       );
       throw error;
     }
+
+    // Invalidate Guru queries so it fetches fresh workbook data for re-assessment
+    // This ensures the Guru AI sees the latest workbook responses
+    invalidateGuruQueries(userId);
+    console.log('[workbook.service] Invalidated Guru queries for user:', userId);
+
     return result as WorkbookProgress;
   } catch (err) {
     console.error('[workbook.service] Exception in upsertWorkbookProgress:', err);

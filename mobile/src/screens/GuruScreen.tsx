@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { useGuru } from '../hooks/useGuru';
 import { MessageBubble } from '../components/chat/MessageBubble';
 import { ChatInput } from '../components/chat/ChatInput';
@@ -36,6 +36,7 @@ import type { MainTabScreenProps } from '../types/navigation';
 
 export function GuruScreen() {
   const route = useRoute<MainTabScreenProps<'Guru'>['route']>();
+  const navigation = useNavigation<MainTabScreenProps<'Guru'>['navigation']>();
   const flatListRef = useRef<FlatList>(null);
   const {
     hasAccess,
@@ -67,8 +68,11 @@ export function GuruScreen() {
       !selectedPhase
     ) {
       selectPhase(preSelectedPhase);
+      // Clear the param after consuming to prevent re-selection on back
+      // This fixes the navigation loop bug where backing out would re-trigger auto-selection
+      navigation.setParams({ preSelectedPhase: undefined });
     }
-  }, [route.params?.preSelectedPhase, hasAccess, completedPhases, selectedPhase, selectPhase]);
+  }, [route.params?.preSelectedPhase, hasAccess, completedPhases, selectedPhase, selectPhase, navigation]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
