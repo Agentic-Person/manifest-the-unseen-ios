@@ -23,7 +23,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing } from '../../theme';
 import type { SubscriptionPeriod, SubscriptionPackage } from '../../types/subscription';
-import { TIER_PRICING } from '../../types/subscription';
+import { TIER_PRICING, getSaleConfig } from '../../types/subscription';
+import { SaleBanner } from '../../components/subscription/SaleBanner';
+import { SaleBadge } from '../../components/subscription/SaleBadge';
+import { StrikethroughPrice } from '../../components/subscription/StrikethroughPrice';
 import { useSubscriptionStore, useOfferings, usePurchaseState, usePromoCodeState } from '../../stores/subscriptionStore';
 import { PromoCodeInput } from '../../components/PromoCodeInput';
 import { recordPromoRedemption } from '../../services/promoService';
@@ -50,6 +53,10 @@ interface TestPackageCardProps {
   onPurchase: () => void;
   isPurchasing: boolean;
   isDisabled?: boolean;
+  // Sale props
+  isSaleActive?: boolean;
+  originalPrice?: string;
+  discountPercentage?: number;
 }
 
 const TestPackageCard: React.FC<TestPackageCardProps> = ({
@@ -60,8 +67,14 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
   onPurchase,
   isPurchasing,
   isDisabled = false,
+  isSaleActive = false,
+  originalPrice,
+  discountPercentage = 50,
 }) => (
   <View style={[styles.packageCard, isPopular && styles.packageCardPopular]}>
+    {/* Sale Badge */}
+    {isSaleActive && <SaleBadge discountPercentage={discountPercentage} />}
+
     {isPopular && (
       <View style={styles.popularBadge}>
         <Text style={styles.popularBadgeText}>BEST VALUE</Text>
@@ -70,7 +83,17 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
     <View style={styles.packageContent}>
       <View style={styles.packageHeader}>
         <Text style={styles.packageLabel}>{label}</Text>
-        <Text style={styles.packagePrice}>{packageData.price}</Text>
+
+        {/* Price display - strikethrough for sale, normal otherwise */}
+        {isSaleActive && originalPrice ? (
+          <StrikethroughPrice
+            originalPrice={originalPrice}
+            discountedPrice={packageData.price}
+          />
+        ) : (
+          <Text style={styles.packagePrice}>{packageData.price}</Text>
+        )}
+
         <Text style={styles.packageSublabel}>{sublabel}</Text>
       </View>
       <Pressable
@@ -116,6 +139,19 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   const restorePurchases = useSubscriptionStore((state) => state.restorePurchases);
   const loadOfferings = useSubscriptionStore((state) => state.loadOfferings);
   const clearPromo = useSubscriptionStore((state) => state.clearPromo);
+
+  // Get sale configuration
+  const saleConfig = getSaleConfig();
+
+  /**
+   * Calculate original price from discounted price
+   * Used for strikethrough display when sale is active
+   */
+  const getOriginalPrice = (discountedPrice: string, discountPercent: number): string => {
+    const priceNum = parseFloat(discountedPrice.replace(/[^0-9.]/g, ''));
+    const original = priceNum / (1 - discountPercent / 100);
+    return `$${original.toFixed(2)}`;
+  };
 
   // Load offerings on mount
   useEffect(() => {
@@ -273,6 +309,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
             </Text>
           </View>
 
+          {/* Sale Banner - shown when sale is active */}
+          {saleConfig.isActive && !isSubscribed && (
+            <SaleBanner
+              discountPercentage={saleConfig.discountPercentage}
+              bannerText={saleConfig.bannerText}
+            />
+          )}
+
           {/* Locked Feature Message */}
           {route?.params?.lockedFeature && (
             <View style={styles.lockedFeatureContainer}>
@@ -318,11 +362,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
               <TestPackageCard
                 packageData={offerings.yearly}
                 label="Annual"
-                sublabel="Best Value - Save 37%"
+                sublabel={saleConfig.isActive ? '50% OFF + Save 37% vs Monthly' : 'Best Value - Save 37%'}
                 isPopular
                 onPurchase={() => handlePurchase('yearly')}
                 isPurchasing={purchasingPeriod === 'yearly'}
                 isDisabled={isSubscribed}
+                isSaleActive={saleConfig.isActive}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.yearly.price, saleConfig.discountPercentage) : undefined}
+                discountPercentage={saleConfig.discountPercentage}
               />
             )}
 
@@ -331,10 +378,13 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
               <TestPackageCard
                 packageData={offerings.monthly}
                 label="Monthly"
-                sublabel="Cancel anytime"
+                sublabel={saleConfig.isActive ? '50% OFF - Cancel anytime' : 'Cancel anytime'}
                 onPurchase={() => handlePurchase('monthly')}
                 isPurchasing={purchasingPeriod === 'monthly'}
                 isDisabled={isSubscribed}
+                isSaleActive={saleConfig.isActive}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.monthly.price, saleConfig.discountPercentage) : undefined}
+                discountPercentage={saleConfig.discountPercentage}
               />
             )}
 
@@ -343,9 +393,12 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
               <TestPackageCard
                 packageData={offerings.lifetime}
                 label="Lifetime"
-                sublabel="One-time purchase, forever access"
+                sublabel={saleConfig.isActive ? '50% OFF - One-time, forever access' : 'One-time purchase, forever access'}
                 onPurchase={() => handlePurchase('lifetime')}
                 isPurchasing={purchasingPeriod === 'lifetime'}
+                isSaleActive={saleConfig.isActive}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.lifetime.price, saleConfig.discountPercentage) : undefined}
+                discountPercentage={saleConfig.discountPercentage}
                 isDisabled={isSubscribed}
               />
             )}

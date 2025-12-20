@@ -229,3 +229,25 @@ export const FEATURE_LIMITS = {
     hasVisionBoard: true,
   },
 } as const;
+
+/**
+ * Sale Configuration
+ * Controls promotional discount display on PaywallScreen
+ */
+export interface SaleConfig {
+  isActive: boolean;
+  discountPercentage: number;
+  endDate?: string; // ISO date string for countdown timer
+  bannerText?: string; // e.g., "Limited Time - 50% OFF!"
+}
+
+/**
+ * Get active sale configuration from environment
+ * Toggle sale on/off via EXPO_PUBLIC_SALE_ACTIVE env var
+ */
+export const getSaleConfig = (): SaleConfig => ({
+  isActive: process.env.EXPO_PUBLIC_SALE_ACTIVE === 'true',
+  discountPercentage: parseInt(process.env.EXPO_PUBLIC_SALE_DISCOUNT || '50', 10),
+  endDate: process.env.EXPO_PUBLIC_SALE_END_DATE,
+  bannerText: process.env.EXPO_PUBLIC_SALE_BANNER_TEXT || '50% OFF - Limited Time!',
+});
