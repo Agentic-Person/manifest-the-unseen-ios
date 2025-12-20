@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#9333ea"
+      "backgroundColor": "#000000"
     },
     "assetBundlePatterns": [
       "assets/icon.png",
@@ -22,7 +22,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manifesttheunseen.app",
-      "buildNumber": "24",
+      "buildNumber": "25",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#000000"
+      },
       "infoPlist": {
         "UIBackgroundModes": [
           "audio",

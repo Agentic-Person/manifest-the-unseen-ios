@@ -52,6 +52,31 @@
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 19, 2025 - Splash Screen Branding + Guru AI Fixes
+- **Duration**: ~3 hours
+- **What Was Done**: Fixed Guru AI Edge Function (missing API keys) + Added branded splash screen
+- **Status**: ✅ **COMPLETE** - Ready for Build 25
+- **Guru AI Fixes**:
+  - Added `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` to Supabase Edge Function secrets
+  - Redeployed guru-analysis Edge Function (v7)
+  - Guru AI now fully functional with personalized workbook analysis
+- **Splash Screen Update**:
+  - Replaced plain purple splash with APS branded logo
+  - Changed backgroundColor from purple (#9333ea) to black (#000000)
+  - Added iOS-specific splash configuration in app.json
+  - Build number incremented to 25
+- **Other Fixes**:
+  - Worksheet ID mismatch in Phase1Dashboard (habits-audit, values-assessment)
+  - Guru chat input positioning (80px bottom margin for tab bar clearance)
+- **Files Modified**:
+  - `mobile/app.json` - Splash config + build 25
+  - `mobile/assets/splash.png` - APS branded logo
+  - `mobile/src/screens/GuruScreen.tsx` - Chat input positioning
+  - `mobile/src/components/chat/ChatInput.tsx` - Keyboard offset fix
+  - `mobile/src/screens/workbook/Phase1/Phase1Dashboard.tsx` - Worksheet ID fix
+  - Supabase secrets: ANTHROPIC_API_KEY, OPENAI_API_KEY added
+
+### Previous Activity
 - **Date**: December 18, 2025 - Security Audit + TestFlight Feature Access Fix
 - **Duration**: ~3 hours
 - **What Was Done**: Supabase security audit + fixed feature locking in TestFlight builds
