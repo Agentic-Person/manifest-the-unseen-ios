@@ -283,10 +283,12 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10,
   },
   headerTitleContainer: {
     flex: 1,
     alignItems: 'center',
+    overflow: 'hidden',
   },
   headerSubtitle: {
     fontSize: 12,

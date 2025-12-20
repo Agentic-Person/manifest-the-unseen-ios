@@ -275,7 +275,10 @@ Screenshots will be captured during Playwright testing:
 **Severity:** Low
 **Description:** The "Guru" heading overlays the back button in the conversation view, preventing click.
 **Impact:** Back button hard to click via automated testing.
-**Workaround:** Users can navigate via tab bar.
+**Status:** ✅ FIXED
+**Fix Applied:**
+- Added `zIndex: 10` to `backButton` style to ensure it stays on top
+- Added `overflow: 'hidden'` to `headerTitleContainer` to prevent title text overflow
 
 ### Issue 3: RevenueCat Singleton Error on Web
 **Severity:** Low (expected)
