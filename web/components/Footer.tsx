@@ -4,7 +4,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-temple-stone/50 border-t border-elevated">
+    <footer className="relative z-10 bg-deep-void border-t border-elevated">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
@@ -80,7 +80,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 border-t border-elevated flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-muted-wisdom text-sm font-body">
-            © {currentYear} Manifest the Unseen. All rights reserved.
+            © 2025 Agentic Personnel LLC. All rights reserved.
           </p>
           <div className="flex items-center gap-2 text-sm text-muted-wisdom font-body">
             <span>Made with</span>

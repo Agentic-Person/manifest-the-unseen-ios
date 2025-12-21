@@ -5,8 +5,8 @@ import Image from 'next/image'
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Background image */}
-      <div className="absolute inset-0 z-0">
+      {/* Background image - fixed for parallax effect, constrained to viewport height */}
+      <div className="fixed top-0 left-0 right-0 z-0 h-screen">
         <Image
           src="/images/hero-bg.png"
           alt="Mystical forest meditation"
@@ -32,7 +32,7 @@ export default function Hero() {
       </div>
 
       {/* The Path section - bottom of hero */}
-      <div className="relative z-10 mt-auto pb-24 text-center">
+      <div id="path" className="relative z-10 mt-auto pb-24 text-center">
         <p className="font-body text-aged-gold/80 text-sm uppercase tracking-widest mb-3">
           The Path
         </p>
@@ -40,20 +40,29 @@ export default function Hero() {
           Begin · Transform · Manifest
         </h2>
 
-        <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 text-muted-wisdom px-6">
-          <div className="flex flex-col items-center">
+        <div className="flex flex-col md:flex-row justify-center items-start gap-10 md:gap-8 text-muted-wisdom px-6 max-w-5xl mx-auto">
+          <div className="flex flex-col items-center flex-1 max-w-xs">
             <span className="text-aged-gold font-heading text-2xl mb-2">01</span>
-            <span className="font-body text-sm">Start your free trial</span>
+            <span className="font-body text-base font-medium text-enlightened mb-2">Start Digital Workbook</span>
+            <span className="font-body text-sm text-enlightened/90 leading-relaxed">
+              The digital 202-page workbook guides you through 10 phases of transformation to become the version of yourself your dreams already belong to.
+            </span>
           </div>
-          <div className="hidden md:block w-12 h-px bg-aged-gold/30" />
-          <div className="flex flex-col items-center">
+          <div className="hidden md:block w-12 h-px bg-aged-gold/30 mt-4" />
+          <div className="flex flex-col items-center flex-1 max-w-xs">
             <span className="text-aged-gold font-heading text-2xl mb-2">02</span>
-            <span className="font-body text-sm">Journey through 10 phases</span>
+            <span className="font-body text-base font-medium text-enlightened mb-2">Engage with the Guru</span>
+            <span className="font-body text-sm text-enlightened/90 leading-relaxed">
+              Converse during every phase of the workbook for deeper experience. AI wisdom trained on ancient teachings.
+            </span>
           </div>
-          <div className="hidden md:block w-12 h-px bg-aged-gold/30" />
-          <div className="flex flex-col items-center">
+          <div className="hidden md:block w-12 h-px bg-aged-gold/30 mt-4" />
+          <div className="flex flex-col items-center flex-1 max-w-xs">
             <span className="text-aged-gold font-heading text-2xl mb-2">03</span>
-            <span className="font-body text-sm">Manifest daily</span>
+            <span className="font-body text-base font-medium text-enlightened mb-2">Manifest Daily</span>
+            <span className="font-body text-sm text-enlightened/90 leading-relaxed">
+              Exercise guided meditations and prayers of action to see daily manifestations!
+            </span>
           </div>
         </div>
       </div>

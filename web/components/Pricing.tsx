@@ -15,7 +15,7 @@ const PROMO_DISCOUNT = 0.50 // 50%
 
 const tiers = [
   {
-    name: 'Novice',
+    name: 'Seeker',
     tagline: 'Begin your journey',
     monthlyPrice: 7.99,
     yearlyPrice: 79.99,
@@ -32,9 +32,9 @@ const tiers = [
     monthlyPrice: 19.99,
     yearlyPrice: 199.99,
     features: [
-      'Everything in Novice',
+      'Everything in Seeker',
       '6+ guided meditations',
-      'Limited Guru access',
+      'Guru Access',
       'Advanced analytics',
     ],
     highlighted: true,
@@ -49,7 +49,8 @@ const tiers = [
       'Everything in Awakening',
       'Voice journaling + Guru feedback',
       '12+ meditation tracks',
-      'Unlimited Guru access',
+      '24+ guided meditations',
+      '12+ prayers/affirmations',
     ],
     highlighted: false,
     badge: 'Coming Soon',
@@ -128,7 +129,7 @@ export default function Pricing() {
   const showPromo = remainingSlots === null || remainingSlots > 0
 
   return (
-    <section id="pricing" className="py-24 bg-deep-void">
+    <section id="pricing" className="relative z-10 py-24 bg-deep-void">
       <div className="max-w-5xl mx-auto px-6">
         {/* Section header */}
         <div className="text-center mb-8">
@@ -145,33 +146,49 @@ export default function Pricing() {
 
         {/* Promo Banner */}
         {showPromo && !isLoading && (
-          <div className="mb-10 p-6 bg-gradient-to-r from-crown-purple/30 to-emerald-500/20 rounded-2xl border border-emerald-500/30">
-            <div className="text-center">
-              <p className="text-xs uppercase tracking-widest text-emerald-400 mb-2">
-                Limited Time Offer
-              </p>
-              <h3 className="font-serif text-2xl text-enlightened mb-2">
-                Get <span className="text-emerald-400 font-bold">50% OFF</span> Monthly or Yearly
-              </h3>
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <code className="bg-deep-void px-4 py-2 rounded-lg text-xl font-mono text-emerald-400 border border-emerald-500/50">
-                  {PROMO_CODE}
-                </code>
-                <button
-                  onClick={handleCopyCode}
-                  className="text-sm text-muted-wisdom hover:text-enlightened transition-colors px-3 py-1 rounded border border-elevated hover:border-emerald-500/50"
-                >
-                  {copied ? 'Copied!' : 'Copy'}
-                </button>
+          <div className="mb-10 p-6 bg-gradient-to-r from-crown-purple/30 to-amber-glow/20 rounded-2xl border border-amber-glow/40">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+              {/* QR Code Placeholder */}
+              <div className="flex-shrink-0">
+                <div className="w-32 h-32 bg-white rounded-xl flex items-center justify-center border-4 border-amber-glow/50 shadow-[0_0_20px_rgba(212,168,75,0.3)]">
+                  <div className="text-center text-deep-void">
+                    <svg className="w-12 h-12 mx-auto mb-1 opacity-40" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v1h-1v-1zm-3 0h1v1h-1v-1zm1 1h1v1h-1v-1zm-1 1h1v1h-1v-1zm1 1h1v1h-1v-1zm1-1h1v1h-1v-1zm1 1h1v1h-1v-1zm0 1h1v1h-1v-1zm-1 1h1v1h-1v-1zm-2-2h1v1h-1v-1zm0 2h1v1h-1v-1zm-1-1h1v1h-1v-1z"/>
+                    </svg>
+                    <span className="text-xs font-medium opacity-60">QR Code</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-wisdom text-center mt-2">Scan to download</p>
               </div>
-              <p className="text-sm text-muted-wisdom">
-                Enter this code in the app after downloading
-              </p>
-              {remainingSlots !== null && remainingSlots < 15 && (
-                <p className="mt-2 text-sm font-semibold text-orange-400">
-                  Only {remainingSlots} spots remaining!
+
+              {/* Promo Content */}
+              <div className="text-center md:text-left">
+                <p className="text-xs uppercase tracking-widest text-amber-glow mb-2">
+                  Limited Time Offer
                 </p>
-              )}
+                <h3 className="font-serif text-2xl text-enlightened mb-2">
+                  Get <span className="text-amber-glow font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">50% OFF</span> Monthly or Yearly
+                </h3>
+                <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
+                  <code className="bg-deep-void px-4 py-2 rounded-lg text-xl font-mono text-amber-glow border border-amber-glow/50 drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]">
+                    {PROMO_CODE}
+                  </code>
+                  <button
+                    onClick={handleCopyCode}
+                    className="text-sm text-muted-wisdom hover:text-enlightened transition-colors px-3 py-1 rounded border border-elevated hover:border-amber-glow/50"
+                  >
+                    {copied ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+                <p className="text-sm text-muted-wisdom">
+                  Enter this code in the app after downloading
+                </p>
+                {remainingSlots !== null && remainingSlots < 15 && (
+                  <p className="mt-2 text-sm font-semibold text-orange-400">
+                    Only {remainingSlots} spots remaining!
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -224,7 +241,7 @@ export default function Pricing() {
                       <span className="text-lg text-muted-wisdom line-through">
                         ${tier.monthlyPrice}
                       </span>
-                      <span className="text-3xl font-bold text-emerald-400">
+                      <span className="text-3xl font-bold text-amber-glow drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
                         ${getDiscountedPrice(tier.monthlyPrice)}
                       </span>
                       <span className="text-muted-wisdom text-sm">/mo</span>
@@ -234,11 +251,11 @@ export default function Pricing() {
                       <span className="text-sm text-muted-wisdom line-through">
                         ${tier.yearlyPrice}/yr
                       </span>
-                      <span className="text-lg font-bold text-emerald-400">
+                      <span className="text-lg font-bold text-amber-glow drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]">
                         ${getDiscountedPrice(tier.yearlyPrice)}/yr
                       </span>
                     </div>
-                    <p className="text-xs text-emerald-400 mt-2 font-semibold">
+                    <p className="text-xs text-amber-glow mt-2 font-semibold drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]">
                       50% OFF with code {PROMO_CODE}
                     </p>
                   </>
@@ -268,11 +285,9 @@ export default function Pricing() {
               {/* CTA */}
               <button
                 className={`w-full py-2.5 px-4 rounded-full text-sm transition-all duration-300 ${
-                  tier.highlighted
-                    ? 'bg-aged-gold text-deep-void hover:bg-aged-gold/90'
-                    : tier.badge === 'Coming Soon'
-                    ? 'bg-transparent text-muted-wisdom border border-elevated cursor-not-allowed'
-                    : 'bg-transparent text-enlightened border border-aged-gold/30 hover:border-aged-gold/50'
+                  tier.badge === 'Coming Soon'
+                    ? 'bg-transparent text-muted-wisdom border-2 border-white/50 cursor-not-allowed'
+                    : 'bg-transparent text-enlightened border-2 border-white/60 hover:border-white/80'
                 }`}
                 disabled={tier.badge === 'Coming Soon'}
               >

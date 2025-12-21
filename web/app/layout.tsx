@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, Raleway } from 'next/font/google'
 import './globals.css'
+import Navbar from '@/components/Navbar'
 
 // Elegant serif for headings - classical, meditative feel
 const cormorant = Cormorant_Garamond({
@@ -72,6 +73,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="font-body bg-deep-void text-enlightened antialiased">
+        <Navbar />
         {children}
       </body>
     </html>
