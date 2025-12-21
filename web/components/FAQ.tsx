@@ -8,12 +8,16 @@ const faqs = [
     answer: 'Full access to all features for 7 days. No credit card required.',
   },
   {
+    question: 'How does The Guru work?',
+    answer: 'The Guru is your personal AI guide, trained on a curated library of ancient wisdom texts, manifestation teachings, and spiritual frameworks—from energy principles to the 3-6-9 method. It reads your workbook entries and journal reflections to offer personalized guidance that meets you exactly where you are in your journey. Think of it as having a wise mentor available 24/7 who truly understands your path.',
+  },
+  {
     question: 'How does voice journaling work?',
     answer: 'Speak naturally and our on-device AI transcribes instantly. Your audio never leaves your phone.',
   },
   {
     question: 'Is my data private?',
-    answer: 'Yes. Voice transcription happens on-device, journals are encrypted, and we never sell your data.',
+    answer: 'Yes. Voice transcription happens on-device, journals are encrypted, and we never sell your data. Your conversations with The Guru and all workbook entries remain completely private.',
   },
   {
     question: 'Can I cancel anytime?',
@@ -69,7 +73,7 @@ export default function FAQ() {
               </button>
               <div
                 className={`overflow-hidden transition-all duration-300 ${
-                  openIndex === index ? 'max-h-40 pb-4' : 'max-h-0'
+                  openIndex === index ? 'max-h-60 pb-4' : 'max-h-0'
                 }`}
               >
                 <p className="text-muted-wisdom text-sm leading-relaxed">
