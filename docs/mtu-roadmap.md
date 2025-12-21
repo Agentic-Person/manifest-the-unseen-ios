@@ -1,17 +1,17 @@
 # Manifest the Unseen - Project Roadmap & Status Audit
 
-**Date**: December 6, 2025
+**Date**: December 21, 2025
 **Project**: Manifest the Unseen iOS App
-**Status**: 55% Complete - Critical Blocker Active
+**Status**: 60% Complete - Profile Section Enhanced
 
 ---
 
 ## Executive Summary
 
 ### Current State
-- **Overall Completion**: 55% (MVP features built, critical blocker preventing testing)
-- **Critical Blocker**: 44 TypeScript compilation errors preventing all builds
-- **Screens Built**: 63 total screens (47 exercises + 10 dashboards + 6 core features)
+- **Overall Completion**: 60% (MVP features built, profile section enhanced)
+- **Recent Updates**: Profile section with avatar upload, font scaling, spoken prayer reminders
+- **Screens Built**: 63+ total screens (47 exercises + 10 dashboards + 6 core features + profile)
 - **All 10 Workbook Phases**: Implemented with interactive exercises
 - **Content Ready**: 18 meditation audio files, 327 AI embeddings, 180+ images
 
@@ -154,11 +154,24 @@
 - ✅ **AI Embeddings**: 327 knowledge base entries with pgvector
 - ✅ **State Management**: Zustand stores (auth, workbook, meditation, journal)
 
-### 6. Development Infrastructure
+### 6. Profile Section (December 21, 2025)
+
+- ✅ **Account Settings**: Full name editing, member since date
+- ✅ **Avatar Upload**: Image picker with Supabase Storage integration
+- ✅ **Notifications**: Push toggles, meditation/journal reminders, spoken prayer reminders
+- ✅ **Appearance**: Theme picker (Light/Dark/System), font size scaling (Small/Medium/Large), reduce motion
+- ✅ **Privacy & Security**: Biometric lock, analytics/crash reporting toggles
+- ✅ **Help Center**: Contact form with email integration
+- ✅ **About**: App info, version, legal links (Privacy Policy, Terms of Service)
+- ✅ **Font Size Context**: Global font scaling provider with scale factors (0.85/1.0/1.15)
+- ✅ **Spoken Prayer Reminder**: Multiple time slots with add/remove/edit functionality
+- ✅ **Legal Updates**: Ownership correctly set to "Agentic Personnel LLC"
+
+### 7. Development Infrastructure
 
 - ✅ **TypeScript**: Strict mode enabled, comprehensive type definitions
 - ✅ **React Native**: Latest stable with Expo SDK 51
-- ✅ **Git Repository**: Active with 47 commits
+- ✅ **Git Repository**: Active with 50+ commits
 - ✅ **Environment Variables**: Configured for Supabase, OpenAI, Claude
 - ✅ **Metro Bundler**: Running and serving app
 - ✅ **Expo Go Testing**: Works in web browser (limited features)
@@ -176,6 +189,9 @@
 - ✅ Journal entry creation (text-based)
 - ✅ AI chat interface (message send/receive)
 - ✅ Image selection (vision boards - limited)
+- ✅ Profile settings (account, notifications, appearance)
+- ✅ Font size scaling (small/medium/large)
+- ✅ Spoken prayer reminder configuration
 
 **Limitations**:
 - ❌ Audio playback (codec issues in browser)
@@ -399,14 +415,16 @@ export interface ExerciseProgress {
       - Full-text search with Supabase
       - Filter by date/tags
 
-15. **Add Settings Screen**
-    - Time: 2-3 hours
+15. **Settings Screen** ✅ COMPLETED (December 21, 2025)
+    - Time: Completed
     - Impact: User customization
-    - Tasks:
-      - Profile editing (name, email, photo)
-      - Notification preferences
-      - Audio settings (volume, autoplay)
-      - Theme settings (if expanding beyond dark mode)
+    - Completed Tasks:
+      - ✅ Profile editing (name, avatar upload to Supabase)
+      - ✅ Notification preferences (meditation, journal, spoken prayer reminders)
+      - ✅ Appearance settings (theme, font size scaling, reduce motion)
+      - ✅ Privacy & Security (biometric lock, analytics toggles)
+      - ✅ Help Center (contact form with email)
+      - ✅ About (app info, legal links)
 
 16. **Implement Analytics**
     - Time: 2-3 hours
