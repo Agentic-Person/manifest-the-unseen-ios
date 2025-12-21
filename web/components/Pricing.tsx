@@ -8,7 +8,6 @@ import { useState, useEffect } from 'react'
 
 const PROMO_CODE = 'EARLY50'
 const PROMO_DISCOUNT = 0.50 // 50%
-const PROMO_DURATION_MONTHS = 3
 
 // =============================================================================
 // Tier Data
@@ -146,21 +145,21 @@ export default function Pricing() {
 
         {/* Promo Banner */}
         {showPromo && !isLoading && (
-          <div className="mb-10 p-6 bg-gradient-to-r from-crown-purple/30 to-aged-gold/20 rounded-2xl border border-aged-gold/30">
+          <div className="mb-10 p-6 bg-gradient-to-r from-crown-purple/30 to-emerald-500/20 rounded-2xl border border-emerald-500/30">
             <div className="text-center">
-              <p className="text-xs uppercase tracking-widest text-aged-gold/80 mb-2">
+              <p className="text-xs uppercase tracking-widest text-emerald-400 mb-2">
                 Limited Time Offer
               </p>
               <h3 className="font-serif text-2xl text-enlightened mb-2">
-                Get <span className="text-aged-gold font-semibold">50% OFF</span> for {PROMO_DURATION_MONTHS} Months
+                Get <span className="text-emerald-400 font-bold">50% OFF</span> Monthly or Yearly
               </h3>
               <div className="flex items-center justify-center gap-3 mb-3">
-                <code className="bg-deep-void px-4 py-2 rounded-lg text-xl font-mono text-aged-gold border border-aged-gold/50">
+                <code className="bg-deep-void px-4 py-2 rounded-lg text-xl font-mono text-emerald-400 border border-emerald-500/50">
                   {PROMO_CODE}
                 </code>
                 <button
                   onClick={handleCopyCode}
-                  className="text-sm text-muted-wisdom hover:text-enlightened transition-colors px-3 py-1 rounded border border-elevated hover:border-aged-gold/50"
+                  className="text-sm text-muted-wisdom hover:text-enlightened transition-colors px-3 py-1 rounded border border-elevated hover:border-emerald-500/50"
                 >
                   {copied ? 'Copied!' : 'Copy'}
                 </button>
@@ -220,28 +219,40 @@ export default function Pricing() {
               <div className="text-center mb-6">
                 {showPromo && !isLoading ? (
                   <>
-                    <div className="flex items-baseline justify-center gap-2">
+                    {/* Monthly with discount */}
+                    <div className="flex items-baseline justify-center gap-2 mb-2">
                       <span className="text-lg text-muted-wisdom line-through">
                         ${tier.monthlyPrice}
                       </span>
-                      <span className="text-3xl font-light text-aged-gold">
+                      <span className="text-3xl font-bold text-emerald-400">
                         ${getDiscountedPrice(tier.monthlyPrice)}
                       </span>
                       <span className="text-muted-wisdom text-sm">/mo</span>
                     </div>
-                    <p className="text-xs text-aged-gold mt-1">
-                      for first {PROMO_DURATION_MONTHS} months, then ${tier.monthlyPrice}/mo
+                    {/* Yearly with discount */}
+                    <div className="flex items-baseline justify-center gap-2">
+                      <span className="text-sm text-muted-wisdom line-through">
+                        ${tier.yearlyPrice}/yr
+                      </span>
+                      <span className="text-lg font-bold text-emerald-400">
+                        ${getDiscountedPrice(tier.yearlyPrice)}/yr
+                      </span>
+                    </div>
+                    <p className="text-xs text-emerald-400 mt-2 font-semibold">
+                      50% OFF with code {PROMO_CODE}
                     </p>
                   </>
                 ) : (
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-3xl font-light text-enlightened">${tier.monthlyPrice}</span>
-                    <span className="text-muted-wisdom text-sm">/mo</span>
-                  </div>
+                  <>
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-3xl font-light text-enlightened">${tier.monthlyPrice}</span>
+                      <span className="text-muted-wisdom text-sm">/mo</span>
+                    </div>
+                    <p className="text-xs text-muted-wisdom mt-1">
+                      ${tier.yearlyPrice}/yr · Save {Math.round((1 - tier.yearlyPrice / (tier.monthlyPrice * 12)) * 100)}%
+                    </p>
+                  </>
                 )}
-                <p className="text-xs text-muted-wisdom mt-1">
-                  ${tier.yearlyPrice}/yr · Save {Math.round((1 - tier.yearlyPrice / (tier.monthlyPrice * 12)) * 100)}%
-                </p>
               </div>
 
               {/* Features */}
