@@ -72,7 +72,7 @@ const ProfileScreen = ({ navigation }: Props) => {
             </View>
             <TouchableOpacity
               style={styles.upgradeButton}
-              onPress={() => navigation.navigate('Subscription')}
+              onPress={() => navigation.navigate('Paywall')}
             >
               <Text style={styles.upgradeButtonText}>Manage</Text>
             </TouchableOpacity>

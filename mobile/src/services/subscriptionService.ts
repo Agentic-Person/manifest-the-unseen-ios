@@ -116,6 +116,46 @@ export async function logoutUser(): Promise<void> {
  * All map to 'enlightenment' tier for testing purposes
  */
 export async function getOfferings(): Promise<SubscriptionOffering | null> {
+  // Return mock offerings for web mode (RevenueCat doesn't work in browser)
+  if (Platform.OS === 'web') {
+    console.log('[Subscription] Web mode - returning mock offerings for UI testing');
+    return {
+      monthly: {
+        id: 'mock_monthly',
+        tier: 'enlightenment',
+        period: 'monthly',
+        price: '$24.99',
+        pricePerMonth: '$24.99/mo',
+        currencyCode: 'USD',
+        title: 'Monthly Subscription',
+        description: 'Full access - billed monthly',
+        rcPackage: {} as any,
+      },
+      yearly: {
+        id: 'mock_yearly',
+        tier: 'enlightenment',
+        period: 'yearly',
+        price: '$249.95',
+        pricePerMonth: '$20.83/mo',
+        currencyCode: 'USD',
+        title: 'Annual Subscription',
+        description: 'Full access - billed annually',
+        rcPackage: {} as any,
+      },
+      lifetime: {
+        id: 'mock_lifetime',
+        tier: 'enlightenment',
+        period: 'lifetime',
+        price: '$499.99',
+        pricePerMonth: 'One-time',
+        currencyCode: 'USD',
+        title: 'Lifetime Access',
+        description: 'Full access - forever',
+        rcPackage: {} as any,
+      },
+    };
+  }
+
   try {
     const offerings: PurchasesOfferings = await Purchases.getOfferings();
 
