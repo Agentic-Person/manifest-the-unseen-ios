@@ -249,5 +249,5 @@ export const getSaleConfig = (): SaleConfig => ({
   isActive: process.env.EXPO_PUBLIC_SALE_ACTIVE === 'true',
   discountPercentage: parseInt(process.env.EXPO_PUBLIC_SALE_DISCOUNT || '50', 10),
   endDate: process.env.EXPO_PUBLIC_SALE_END_DATE,
-  bannerText: process.env.EXPO_PUBLIC_SALE_BANNER_TEXT || '50% OFF - Limited Time!',
+  bannerText: process.env.EXPO_PUBLIC_SALE_BANNER_TEXT || 'Monthly or Annual - You Choose!',
 });

@@ -29,10 +29,10 @@ export const SaleBanner: React.FC<SaleBannerProps> = ({
       <View style={styles.content}>
         <Text style={styles.discountText}>{discountPercentage}% OFF</Text>
         <Text style={styles.bannerText}>
-          {bannerText || 'Limited Time Offer!'}
+          {bannerText || 'Monthly or Annual - You Choose!'}
         </Text>
         <View style={styles.urgencyBadge}>
-          <Text style={styles.urgencyText}>Limited Time!</Text>
+          <Text style={styles.urgencyText}>Limited Time Offer</Text>
         </View>
       </View>
     </LinearGradient>

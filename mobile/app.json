@@ -22,7 +22,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manifesttheunseen.app",
-      "buildNumber": "25",
+      "buildNumber": "26",
       "splash": {
         "image": "./assets/splash.png",
         "resizeMode": "contain",

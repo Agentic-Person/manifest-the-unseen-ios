@@ -10,6 +10,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Prevent splash from auto-hiding before app is ready
+SplashScreen.preventAutoHideAsync();
 
 // Import services and navigation
 import { queryClient } from './src/services/queryClient';
@@ -65,10 +69,16 @@ const App = () => {
         // Mark app as ready
         setAppReady(true);
         console.log('✅ App ready');
+
+        // Hide splash screen now that app is ready
+        await SplashScreen.hideAsync();
+        console.log('✅ Splash screen hidden');
       } catch (error) {
         console.error('❌ App initialization error:', error);
         // Still mark as ready to show error screen
         setAppReady(true);
+        // Still hide splash on error
+        await SplashScreen.hideAsync();
       }
     };
 
