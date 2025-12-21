@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-19
+**Last Updated**: 2025-12-20
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
@@ -96,11 +96,12 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
+ec47eb9 feat(web): add FAQ about The Guru AI feature
+953b6b1 feat(web): CTA buttons scroll to QR code promo banner
+07d8491 feat(web): landing page updates - navbar, parallax, styled sections
 19f9330 feat(promo): add EARLY50 promo code system for early adopters
 e5da735 fix(guru): resolve navigation loop bug + add workbook update re-assessment
 8820282 feat(splash): Add APS branded splash screen on black background
-803afe0 🎉 feat(guru): Guru AI fully functional with dynamic workbook analysis
-568c117 fix: enable full feature access in TestFlight builds
 ```
 
 ---
@@ -114,6 +115,49 @@ e5da735 fix(guru): resolve navigation loop bug + add workbook update re-assessme
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 20, 2025 - Landing Page Major Updates
+- **Duration**: ~2 hours
+- **What Was Done**: Comprehensive landing page redesign with new features and improved UX
+- **Status**: ✅ **COMPLETE** - All changes committed and pushed to GitHub
+- **Commits**:
+  - `ec47eb9` - feat(web): add FAQ about The Guru AI feature
+  - `953b6b1` - feat(web): CTA buttons scroll to QR code promo banner
+  - `07d8491` - feat(web): landing page updates - navbar, parallax, styled sections
+- **New Features**:
+  - **Sticky Navbar**: Appears on scroll (100px+) OR mouse hover at top of screen
+    - Mandala logo (3-6-9 image) + "Manifest the Unseen" text
+    - Nav links: Path, Tools, Join, FAQ
+    - "Start Free Trial" CTA button
+  - **Parallax Hero**: Fixed background image creates depth as content scrolls over it
+  - **QR Code Placeholder**: In promo banner for App Store download (ready for real QR when app launches)
+  - **CTA Button Scroll**: Pricing card buttons scroll to QR code with highlight effect
+- **Content Updates**:
+  - **Path Section (01/02/03)**: New titles and detailed descriptions
+    - 01: "Start Digital Workbook" - 202-page workbook, 10 phases of transformation
+    - 02: "Engage with the Guru" - AI wisdom trained on ancient teachings
+    - 03: "Manifest Daily" - Guided meditations and prayers of action
+  - **Tools Section**: Complete rewrite with detailed feature descriptions
+    - Digital Workbook, Guided Meditations, The Guru, Voice Journaling
+    - Styled cards with gradient backgrounds and gold borders/glow
+  - **FAQ Added**: "How does The Guru work?" - Explains RAG knowledge base and personalized guidance
+  - **Footer**: Copyright updated to "© 2025 Agentic Personnel LLC"
+- **UI/UX Improvements**:
+  - Brighter text colors for better readability on dark backgrounds
+  - Feature cards with gradient backgrounds (`from-aged-gold/10 via-temple-stone/30`)
+  - Gold border glow effects on hover
+  - All sections have proper z-index for parallax compatibility
+- **Files Created**:
+  - `web/components/Navbar.tsx` - Sticky navbar with scroll/hover trigger
+  - `web/public/images/logo-mandala.png` - Mandala logo from phase-6 asset
+- **Files Modified**:
+  - `web/app/layout.tsx` - Added Navbar globally
+  - `web/components/Hero.tsx` - Parallax background, updated Path section
+  - `web/components/Features.tsx` - Styled cards, new descriptions
+  - `web/components/Pricing.tsx` - QR code placeholder, CTA scroll handler
+  - `web/components/FAQ.tsx` - Added Guru FAQ, updated privacy FAQ
+  - `web/components/Footer.tsx` - Updated copyright
+
+### Previous Activity (Dec 19 PM)
 - **Date**: December 19, 2025 - Promo Code System Implementation
 - **Duration**: ~2 hours
 - **What Was Done**: Built and deployed complete promo code system for early adopter discounts
@@ -137,7 +181,7 @@ e5da735 fix(guru): resolve navigation loop bug + add workbook update re-assessme
   - `web/components/Pricing.tsx` - Added promo banner with discounted prices
 - **Next Step**: Configure Apple Offer Codes in App Store Connect after app approval
 
-### Previous Activity (Dec 20)
+### Previous Activity (Dec 20 AM)
 - **Date**: December 20, 2025 - Guru Navigation Bug Fix + Workbook Re-assessment Feature
 - **Duration**: ~2 hours
 - **What Was Done**: Fixed Guru navigation loop bug + added workbook update triggering Guru re-assessment + created permanent test accounts
