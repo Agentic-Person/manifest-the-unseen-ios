@@ -4,9 +4,10 @@
  * A container for grouping related settings with a title header.
  */
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, StyleSheet, TextStyle } from 'react-native';
 import { colors, spacing } from '../../theme';
+import { useFontSizeContext } from '../../contexts/FontSizeContext';
 
 interface SettingsSectionProps {
   title: string;
@@ -30,9 +31,16 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
   title,
   children,
 }) => {
+  const { scaleFont } = useFontSizeContext();
+
+  const scaledTitleStyle = useMemo((): TextStyle => ({
+    ...styles.title,
+    fontSize: scaleFont(13),
+  }), [scaleFont]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={scaledTitleStyle}>{title}</Text>
       <View style={styles.content}>{children}</View>
     </View>
   );

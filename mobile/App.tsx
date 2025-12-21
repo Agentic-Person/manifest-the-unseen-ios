@@ -19,6 +19,7 @@ SplashScreen.preventAutoHideAsync();
 import { queryClient } from './src/services/queryClient';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { configurePurchases, setUserId } from './src/services/subscriptionService';
+import { FontSizeProvider } from './src/contexts/FontSizeContext';
 
 // Import stores for initialization
 import { useAppStore } from './src/stores/appStore';
@@ -89,7 +90,9 @@ const App = () => {
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <RootNavigator />
+          <FontSizeProvider>
+            <RootNavigator />
+          </FontSizeProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

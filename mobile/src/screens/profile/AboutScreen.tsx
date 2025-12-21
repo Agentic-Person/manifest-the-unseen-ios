@@ -73,10 +73,10 @@ const AboutScreen = ({ navigation }: Props) => {
         {/* Credits */}
         <View style={styles.credits}>
           <Text style={styles.creditsText}>
-            Created by Lunar Rivers
+            Created by Agentic Personnel LLC
           </Text>
           <Text style={styles.copyrightText}>
-            {'\u00A9'} {new Date().getFullYear()} Lunar Rivers. All rights reserved.
+            {'\u00A9'} {new Date().getFullYear()} Agentic Personnel LLC. All rights reserved.
           </Text>
         </View>
       </ScrollView>

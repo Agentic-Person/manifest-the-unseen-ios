@@ -44,6 +44,10 @@ const defaultSettings: Omit<
   journalReminderTime: undefined,
   autoTranscribeVoice: true,
 
+  // Spoken Prayer Reminder
+  spokenPrayerEnabled: false,
+  spokenPrayerTimes: ['08:00', '12:00', '18:00'], // Default times
+
   // Notifications
   pushNotificationsEnabled: true,
   dailyInspirationsEnabled: true,
@@ -128,6 +132,16 @@ export const useSettingsStore = create<SettingsState>()(
        */
       setAutoTranscribeVoice: (enabled) => {
         set({ autoTranscribeVoice: enabled });
+      },
+
+      /**
+       * Set Spoken Prayer Reminder
+       */
+      setSpokenPrayer: (enabled, times) => {
+        set({
+          spokenPrayerEnabled: enabled,
+          spokenPrayerTimes: times ?? get().spokenPrayerTimes,
+        });
       },
 
       /**
@@ -239,6 +253,13 @@ export const useJournalReminder = () =>
   }));
 export const useAutoTranscribeVoice = () =>
   useSettingsStore((state) => state.autoTranscribeVoice);
+
+// Spoken Prayer
+export const useSpokenPrayerReminder = () =>
+  useSettingsStore((state) => ({
+    enabled: state.spokenPrayerEnabled,
+    times: state.spokenPrayerTimes,
+  }));
 
 // Notifications
 export const usePushNotifications = () =>

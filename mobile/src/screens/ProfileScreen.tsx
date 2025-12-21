@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Constants from 'expo-constants';
 import type { ProfileStackScreenProps } from '../types/navigation';
 import { useUser, useProfile, useSignOut } from '../stores/authStore';
@@ -48,9 +48,16 @@ const ProfileScreen = ({ navigation }: Props) => {
       {/* Profile Header */}
       <View style={styles.profileHeader}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user?.email?.charAt(0).toUpperCase() || 'U'}
-          </Text>
+          {profile?.avatarUrl ? (
+            <Image
+              source={{ uri: profile.avatarUrl }}
+              style={styles.avatarImage}
+            />
+          ) : (
+            <Text style={styles.avatarText}>
+              {profile?.fullName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+            </Text>
+          )}
         </View>
         <Text style={styles.userName}>{profile?.fullName || 'User'}</Text>
         <Text style={styles.userEmail}>{user?.email}</Text>
@@ -176,6 +183,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
   },
   avatarText: {
     fontSize: 32,

@@ -5,9 +5,10 @@
  * Supports labels, descriptions, icons, and navigation chevrons.
  */
 
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextStyle } from 'react-native';
 import { colors, spacing } from '../../theme';
+import { useFontSizeContext } from '../../contexts/FontSizeContext';
 
 interface SettingsRowProps {
   label: string;
@@ -48,6 +49,22 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({
   isLast = false,
 }) => {
   const Container = onPress ? TouchableOpacity : View;
+  const { scaleFont } = useFontSizeContext();
+
+  const scaledStyles = useMemo(() => ({
+    label: {
+      ...styles.label,
+      fontSize: scaleFont(16),
+    } as TextStyle,
+    description: {
+      ...styles.description,
+      fontSize: scaleFont(13),
+    } as TextStyle,
+    value: {
+      ...styles.value,
+      fontSize: scaleFont(15),
+    } as TextStyle,
+  }), [scaleFont]);
 
   return (
     <Container
@@ -62,16 +79,16 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({
       {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
 
       <View style={styles.content}>
-        <Text style={[styles.label, disabled && styles.labelDisabled]}>
+        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>
           {label}
         </Text>
         {description && (
-          <Text style={styles.description}>{description}</Text>
+          <Text style={scaledStyles.description}>{description}</Text>
         )}
       </View>
 
       <View style={styles.rightContainer}>
-        {value && <Text style={styles.value}>{value}</Text>}
+        {value && <Text style={scaledStyles.value}>{value}</Text>}
         {rightElement}
         {showChevron && <Text style={styles.chevron}>›</Text>}
       </View>

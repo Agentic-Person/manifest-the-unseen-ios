@@ -106,7 +106,7 @@ const TermsOfServiceScreen = (_props: Props) => {
         <Text style={styles.sectionTitle}>8. Intellectual Property</Text>
         <Text style={styles.paragraph}>
           The App and its content, including but not limited to text, graphics,
-          logos, images, audio, and software, are the property of Lunar Rivers
+          logos, images, audio, and software, are the property of Agentic Personnel LLC
           and are protected by copyright and other intellectual property laws.
           The workbook methodology, meditation content, and AI training data
           are proprietary and may not be reproduced without permission.
@@ -122,7 +122,7 @@ const TermsOfServiceScreen = (_props: Props) => {
 
         <Text style={styles.sectionTitle}>10. Limitation of Liability</Text>
         <Text style={styles.paragraph}>
-          To the maximum extent permitted by law, Lunar Rivers shall not be
+          To the maximum extent permitted by law, Agentic Personnel LLC shall not be
           liable for any indirect, incidental, special, consequential, or
           punitive damages arising from your use of the App.
         </Text>

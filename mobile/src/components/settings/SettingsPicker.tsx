@@ -4,9 +4,10 @@
  * A segmented control picker for selecting between options.
  */
 
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextStyle } from 'react-native';
 import { colors, spacing } from '../../theme';
+import { useFontSizeContext } from '../../contexts/FontSizeContext';
 
 interface Option<T extends string> {
   label: string;
@@ -51,6 +52,23 @@ export function SettingsPicker<T extends string>({
   disabled = false,
   isLast = false,
 }: SettingsPickerProps<T>) {
+  const { scaleFont } = useFontSizeContext();
+
+  const scaledStyles = useMemo(() => ({
+    label: {
+      ...styles.label,
+      fontSize: scaleFont(16),
+    } as TextStyle,
+    description: {
+      ...styles.description,
+      fontSize: scaleFont(13),
+    } as TextStyle,
+    segmentText: {
+      ...styles.segmentText,
+      fontSize: scaleFont(14),
+    } as TextStyle,
+  }), [scaleFont]);
+
   return (
     <View
       style={[
@@ -60,11 +78,11 @@ export function SettingsPicker<T extends string>({
       ]}
     >
       <View style={styles.labelContainer}>
-        <Text style={[styles.label, disabled && styles.labelDisabled]}>
+        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>
           {label}
         </Text>
         {description && (
-          <Text style={styles.description}>{description}</Text>
+          <Text style={scaledStyles.description}>{description}</Text>
         )}
       </View>
 
@@ -89,7 +107,7 @@ export function SettingsPicker<T extends string>({
             >
               <Text
                 style={[
-                  styles.segmentText,
+                  scaledStyles.segmentText,
                   isSelected && styles.segmentTextSelected,
                 ]}
               >

@@ -22,6 +22,7 @@ import { useNotifications } from '../../hooks/useNotifications';
 import { SettingsSection } from '../../components/settings/SettingsSection';
 import { SettingsToggle } from '../../components/settings/SettingsToggle';
 import { SettingsRow } from '../../components/settings/SettingsRow';
+import { PrayerTimePicker } from '../../components/settings/PrayerTimePicker';
 
 type Props = ProfileStackScreenProps<'Notifications'>;
 
@@ -44,11 +45,14 @@ const NotificationsScreen = (_props: Props) => {
     meditationReminderTime,
     journalReminderEnabled,
     journalReminderTime,
+    spokenPrayerEnabled,
+    spokenPrayerTimes,
     setPushNotifications,
     setDailyInspirations,
     setProgressMilestones,
     setMeditationReminder,
     setJournalReminder,
+    setSpokenPrayer,
   } = useSettingsStore();
 
   const {
@@ -181,6 +185,17 @@ const NotificationsScreen = (_props: Props) => {
     }
   };
 
+  const handleSpokenPrayerToggle = (value: boolean) => {
+    setSpokenPrayer(value, spokenPrayerTimes);
+    // TODO: Schedule/cancel spoken prayer notifications
+    // This will be implemented when notifications are fully wired up
+  };
+
+  const handlePrayerTimesChange = (times: string[]) => {
+    setSpokenPrayer(spokenPrayerEnabled, times);
+    // TODO: Reschedule spoken prayer notifications with new times
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView
@@ -246,7 +261,21 @@ const NotificationsScreen = (_props: Props) => {
               onPress={() => setShowJournalPicker(true)}
               showChevron
               disabled={!pushNotificationsEnabled}
-              isLast
+            />
+          )}
+          <SettingsToggle
+            label="Spoken Prayer"
+            description="Daily reminders for spoken prayer"
+            value={spokenPrayerEnabled}
+            onValueChange={handleSpokenPrayerToggle}
+            disabled={!pushNotificationsEnabled}
+          />
+          {spokenPrayerEnabled && (
+            <PrayerTimePicker
+              times={spokenPrayerTimes}
+              onTimesChange={handlePrayerTimesChange}
+              disabled={!pushNotificationsEnabled}
+              maxTimes={6}
             />
           )}
         </SettingsSection>

@@ -14,12 +14,14 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ProfileStackScreenProps } from '../../types/navigation';
 import { colors, spacing } from '../../theme';
 import { useUser, useProfile } from '../../stores/authStore';
 import { useUpdateUserProfile } from '../../hooks/useUser';
+import { useAvatarUpload } from '../../hooks/useAvatarUpload';
 import { SettingsSection } from '../../components/settings/SettingsSection';
 import { SettingsRow } from '../../components/settings/SettingsRow';
 
@@ -38,6 +40,7 @@ const AccountSettingsScreen = (_props: Props) => {
   const user = useUser();
   const profile = useProfile();
   const updateProfile = useUpdateUserProfile();
+  const { pickAndUploadAvatar, isUploading: isUploadingAvatar } = useAvatarUpload();
 
   const [fullName, setFullName] = useState(profile?.fullName || '');
   const [hasChanges, setHasChanges] = useState(false);
@@ -76,11 +79,25 @@ const AccountSettingsScreen = (_props: Props) => {
       >
         {/* Avatar */}
         <View style={styles.avatarContainer}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{getInitial()}</Text>
-          </View>
+          <TouchableOpacity
+            style={styles.avatar}
+            onPress={pickAndUploadAvatar}
+            disabled={isUploadingAvatar}
+            activeOpacity={0.7}
+          >
+            {isUploadingAvatar ? (
+              <ActivityIndicator size="large" color={colors.white} />
+            ) : profile?.avatarUrl ? (
+              <Image
+                source={{ uri: profile.avatarUrl }}
+                style={styles.avatarImage}
+              />
+            ) : (
+              <Text style={styles.avatarText}>{getInitial()}</Text>
+            )}
+          </TouchableOpacity>
           <Text style={styles.avatarHint}>
-            Avatar customization coming soon
+            Tap to change
           </Text>
         </View>
 
@@ -163,6 +180,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.sm,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
   avatarText: {
     fontSize: 40,

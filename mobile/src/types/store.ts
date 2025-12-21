@@ -70,6 +70,10 @@ export interface SettingsState {
   journalReminderTime?: string;
   autoTranscribeVoice: boolean;
 
+  // Spoken Prayer Reminder
+  spokenPrayerEnabled: boolean;
+  spokenPrayerTimes: string[]; // Array of HH:mm format times
+
   // Notifications
   pushNotificationsEnabled: boolean;
   dailyInspirationsEnabled: boolean;
@@ -89,6 +93,7 @@ export interface SettingsState {
   setMeditationReminder: (enabled: boolean, time?: string) => void;
   setJournalReminder: (enabled: boolean, time?: string) => void;
   setAutoTranscribeVoice: (enabled: boolean) => void;
+  setSpokenPrayer: (enabled: boolean, times?: string[]) => void;
   setPushNotifications: (enabled: boolean) => void;
   setDailyInspirations: (enabled: boolean) => void;
   setProgressMilestones: (enabled: boolean) => void;

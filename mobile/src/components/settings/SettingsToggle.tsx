@@ -4,9 +4,10 @@
  * A toggle switch row for boolean settings.
  */
 
-import React from 'react';
-import { View, Text, Switch, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, Switch, StyleSheet, TextStyle } from 'react-native';
 import { colors, spacing } from '../../theme';
+import { useFontSizeContext } from '../../contexts/FontSizeContext';
 
 interface SettingsToggleProps {
   label: string;
@@ -40,6 +41,19 @@ export const SettingsToggle: React.FC<SettingsToggleProps> = ({
   disabled = false,
   isLast = false,
 }) => {
+  const { scaleFont } = useFontSizeContext();
+
+  const scaledStyles = useMemo(() => ({
+    label: {
+      ...styles.label,
+      fontSize: scaleFont(16),
+    } as TextStyle,
+    description: {
+      ...styles.description,
+      fontSize: scaleFont(13),
+    } as TextStyle,
+  }), [scaleFont]);
+
   return (
     <View
       style={[
@@ -49,11 +63,11 @@ export const SettingsToggle: React.FC<SettingsToggleProps> = ({
       ]}
     >
       <View style={styles.content}>
-        <Text style={[styles.label, disabled && styles.labelDisabled]}>
+        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>
           {label}
         </Text>
         {description && (
-          <Text style={styles.description}>{description}</Text>
+          <Text style={scaledStyles.description}>{description}</Text>
         )}
       </View>
 
