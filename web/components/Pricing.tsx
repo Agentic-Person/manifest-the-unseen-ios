@@ -128,6 +128,18 @@ export default function Pricing() {
   // Show promo if slots remaining or still loading
   const showPromo = remainingSlots === null || remainingSlots > 0
 
+  const scrollToQRCode = () => {
+    const element = document.getElementById('promo-qr')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // Add a brief highlight effect
+      element.classList.add('ring-2', 'ring-amber-glow')
+      setTimeout(() => {
+        element.classList.remove('ring-2', 'ring-amber-glow')
+      }, 2000)
+    }
+  }
+
   return (
     <section id="pricing" className="relative z-10 py-24 bg-deep-void">
       <div className="max-w-5xl mx-auto px-6">
@@ -146,7 +158,7 @@ export default function Pricing() {
 
         {/* Promo Banner */}
         {showPromo && !isLoading && (
-          <div className="mb-10 p-6 bg-gradient-to-r from-crown-purple/30 to-amber-glow/20 rounded-2xl border border-amber-glow/40">
+          <div id="promo-qr" className="mb-10 p-6 bg-gradient-to-r from-crown-purple/30 to-amber-glow/20 rounded-2xl border border-amber-glow/40">
             <div className="flex flex-col md:flex-row items-center justify-center gap-6">
               {/* QR Code Placeholder */}
               <div className="flex-shrink-0">
@@ -284,6 +296,7 @@ export default function Pricing() {
 
               {/* CTA */}
               <button
+                onClick={tier.badge !== 'Coming Soon' ? scrollToQRCode : undefined}
                 className={`w-full py-2.5 px-4 rounded-full text-sm transition-all duration-300 ${
                   tier.badge === 'Coming Soon'
                     ? 'bg-transparent text-muted-wisdom border-2 border-white/50 cursor-not-allowed'
