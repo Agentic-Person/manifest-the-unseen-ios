@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-20
+**Last Updated**: 2025-12-21
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
@@ -28,6 +28,11 @@
 - ✅ **Workbook update re-assessment** - Guru fetches fresh data after workbook changes
 - ✅ **3 permanent test accounts** - Novice, Awakening, Enlightenment tiers for QA
 - ✅ **Promo Code System** - EARLY50 code for 50% off first 3 months (30 user limit)
+- ✅ **Profile Section Enhancements** (Dec 21):
+  - Avatar upload to Supabase Storage (tap to change)
+  - Global font size scaling (Small/Medium/Large via FontSizeContext)
+  - Spoken prayer reminders with custom times (PrayerTimePicker component)
+  - Legal text updated to "Agentic Personnel LLC" in About & Terms screens
 
 **What's Included in Build 24 (current TestFlight):**
 - ✅ All 10 Workbook Phases (35 screens)
@@ -115,10 +120,33 @@ e5da735 fix(guru): resolve navigation loop bug + add workbook update re-assessme
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 21, 2025 - Profile Section Enhancements
+- **Duration**: ~2 hours
+- **What Was Done**: Enhanced profile section with avatar upload, font scaling, spoken prayer reminders
+- **Status**: ✅ **COMPLETE** - All changes committed and pushed to GitHub
+- **Commits**:
+  - `d634c1e` - Profile section enhancements (avatar, font scaling, spoken prayer, legal updates)
+  - `d574a58` - docs: add project status summary file
+- **New Files Created**:
+  - `mobile/src/contexts/FontSizeContext.tsx` - Global font scaling provider
+  - `mobile/src/components/common/ScaledText.tsx` - Auto-scaled text component
+  - `mobile/src/hooks/useAvatarUpload.ts` - Avatar picker and Supabase upload
+  - `mobile/src/components/settings/PrayerTimePicker.tsx` - Multi-time picker for prayer reminders
+- **Files Modified**:
+  - `mobile/App.tsx` - Added FontSizeProvider wrapper
+  - `mobile/src/screens/profile/AccountSettingsScreen.tsx` - Avatar upload UI
+  - `mobile/src/screens/profile/NotificationsScreen.tsx` - Spoken prayer toggle + times
+  - `mobile/src/screens/profile/AboutScreen.tsx` - Legal text to "Agentic Personnel LLC"
+  - `mobile/src/screens/profile/TermsOfServiceScreen.tsx` - Legal text updates
+  - `mobile/src/types/store.ts` - Added spoken prayer types
+  - `mobile/src/stores/settingsStore.ts` - Added spoken prayer state
+  - Settings components (SettingsSection, SettingsRow, SettingsToggle, SettingsPicker) - Font scaling
+
+### Previous Activity
 - **Date**: December 20, 2025 - Landing Page Major Updates
 - **Duration**: ~2 hours
 - **What Was Done**: Comprehensive landing page redesign with new features and improved UX
-- **Status**: ✅ **COMPLETE** - All changes committed and pushed to GitHub
+- **Status**: ✅ **COMPLETE**
 - **Commits**:
   - `ec47eb9` - feat(web): add FAQ about The Guru AI feature
   - `953b6b1` - feat(web): CTA buttons scroll to QR code promo banner
