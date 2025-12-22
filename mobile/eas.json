@@ -25,6 +25,9 @@
       }
     },
     "production": {
+      "cache": {
+        "key": "splash-rebuild-v1"
+      },
       "ios": {
         "resourceClass": "default"
       },

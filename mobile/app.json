@@ -7,14 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "manifesttheunseen",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
-    },
     "assetBundlePatterns": [
       "assets/icon.png",
-      "assets/splash.png",
+      "assets/splash-v2.png",
       "assets/adaptive-icon.png",
       "src/assets/images-compressed/**/*",
       "src/assets/icons/**/*"
@@ -22,12 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manifesttheunseen.app",
-      "buildNumber": "26",
-      "splash": {
-        "image": "./assets/splash.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#000000"
-      },
+      "buildNumber": "27",
       "infoPlist": {
         "UIBackgroundModes": [
           "audio",
@@ -51,7 +41,14 @@
       "favicon": "./assets/icon.png"
     },
     "plugins": [
-      "expo-splash-screen",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#000000",
+          "image": "./assets/splash-v2.png",
+          "imageWidth": 200
+        }
+      ],
       [
         "expo-build-properties",
         {
