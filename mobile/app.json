@@ -17,13 +17,16 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manifesttheunseen.app",
-      "buildNumber": "27",
+      "buildNumber": "28",
       "infoPlist": {
         "UIBackgroundModes": [
-          "audio",
           "audio"
         ],
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSMicrophoneUsageDescription": "Manifest the Unseen needs microphone access to record voice journal entries for transcription.",
+        "NSPhotoLibraryUsageDescription": "Manifest the Unseen needs photo library access to add images to your vision board and profile picture.",
+        "NSCameraUsageDescription": "Manifest the Unseen needs camera access to take photos for your vision board.",
+        "NSFaceIDUsageDescription": "Manifest the Unseen uses Face ID to secure your personal journal entries and workbook data."
       }
     },
     "android": {

@@ -327,13 +327,15 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
             </View>
           )}
 
-          {/* TEST MODE: Show available packages */}
-          <View style={styles.testModeContainer}>
-            <Text style={styles.testModeLabel}>🧪 TEST MODE</Text>
-            <Text style={styles.testModeDescription}>
-              Using RevenueCat Test Store - All purchases grant full access
-            </Text>
-          </View>
+          {/* TEST MODE: Only show in development builds */}
+          {__DEV__ && (
+            <View style={styles.testModeContainer}>
+              <Text style={styles.testModeLabel}>🧪 TEST MODE</Text>
+              <Text style={styles.testModeDescription}>
+                Using RevenueCat Test Store - All purchases grant full access
+              </Text>
+            </View>
+          )}
 
           {/* Already Subscribed Message */}
           {isSubscribed && (

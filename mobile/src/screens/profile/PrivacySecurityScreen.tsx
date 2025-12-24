@@ -1,7 +1,8 @@
 /**
  * Privacy & Security Screen
  *
- * Allows users to manage biometric lock, analytics, and crash reporting.
+ * Allows users to manage biometric lock, analytics, crash reporting,
+ * and export their personal data (GDPR/Privacy compliance).
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -11,6 +12,8 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -19,6 +22,7 @@ import { colors, spacing } from '../../theme';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { SettingsSection } from '../../components/settings/SettingsSection';
 import { SettingsToggle } from '../../components/settings/SettingsToggle';
+import { exportUserData } from '../../services/dataExportService';
 
 type Props = ProfileStackScreenProps<'PrivacySecurity'>;
 
@@ -41,6 +45,7 @@ const PrivacySecurityScreen = (_props: Props) => {
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [biometricType, setBiometricType] = useState<string>('Biometrics');
+  const [isExporting, setIsExporting] = useState(false);
 
   // Check biometric availability on mount
   useEffect(() => {
@@ -145,6 +150,35 @@ const PrivacySecurityScreen = (_props: Props) => {
     }
   };
 
+  /**
+   * Handle data export
+   */
+  const handleExportData = async () => {
+    setIsExporting(true);
+
+    try {
+      const result = await exportUserData();
+
+      if (result.success) {
+        // The share dialog was shown - no need for additional alert
+        console.log('[PrivacySecurity] Data exported successfully');
+      } else {
+        Alert.alert(
+          'Export Failed',
+          result.error || 'Unable to export your data. Please try again.'
+        );
+      }
+    } catch (error) {
+      console.error('[PrivacySecurity] Export error:', error);
+      Alert.alert(
+        'Export Failed',
+        'An unexpected error occurred. Please try again.'
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView
@@ -189,6 +223,30 @@ const PrivacySecurityScreen = (_props: Props) => {
             onValueChange={handleCrashReportingToggle}
             isLast
           />
+        </SettingsSection>
+
+        <SettingsSection title="Your Data">
+          <TouchableOpacity
+            style={styles.exportButton}
+            onPress={handleExportData}
+            disabled={isExporting}
+            accessibilityRole="button"
+            accessibilityLabel="Export your data"
+          >
+            <View style={styles.exportButtonContent}>
+              <View>
+                <Text style={styles.exportButtonText}>Export My Data</Text>
+                <Text style={styles.exportButtonDescription}>
+                  Download all your data as a JSON file
+                </Text>
+              </View>
+              {isExporting ? (
+                <ActivityIndicator size="small" color={colors.primary[500]} />
+              ) : (
+                <Text style={styles.exportButtonIcon}>↓</Text>
+              )}
+            </View>
+          </TouchableOpacity>
         </SettingsSection>
 
         <View style={styles.privacyNote}>
@@ -247,6 +305,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.text.secondary,
     lineHeight: 20,
+  },
+  // Export button styles
+  exportButton: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  exportButtonContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  exportButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: colors.text.primary,
+  },
+  exportButtonDescription: {
+    fontSize: 13,
+    color: colors.text.secondary,
+    marginTop: spacing.xs,
+  },
+  exportButtonIcon: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.primary[500],
   },
 });
 

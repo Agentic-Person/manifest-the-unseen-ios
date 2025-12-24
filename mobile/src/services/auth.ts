@@ -236,6 +236,57 @@ export const authService = {
   },
 
   /**
+   * Delete Account
+   *
+   * Permanently deletes the user's account and all associated data.
+   * Requires password re-authentication for security.
+   * Required for Apple App Store compliance (Guideline 5.1.1).
+   *
+   * @param password - User's password for verification
+   * @returns AuthResult with any errors
+   *
+   * @example
+   * ```tsx
+   * const result = await authService.deleteAccount('userPassword123');
+   * if (result.error) {
+   *   console.error('Account deletion failed:', result.error);
+   * } else {
+   *   console.log('Account deleted successfully');
+   *   // Navigate to login screen
+   * }
+   * ```
+   */
+  deleteAccount: async (password: string): Promise<AuthResult> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-account', {
+        body: { password },
+      });
+
+      if (error) {
+        return {
+          error: new Error(error.message || 'Failed to delete account'),
+        };
+      }
+
+      if (!data.success) {
+        return {
+          error: new Error(data.error || 'Failed to delete account'),
+        };
+      }
+
+      // Clear local session after successful deletion
+      await supabase.auth.signOut();
+
+      return {};
+    } catch (error) {
+      return {
+        error:
+          error instanceof Error ? error : new Error('Account deletion failed'),
+      };
+    }
+  },
+
+  /**
    * Reset Password
    *
    * Sends password reset email to user.

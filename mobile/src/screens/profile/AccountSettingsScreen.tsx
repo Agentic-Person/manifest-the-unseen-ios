@@ -2,6 +2,7 @@
  * Account Settings Screen
  *
  * Allows users to view and edit their profile information.
+ * Includes account deletion for App Store compliance (Guideline 5.1.1).
  */
 
 import React, { useState, useEffect } from 'react';
@@ -15,15 +16,20 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  Modal,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ProfileStackScreenProps } from '../../types/navigation';
 import { colors, spacing } from '../../theme';
-import { useUser, useProfile } from '../../stores/authStore';
+import { useUser, useProfile, useAuthStore } from '../../stores/authStore';
 import { useUpdateUserProfile } from '../../hooks/useUser';
 import { useAvatarUpload } from '../../hooks/useAvatarUpload';
 import { SettingsSection } from '../../components/settings/SettingsSection';
 import { SettingsRow } from '../../components/settings/SettingsRow';
+import { authService } from '../../services/auth';
 
 type Props = ProfileStackScreenProps<'AccountSettings'>;
 
@@ -35,15 +41,23 @@ type Props = ProfileStackScreenProps<'AccountSettings'>;
  * - Full name (editable)
  * - Email (read-only)
  * - Save button
+ * - Delete Account (App Store requirement)
  */
 const AccountSettingsScreen = (_props: Props) => {
   const user = useUser();
   const profile = useProfile();
   const updateProfile = useUpdateUserProfile();
+  const signOut = useAuthStore((state) => state.signOut);
   const { pickAndUploadAvatar, isUploading: isUploadingAvatar } = useAvatarUpload();
 
   const [fullName, setFullName] = useState(profile?.fullName || '');
   const [hasChanges, setHasChanges] = useState(false);
+
+  // Delete account state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     setFullName(profile?.fullName || '');
@@ -69,6 +83,78 @@ const AccountSettingsScreen = (_props: Props) => {
     if (fullName) return fullName.charAt(0).toUpperCase();
     if (user?.email) return user.email.charAt(0).toUpperCase();
     return 'U';
+  };
+
+  /**
+   * Handle Delete Account - Step 1: Show confirmation alert
+   */
+  const handleDeleteAccountPress = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to permanently delete your account? This action cannot be undone.\n\nAll your data will be deleted:\n- Workbook progress\n- Journal entries\n- Meditation history\n- Profile information',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Continue',
+          style: 'destructive',
+          onPress: () => setShowDeleteModal(true),
+        },
+      ]
+    );
+  };
+
+  /**
+   * Handle Delete Account - Step 2: Verify password and delete
+   */
+  const handleConfirmDelete = async () => {
+    if (!deletePassword.trim()) {
+      setDeleteError('Please enter your password');
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError(null);
+
+    try {
+      const result = await authService.deleteAccount(deletePassword);
+
+      if (result.error) {
+        setDeleteError(result.error.message);
+        setIsDeleting(false);
+        return;
+      }
+
+      // Close modal
+      setShowDeleteModal(false);
+
+      // Clear auth state
+      signOut();
+
+      // Show success message
+      Alert.alert(
+        'Account Deleted',
+        'Your account has been permanently deleted.',
+        [{ text: 'OK' }]
+      );
+
+      // Navigation will happen automatically when auth state changes
+
+    } catch (error) {
+      setDeleteError('An unexpected error occurred. Please try again.');
+      setIsDeleting(false);
+    }
+  };
+
+  /**
+   * Close delete modal and reset state
+   */
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeletePassword('');
+    setDeleteError(null);
   };
 
   return (
@@ -151,7 +237,90 @@ const AccountSettingsScreen = (_props: Props) => {
             <Text style={styles.saveButtonText}>Save Changes</Text>
           )}
         </TouchableOpacity>
+
+        {/* Danger Zone */}
+        <SettingsSection title="Danger Zone">
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDeleteAccountPress}
+            accessibilityRole="button"
+            accessibilityLabel="Delete account"
+          >
+            <Text style={styles.deleteButtonText}>Delete Account</Text>
+            <Text style={styles.deleteButtonSubtext}>
+              Permanently delete your account and all data
+            </Text>
+          </TouchableOpacity>
+        </SettingsSection>
       </ScrollView>
+
+      {/* Delete Account Password Modal */}
+      <Modal
+        visible={showDeleteModal}
+        transparent
+        animationType="fade"
+        onRequestClose={handleCloseDeleteModal}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
+          <Pressable
+            style={styles.modalBackdrop}
+            onPress={handleCloseDeleteModal}
+          />
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Confirm Deletion</Text>
+            <Text style={styles.modalDescription}>
+              Please enter your password to confirm account deletion.
+              This action cannot be undone.
+            </Text>
+
+            <TextInput
+              style={styles.passwordInput}
+              value={deletePassword}
+              onChangeText={setDeletePassword}
+              placeholder="Enter your password"
+              placeholderTextColor={colors.text.tertiary}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!isDeleting}
+            />
+
+            {deleteError && (
+              <Text style={styles.errorText}>{deleteError}</Text>
+            )}
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={handleCloseDeleteModal}
+                disabled={isDeleting}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.confirmDeleteButton,
+                  isDeleting && styles.confirmDeleteButtonDisabled,
+                ]}
+                onPress={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <ActivityIndicator color={colors.white} size="small" />
+                ) : (
+                  <Text style={styles.confirmDeleteButtonText}>
+                    Delete Account
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -223,6 +392,104 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border.default,
   },
   saveButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.white,
+  },
+  // Delete Account Styles
+  deleteButton: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  deleteButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#EF4444',
+  },
+  deleteButtonSubtext: {
+    fontSize: 13,
+    color: colors.text.tertiary,
+    marginTop: spacing.xs,
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  modalContent: {
+    backgroundColor: colors.background.secondary,
+    borderRadius: 16,
+    padding: spacing.lg,
+    width: '85%',
+    maxWidth: 400,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text.primary,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  modalDescription: {
+    fontSize: 14,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+    lineHeight: 20,
+  },
+  passwordInput: {
+    backgroundColor: colors.background.primary,
+    borderRadius: 12,
+    padding: spacing.md,
+    fontSize: 16,
+    color: colors.text.primary,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    marginBottom: spacing.md,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#EF4444',
+    textAlign: 'center',
+    marginBottom: spacing.md,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginTop: spacing.sm,
+  },
+  cancelButton: {
+    flex: 1,
+    padding: spacing.md,
+    borderRadius: 12,
+    backgroundColor: colors.background.primary,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  confirmDeleteButton: {
+    flex: 1,
+    padding: spacing.md,
+    borderRadius: 12,
+    backgroundColor: '#EF4444',
+    alignItems: 'center',
+  },
+  confirmDeleteButtonDisabled: {
+    opacity: 0.6,
+  },
+  confirmDeleteButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: colors.white,
