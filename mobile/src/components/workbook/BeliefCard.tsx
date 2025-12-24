@@ -179,7 +179,7 @@ export const BeliefCard: React.FC<BeliefCardProps> = ({
         {/* Column 3: New Empowering Belief */}
         <View style={[styles.column, styles.columnPositive]}>
           <View style={styles.columnHeader}>
-            <Text style={styles.columnIcon}>{'\u2728'}</Text>
+            <Text style={styles.columnIcon}>✨</Text>
             <Text style={styles.columnTitle}>New Belief</Text>
           </View>
           <Text style={styles.columnContent} numberOfLines={4}>

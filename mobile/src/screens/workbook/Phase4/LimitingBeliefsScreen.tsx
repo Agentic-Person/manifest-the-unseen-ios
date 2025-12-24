@@ -274,7 +274,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
       case 'new':
         return {
           title: 'Step 3: New Empowering Belief',
-          icon: '\u2728',
+          icon: '✨',
           description: 'Reframe this into a positive, empowering belief',
           placeholder: 'e.g., "I am capable of..."',
           value: newBeliefText,
@@ -364,7 +364,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
             <Text style={styles.processArrow}>{'\u2192'}</Text>
             <View style={styles.processStep}>
               <View style={[styles.processIcon, { backgroundColor: `${colors.dark.accentGreen}30` }]}>
-                <Text style={styles.processEmoji}>{'\u2728'}</Text>
+                <Text style={styles.processEmoji}>✨</Text>
               </View>
               <Text style={styles.processLabel}>Reframe</Text>
             </View>

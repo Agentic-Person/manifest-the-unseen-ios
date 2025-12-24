@@ -439,7 +439,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
         {/* Empty State */}
         {currentItems.length === 0 && (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyIcon}>{'\u2728'}</Text>
+            <Text style={styles.emptyIcon}>✨</Text>
             <Text style={styles.emptyTitle}>
               {isToday ? 'Start Your Gratitude Practice' : 'No Entry for This Day'}
             </Text>

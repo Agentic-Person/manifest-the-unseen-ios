@@ -216,7 +216,7 @@ export const RepetitionTracker: React.FC<RepetitionTrackerProps> = ({
       {isComplete && (
         <View style={styles.completeContainer}>
           <Text style={[styles.completeText, { color: config.color }]}>
-            {'\u2728'} {config.label} practice complete! {'\u2728'}
+            ✨ {config.label} practice complete! ✨
           </Text>
         </View>
       )}

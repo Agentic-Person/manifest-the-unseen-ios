@@ -504,7 +504,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
           <View style={styles.reflectionModal}>
             <Text style={styles.reflectionTitle}>Session Complete</Text>
             <Text style={styles.reflectionCelebration}>
-              {'\u2728'} Beautiful work! You meditated for {Math.floor(lastDuration / 60)} minutes.
+              ✨ Beautiful work! You meditated for {Math.floor(lastDuration / 60)} minutes.
             </Text>
 
             <Text style={styles.reflectionLabel}>

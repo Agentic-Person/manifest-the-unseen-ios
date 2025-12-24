@@ -215,7 +215,7 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Connection lines hint */}
       <View style={styles.insightHint}>
-        <Text style={styles.insightIcon}>{'\u2728'}</Text>
+        <Text style={styles.insightIcon}>✨</Text>
         <Text style={styles.insightText}>
           Tap each petal to add your insights. Your strengths can help overcome
           threats, and opportunities can address weaknesses.

@@ -389,7 +389,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
         accessibilityRole="button"
         accessibilityLabel="Log a new sign or synchronicity"
       >
-        <Text style={styles.addButtonIcon}>{'\u2728'}</Text>
+        <Text style={styles.addButtonIcon}>✨</Text>
         <Text style={styles.addButtonText}>Log a Sign or Synchronicity</Text>
       </Pressable>
 

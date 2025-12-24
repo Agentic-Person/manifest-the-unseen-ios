@@ -94,7 +94,7 @@ export const SIGN_CATEGORIES: SignCategoryConfig[] = [
   {
     key: 'events',
     label: 'Events',
-    icon: '\u2728',
+    icon: '✨',
     color: DESIGN_COLORS.accentPurple,
     description: 'Meaningful coincidences, perfect timing',
   },

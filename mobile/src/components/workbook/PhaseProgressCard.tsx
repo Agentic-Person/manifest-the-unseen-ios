@@ -41,7 +41,7 @@ const PHASE_ICONS: Record<number, string> = {
   3: '\u2192', // Arrow (goals)
   4: '\u2620', // Skull (fears - facing death of old self)
   5: '\u2661', // Heart (self-love)
-  6: '\u2728', // Sparkles (manifestation)
+  6: '✨', // Sparkles (manifestation)
   7: '\u2618', // Clover (gratitude)
   8: '\u2194', // Double arrow (envy to inspiration)
   9: '\u2693', // Anchor (trust)

@@ -61,7 +61,7 @@ export const FEAR_CATEGORIES = {
   selfWorth: {
     label: 'Self-Worth',
     color: '#9333ea',
-    icon: '\u2728',
+    icon: '✨',
   },
 } as const;
 

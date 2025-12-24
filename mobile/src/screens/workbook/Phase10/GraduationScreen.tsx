@@ -99,7 +99,7 @@ const DAILY_PRACTICES: DailyPractice[] = [
     name: '3-6-9 Method',
     description: 'Write your intention 3-6-9 times',
     duration: '5 min',
-    icon: '\u2728',
+    icon: '✨',
   },
   {
     id: 'vision',
@@ -363,7 +363,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         {/* Celebration Message (if graduated) */}
         {hasGraduated && !showCertificate && (
           <View style={styles.celebrationCard}>
-            <Text style={styles.celebrationIcon}>{'\u2728'}</Text>
+            <Text style={styles.celebrationIcon}>✨</Text>
             <Text style={styles.celebrationTitle}>Journey Complete!</Text>
             <Text style={styles.celebrationText}>
               You've transformed through {journeyDuration} days of dedication.

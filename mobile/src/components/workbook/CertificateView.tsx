@@ -75,7 +75,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
               {/* Top Decorative Element */}
               <View style={styles.topDecoration}>
                 <View style={styles.decorLine} />
-                <Text style={styles.decorSymbol}>{'\u2728'}</Text>
+                <Text style={styles.decorSymbol}>✨</Text>
                 <View style={styles.decorLine} />
               </View>
 
@@ -154,7 +154,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
               {/* Bottom Decoration */}
               <View style={styles.bottomDecoration}>
                 <View style={styles.decorLine} />
-                <Text style={styles.decorSymbol}>{'\u2728'}</Text>
+                <Text style={styles.decorSymbol}>✨</Text>
                 <View style={styles.decorLine} />
               </View>
 

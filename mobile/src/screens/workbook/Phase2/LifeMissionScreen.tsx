@@ -251,7 +251,7 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           accessibilityHint="Opens a view with all your mission statements combined"
           testID="view-combined-button"
         >
-          <Text style={styles.viewCombinedIcon}>\u2728</Text>
+          <Text style={styles.viewCombinedIcon}>✨</Text>
           <Text style={styles.viewCombinedText}>
             View Your Complete Mission
           </Text>

@@ -203,7 +203,7 @@ export const SurrenderCard: React.FC<SurrenderCardProps> = ({
         accessibilityLabel={`Released surrender: ${entry.controllingText}`}
       >
         <View style={styles.releasedIcon}>
-          <Text style={styles.releasedIconText}>{'\u2728'}</Text>
+          <Text style={styles.releasedIconText}>✨</Text>
         </View>
         <Text style={styles.releasedTitle}>Released & Surrendered</Text>
         <Text style={styles.releasedText}>
@@ -342,7 +342,7 @@ export const SurrenderCard: React.FC<SurrenderCardProps> = ({
         accessibilityState={{ disabled: !entry.controllingText.trim() || !entry.surrenderText.trim() }}
       >
         <Text style={styles.releaseButtonIcon}>
-          {isReleasing ? '\u2728' : '\u{1f54a}'}
+          {isReleasing ? '✨' : '🕊'}
         </Text>
         <Text style={styles.releaseButtonText}>
           {isReleasing ? 'Releasing...' : 'Release & Surrender'}
