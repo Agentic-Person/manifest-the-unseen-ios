@@ -14,7 +14,7 @@
 |------|-------|
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
-| **Build (TestFlight)** | 28 (testflight profile) |
+| **Build (TestFlight)** | 30 (testflight profile) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -31,10 +31,17 @@
 | `testflight` | `eas build --profile testflight` | Testing with full access bypass enabled |
 | `production` | `eas build --profile production` | App Store (RevenueCat enabled, no bypasses) |
 
+**What's Included in Build 30 (TestFlight Testing - Dec 25):**
+- ✅ **TestFlight build profile** - TESTFLIGHT_FULL_ACCESS=true (bypasses subscription)
+- ✅ DEV_SKIP_AUTH=false (authentication still required)
+- ✅ All compliance features from Build 28/29
+- ⚠️ **FOR TESTING ONLY** - Not for App Store submission
+
 **What's Included in Build 29 (App Store Resubmission - Dec 25):**
 - ✅ **Production build profile** - TESTFLIGHT_FULL_ACCESS=false, DEV_SKIP_AUTH=false
 - ✅ **RevenueCat fully enabled** - Real subscription flow for App Store
 - ✅ All compliance features from Build 28
+- ⚠️ **FOR APP STORE ONLY** - Use Build 30 for TestFlight testing
 
 **What's Included in Build 28 (App Store Compliance - Dec 25):**
 - ✅ **Account Deletion** (Apple Guideline 5.1.1) - Two-step confirmation with password re-entry
