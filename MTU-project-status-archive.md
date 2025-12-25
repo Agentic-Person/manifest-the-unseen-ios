@@ -485,5 +485,225 @@ cp agent-orchestration/tasks/templates/implementation-task.md \
 
 ---
 
+## Archived: Features Complete (Weeks 1-3)
+
+### Week 1: Infrastructure Foundation (Nov 17-18)
+
+**Monorepo Structure**
+- `mobile/` - React Native app
+- `packages/shared/` - Shared TypeScript code (models, validation, utilities)
+- `supabase/` - Database migrations, Edge Functions, config
+
+**Design System**
+- `mobile/src/theme/colors.ts` - Purple/gold brand palette (WCAG AA contrast)
+- `mobile/src/theme/typography.ts` - Font scale (h1-h6, body, caption)
+- `mobile/src/theme/spacing.ts` - 4px base grid system
+- `mobile/src/theme/shadows.ts` - iOS/Android elevation system
+
+**Component Library** (5 atomic components)
+- `Button` - 4 variants (primary, secondary, ghost, outline), 3 sizes, haptic feedback
+- `TextInput` - Labels, error states, character counter, icon support
+- `Card` - 3 elevation levels, press handling
+- `Loading` - Spinner and skeleton variants
+- `Text` - 13 typography variants
+
+**Database Schema**
+- 8 tables: users, workbook_progress, journal_entries, meditations, meditation_sessions, ai_conversations, vision_boards, knowledge_embeddings
+- 27 RLS policies for data security
+- Migrations ready: `supabase/migrations/20250102000000_*.sql`
+
+### Week 2: Authentication System (Nov 18)
+
+**Authentication Service** (`mobile/src/services/auth.ts` - 371 lines)
+- `signUpWithEmail()`, `signInWithEmail()`, `signInWithApple()`, `signOut()`
+- `resetPassword()`, `updatePassword()`, `getCurrentUser()`, `getCurrentSession()`
+- `fetchUserProfile()`, `onAuthStateChange()`
+
+**Authentication Screens** (3 screens, 995 lines total)
+- `WelcomeScreen.tsx` - Onboarding with "Get Started" and "Sign In" buttons
+- `LoginScreen.tsx` (311 lines) - Email/password login, forgot password link, Apple Sign-In button
+- `SignupScreen.tsx` (368 lines) - Full registration form
+- `ForgotPasswordScreen.tsx` (255 lines) - Password reset flow
+
+**Navigation Integration** (`mobile/src/navigation/`)
+- `RootNavigator.tsx` - Conditional rendering: AuthNavigator vs TabNavigator
+- `AuthNavigator.tsx` - Stack navigator for Welcome → Login → Signup → Forgot Password
+- `TabNavigator.tsx` - 5 tabs (Home, Workbook, Journal, Meditate, Profile)
+
+**State Management** (`mobile/src/stores/authStore.ts`)
+- Zustand store for auth state (user, session, profile, loading, error)
+- Session persistence and restoration on app launch
+
+### Week 3: Expo Configuration (Nov 19)
+
+**Expo SDK 54 Setup**
+- Installed 272 packages (React Native 0.73 via Expo)
+- Created `mobile/app.json` - iOS/Android configuration
+- Created `mobile/index.js` - Expo entry point
+- Updated `mobile/package.json` - Expo scripts
+
+**Cross-Platform Development Workflow**
+- Windows PC → Android emulator (primary development)
+- Windows PC → iPhone/iPad via Expo Go (iOS testing without macOS)
+- Hot reload working (~2 second refresh on both platforms)
+
+**Documentation** (1,850 lines total)
+- `docs/android-emulator-setup.md` (650 lines)
+- `docs/ios-expo-go-setup.md` (550 lines)
+- `docs/expo-setup-complete.md` (650 lines)
+
+---
+
+## Archived: Testing Strategy & iOS Deployment (Nov 27)
+
+### Development Environment (Windows 11 - No Mac Required)
+
+**Current Stack**:
+- **Expo SDK 54** with React 19.1.0 + React Native 0.81.5 (Legacy Architecture)
+- **Styling**: Custom design system using `StyleSheet.create` (NOT Tailwind/NativeWind)
+- **Auth Bypass**: `EXPO_PUBLIC_DEV_SKIP_AUTH=true` in `.env` for development
+
+### Testing Hierarchy (Recommended Order)
+
+#### 1. Browser Testing (Fastest Iteration)
+```bash
+cd mobile && npm start
+# Press 'w' to open web browser
+```
+- Use Chrome DevTools → Device Mode (F12 → Toggle device toolbar)
+- Select "iPhone 14 Pro" or similar for realistic sizing
+- **Best for**: Layout, colors, component styling, dark mode verification
+
+#### 2. Expo Go (Real Device Testing - No Build Required)
+```bash
+cd mobile && npm start
+# Scan QR code with Expo Go app on iPhone/Android
+```
+- **Best for**: Haptics, gestures, navigation, real performance
+
+#### 3. EAS Build (Production-Ready iOS Testing)
+```bash
+npm install -g eas-cli
+eas login
+eas build --platform ios --profile development
+eas build --platform ios --profile preview
+eas build --platform ios --profile production
+```
+
+### iOS Deployment Path (No Mac Required!)
+
+1. **Apple Developer Account** ($99/year) - Required for TestFlight/App Store
+2. **EAS Build** (cloud) - Compiles iOS app on Expo's Mac servers
+3. **TestFlight** - Install builds on real iOS devices for beta testing
+4. **App Store Connect** - Submit for review and publish
+
+### Dark Mode Enforcement Rules
+
+**All UI must follow these color conventions**:
+- **Backgrounds**: Use `colors.background.*` (never `colors.white` or light grays)
+- **Cards/Elevated**: Use `colors.background.elevated` (dark gray)
+- **Borders**: Use `colors.border.default` (muted)
+- **Pressed/Hover states**: Use `colors.primary[900]` or `colors.gray[800]`
+- **Track colors** (sliders): Use `colors.gray[700]`
+
+### Quick Dark Mode Audit Command
+```bash
+cd mobile/src
+grep -rn "colors.white" --include="*.tsx"
+grep -rn "colors.gray\[50\]" --include="*.tsx"
+grep -rn "#fff" --include="*.tsx"
+```
+
+---
+
+## Archived: Detailed Change Log (Dec 13+)
+
+*These are the full implementation details for Change Log entries.
+Summaries are in the main `MTU-project-status.md`.*
+
+### 2025-12-16 - GURU AI ENHANCEMENT (Full Details)
+
+**Problem Solved**:
+1. `guruService.ts` was querying non-existent `guru_conversations` table
+2. Guru gave same suggestions regardless of user's actual weak areas
+
+**Solution**: Implemented dynamic life area analysis using swarm (2 parallel agents).
+
+**Database Changes**:
+- Added `life_areas TEXT[]` column to meditations table
+- Created GIN index for efficient array queries
+- Updated seed data with life area tags for all 6 meditation types
+
+**Edge Function Enhancements** (`supabase/functions/guru-analysis/index.ts`):
+- Added `WheelOfLifeData` interface for type-safe Wheel of Life parsing
+- Added `LIFE_AREA_TO_BREATHING` mapping (8 life areas → breathing exercises)
+- Added `extractLowLifeAreas()` function to detect scores < 5/10
+- Dynamic breathing suggestions based on user's weakest area
+
+**Mobile Code Fixes** (`mobile/src/services/guruService.ts`):
+- Changed all queries from `guru_conversations` → `ai_conversations`
+- Added `conversation_type='guru'` and `guru_phase` filters
+
+**New Files Created**:
+- `mobile/src/constants/lifeAreaMappings.ts`
+- `supabase/migrations/20251217000000_meditation_life_areas.sql`
+
+### 2025-12-16 - PROFILE/SETTINGS (Full Details)
+
+**Files Created** (17 new files):
+- `mobile/src/navigation/ProfileNavigator.tsx`
+- Settings Components: SettingsSection, SettingsRow, SettingsToggle, SettingsPicker
+- Profile Screens: AccountSettings, Notifications, Appearance, PrivacySecurity, HelpCenter, About, PrivacyPolicy, TermsOfService
+- `mobile/src/hooks/useNotifications.ts`
+
+**Dependencies Installed**:
+```bash
+npx expo install expo-notifications expo-local-authentication expo-mail-composer @react-native-community/datetimepicker
+```
+
+### 2025-12-15 - GURU AI LOCAL TESTING (Full Details)
+
+**Changes Made**:
+1. `subscriptionStore.ts` - Changed local dev bypass from env vars to `__DEV__` global
+2. Database: User `jimmy@agenticpersonnel.com` set to enlightenment tier
+3. Build 19 Submitted to TestFlight
+
+### 2025-12-14 - GURU ANALYSIS FIXES (Full Details)
+
+**Problems Identified**:
+1. Function Name Mismatch - calling `guru-analyze` but Edge Function was `guru-analysis`
+2. Request Format Mismatch - sending `userMessage` but Edge Function expected `message`
+3. Worksheet Count Wrong - `WORKSHEETS_PER_PHASE[1]` was 4, should be 11
+4. Edge Function Not Deployed
+
+**Files Modified**:
+- `mobile/src/services/guruService.ts` - Fixed function name + request format
+- `mobile/src/types/workbook.ts` - Fixed WORKSHEETS_PER_PHASE[1]: 4 → 11
+- `supabase/functions/guru-analysis/index.ts` - Fixed counts + deployed v2
+
+### 2025-12-14 - AUTO-SAVE BUG FIX (Full Details)
+
+**Root Cause**: Race condition in auto-save cycle - TanStack Query cache update triggers load useEffect, overwriting user changes.
+
+**Solution**: Added `hasLoadedInitialData` useRef pattern to all 35 workbook screens.
+
+**Files Fixed** (35 screens across all 10 phases):
+- Phase 1 (11): HabitsAudit, WheelOfLife, SWOTAnalysis, FeelWheel, Values, ABCModel, StrengthsWeaknesses, ComfortZone, KnowYourself, AbilitiesRating, ThoughtAwareness
+- Phase 2-10 (3 each): All screens updated
+
+### 2025-12-13 - APP STORE SUBMISSION (Full Details)
+
+**Submission Details**:
+- Build 13 (version 1.0.0) submitted to Apple
+- Pricing: Free ($0.00) for 175 countries
+- Created iPad 13" screenshot (2048 × 2732px)
+- Git tag: `v1.0.0-beta.13`
+
+**Package Cleanup**:
+- Removed `expo-secure-store` (caused auth issues)
+- Removed `babel-plugin-transform-remove-console`
+
+---
+
 **Archive Last Updated**: December 25, 2025
-**Archived From**: MTU-project-status.md v1.10.0
+**Archived From**: MTU-project-status.md v2.0.0

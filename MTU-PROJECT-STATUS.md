@@ -584,87 +584,16 @@ cd mobile && npm run type-check
 
 ## Features Complete
 
-### ✅ Week 1: Infrastructure Foundation (Nov 17-18)
-**Status**: 100% Complete
+✅ **Weeks 1-3 Complete** (Nov 17-19): Infrastructure, authentication, and Expo configuration.
+See `MTU-project-status-archive.md` for detailed implementation notes.
 
-**Monorepo Structure**
-- `mobile/` - React Native app
-- `packages/shared/` - Shared TypeScript code (models, validation, utilities)
-- `supabase/` - Database migrations, Edge Functions, config
-
-**Design System**
-- `mobile/src/theme/colors.ts` - Purple/gold brand palette (WCAG AA contrast)
-- `mobile/src/theme/typography.ts` - Font scale (h1-h6, body, caption)
-- `mobile/src/theme/spacing.ts` - 4px base grid system
-- `mobile/src/theme/shadows.ts` - iOS/Android elevation system
-
-**Component Library** (5 atomic components)
-- `Button` - 4 variants (primary, secondary, ghost, outline), 3 sizes, haptic feedback
-- `TextInput` - Labels, error states, character counter, icon support
-- `Card` - 3 elevation levels, press handling
-- `Loading` - Spinner and skeleton variants
-- `Text` - 13 typography variants
-
-**Database Schema**
-- 8 tables: users, workbook_progress, journal_entries, meditations, meditation_sessions, ai_conversations, vision_boards, knowledge_embeddings
-- 27 RLS policies for data security
-- Migrations ready: `supabase/migrations/20250102000000_*.sql`
-
-### ✅ Week 2: Authentication System (Nov 18)
-**Status**: 100% Complete (UI + Service Layer)
-
-**Authentication Service** (`mobile/src/services/auth.ts` - 371 lines)
-- ✅ `signUpWithEmail()` - Email/password registration with email confirmation
-- ✅ `signInWithEmail()` - Login with credentials
-- ✅ `signInWithApple()` - Apple Sign-In (placeholder, Week 4 implementation)
-- ✅ `signOut()` - Session termination
-- ✅ `resetPassword()` - Password reset email
-- ✅ `updatePassword()` - Change password for authenticated user
-- ✅ `getCurrentUser()` - Fetch current user
-- ✅ `getCurrentSession()` - Get session with tokens
-- ✅ `fetchUserProfile()` - Load user profile from database
-- ✅ `onAuthStateChange()` - Auth event listener
-
-**Authentication Screens** (3 screens, 995 lines total)
-- `WelcomeScreen.tsx` - Onboarding with "Get Started" and "Sign In" buttons
-- `LoginScreen.tsx` (311 lines) - Email/password login, forgot password link, Apple Sign-In button
-- `SignupScreen.tsx` (368 lines) - Full registration form (name, email, password, confirm, terms)
-- `ForgotPasswordScreen.tsx` (255 lines) - Password reset flow with email input
-
-**Navigation Integration** (`mobile/src/navigation/`)
-- `RootNavigator.tsx` - Conditional rendering: AuthNavigator (logged out) vs TabNavigator (logged in)
-- `AuthNavigator.tsx` - Stack navigator for Welcome → Login → Signup → Forgot Password
-- `TabNavigator.tsx` - 5 tabs (Home, Workbook, Journal, Meditate, Profile)
-
-**State Management** (`mobile/src/stores/authStore.ts`)
-- Zustand store for auth state (user, session, profile, loading, error)
-- Session persistence and restoration on app launch
-- Automatic profile fetching after sign-in
-
-### ✅ Week 3: Expo Configuration (Nov 19)
-**Status**: 100% Complete
-
-**Expo SDK 54 Setup**
-- ✅ Installed 272 packages (React Native 0.73 via Expo)
-- ✅ Created `mobile/app.json` - iOS/Android configuration
-- ✅ Created `mobile/index.js` - Expo entry point
-- ✅ Updated `mobile/package.json` - Expo scripts (start, android, ios, expo-go)
-- ✅ Fixed `mobile/tsconfig.json` - Extended expo/tsconfig.base
-
-**Cross-Platform Development Workflow**
-- ✅ Windows PC → Android emulator (primary development)
-- ✅ Windows PC → iPhone/iPad via Expo Go (iOS testing without macOS)
-- ✅ Hot reload working (~2 second refresh on both platforms)
-- ✅ QR code workflow for instant iOS preview
-
-**Documentation** (1,850 lines total)
-- ✅ `docs/android-emulator-setup.md` (650 lines) - Complete Android Studio guide
-- ✅ `docs/ios-expo-go-setup.md` (550 lines) - iPhone/iPad Expo Go testing
-- ✅ `docs/expo-setup-complete.md` (650 lines) - Full setup report
-
-**Placeholder Assets**
-- ✅ 1x1 pixel placeholders (icon.png, splash.png, adaptive-icon.png)
-- ✅ Asset replacement guide (mobile/assets/README.md)
+**Summary**:
+- Monorepo structure (mobile, packages/shared, supabase)
+- Design system (colors, typography, spacing, shadows)
+- 5 atomic components (Button, TextInput, Card, Loading, Text)
+- 8 database tables with 27 RLS policies
+- Authentication service + 4 auth screens
+- Expo SDK 54 with cross-platform workflow
 
 ---
 
@@ -866,178 +795,14 @@ npx supabase status
 
 ---
 
-## Testing Strategy & iOS Deployment (2025-11-27)
+## Testing & Deployment
 
-### Development Environment (Windows 11 - No Mac Required)
+See `MTU-project-status-archive.md` for detailed testing strategy and iOS deployment documentation.
 
-**Current Stack**:
-- **Expo SDK 54** with React 19.1.0 + React Native 0.81.5 (Legacy Architecture)
-- **Styling**: Custom design system using `StyleSheet.create` (NOT Tailwind/NativeWind)
-- **Auth Bypass**: `EXPO_PUBLIC_DEV_SKIP_AUTH=true` in `.env` for development
-
-### Testing Hierarchy (Recommended Order)
-
-#### 1. Browser Testing (Fastest Iteration)
-```bash
-cd mobile && npm start
-# Press 'w' to open web browser
-```
-- Use Chrome DevTools → Device Mode (F12 → Toggle device toolbar)
-- Select "iPhone 14 Pro" or similar for realistic sizing
-- **Limitations**: No native haptics, no native navigation feel
-- **Best for**: Layout, colors, component styling, dark mode verification
-
-#### 2. Expo Go (Real Device Testing - No Build Required)
-```bash
-cd mobile && npm start
-# Scan QR code with Expo Go app on iPhone/Android
-```
-- **Best for**: Haptics, gestures, navigation, real performance
-- **Limitation**: Some native modules may not work in Expo Go
-
-#### 3. EAS Build (Production-Ready iOS Testing)
-```bash
-# Install EAS CLI (one-time)
-npm install -g eas-cli
-
-# Login to Expo account
-eas login
-
-# Create development build for iOS
-eas build --platform ios --profile development
-
-# Create preview build (installable via TestFlight)
-eas build --platform ios --profile preview
-
-# Create production build (App Store submission)
-eas build --platform ios --profile production
-```
-
-### iOS Deployment Path (No Mac Required!)
-
-**EAS Build enables iOS deployment from Windows**:
-
-1. **Apple Developer Account** ($99/year) - Required for TestFlight/App Store
-2. **EAS Build** (cloud) - Compiles iOS app on Expo's Mac servers
-3. **TestFlight** - Install builds on real iOS devices for beta testing
-4. **App Store Connect** - Submit for review and publish
-
-**EAS Build Profiles** (in `eas.json`):
-```json
-{
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {}
-  }
-}
-```
-
-### Why Staying on Expo SDK 54
-
-**Decision**: Keep Expo SDK 54 (stable) rather than upgrading to SDK 55+
-- SDK 54 uses Legacy Architecture (stable, well-tested)
-- SDK 55+ requires New Architecture migration (breaking changes)
-- Current codebase works well with SDK 54
-- No features require SDK 55 at this time
-
-**If upgrading later**:
-- Use `npx expo install --check` to verify compatibility
-- Test thoroughly in development build before production
-
-### Development Workflow (Daily)
-
-```bash
-# 1. Start Expo (browser + device testing)
-cd mobile && npm start
-
-# 2. Test in browser first (fastest iteration)
-# Press 'w' → Chrome DevTools device mode
-
-# 3. Test on device via Expo Go
-# Scan QR code with Expo Go app
-
-# 4. TypeScript check before commit
-npm run type-check
-
-# 5. Commit changes
-git add . && git commit -m "feat: description"
-```
-
-### Dark Mode Enforcement Rules
-
-**All UI must follow these color conventions**:
-- **Backgrounds**: Use `colors.background.*` (never `colors.white` or light grays)
-- **Cards/Elevated**: Use `colors.background.elevated` (dark gray)
-- **Borders**: Use `colors.border.default` (muted)
-- **Pressed/Hover states**: Use `colors.primary[900]` or `colors.gray[800]` (not `colors.primary[50]`)
-- **Track colors** (sliders): Use `colors.gray[700]` (not `colors.gray[200]`)
-
-**Files that define the color system**:
-- `mobile/src/theme/colors.ts` - All color tokens
-- `mobile/src/theme/index.ts` - Theme exports
-
-### Quick Dark Mode Audit Command
-
-To find remaining light backgrounds:
-```bash
-# Search for potential light colors
-cd mobile/src
-grep -rn "colors.white" --include="*.tsx"
-grep -rn "colors.gray\[50\]" --include="*.tsx"
-grep -rn "colors.gray\[100\]" --include="*.tsx"
-grep -rn "colors.gray\[200\]" --include="*.tsx"
-grep -rn "colors.primary\[50\]" --include="*.tsx"
-grep -rn "colors.primary\[100\]" --include="*.tsx"
-grep -rn "#fff" --include="*.tsx"
-grep -rn "#ffffff" --include="*.tsx"
-```
-
-### Manual Testing Checklist (To Be Completed)
-- [ ] Install Android Studio and create AVD
-- [ ] Launch app in Android emulator
-- [ ] Install Expo Go on iPhone/iPad
-- [ ] Launch app via QR code on iOS device
-- [ ] Test hot reload on both platforms
-- [ ] Complete signup flow with real email
-- [ ] Verify user created in Supabase database
-- [ ] Test login with created credentials
-- [ ] Test forgot password flow
-- [ ] Test navigation between all tabs (Home, Workbook, Journal, Meditate, Profile)
-
----
-
-## Known Issues & Blockers
-
-### Active Blockers (Stop Work)
-None currently. All infrastructure in place, ready for feature development.
-
-### Known Issues (Can Work Around)
-1. **Android Emulator Not Installed**
-   - **Description**: Cannot test Android app locally without emulator
-   - **Workaround**: Use Expo Go on iPhone for iOS testing
-   - **Fix Planned**: Follow `docs/android-emulator-setup.md` (~60 min one-time setup)
-
-2. **Auth Flow Not Tested End-to-End**
-   - **Description**: Auth screens built but not tested with real Supabase backend
-   - **Workaround**: UI verified in code review, backend service exists
-   - **Fix Planned**: Manual testing in next session (Week 4 start)
-
-3. **Placeholder Assets**
-   - **Description**: Using 1x1 pixel placeholders for app icon and splash screen
-   - **Workaround**: Functional for development, Expo accepts minimal assets
-   - **Fix Planned**: Replace with professional 1024x1024 assets before TestFlight (Week 25+)
-
-### Technical Debt
-- **Placeholder Email Templates** (supabase/templates/*.html) - Minimal HTML, need branded design (Week 25+)
-- **No Test Suite Yet** - Unit/integration tests planned for Week 8+ (after core features built)
-- **Apple Sign-In Placeholder** - Auth service has stub, needs native implementation (Week 4)
-- **No Error Boundary** - React error boundaries needed for production (Week 23-24)
+**Quick Reference**:
+- Browser: `npm start` → press 'w' → Chrome DevTools device mode
+- Device: `npm start` → scan QR with Expo Go
+- Build: `eas build --platform ios --profile production`
 
 ---
 
@@ -1064,21 +829,6 @@ None currently. All infrastructure in place, ready for feature development.
 - **[Expo Setup Complete](./docs/expo-setup-complete.md)** (650 lines) - Full Expo configuration report
 - **[Database Execution Guide](./docs/database-execution-guide.md)** (900+ lines) - Supabase migrations and RLS policies
 
-### Session Logs (Chronological History)
-- **[Session 2025-11-17](./agent-orchestration/logs/sessions/2025-11/session-2025-11-17.md)** - Day 1 (Infrastructure)
-- **[Session 2025-11-18](./agent-orchestration/logs/sessions/2025-11/session-2025-11-18.md)** - Day 2 (Auth + Design)
-- **[Session 2025-11-19](./agent-orchestration/logs/sessions/2025-11/session-2025-11-19.md)** - Day 3 (Expo)
-- **[Session 2025-11-20](./agent-orchestration/logs/sessions/2025-11/session-2025-11-20.md)** - Day 4
-- **[Session 2025-11-21](./agent-orchestration/logs/sessions/2025-11/session-2025-11-21.md)** - Day 5 (Infra Testing)
-- **[Session 2025-11-22](./agent-orchestration/logs/sessions/2025-11/session-2025-11-22.md)** - Day 6 (Design Mockups + Logo) ← TODAY
-- **[Week 1 Summary](./agent-orchestration/logs/sessions/2025-11/WEEK-1-SUMMARY.md)** - Infrastructure week recap
-- **[Week 2 Summary](./agent-orchestration/logs/sessions/2025-11/WEEK-2-SUMMARY.md)** - Design + Auth week recap
-
-### Agent Orchestration System
-- **[Orchestration README](./agent-orchestration/README.md)** - How to use agents, templates, workstreams
-- **[Master Plan](./agent-orchestration/orchestrator/master-plan.md)** - Complete 28-week roadmap
-- **[Agent Prompts](./agent-orchestration/agents/implement/)** - Custom system prompts for specialists
-
 ### Architecture Decisions (ADRs)
 - **[ADR-001: React Native + TypeScript](./agent-orchestration/decisions/ADR-001-react-native-typescript.md)** - Why React Native over native Swift
 - **[ADR-002: Supabase Backend](./agent-orchestration/decisions/ADR-002-supabase-backend.md)** - Why Supabase over Firebase/Convex
@@ -1088,359 +838,47 @@ None currently. All infrastructure in place, ready for feature development.
 
 ## Change Log
 
-### 2025-12-16 - GURU AI ENHANCEMENT COMPLETE 🧘✨
+*For full implementation details, see `MTU-project-status-archive.md`*
 
-**Duration**: ~3 hours (swarm implementation)
-**Focus**: Transform Guru AI from static phase-based to dynamic workbook analysis
+### 2025-12-16 - Guru AI Enhancement
+**Duration**: ~3 hours | **Status**: ✅ Complete
+- Fixed `guruService.ts` to use `ai_conversations` table (was querying non-existent table)
+- Implemented dynamic life area analysis from Wheel of Life scores
+- Added smart breathing suggestions based on user's weak areas
 
-**Problem Solved**:
-1. **Critical Bug**: `guruService.ts` was querying non-existent `guru_conversations` table
-2. **Static Suggestions**: Guru gave same suggestions regardless of user's actual weak areas
+### 2025-12-16 - Profile/Settings Implementation
+**Duration**: ~2 hours | **Status**: ✅ Complete
+- Built 8 new profile screens with iOS native integrations
+- Created 17 new files (navigator, settings components, screens)
+- Added push notifications, biometrics, email composer
 
-**Solution Applied**:
-Implemented dynamic life area analysis using swarm (2 parallel agents).
+### 2025-12-15 - Guru AI Local Testing
+**Duration**: ~2 hours | **Status**: ✅ Complete
+- Changed dev bypass from env vars to `__DEV__` global
+- Set up test user with enlightenment tier access
+- Build 19 submitted to TestFlight
 
-**Database Changes**:
-- Added `life_areas TEXT[]` column to meditations table
-- Created GIN index for efficient array queries
-- Updated seed data with life area tags for all 6 meditation types
+### 2025-12-14 - Guru Analysis Fixes
+**Duration**: ~3 hours | **Status**: ✅ Complete
+- Fixed function name mismatch (`guru-analyze` → `guru-analysis`)
+- Fixed request format (`userMessage` → `message`)
+- Fixed Phase 1 worksheet count (4 → 11)
 
-**Edge Function Enhancements** (`supabase/functions/guru-analysis/index.ts`):
-- Added `WheelOfLifeData` interface for type-safe Wheel of Life parsing
-- Added `LIFE_AREA_TO_BREATHING` mapping (8 life areas → breathing exercises)
-- Added `extractLowLifeAreas()` function to detect scores < 5/10
-- Updated `callClaude()` to inject low areas into system prompt
-- Dynamic breathing suggestions based on user's weakest area
+### 2025-12-14 - Auto-Save Bug Fix
+**Duration**: ~2 hours | **Status**: ✅ Complete
+- Fixed race condition in auto-save cycle across all 35 workbook screens
+- Added `hasLoadedInitialData` useRef pattern to prevent data overwrites
+- Build 15-18 included incremental fixes
 
-**Mobile Code Fixes** (`mobile/src/services/guruService.ts`):
-- Changed all queries from `guru_conversations` → `ai_conversations`
-- Added `conversation_type='guru'` and `guru_phase` filters
-- Updated upsert conflict resolution
-
-**New Files Created**:
-- `mobile/src/constants/lifeAreaMappings.ts` - Life area constants and mappings
-- `supabase/migrations/20251217000000_meditation_life_areas.sql` - Database migration
-
-**Deployments**:
-- ✅ Database migration deployed via Supabase Dashboard
-- ✅ Seed data UPDATE statements executed
-- ✅ Edge Function deployed via CLI (`npx supabase functions deploy guru-analysis`)
-
-**How It Works Now**:
-1. User completes Phase 1 (including Wheel of Life with 8 life area scores)
-2. Guru analyzes worksheet data and identifies areas scoring < 5/10
-3. System prompt includes: "User's low areas: Finance (3/10), Health (4/10)"
-4. Breathing exercise dynamically selected based on primary weak area
-5. Guru references specific low scores in personalized feedback
-
-**Working Document**: `docs/guru/GURU-AI-ENHANCEMENT-PROGRESS.md`
-**Feature Documentation**: `docs/guru/README.md`
-**Test Data SQL**: `docs/guru/test-data.sql`
-
-**Test Data Populated**:
-- User: jimmy@agenticpersonnel.com (enlightenment tier)
-- Phase 1: 11 worksheets completed
-- Wheel of Life: Career (3), Finance (2), Health (4) - all below threshold
-
-**Status**: ✅ 100% Complete - All deployed, test data ready
-**Next Step**: Test Guru AI at http://localhost:8081
+### 2025-12-13 - App Store Submission
+**Duration**: ~2 hours | **Status**: ✅ Complete
+- Submitted Build 13 (v1.0.0) to Apple App Store
+- Set pricing to Free, created iPad screenshot
+- Git tag: `v1.0.0-beta.13`
 
 ---
 
-### 2025-12-16 - PROFILE/SETTINGS COMPLETE IMPLEMENTATION ⚙️
-
-**Duration**: ~2 hours
-**Focus**: Build complete Profile/Settings functionality with iOS integrations
-
-**Problem Identified**:
-ProfileScreen existed but was a "hollow shell" - all buttons except Sign Out had no onPress handlers. The settingsStore was fully implemented but not connected to any UI.
-
-**Solution Applied**:
-Complete implementation of Profile navigation stack with 8 new screens and iOS native integrations.
-
-**Files Created** (17 new files):
-
-**Navigation:**
-- `mobile/src/navigation/ProfileNavigator.tsx` - Stack navigator for all profile screens
-
-**Settings Components:**
-- `mobile/src/components/settings/SettingsSection.tsx` - Grouped container with title
-- `mobile/src/components/settings/SettingsRow.tsx` - Base row with label, description, chevron
-- `mobile/src/components/settings/SettingsToggle.tsx` - Toggle switch row
-- `mobile/src/components/settings/SettingsPicker.tsx` - Segmented control picker
-- `mobile/src/components/settings/index.ts` - Component exports
-
-**Profile Screens:**
-- `mobile/src/screens/profile/AccountSettingsScreen.tsx` - Edit name, view email/membership date
-- `mobile/src/screens/profile/NotificationsScreen.tsx` - Push notifications & reminders with time pickers
-- `mobile/src/screens/profile/AppearanceScreen.tsx` - Theme (light/dark/system), font size, reduced motion
-- `mobile/src/screens/profile/PrivacySecurityScreen.tsx` - Face ID/Touch ID lock, analytics/crash toggles
-- `mobile/src/screens/profile/HelpCenterScreen.tsx` - Contact form → jimmy@agenticpersonnel.com
-- `mobile/src/screens/profile/AboutScreen.tsx` - Version info, legal links
-- `mobile/src/screens/profile/PrivacyPolicyScreen.tsx` - In-app privacy policy
-- `mobile/src/screens/profile/TermsOfServiceScreen.tsx` - In-app terms of service
-
-**Hooks:**
-- `mobile/src/hooks/useNotifications.ts` - Push notification permissions & scheduling
-
-**Files Modified** (3 files):
-- `mobile/src/types/navigation.ts` - Extended ProfileStackParamList with new routes
-- `mobile/src/navigation/MainTabNavigator.tsx` - Uses ProfileNavigator instead of ProfileScreen
-- `mobile/src/screens/ProfileScreen.tsx` - All navigation handlers wired up
-
-**Dependencies Installed:**
-```bash
-npx expo install expo-notifications expo-local-authentication expo-mail-composer @react-native-community/datetimepicker
-```
-
-**Features Implemented:**
-
-| Screen | Features |
-|--------|----------|
-| AccountSettings | Edit profile name, view email, membership date, avatar display |
-| Notifications | Push permissions, daily inspiration, meditation/journal reminders with iOS time pickers |
-| Appearance | Theme (Light/Dark/System), font size (Small/Medium/Large), reduced motion toggle |
-| PrivacySecurity | Face ID/Touch ID lock, analytics toggle, crash reporting toggle |
-| HelpCenter | Subject selector, message input, sends email via expo-mail-composer |
-| About | App version (expo-constants), description, Privacy Policy & Terms links |
-
-**Settings Store Integration:**
-All screens now properly connected to `useSettingsStore` with these methods:
-- `setTheme()`, `setFontSize()`, `setReducedMotion()`
-- `setPushNotifications()`, `setDailyInspirations()`, `setProgressMilestones()`
-- `setMeditationReminder()`, `setJournalReminder()`
-- `setAnalytics()`, `setCrashReporting()`
-
-**iOS Native Features:**
-- Push notification permissions and scheduling (expo-notifications)
-- Biometric authentication check (expo-local-authentication)
-- Email composition (expo-mail-composer)
-- Time picker modals (@react-native-community/datetimepicker)
-
-**TypeScript Status**: 0 errors after fixes applied
-
-**Next Steps**:
-1. Test Profile functionality on device
-2. Create new TestFlight build (Build 20)
-3. Resume Guru AI Enhancement work
-
----
-
-### 2025-12-15 - GURU AI LOCAL TESTING (IN PROGRESS) 🔧
-
-**Duration**: Session in progress (previous session crashed)
-**Focus**: Test Guru AI locally to debug authentication issues
-
-**Problem Identified**:
-- Guru AI feature not working properly in production
-- Local testing revealed authentication errors when calling Edge Function
-- Session crashed due to 70+ accumulated node processes (Metro bundlers)
-
-**Changes Made**:
-1. **subscriptionStore.ts** - Changed local dev bypass from env vars to `__DEV__` global
-   - `__DEV__` is automatically true in Expo Go/Metro, false in production builds
-   - Enables local testing with full enlightenment tier access
-   - No risk of leaking to production (build-time constant)
-
-2. **Database Setup**:
-   - User `jimmy@agenticpersonnel.com` set to enlightenment tier
-   - Phase 1 worksheets (11/11) marked complete for Guru testing
-
-3. **Build 19 Submitted**:
-   - TestFlight link: https://appstoreconnect.apple.com/apps/6756403109/testflight/ios
-   - Build URL: https://expo.dev/accounts/agentic-personnel/projects/manifest-the-unseen/builds/f0e0d3bc-95ff-418f-bae3-33f6d6481d7e
-
-**Current Blocker**:
-- ❌ Authentication errors when calling Guru Edge Function locally
-- Need to debug: Is it JWT issue? Session issue? Supabase client config?
-
-**Next Steps**:
-1. Start fresh local dev environment (all node processes killed)
-2. Start Expo with `npx expo start --clear`
-3. Test authentication flow
-4. Debug Guru API call with detailed logging
-
----
-
-### 2025-12-14 - GURU ANALYSIS FEATURE FIXES 🧘
-
-**Duration**: ~3 hours
-**Focus**: Debug and fix Guru feature not working properly
-
-**Problems Identified**:
-1. **Function Name Mismatch** - `guruService.ts` was calling `guru-analyze` but Edge Function was named `guru-analysis`
-2. **Request Format Mismatch** - Service was sending `userMessage` but Edge Function expected `message`
-3. **Worksheet Count Wrong** - `WORKSHEETS_PER_PHASE[1]` was set to 4, but Phase 1 actually has 11 worksheets
-4. **Edge Function Not Deployed** - `guru-analysis` function wasn't deployed to Supabase
-
-**Fixes Applied**:
-
-**1. guruService.ts** (`mobile/src/services/guruService.ts`):
-```typescript
-// Changed function name from 'guru-analyze' to 'guru-analysis'
-// Added request transformation:
-const edgeFunctionRequest = {
-  message: request.userMessage,  // Transform userMessage → message
-  phaseNumber: request.phaseNumber,
-  conversationId: request.conversationId,
-  isInitialAnalysis: !request.conversationId,
-};
-```
-
-**2. workbook.ts** (`mobile/src/types/workbook.ts`):
-```typescript
-// Fixed Phase 1 worksheet count
-WORKSHEETS_PER_PHASE[1] = 11;  // Was 4, now correctly 11
-```
-
-**3. guru-analysis Edge Function** (`supabase/functions/guru-analysis/index.ts`):
-- Updated `WORKSHEETS_PER_PHASE[1]` from 4 → 11
-- Deployed v2 to Supabase production
-
-**4. Test Data Setup**:
-- Marked all existing Phase 1 worksheets as `completed: true`
-- Inserted missing worksheets (strengths-weaknesses, know-yourself, thought-awareness)
-- `test@manifest.app` now has 11/11 Phase 1 worksheets completed
-
-**Files Modified**:
-| File | Change |
-|------|--------|
-| `mobile/src/services/guruService.ts` | Fixed function name + request format |
-| `mobile/src/types/workbook.ts` | Fixed WORKSHEETS_PER_PHASE[1]: 4 → 11 |
-| `supabase/functions/guru-analysis/index.ts` | Fixed worksheet counts + deployed v2 |
-| `mobile/app.json` | Incremented buildNumber: 15 → 16 |
-
-**Database Changes**:
-- `workbook_progress` table: Updated/inserted Phase 1 worksheets for `test@manifest.app`
-
-**Build Deployed**:
-- **Build 16** submitted to TestFlight
-- Build URL: https://expo.dev/accounts/agentic-personnel/projects/manifest-the-unseen/builds/3b540ea2-8a0a-4f0c-89ef-96f1063c323a
-
-**Test Accounts Ready**:
-| Email | Tier | Phase 1 Status | Notes |
-|-------|------|----------------|-------|
-| `test@manifest.app` | enlightenment | 11/11 complete | Original test account |
-| `jimmy@agenticpersonnel.com` | enlightenment | 11/11 complete | Added 2025-12-15 for local testing |
-
----
-
-### 2025-12-14 - AUTO-SAVE BUG FIX COMPLETE 🔧
-
-**Duration**: ~2 hours
-**Focus**: Fix critical workbook data loss issue
-
-**Problem Identified**:
-Users reported habit tracking progress not saving properly. Root cause was a race condition in the auto-save cycle: when save completes, the TanStack Query cache update triggers the load useEffect, which overwrites user changes made between save trigger and completion.
-
-**Solution Applied**:
-Added `hasLoadedInitialData` useRef pattern to all 35 workbook screens:
-```typescript
-const hasLoadedInitialData = useRef(false);
-
-useEffect(() => {
-  if (savedProgress?.data && !hasLoadedInitialData.current) {
-    setLocalData(savedProgress.data);
-    hasLoadedInitialData.current = true;
-  }
-}, [savedProgress]);
-```
-
-**Files Fixed** (35 screens across all 10 phases):
-
-**Phase 1** (11 screens):
-- HabitsAuditScreen, WheelOfLifeScreen, SWOTAnalysisScreen
-- FeelWheelScreen, ValuesScreen, ABCModelScreen
-- StrengthsWeaknessesScreen, ComfortZoneScreen, KnowYourselfScreen
-- AbilitiesRatingScreen, ThoughtAwarenessScreen
-
-**Phase 2** (3 screens):
-- PurposeScreen, VisionBoardScreen, LifeMissionScreen
-
-**Phase 3** (3 screens):
-- SMARTGoalsScreen, ActionPlanScreen, TimelineScreen
-
-**Phase 4** (3 screens):
-- FearInventoryScreen, LimitingBeliefsScreen, FearFacingPlanScreen
-
-**Phase 5** (3 screens):
-- SelfLoveAffirmationsScreen, SelfCareRoutineScreen, InnerChildScreen
-
-**Phase 6** (3 screens):
-- ThreeSixNineScreen, ScriptingScreen, WOOPScreen
-
-**Phase 7** (3 screens):
-- GratitudeJournalScreen, GratitudeLettersScreen, GratitudeMeditationScreen
-
-**Phase 8** (3 screens):
-- EnvyInventoryScreen, InspirationReframeScreen, RoleModelsScreen
-
-**Phase 9** (3 screens):
-- TrustAssessmentScreen, SurrenderPracticeScreen, SignsScreen
-
-**Phase 10** (3 screens):
-- JourneyReviewScreen, FutureLetterScreen, GraduationScreen
-
-**Also Fixed**:
-- Typography errors in ManuscriptScreen.tsx and ObservableScienceScreen.tsx (`fontFamilies.heading` → `fontFamilies.primary`)
-- Missing `useRef` imports in 7 files after parallel agent execution
-
-**Build History**:
-| Build | Date | Notes |
-|-------|------|-------|
-| 18 | Dec 14, 2025 | Purple splash screen fix (was 1x1 red pixel) |
-| 17 | Dec 14, 2025 | Guru fixes committed & pushed before build |
-| 16 | Dec 14, 2025 | Guru Analysis fixes (function name, request format, worksheet counts) |
-| 15 | Dec 14, 2025 | Complete auto-save fix (all 35 screens) |
-| 14 | Dec 14, 2025 | Initial fix (3 screens) + typography |
-| 13 | Dec 13, 2025 | MVP Beta - App Store Submission |
-
-**Testing Notes**:
-- Build 18 includes purple splash screen (no more red flash on launch)
-- Test Guru with `test@manifest.app` (11/11 Phase 1 complete)
-- Delete app from device before installing to clear cached data
-
----
-
-### 2025-12-13 - APP STORE SUBMISSION COMPLETE 🍎
-
-**Duration**: ~2 hours
-**Focus**: Submit MVP to Apple App Store
-
-**App Store Submission**:
-- Submitted Build 13 (version 1.0.0) to Apple for review
-- Set pricing to Free ($0.00) for 175 countries
-- Configured Content Rights Information
-- Created and uploaded iPad 13" screenshot (2048 × 2732px)
-- App status: **Waiting for Review** (24-48 hours typical)
-
-**Git Milestone**:
-- Created tag `v1.0.0-beta.13` - MVP Beta Build
-- Pushed all changes to GitHub
-
-**Package Cleanup**:
-- Removed `expo-secure-store` (caused auth issues)
-- Removed `babel-plugin-transform-remove-console` (not needed)
-
-**Build History Update**:
-| Build | Date | Notes |
-|-------|------|-------|
-| 13 | Dec 13, 2025 | MVP Beta - **App Store Submission** |
-| 12 | Dec 12, 2025 | Fixed security revert issues |
-| 11 | Dec 11, 2025 | Security fixes (broken - reverted) |
-
-**Known Issue to Fix Post-Launch**:
-- Habit tracking progress not saving in workbook
-
-**Next Steps**:
-1. Wait for Apple review (24-48 hours)
-2. Address any review feedback
-3. Fix habit tracking bug
-4. Plan marketing/launch activities
-
----
-
-*For Change Log entries before December 13, 2025, see `MTU-project-status-archive.md`*
+*For entries before December 13, 2025, see `MTU-project-status-archive.md`*
 
 ---
 
@@ -1533,6 +971,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Status File Cleanup)
+**Last Updated by**: Claude Code (Phase 2 Status File Cleanup)
 **Session Date**: December 25, 2025
-**Document Version**: 2.0.0
+**Document Version**: 2.1.0
