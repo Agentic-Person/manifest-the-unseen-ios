@@ -4,21 +4,37 @@
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🚀 **BUILD 28 SUBMITTED** - App Store compliance audit complete, all critical blockers fixed
+**Status**: 🟡 **BUILD 29 - WAITING FOR APP STORE REVIEW** - Resubmitted Dec 25, 2025
 
 ---
 
-## 🎉 MILESTONE: App Store Compliance Audit Complete!
+## 🎉 MILESTONE: App Store Resubmission Complete!
 
 | Item | Value |
 |------|-------|
 | **Version** | 1.0.0 |
-| **Build (Latest)** | 28 (building on EAS) |
-| **Build (TestFlight)** | 27 |
+| **Build (App Store)** | 29 (production profile) |
+| **Build (TestFlight)** | 28 (testflight profile) |
 | **Git Tag** | `v1.0.0-beta.13` |
-| **App Store Status** | Waiting for Review |
-| **TestFlight** | Available (Build 27) |
-| **Submission Date** | December 13, 2025 |
+| **App Store Status** | 🟡 Waiting for Review |
+| **Submission Date** | December 25, 2025 12:35 PM |
+| **Submission ID** | 2115db35-9f20-4543-84eb-40979f7a6eb4 |
+
+### Previous Rejection (Build 13 - Dec 15, 2025)
+- **Guideline 2.1 - Performance - App Completeness**
+- **Bug:** "no further action occurred after tapping on any features in Profile tab"
+- **Device:** iPad Air (5th generation), iPadOS 26.1
+
+### Build Profiles (eas.json)
+| Profile | Command | Purpose |
+|---------|---------|---------|
+| `testflight` | `eas build --profile testflight` | Testing with full access bypass enabled |
+| `production` | `eas build --profile production` | App Store (RevenueCat enabled, no bypasses) |
+
+**What's Included in Build 29 (App Store Resubmission - Dec 25):**
+- ✅ **Production build profile** - TESTFLIGHT_FULL_ACCESS=false, DEV_SKIP_AUTH=false
+- ✅ **RevenueCat fully enabled** - Real subscription flow for App Store
+- ✅ All compliance features from Build 28
 
 **What's Included in Build 28 (App Store Compliance - Dec 25):**
 - ✅ **Account Deletion** (Apple Guideline 5.1.1) - Two-step confirmation with password re-entry
