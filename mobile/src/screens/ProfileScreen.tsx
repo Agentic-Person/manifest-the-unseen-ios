@@ -21,7 +21,7 @@ const ProfileScreen = ({ navigation }: Props) => {
   const user = useUser();
   const profile = useProfile();
   const signOut = useSignOut();
-  const { isLoading } = useUserProfile();
+  const { isLoading, isFetching, error } = useUserProfile();
 
   // Get app version from expo-constants
   const appVersion = Constants.expoConfig?.version || '1.0.0';
@@ -35,10 +35,24 @@ const ProfileScreen = ({ navigation }: Props) => {
     }
   };
 
-  if (isLoading) {
+  // Only show loading if we're actually fetching AND don't have profile data
+  // This prevents infinite loading when query is disabled or fails
+  if (isFetching && !profile) {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Loading...</Text>
+      </View>
+    );
+  }
+
+  // If there's an error and no profile, show error state
+  if (error && !profile) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>Unable to load profile</Text>
+        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+          <Text style={styles.signOutText}>Sign Out</Text>
+        </TouchableOpacity>
       </View>
     );
   }
