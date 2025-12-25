@@ -114,9 +114,13 @@ mobile/web/
 
 # Audio content (stored in Supabase Storage, not git)
 meditation-audio/
+meditation-audio/.wip/
 *.m4a
 *.mp3
 *.wav
+
+# Work in progress folders
+.wip/
 
 # Screenshots and snips (local development only)
 snips/
