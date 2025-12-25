@@ -1,26 +1,36 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-21
+**Last Updated**: 2025-12-25
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🚀 **BUILD 26 READY** - Promo code system deployed (EARLY50 - 50% off for 30 early adopters)
+**Status**: 🚀 **BUILD 28 SUBMITTED** - App Store compliance audit complete, all critical blockers fixed
 
 ---
 
-## 🎉 MILESTONE: App Store Submission Complete!
+## 🎉 MILESTONE: App Store Compliance Audit Complete!
 
 | Item | Value |
 |------|-------|
 | **Version** | 1.0.0 |
-| **Build (Local)** | 26 (ready, not yet on TestFlight) |
-| **Build (TestFlight)** | 24 |
+| **Build (Latest)** | 28 (building on EAS) |
+| **Build (TestFlight)** | 27 |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | Waiting for Review |
-| **TestFlight** | Available (Build 24) |
+| **TestFlight** | Available (Build 27) |
 | **Submission Date** | December 13, 2025 |
 
-**What's Included in Build 26 (pending):**
+**What's Included in Build 28 (App Store Compliance - Dec 25):**
+- ✅ **Account Deletion** (Apple Guideline 5.1.1) - Two-step confirmation with password re-entry
+- ✅ **Data Export** (GDPR/Privacy) - Export all user data as JSON from Privacy & Security
+- ✅ **iOS Permission Descriptions** - NSMicrophoneUsageDescription, NSPhotoLibraryUsageDescription, NSCameraUsageDescription, NSFaceIDUsageDescription
+- ✅ **Production Env Vars Fixed** - DEV_SKIP_AUTH and TESTFLIGHT_FULL_ACCESS set to false
+- ✅ **TEST MODE Hidden** - Wrapped in `__DEV__` check (hidden in production builds)
+- ✅ **delete-account Edge Function** - Deployed to Supabase for cascade user deletion
+- ✅ **Playwright Compliance Tests** - Automated tests for App Store requirements
+- ✅ **expo-sharing** package installed for data export
+
+**What's Included in Build 27 (previous):**
 - ✅ APS branded splash screen (black background)
 - ✅ Guru AI fully functional with API keys configured
 - ✅ All bug fixes from Dec 18-20 sessions
