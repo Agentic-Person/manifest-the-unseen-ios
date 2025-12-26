@@ -25,10 +25,27 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 // CORS Headers
 // =============================================================================
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// CORS Headers - Restrict to known origins for security
+// See SecurityAudit.md H4: Overly permissive CORS
+const ALLOWED_ORIGINS = [
+  'https://manifesttheunseen.com',
+  'https://www.manifesttheunseen.com',
+  'https://zbyszxtwzoylyygtexdr.supabase.co', // Supabase project
+];
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  // Allow the origin if it's in our list, otherwise use first allowed origin
+  // For mobile apps, origin may be null/empty - allow those requests
+  const allowedOrigin = !origin || ALLOWED_ORIGINS.includes(origin)
+    ? (origin || '*')
+    : ALLOWED_ORIGINS[0];
+
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
+}
 
 // =============================================================================
 // Types
@@ -73,6 +90,8 @@ interface ValidationResponse {
 // =============================================================================
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -92,13 +111,17 @@ serve(async (req) => {
     const normalizedCode = code.toUpperCase().trim();
     console.log(`Validating promo code: ${normalizedCode}`);
 
-    // Initialize Supabase admin client for database access
-    const supabaseAdmin = createClient(
+    // Initialize Supabase clients
+    // SECURITY FIX (SecurityAudit.md C4): Use anon+JWT for most operations
+    // Service role only needed for updating promo_codes counter
+
+    // Anon client for public promo code lookups (RLS allows public SELECT on active codes)
+    const supabaseAnon = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
     );
 
-    // Initialize Supabase client with user JWT for auth
+    // User client with JWT for authenticated operations
     const supabaseUser = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
@@ -109,12 +132,18 @@ serve(async (req) => {
       }
     );
 
+    // Admin client ONLY for counter updates (requires service role)
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
     // Get user ID if authenticated
     const { data: { user } } = await supabaseUser.auth.getUser();
     const userId = user?.id;
 
-    // Look up promo code
-    const { data: promoCode, error: fetchError } = await supabaseAdmin
+    // Look up promo code (uses anon client - RLS allows public SELECT on active codes)
+    const { data: promoCode, error: fetchError } = await supabaseAnon
       .from('promo_codes')
       .select('*')
       .eq('code', normalizedCode)
@@ -172,8 +201,9 @@ serve(async (req) => {
     }
 
     // Check if user already redeemed (if authenticated)
+    // Uses user client with JWT - RLS allows users to read own redemptions
     if (userId) {
-      const { data: existingRedemption } = await supabaseAdmin
+      const { data: existingRedemption } = await supabaseUser
         .from('promo_code_redemptions')
         .select('id')
         .eq('promo_code_id', promo.id)
@@ -222,7 +252,8 @@ serve(async (req) => {
     }
 
     // Insert redemption record
-    const { error: redemptionError } = await supabaseAdmin
+    // Uses user client with JWT - RLS policy "Users can insert own redemptions" allows this
+    const { error: redemptionError } = await supabaseUser
       .from('promo_code_redemptions')
       .insert({
         promo_code_id: promo.id,

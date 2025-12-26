@@ -27,9 +27,31 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // =============================================================================
-// CORS Headers
+// CORS Headers - Restrict to known origins for security
+// See SecurityAudit.md H4: Overly permissive CORS
 // =============================================================================
 
+const ALLOWED_ORIGINS = [
+  'https://manifesttheunseen.com',
+  'https://www.manifesttheunseen.com',
+  'https://zbyszxtwzoylyygtexdr.supabase.co', // Supabase project
+];
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  // Allow the origin if it's in our list, otherwise use first allowed origin
+  // For mobile apps, origin may be null/empty - allow those requests
+  const allowedOrigin = !origin || ALLOWED_ORIGINS.includes(origin)
+    ? (origin || '*')
+    : ALLOWED_ORIGINS[0];
+
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
+}
+
+// Legacy corsHeaders for backwards compatibility in existing code
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',

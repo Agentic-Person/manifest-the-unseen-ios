@@ -23,13 +23,29 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // =============================================================================
-// CORS Headers
+// CORS Headers - Restrict to known origins for security
+// See SecurityAudit.md H4: Overly permissive CORS
 // =============================================================================
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const ALLOWED_ORIGINS = [
+  'https://manifesttheunseen.com',
+  'https://www.manifesttheunseen.com',
+  'https://zbyszxtwzoylyygtexdr.supabase.co', // Supabase project
+];
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('origin') || '';
+  // Allow the origin if it's in our list, otherwise use first allowed origin
+  // For mobile apps, origin may be null/empty - allow those requests
+  const allowedOrigin = !origin || ALLOWED_ORIGINS.includes(origin)
+    ? (origin || '*')
+    : ALLOWED_ORIGINS[0];
+
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
+}
 
 // =============================================================================
 // Types
@@ -50,6 +66,8 @@ interface DeleteAccountResponse {
 // =============================================================================
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -69,7 +87,12 @@ serve(async (req) => {
       );
     }
 
-    // Initialize Supabase client with user JWT for auth verification
+    // Initialize Supabase clients
+    // NOTE on service role usage (SecurityAudit.md C4):
+    // Service role IS REQUIRED here for:
+    // 1. Storage operations (deleting user's files requires admin access)
+    // 2. auth.admin.deleteUser() - this admin API requires service role
+    // The anon+JWT client is used for user authentication verification only
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
@@ -103,11 +126,13 @@ serve(async (req) => {
     });
 
     if (signInError) {
+      // SECURITY FIX (SecurityAudit.md C5): Use generic error message
+      // Don't reveal whether password was wrong vs other auth issues
       console.log(`Delete account: Password verification failed for user ${user.id}`);
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Incorrect password. Please try again.',
+          error: 'Unable to verify your identity. Please check your password and try again.',
         } as DeleteAccountResponse),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );

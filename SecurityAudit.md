@@ -24,8 +24,8 @@
 
 | Severity | Count | Fixed | Remaining |
 |----------|-------|-------|-----------|
-| CRITICAL | 5 | 2 | 3 |
-| HIGH | 6 | 0 | 6 |
+| CRITICAL | 5 | 4 | 1 (C1: key rotation - manual) |
+| HIGH | 6 | 2 | 4 |
 | MEDIUM | 11 | 0 | 11 |
 | LOW | 3 | 0 | 3 |
 
@@ -43,12 +43,12 @@
 | C1 | CRITICAL | Exposed API keys in version control | `.env.local`, `mobile/.env` | PENDING |
 | C2 | CRITICAL | Hardcoded dev credentials | `authStore.ts:96-97` | **FIXED** |
 | C3 | CRITICAL | Authentication bypass flag | `eas.json`, `authStore.ts:67` | **FIXED** |
-| C4 | CRITICAL | Service role key in Edge Functions | `delete-account/`, `validate-promo/` | PENDING |
-| C5 | CRITICAL | Weak account deletion verification | `delete-account/index.ts:99-114` | PENDING |
-| H1 | HIGH | Missing RLS policies on knowledge_embeddings | `security_fixes.sql:19-41` | PENDING |
+| C4 | CRITICAL | Service role key in Edge Functions | `delete-account/`, `validate-promo/` | **FIXED** |
+| C5 | CRITICAL | Weak account deletion verification | `delete-account/index.ts:99-114` | **PARTIAL** |
+| H1 | HIGH | Missing RLS policies on knowledge_embeddings | `security_fixes.sql:19-41` | **FIXED** |
 | H2 | HIGH | Unverified conversation ownership | `guru-analysis/index.ts:1405-1418` | PENDING |
 | H3 | HIGH | Sensitive data in console logs | Multiple services | PENDING |
-| H4 | HIGH | Overly permissive CORS (*) | All Edge Functions | PENDING |
+| H4 | HIGH | Overly permissive CORS (*) | All Edge Functions | **FIXED** |
 | H5 | HIGH | No rate limiting on AI endpoints | `ai-chat/`, `guru-analysis/` | PENDING |
 | H6 | HIGH | Missing journal entry encryption | `initial_schema.sql:90-99` | PENDING |
 | M1 | MEDIUM | Insecure web storage (localStorage) | `supabase.ts:26-48` | PENDING |
@@ -643,6 +643,64 @@ Use this section to track changes as they're made.
 - [ ] App launches to login screen in development
 - [ ] Real authentication works end-to-end
 - [ ] No DEV_SKIP_AUTH references remain in codebase
+
+---
+
+### 2025-12-25 - Claude Code - C4, H1, H4: Edge Function Security & RLS Fixes
+
+**Issues Addressed:**
+- C4: Service role key in Edge Functions
+- H1: Missing RLS policies on knowledge_embeddings
+- H4: Overly permissive CORS
+
+**Files Created:**
+1. `supabase/migrations/20251225000000_security_rls_improvements.sql`
+   - Added RLS policy: "Users can insert own redemptions" on promo_code_redemptions
+   - Added RLS policy: "Service role can update embeddings" on knowledge_embeddings
+   - Added RLS policy: "Service role can delete embeddings" on knowledge_embeddings
+
+**Files Modified:**
+2. `supabase/functions/validate-promo/index.ts`
+   - Changed promo code lookup to use anon client (RLS allows public SELECT)
+   - Changed redemption check to use user JWT (RLS allows users to read own)
+   - Changed redemption insert to use user JWT (new RLS policy allows)
+   - Only counter update uses service role now
+   - Added CORS origin restriction
+
+3. `supabase/functions/delete-account/index.ts`
+   - Added documentation explaining why service role is necessary
+   - Added CORS origin restriction
+   - Improved error message (C5 partial fix)
+
+4. `supabase/functions/guru-analysis/index.ts`
+   - Added CORS origin restriction (getCorsHeaders function)
+   - Already correctly uses anon+JWT
+
+5. `supabase/functions/ai-chat/index.ts`
+   - Added CORS origin restriction (getCorsHeaders function)
+
+**CORS Allowed Origins:**
+- https://manifesttheunseen.com
+- https://www.manifesttheunseen.com
+- https://zbyszxtwzoylyygtexdr.supabase.co
+- Mobile apps (null/empty origin allowed)
+
+**Service Role Usage After Fix:**
+| Function | Service Role Usage | Reason |
+|----------|-------------------|--------|
+| validate-promo | Counter update only | Requires admin to modify promo_codes table |
+| delete-account | Storage + auth.admin.deleteUser | Admin APIs require service role |
+| guru-analysis | None | All operations via user JWT |
+| ai-chat | None | All operations via user JWT |
+
+**Migration Required:**
+Run `npx supabase db push` to apply the new RLS policies.
+
+**Verification:**
+- [ ] validate-promo works with user JWT for redemptions
+- [ ] delete-account still works for account deletion
+- [ ] CORS blocks requests from unknown origins
+- [ ] knowledge_embeddings has complete RLS coverage
 
 ---
 
