@@ -1,8 +1,8 @@
 # Security Audit - Manifest the Unseen iOS
 
 **Audit Date:** December 25, 2025
-**Last Updated:** December 25, 2025
-**Status:** IN PROGRESS
+**Last Updated:** December 25, 2025 23:45 UTC
+**Status:** 🟡 IN PROGRESS - 4/5 Critical Fixed, 1 Requires Manual Action
 
 ---
 
@@ -693,10 +693,19 @@ Use this section to track changes as they're made.
 | guru-analysis | None | All operations via user JWT |
 | ai-chat | None | All operations via user JWT |
 
-**Migration Required:**
-Run `npx supabase db push` to apply the new RLS policies.
+**Deployment Status (Dec 25, 2025):**
+```
+✓ Migration 20251225000000_security_rls_improvements.sql - APPLIED
+✓ validate-promo (70.31kB) - DEPLOYED
+✓ delete-account (69.29kB) - DEPLOYED
+✓ guru-analysis (87.17kB) - DEPLOYED
+✓ ai-chat (71.17kB) - DEPLOYED
+✓ Git commit 36f6304 - PUSHED to origin/main
+```
 
 **Verification:**
+- [x] Migration applied to Supabase production
+- [x] All 4 Edge Functions deployed successfully
 - [ ] validate-promo works with user JWT for redemptions
 - [ ] delete-account still works for account deletion
 - [ ] CORS blocks requests from unknown origins

@@ -1,10 +1,51 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-25
+**Last Updated**: 2025-12-25 (Security Audit Complete)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟡 **BUILD 29 - WAITING FOR APP STORE REVIEW** - Resubmitted Dec 25, 2025
+**Status**: 🟡 **BUILD 29 - WAITING FOR APP STORE REVIEW** + 🔒 **SECURITY HARDENING IN PROGRESS**
+
+---
+
+## 🔒 SECURITY AUDIT - December 25, 2025
+
+**Full audit completed** - See `SecurityAudit.md` for details.
+
+| Severity | Total | Fixed | Remaining |
+|----------|-------|-------|-----------|
+| CRITICAL | 5 | 4 | 1 (manual key rotation) |
+| HIGH | 6 | 2 | 4 |
+| MEDIUM | 11 | 0 | 11 |
+| LOW | 3 | 0 | 3 |
+
+### Critical Fixes Applied (Dec 25)
+| ID | Issue | Status |
+|----|-------|--------|
+| C2 | Hardcoded dev credentials | ✅ FIXED - Removed from authStore.ts |
+| C3 | DEV_SKIP_AUTH bypass | ✅ FIXED - Removed entirely |
+| C4 | Service role in Edge Functions | ✅ FIXED - Now uses anon+JWT |
+| C5 | Weak account deletion | ⚠️ PARTIAL - Generic error message |
+| H1 | Missing RLS policies | ✅ FIXED - Added UPDATE/DELETE |
+| H4 | Permissive CORS (*) | ✅ FIXED - Restricted origins |
+
+### ⚠️ CRITICAL: Manual Action Required (C1)
+**Exposed API keys in git history** - Must rotate:
+- [ ] Supabase keys (anon + service role)
+- [ ] Anthropic Claude API key
+- [ ] OpenAI API key
+- [ ] RevenueCat key
+- [ ] Clean git history with `git filter-repo`
+
+See `SecurityAudit.md` → C1 section for step-by-step instructions.
+
+### Edge Functions Deployed (Dec 25)
+```
+✓ validate-promo (70.31kB) - Security refactored
+✓ delete-account (69.29kB) - CORS + error handling
+✓ guru-analysis (87.17kB) - CORS restricted
+✓ ai-chat (71.17kB) - CORS restricted
+```
 
 ---
 
@@ -15,6 +56,7 @@
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
 | **Build (TestFlight)** | 30 (testflight profile) |
+| **Build (Latest)** | 32 (production - post-security fixes) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -31,14 +73,19 @@
 | `testflight` | `eas build --profile testflight` | Testing with full access bypass enabled |
 | `production` | `eas build --profile production` | App Store (RevenueCat enabled, no bypasses) |
 
+**What's Included in Build 32+ (Post-Security Fixes - Dec 25):**
+- ✅ **DEV_SKIP_AUTH removed entirely** - No more auth bypass in any build
+- ✅ **Edge Functions secured** - CORS restricted, service role minimized
+- ✅ **RLS policies complete** - All tables have proper access control
+- ⚠️ **All builds require real authentication** - No dev shortcuts
+
 **What's Included in Build 30 (TestFlight Testing - Dec 25):**
 - ✅ **TestFlight build profile** - TESTFLIGHT_FULL_ACCESS=true (bypasses subscription)
-- ✅ DEV_SKIP_AUTH=false (authentication still required)
 - ✅ All compliance features from Build 28/29
 - ⚠️ **FOR TESTING ONLY** - Not for App Store submission
 
 **What's Included in Build 29 (App Store Resubmission - Dec 25):**
-- ✅ **Production build profile** - TESTFLIGHT_FULL_ACCESS=false, DEV_SKIP_AUTH=false
+- ✅ **Production build profile** - TESTFLIGHT_FULL_ACCESS=false
 - ✅ **RevenueCat fully enabled** - Real subscription flow for App Store
 - ✅ All compliance features from Build 28
 - ⚠️ **FOR APP STORE ONLY** - Use Build 30 for TestFlight testing
@@ -134,12 +181,12 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
+36f6304 security: fix Edge Functions (C4, H1, H4) - reduce service role usage and restrict CORS
+560bbda security: remove dev auth bypass and add security audit documentation
+f69c767 build: increment to Build 32 for production App Store fix
 ec47eb9 feat(web): add FAQ about The Guru AI feature
 953b6b1 feat(web): CTA buttons scroll to QR code promo banner
 07d8491 feat(web): landing page updates - navbar, parallax, styled sections
-19f9330 feat(promo): add EARLY50 promo code system for early adopters
-e5da735 fix(guru): resolve navigation loop bug + add workbook update re-assessment
-8820282 feat(splash): Add APS branded splash screen on black background
 ```
 
 ---
