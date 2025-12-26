@@ -719,6 +719,38 @@ Use this section to track changes as they're made.
 
 ---
 
+### 2025-12-26 - Claude Code - JWT ES256 Compatibility Issue
+
+**Issue Discovered:** After rotating JWT signing keys from HS256 to ES256 (ECC P-256), all Edge Functions returned `401 Invalid JWT`.
+
+**Investigation:**
+1. Login worked correctly - new access tokens issued with ES256 signing
+2. REST API calls worked - database queries with user JWT succeeded
+3. Edge Functions failed - gateway rejected ES256 tokens before function code executed
+
+**Root Cause:**
+- Supabase Edge Function gateway performs JWT verification BEFORE function code runs
+- Gateway is configured for HS256 verification
+- ES256 (ECC P-256) tokens are not supported at the gateway level
+- This is a Supabase platform limitation, not a code issue
+
+**Resolution:**
+1. Reverted JWT signing key back to **Legacy HS256** in Supabase Dashboard (Settings → API → JWT Keys)
+2. User logged out and back in to get fresh HS256-signed access token
+3. Edge Functions now work correctly with HS256 tokens
+
+**Files Modified:**
+- `supabase/config.toml` - Added explicit `verify_jwt = true` for all 4 Edge Functions with detailed documentation about JWT algorithm requirements
+
+**Key Lessons:**
+- Edge Function gateway requires HS256 (Legacy) JWT signing - ES256 is NOT supported
+- If migrating to ES256 in future, would need to set `verify_jwt = false` and handle auth inside function
+- This limitation should be documented for any future JWT key rotation attempts
+
+**Commit:** `70d00d1` - config: add Edge Function JWT verification settings with documentation
+
+---
+
 ### 2025-12-26 - Claude Code - C1: API Key Rotation (Hybrid Approach)
 
 **Decision:** User opted for hybrid approach - new publishable keys for mobile, legacy JWT for Edge Functions

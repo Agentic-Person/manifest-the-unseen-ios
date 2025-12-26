@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-26 (API Key Rotation Complete)
+**Last Updated**: 2025-12-26 (JWT Key Issue Resolved)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
@@ -45,9 +45,32 @@
 - `.env.local` - All keys documented
 - `.mcp.json` - New Supabase access token
 
-**Manual Step Required:**
-- [ ] Update Edge Function secrets in Supabase Dashboard (ANTHROPIC_API_KEY, OPENAI_API_KEY)
+**Manual Steps Completed:**
+- [x] Update Edge Function secrets in Supabase Dashboard (ANTHROPIC_API_KEY, OPENAI_API_KEY) ✅ Dec 26
 - [ ] Clean git history with `git filter-repo` (optional - old keys now invalid)
+
+### ⚠️ JWT Key Compatibility Issue Discovered & Resolved (Dec 26)
+
+**Problem Found:** After rotating JWT signing keys, Edge Functions returned `401 Invalid JWT`.
+
+**Root Cause:**
+- Supabase offers two JWT signing algorithms: Legacy HS256 and new ECC (P-256) / ES256
+- User rotated to ES256, but Edge Function gateway does NOT support ES256 token validation
+- Access tokens signed with ES256 were rejected at the gateway level (before function code runs)
+
+**Resolution:**
+1. Reverted JWT signing key back to **Legacy HS256** in Supabase Dashboard
+2. Edge Functions now validate HS256-signed tokens correctly
+3. Guru AI and all Edge Functions working again
+
+**Key Lesson Documented:**
+- Edge Function gateway requires HS256 (Legacy) JWT signing
+- ES256 (ECC P-256) tokens are rejected with "Invalid JWT" at gateway level
+- Config documented in `supabase/config.toml` for future reference
+
+**Files Updated:**
+- `supabase/config.toml` - Added explicit `verify_jwt = true` for all functions with detailed comments
+- Git commit: `70d00d1` - config: add Edge Function JWT verification settings with documentation
 
 ### Edge Functions Deployed (Dec 25)
 ```
@@ -191,12 +214,12 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
+70d00d1 config: add Edge Function JWT verification settings with documentation
+7eee8ef security: complete API key rotation (C1 fix) - hybrid publishable/legacy approach
+f7c1fb2 docs: update project status and security audit with deployment confirmation
 36f6304 security: fix Edge Functions (C4, H1, H4) - reduce service role usage and restrict CORS
 560bbda security: remove dev auth bypass and add security audit documentation
 f69c767 build: increment to Build 32 for production App Store fix
-ec47eb9 feat(web): add FAQ about The Guru AI feature
-953b6b1 feat(web): CTA buttons scroll to QR code promo banner
-07d8491 feat(web): landing page updates - navbar, parallax, styled sections
 ```
 
 ---
