@@ -136,7 +136,35 @@ file_size_limit = "50MB"
 # -----------------------------------------------------------------------------
 # Edge Functions Configuration
 # -----------------------------------------------------------------------------
+# JWT Verification Settings:
+# - verify_jwt = true: Gateway validates JWT before function executes (recommended)
+# - verify_jwt = false: Bypass gateway validation, handle auth in function code
+#
+# IMPORTANT: These functions require authenticated users. The gateway-level
+# JWT verification provides an additional security layer before the function
+# code even runs. Each function also validates auth internally via
+# supabase.auth.getUser() for defense-in-depth.
+#
+# NOTE (2025-12-26): Edge Function gateway requires HS256 (Legacy) JWT signing.
+# ES256 (ECC P-256) tokens are rejected with "Invalid JWT" at the gateway level.
+# If migrating to ES256 in the future, test Edge Functions thoroughly or
+# consider setting verify_jwt = false and relying on internal auth validation.
+# -----------------------------------------------------------------------------
+
 [functions.ai-chat]
+# AI chat with Claude - requires authenticated user for conversation history
+verify_jwt = true
+
+[functions.guru-analysis]
+# Phase analysis with AI Guru - requires authenticated user + completed phase
+verify_jwt = true
+
+[functions.delete-account]
+# Account deletion - requires authenticated user (critical operation)
+verify_jwt = true
+
+[functions.validate-promo]
+# Promo code validation - requires authenticated user for tier assignment
 verify_jwt = true
 
 # -----------------------------------------------------------------------------
