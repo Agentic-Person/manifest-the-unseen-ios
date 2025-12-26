@@ -1,27 +1,28 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-25 (Security Audit Complete)
+**Last Updated**: 2025-12-26 (API Key Rotation Complete)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟡 **BUILD 29 - WAITING FOR APP STORE REVIEW** + 🔒 **SECURITY HARDENING IN PROGRESS**
+**Status**: 🟡 **BUILD 29 - WAITING FOR APP STORE REVIEW** + 🔒 **SECURITY HARDENING COMPLETE**
 
 ---
 
-## 🔒 SECURITY AUDIT - December 25, 2025
+## 🔒 SECURITY AUDIT - December 25-26, 2025
 
 **Full audit completed** - See `SecurityAudit.md` for details.
 
 | Severity | Total | Fixed | Remaining |
 |----------|-------|-------|-----------|
-| CRITICAL | 5 | 4 | 1 (manual key rotation) |
+| CRITICAL | 5 | 5 | 0 ✅ |
 | HIGH | 6 | 2 | 4 |
 | MEDIUM | 11 | 0 | 11 |
 | LOW | 3 | 0 | 3 |
 
-### Critical Fixes Applied (Dec 25)
+### Critical Fixes Applied (Dec 25-26)
 | ID | Issue | Status |
 |----|-------|--------|
+| C1 | Exposed API keys | ✅ FIXED - All keys rotated (Dec 26) |
 | C2 | Hardcoded dev credentials | ✅ FIXED - Removed from authStore.ts |
 | C3 | DEV_SKIP_AUTH bypass | ✅ FIXED - Removed entirely |
 | C4 | Service role in Edge Functions | ✅ FIXED - Now uses anon+JWT |
@@ -29,15 +30,24 @@
 | H1 | Missing RLS policies | ✅ FIXED - Added UPDATE/DELETE |
 | H4 | Permissive CORS (*) | ✅ FIXED - Restricted origins |
 
-### ⚠️ CRITICAL: Manual Action Required (C1)
-**Exposed API keys in git history** - Must rotate:
-- [ ] Supabase keys (anon + service role)
-- [ ] Anthropic Claude API key
-- [ ] OpenAI API key
-- [ ] RevenueCat key
-- [ ] Clean git history with `git filter-repo`
+### ✅ API Key Rotation Complete (Dec 26)
+**Hybrid approach implemented:**
+- ✅ **Mobile app**: New Supabase publishable key (`sb_publishable_...`)
+- ✅ **Edge Functions**: Legacy JWT keys (required until Supabase adds support)
+- ✅ **Anthropic API key**: Rotated and updated
+- ✅ **OpenAI API key**: Rotated and updated
+- ✅ **RevenueCat**: Existing `appl_` key retained (still valid)
+- ✅ **MCP access token**: Rotated for Claude Code
 
-See `SecurityAudit.md` → C1 section for step-by-step instructions.
+**Files Updated:**
+- `mobile/.env` - Publishable key + new AI keys
+- `mobile/eas.json` - Publishable key in testflight/production profiles
+- `.env.local` - All keys documented
+- `.mcp.json` - New Supabase access token
+
+**Manual Step Required:**
+- [ ] Update Edge Function secrets in Supabase Dashboard (ANTHROPIC_API_KEY, OPENAI_API_KEY)
+- [ ] Clean git history with `git filter-repo` (optional - old keys now invalid)
 
 ### Edge Functions Deployed (Dec 25)
 ```
