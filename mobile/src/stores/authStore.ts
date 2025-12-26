@@ -62,77 +62,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true });
 
-          // Dev mode: Skip auth UI but actually sign in as demo user
-          // This ensures we have a valid JWT for RLS policies to work
-          if (process.env.EXPO_PUBLIC_DEV_SKIP_AUTH === 'true') {
-            console.log('[Auth] DEV_SKIP_AUTH enabled - signing in as demo user');
-
-            // First check if we already have a valid session
-            const { data: existingSession } = await supabase.auth.getSession();
-            if (existingSession?.session) {
-              console.log('[Auth] Existing session found for:', existingSession.session.user.email);
-              set({
-                user: existingSession.session.user,
-                session: existingSession.session,
-                profile: {
-                  id: existingSession.session.user.id,
-                  email: existingSession.session.user.email,
-                  fullName: 'Demo User',
-                  displayName: 'Demo User',
-                  subscriptionTier: 'enlightenment',
-                  subscriptionStatus: 'active',
-                  currentPhase: 1,
-                  createdAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString(),
-                } as any,
-                isAuthenticated: true,
-                isLoading: false,
-              });
-              return;
-            }
-
-            // Sign in as demo user to get a valid JWT for RLS
-            // Uses env var if set, otherwise falls back to jimmy@agenticpersonnel.com
-            const devEmail = process.env.EXPO_PUBLIC_DEV_EMAIL || 'jimmy@agenticpersonnel.com';
-            const devPassword = process.env.EXPO_PUBLIC_DEV_PASSWORD || 'TestPassword123!';
-            console.log('[Auth] Attempting sign-in with:', devEmail);
-
-            const { data, error } = await supabase.auth.signInWithPassword({
-              email: devEmail,
-              password: devPassword,
-            });
-
-            if (error) {
-              console.error('[Auth] Demo user sign-in failed:', error.message);
-              console.error('[Auth] Error code:', error.status, error.name);
-              console.log('[Auth] Attempted email:', devEmail);
-              console.log('[Auth] Hint: Ensure user exists in Supabase Auth with correct password');
-              console.log('[Auth] Supabase URL:', process.env.EXPO_PUBLIC_SUPABASE_URL);
-              set({ isLoading: false, error: error.message });
-              return;
-            }
-
-            console.log('[Auth] Demo user signed in successfully:', data.user.id);
-            set({
-              user: data.user,
-              session: data.session,
-              profile: {
-                id: data.user.id,
-                email: data.user.email,
-                fullName: 'Demo User',
-                displayName: 'Demo User',
-                subscriptionTier: 'enlightenment',
-                subscriptionStatus: 'active',
-                currentPhase: 1,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-              } as any,
-              isAuthenticated: true,
-              isLoading: false,
-            });
-            return;
-          }
-
+          // Check for existing session
           const { data: { session } } = await supabase.auth.getSession();
 
           if (session) {
