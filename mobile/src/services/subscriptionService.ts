@@ -87,7 +87,10 @@ export async function configurePurchases(userId?: string): Promise<void> {
 export async function setUserId(userId: string): Promise<void> {
   try {
     await Purchases.logIn(userId);
-    console.log('RevenueCat user ID set:', userId);
+    // H3 Security Fix: Don't log userId in production
+    if (__DEV__) {
+      console.log('RevenueCat user ID set');
+    }
   } catch (error) {
     console.error('Failed to set RevenueCat user ID:', error);
     throw error;

@@ -103,8 +103,14 @@ export interface Database {
           user_id: string
           title: string | null
           content: string
+          // H6 Security: Encryption fields
+          encrypted_content: string | null
+          encryption_iv: string | null
+          encryption_tag: string | null
+          encryption_version: number | null
           tags: string[] | null
           mood: string | null
+          images: string[] | null
           created_at: string
           updated_at: string
         }
@@ -113,8 +119,14 @@ export interface Database {
           user_id: string
           title?: string | null
           content: string
+          // H6 Security: Encryption fields
+          encrypted_content?: string | null
+          encryption_iv?: string | null
+          encryption_tag?: string | null
+          encryption_version?: number | null
           tags?: string[] | null
           mood?: string | null
+          images?: string[] | null
           created_at?: string
           updated_at?: string
         }
@@ -123,8 +135,14 @@ export interface Database {
           user_id?: string
           title?: string | null
           content?: string
+          // H6 Security: Encryption fields
+          encrypted_content?: string | null
+          encryption_iv?: string | null
+          encryption_tag?: string | null
+          encryption_version?: number | null
           tags?: string[] | null
           mood?: string | null
+          images?: string[] | null
           created_at?: string
           updated_at?: string
         }

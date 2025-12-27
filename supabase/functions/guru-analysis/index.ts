@@ -1323,7 +1323,42 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    console.log(`Guru Analysis request from user: ${user.id}, Phase: ${phaseNumber}`);
+    // H3 Security Fix: Don't log full user ID
+    console.log(`Guru Analysis request for Phase: ${phaseNumber}`);
+
+    // H5 Security Fix: Rate limiting (50 requests per 24 hours per user for Guru)
+    const RATE_LIMIT = 50;
+    const RATE_WINDOW_HOURS = 24;
+    const windowStart = new Date(Date.now() - RATE_WINDOW_HOURS * 60 * 60 * 1000).toISOString();
+
+    const { count: usageCount, error: usageError } = await supabase
+      .from('api_usage')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('endpoint', 'guru-analysis')
+      .gte('created_at', windowStart);
+
+    if (usageError) {
+      console.error('Rate limit check failed:', usageError);
+      // Continue anyway - don't block user due to rate limit check failure
+    } else if (usageCount && usageCount >= RATE_LIMIT) {
+      return new Response(
+        JSON.stringify({
+          error: 'Daily Guru limit exceeded. Please try again tomorrow.',
+          code: 'RATE_LIMIT_EXCEEDED',
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Record API usage
+    await supabase.from('api_usage').insert({
+      user_id: user.id,
+      endpoint: 'guru-analysis',
+    });
 
     // Step 2: Verify Awakening+ tier subscription
     const hasGuruAccess = await verifyGuruAccess(supabase, user.id);
@@ -1423,13 +1458,19 @@ serve(async (req) => {
     console.log(`Found ${knowledgeMatches.length} relevant knowledge matches`);
 
     // Step 7: Get conversation history if continuing existing conversation
+    // H2 Security Fix: Verify conversation ownership before loading
     let conversationHistory: Message[] = [];
     if (conversationId) {
       const { data } = await supabase
         .from('ai_conversations')
-        .select('messages, conversation_type, guru_phase')
+        .select('messages, conversation_type, guru_phase, user_id')
         .eq('id', conversationId)
         .single();
+
+      // H2 Security Fix: Verify conversation belongs to authenticated user
+      if (data?.user_id !== user.id) {
+        throw new Error('Unauthorized: This conversation does not belong to you');
+      }
 
       // Verify this is a guru conversation for the correct phase
       if (data?.conversation_type !== 'guru' || data?.guru_phase !== phaseNumber) {

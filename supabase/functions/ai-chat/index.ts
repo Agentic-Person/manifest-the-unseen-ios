@@ -272,7 +272,42 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    console.log(`AI Chat request from user: ${user.id}`);
+    // H3 Security Fix: Don't log full user ID
+    console.log(`AI Chat request received`);
+
+    // H5 Security Fix: Rate limiting (100 requests per 24 hours per user)
+    const RATE_LIMIT = 100;
+    const RATE_WINDOW_HOURS = 24;
+    const windowStart = new Date(Date.now() - RATE_WINDOW_HOURS * 60 * 60 * 1000).toISOString();
+
+    const { count: usageCount, error: usageError } = await supabase
+      .from('api_usage')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('endpoint', 'ai-chat')
+      .gte('created_at', windowStart);
+
+    if (usageError) {
+      console.error('Rate limit check failed:', usageError);
+      // Continue anyway - don't block user due to rate limit check failure
+    } else if (usageCount && usageCount >= RATE_LIMIT) {
+      return new Response(
+        JSON.stringify({
+          error: 'Daily limit exceeded. Please try again tomorrow.',
+          code: 'RATE_LIMIT_EXCEEDED',
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Record API usage
+    await supabase.from('api_usage').insert({
+      user_id: user.id,
+      endpoint: 'ai-chat',
+    });
 
     // Step 1: Generate embedding for user message
     console.log('Generating embedding...');
@@ -288,9 +323,14 @@ serve(async (req) => {
     if (conversationId) {
       const { data } = await supabase
         .from('ai_conversations')
-        .select('messages')
+        .select('messages, user_id')
         .eq('id', conversationId)
         .single();
+
+      // H2 Security Fix: Verify conversation ownership
+      if (data?.user_id !== user.id) {
+        throw new Error('Unauthorized: This conversation does not belong to you');
+      }
 
       conversationHistory = data?.messages || [];
     }

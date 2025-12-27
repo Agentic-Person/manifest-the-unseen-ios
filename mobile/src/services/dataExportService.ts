@@ -8,6 +8,7 @@
 import { Paths, File } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { supabase } from './supabase';
+import { JournalEncryptionService } from './journalEncryptionService';
 
 /**
  * User data structure for export
@@ -75,7 +76,10 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
     }
 
     const userId = user.id;
-    console.log('[DataExport] Fetching data for user:', userId);
+    // H3 Security Fix: Don't log userId in production
+    if (__DEV__) {
+      console.log('[DataExport] Fetching user data');
+    }
 
     // Fetch user profile
     const { data: profileData } = await supabase
@@ -92,10 +96,10 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
       .order('phase_number', { ascending: true })
       .order('created_at', { ascending: true });
 
-    // Fetch journal entries
+    // Fetch journal entries (including encryption fields for H6)
     const { data: journalData } = await supabase
       .from('journal_entries')
-      .select('content, tags, mood, created_at, updated_at')
+      .select('content, encrypted_content, encryption_iv, encryption_tag, tags, mood, created_at, updated_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
@@ -140,11 +144,43 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
 
     const journal = (journalData || []) as Array<{
       content: string;
+      encrypted_content: string | null;
+      encryption_iv: string | null;
+      encryption_tag: string | null;
       tags: string[] | null;
       mood: string | null;
       created_at: string;
       updated_at: string;
     }>;
+
+    // H6 Security Fix: Decrypt journal entries before export
+    const decryptedJournal = await Promise.all(
+      journal.map(async (item) => {
+        let content = item.content;
+
+        // If encrypted, decrypt for export
+        if (item.encrypted_content && item.encryption_iv && item.encryption_tag) {
+          try {
+            content = await JournalEncryptionService.decrypt(
+              item.encrypted_content,
+              item.encryption_iv,
+              item.encryption_tag
+            );
+          } catch (error) {
+            console.error('[DataExport] Failed to decrypt journal entry:', error);
+            content = '[Unable to decrypt - encryption key may have changed]';
+          }
+        }
+
+        return {
+          content,
+          tags: item.tags,
+          mood: item.mood,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        };
+      })
+    );
 
     const meditation = (meditationData || []) as Array<{
       completed: boolean;
@@ -180,7 +216,7 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
         createdAt: item.created_at,
         updatedAt: item.updated_at,
       })),
-      journalEntries: journal.map((item) => ({
+      journalEntries: decryptedJournal.map((item) => ({
         content: item.content,
         tags: item.tags || [],
         mood: item.mood,

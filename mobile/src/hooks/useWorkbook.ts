@@ -55,9 +55,14 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
   const query = useQuery({
     queryKey: workbookKeys.worksheet(user?.id || '', phaseNumber, worksheetId),
     queryFn: async () => {
-      console.log('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId, userId: user!.id });
+      // H3 Security Fix: Only log in development, exclude userId
+      if (__DEV__) {
+        console.log('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId });
+      }
       const result = await getWorkbookProgress(user!.id, phaseNumber, worksheetId);
-      console.log('[useWorkbookProgress] Query result:', result);
+      if (__DEV__) {
+        console.log('[useWorkbookProgress] Query result:', !!result);
+      }
       return result;
     },
     enabled: !!user?.id,

@@ -117,7 +117,42 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Delete account: Verifying password for user ${user.id}`);
+    // C5 Security Fix: Rate limiting (3 attempts per hour to prevent brute force)
+    const RATE_LIMIT = 3;
+    const RATE_WINDOW_HOURS = 1;
+    const windowStart = new Date(Date.now() - RATE_WINDOW_HOURS * 60 * 60 * 1000).toISOString();
+
+    const { count: usageCount, error: usageError } = await supabaseUser
+      .from('api_usage')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('endpoint', 'delete-account')
+      .gte('created_at', windowStart);
+
+    if (usageError) {
+      console.error('Rate limit check failed:', usageError);
+      // Continue anyway - don't block user due to rate limit check failure
+    } else if (usageCount && usageCount >= RATE_LIMIT) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Too many attempts. Please try again in 1 hour.',
+        } as DeleteAccountResponse),
+        {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Record API usage attempt
+    await supabaseUser.from('api_usage').insert({
+      user_id: user.id,
+      endpoint: 'delete-account',
+    });
+
+    // H3 Security Fix: Use truncated user ID for debugging
+    console.log(`Delete account: Verifying password for user ${user.id.substring(0, 8)}...`);
 
     // Re-authenticate with password to verify identity
     const { error: signInError } = await supabaseUser.auth.signInWithPassword({
@@ -128,7 +163,7 @@ serve(async (req) => {
     if (signInError) {
       // SECURITY FIX (SecurityAudit.md C5): Use generic error message
       // Don't reveal whether password was wrong vs other auth issues
-      console.log(`Delete account: Password verification failed for user ${user.id}`);
+      console.log(`Delete account: Password verification failed for user ${user.id.substring(0, 8)}...`);
       return new Response(
         JSON.stringify({
           success: false,
@@ -138,7 +173,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Delete account: Password verified for user ${user.id}`);
+    console.log(`Delete account: Password verified for user ${user.id.substring(0, 8)}...`);
 
     // Initialize admin client for deletion operations
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
@@ -152,7 +187,7 @@ serve(async (req) => {
       if (avatarFiles && avatarFiles.length > 0) {
         const filePaths = avatarFiles.map((file) => `${user.id}/${file.name}`);
         await supabaseAdmin.storage.from('avatars').remove(filePaths);
-        console.log(`Delete account: Deleted ${filePaths.length} avatar files for user ${user.id}`);
+        console.log(`Delete account: Deleted ${filePaths.length} avatar files for user ${user.id.substring(0, 8)}...`);
       }
     } catch (storageError) {
       // Log but don't fail - storage files are not critical
@@ -168,7 +203,7 @@ serve(async (req) => {
       if (visionBoardFiles && visionBoardFiles.length > 0) {
         const filePaths = visionBoardFiles.map((file) => `${user.id}/${file.name}`);
         await supabaseAdmin.storage.from('vision-boards').remove(filePaths);
-        console.log(`Delete account: Deleted ${filePaths.length} vision board files for user ${user.id}`);
+        console.log(`Delete account: Deleted ${filePaths.length} vision board files for user ${user.id.substring(0, 8)}...`);
       }
     } catch (storageError) {
       // Log but don't fail - storage files are not critical
@@ -188,7 +223,7 @@ serve(async (req) => {
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
 
     if (deleteError) {
-      console.error(`Delete account: Failed to delete user ${user.id}:`, deleteError);
+      console.error(`Delete account: Failed to delete user ${user.id.substring(0, 8)}...:`, deleteError);
       return new Response(
         JSON.stringify({
           success: false,
@@ -198,7 +233,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Delete account: Successfully deleted user ${user.id} and all associated data`);
+    console.log(`Delete account: Successfully deleted user ${user.id.substring(0, 8)}... and all associated data`);
 
     return new Response(
       JSON.stringify({

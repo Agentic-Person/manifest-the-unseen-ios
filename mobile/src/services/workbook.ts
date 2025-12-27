@@ -33,7 +33,10 @@ export const getWorkbookProgress = async (
   phaseNumber: number,
   worksheetId: string
 ): Promise<WorkbookProgress | null> => {
-  console.log('[workbook.service] Starting query:', { userId, phaseNumber, worksheetId });
+  // H3 Security Fix: Only log in development, exclude userId
+  if (__DEV__) {
+    console.log('[workbook.service] Starting query:', { phaseNumber, worksheetId });
+  }
 
   try {
     const queryPromise = supabase
@@ -51,7 +54,9 @@ export const getWorkbookProgress = async (
       { data: null, error: { code: 'TIMEOUT', message: 'Query timed out' } } as any
     );
 
-    console.log('[workbook.service] Query completed:', { data, error });
+    if (__DEV__) {
+      console.log('[workbook.service] Query completed:', { hasData: !!data, error });
+    }
 
     // PGRST116 = no rows returned, TIMEOUT = our timeout, both are fine for new worksheets
     if (error && error.code !== 'PGRST116' && error.code !== 'TIMEOUT') {
@@ -59,7 +64,9 @@ export const getWorkbookProgress = async (
       throw error;
     }
 
-    console.log('[workbook.service] Returning data:', data);
+    if (__DEV__) {
+      console.log('[workbook.service] Returning data:', !!data);
+    }
     return data as WorkbookProgress | null;
   } catch (err) {
     console.error('[workbook.service] Exception in getWorkbookProgress:', err);
@@ -142,7 +149,9 @@ export const upsertWorkbookProgress = async (
     updated_at: new Date().toISOString(),
   };
 
-  console.log('[workbook.service] Starting upsert:', { phaseNumber, worksheetId, completed });
+  if (__DEV__) {
+    console.log('[workbook.service] Starting upsert:', { phaseNumber, worksheetId, completed });
+  }
 
   try {
     // @ts-ignore - Supabase types not yet generated, but table exists
@@ -161,7 +170,9 @@ export const upsertWorkbookProgress = async (
       { data: payload, error: { code: 'TIMEOUT', message: 'Upsert timed out' } } as any
     );
 
-    console.log('[workbook.service] Upsert completed:', { result: result ? 'success' : 'null', error });
+    if (__DEV__) {
+      console.log('[workbook.service] Upsert completed:', { result: result ? 'success' : 'null', error });
+    }
 
     // If timeout occurred, return the payload as if it succeeded (optimistic)
     if (error && error.code === 'TIMEOUT') {
@@ -174,21 +185,22 @@ export const upsertWorkbookProgress = async (
     }
 
     if (error) {
-      console.error(
-        `[workbook.service] Upsert failed for phase ${phaseNumber}, worksheet ${worksheetId}:`,
-        {
-          error,
-          payload: { ...payload, data: '[omitted for brevity]' },
-          userId,
-        }
-      );
+      // H3 Security Fix: Don't log userId in production
+      if (__DEV__) {
+        console.error(
+          `[workbook.service] Upsert failed for phase ${phaseNumber}, worksheet ${worksheetId}:`,
+          { error }
+        );
+      }
       throw error;
     }
 
     // Invalidate Guru queries so it fetches fresh workbook data for re-assessment
     // This ensures the Guru AI sees the latest workbook responses
     invalidateGuruQueries(userId);
-    console.log('[workbook.service] Invalidated Guru queries for user:', userId);
+    if (__DEV__) {
+      console.log('[workbook.service] Invalidated Guru queries');
+    }
 
     return result as WorkbookProgress;
   } catch (err) {

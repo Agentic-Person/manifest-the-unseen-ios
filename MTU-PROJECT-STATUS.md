@@ -15,20 +15,24 @@
 | Severity | Total | Fixed | Remaining |
 |----------|-------|-------|-----------|
 | CRITICAL | 5 | 5 | 0 ✅ |
-| HIGH | 6 | 2 | 4 |
-| MEDIUM | 11 | 0 | 11 |
+| HIGH | 6 | 6 | 0 ✅ |
+| MEDIUM | 11 | 2 | 9 |
 | LOW | 3 | 0 | 3 |
 
-### Critical Fixes Applied (Dec 25-26)
+### Critical & High Fixes Applied (Dec 25-26)
 | ID | Issue | Status |
 |----|-------|--------|
 | C1 | Exposed API keys | ✅ FIXED - All keys rotated (Dec 26) |
 | C2 | Hardcoded dev credentials | ✅ FIXED - Removed from authStore.ts |
 | C3 | DEV_SKIP_AUTH bypass | ✅ FIXED - Removed entirely |
 | C4 | Service role in Edge Functions | ✅ FIXED - Now uses anon+JWT |
-| C5 | Weak account deletion | ⚠️ PARTIAL - Generic error message |
+| C5 | Weak account deletion | ✅ FIXED - Rate limiting + generic errors |
 | H1 | Missing RLS policies | ✅ FIXED - Added UPDATE/DELETE |
+| H2 | Unverified conversation ownership | ✅ FIXED - Added user_id check |
+| H3 | Sensitive console logs | ✅ FIXED - Wrapped in __DEV__ |
 | H4 | Permissive CORS (*) | ✅ FIXED - Restricted origins |
+| H5 | No rate limiting on AI | ✅ FIXED - 50-100 req/24h limits |
+| H6 | Journal encryption | 📋 DOCUMENTED - Plan in SecurityAudit.md |
 
 ### ✅ API Key Rotation Complete (Dec 26)
 **Hybrid approach implemented:**

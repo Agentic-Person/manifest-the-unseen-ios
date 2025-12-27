@@ -17,10 +17,13 @@ import type { Database } from '../types/database';
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
-// Debug: Log Supabase configuration at startup
-console.log('[Supabase] URL:', SUPABASE_URL);
-console.log('[Supabase] Using remote:', SUPABASE_URL.includes('supabase.co'));
-console.log('[Supabase] Anon key prefix:', SUPABASE_ANON_KEY.substring(0, 20) + '...');
+// H3 Security Fix: Debug logs only in development
+if (__DEV__) {
+  console.log('[Supabase] URL:', SUPABASE_URL);
+  console.log('[Supabase] Using remote:', SUPABASE_URL.includes('supabase.co'));
+  // Don't log any part of the anon key, even in dev
+  console.log('[Supabase] Key configured:', !!SUPABASE_ANON_KEY);
+}
 
 /**
  * Web-compatible storage adapter using localStorage

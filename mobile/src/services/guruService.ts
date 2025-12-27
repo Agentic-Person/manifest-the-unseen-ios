@@ -107,13 +107,16 @@ export const sendGuruMessage = async (
     messageLength: request.userMessage?.length,
   });
 
-  // Check auth state before calling
+  // Check auth state before calling (H3 Security Fix: Only log in development)
   const { data: { session } } = await supabase.auth.getSession();
-  console.log('[Guru] Auth session exists:', !!session);
-  if (session) {
-    console.log('[Guru] User ID:', session.user.id);
-    console.log('[Guru] Token expires:', new Date(session.expires_at! * 1000).toISOString());
-  } else {
+  if (__DEV__) {
+    console.log('[Guru] Auth session exists:', !!session);
+    if (session) {
+      // Don't log user ID or token details even in dev - just confirm they exist
+      console.log('[Guru] Session valid, user authenticated');
+    }
+  }
+  if (!session) {
     console.error('[Guru] NO SESSION - Edge Function will fail with 401');
   }
 

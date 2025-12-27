@@ -284,7 +284,8 @@ serve(async (req) => {
       // Don't throw - redemption was recorded, counter is secondary
     }
 
-    console.log(`Promo code redeemed: ${normalizedCode} by user ${userId}`);
+    // H3 Security Fix: Don't log full user ID
+    console.log(`Promo code redeemed: ${normalizedCode}`);
 
     return new Response(
       JSON.stringify({
