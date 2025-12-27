@@ -21,7 +21,9 @@ import {
   getSubscriptionInfo,
   purchasePackage as purchaseSubscriptionPackage,
   restorePurchases as restoreSubscriptionPurchases,
+  getTierFromCustomerInfo,
 } from '../services/subscriptionService';
+import { supabase } from '../services/supabase';
 import {
   validatePromoCode,
   type PromoValidationResult,
@@ -198,6 +200,20 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       const result = await purchaseSubscriptionPackage(pkg);
 
       if (result.success && result.customerInfo) {
+        // Sync tier to database after successful RevenueCat purchase
+        const newTier = getTierFromCustomerInfo(result.customerInfo);
+        if (newTier !== 'free') {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await supabase
+              .from('users')
+              .update({
+                subscription_tier: newTier,
+                subscription_status: 'active',
+              })
+              .eq('id', user.id);
+          }
+        }
         // Refresh subscription info after successful purchase
         await get().loadSubscription();
       }
@@ -230,6 +246,20 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
       const result = await restoreSubscriptionPurchases();
 
       if (result.success && result.customerInfo) {
+        // Sync tier to database after successful restore
+        const newTier = getTierFromCustomerInfo(result.customerInfo);
+        if (newTier !== 'free') {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await supabase
+              .from('users')
+              .update({
+                subscription_tier: newTier,
+                subscription_status: 'active',
+              })
+              .eq('id', user.id);
+          }
+        }
         // Refresh subscription info after successful restore
         await get().loadSubscription();
       }

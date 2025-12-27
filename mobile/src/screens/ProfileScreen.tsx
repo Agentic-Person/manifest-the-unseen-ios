@@ -10,6 +10,7 @@ import Constants from 'expo-constants';
 import type { ProfileStackScreenProps } from '../types/navigation';
 import { useUser, useProfile, useSignOut } from '../stores/authStore';
 import { useUserProfile } from '../hooks/useUser';
+import { useSubscriptionSummary } from '../hooks/useSubscription';
 import { colors } from '../theme';
 
 type Props = ProfileStackScreenProps<'ProfileHome'>;
@@ -22,6 +23,8 @@ const ProfileScreen = ({ navigation }: Props) => {
   const profile = useProfile();
   const signOut = useSignOut();
   const { isLoading, isFetching, error } = useUserProfile();
+  // Use RevenueCat subscription status (source of truth for purchases)
+  const { tierName, statusText } = useSubscriptionSummary();
 
   // Get app version from expo-constants
   const appVersion = Constants.expoConfig?.version || '1.0.0';
@@ -84,11 +87,10 @@ const ProfileScreen = ({ navigation }: Props) => {
           <View style={styles.subscriptionInfo}>
             <View>
               <Text style={styles.tierName}>
-                {(profile.subscriptionTier ?? 'free').charAt(0).toUpperCase() +
-                 (profile.subscriptionTier ?? 'free').slice(1)} Path
+                {tierName}
               </Text>
               <Text style={styles.tierStatus}>
-                Status: {profile.subscriptionStatus ?? 'active'}
+                {statusText}
               </Text>
             </View>
             <TouchableOpacity
