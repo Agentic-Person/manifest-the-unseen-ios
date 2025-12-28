@@ -22,9 +22,9 @@ const ProfileScreen = ({ navigation }: Props) => {
   const user = useUser();
   const profile = useProfile();
   const signOut = useSignOut();
-  const { isLoading, isFetching, error } = useUserProfile();
+  const { isFetching, error } = useUserProfile();
   // Use RevenueCat subscription status (source of truth for purchases)
-  const { tierName, statusText } = useSubscriptionSummary();
+  const { tierName, statusLabel } = useSubscriptionSummary();
 
   // Get app version from expo-constants
   const appVersion = Constants.expoConfig?.version || '1.0.0';
@@ -90,7 +90,7 @@ const ProfileScreen = ({ navigation }: Props) => {
                 {tierName}
               </Text>
               <Text style={styles.tierStatus}>
-                {statusText}
+                {statusLabel}
               </Text>
             </View>
             <TouchableOpacity

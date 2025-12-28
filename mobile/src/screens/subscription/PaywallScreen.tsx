@@ -139,6 +139,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   const restorePurchases = useSubscriptionStore((state) => state.restorePurchases);
   const loadOfferings = useSubscriptionStore((state) => state.loadOfferings);
   const clearPromo = useSubscriptionStore((state) => state.clearPromo);
+  const offeringsError = useSubscriptionStore((state) => state.error);
 
   // Get sale configuration
   const saleConfig = getSaleConfig();
@@ -266,7 +267,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   /**
    * Render Loading State
    */
-  if (isLoadingOfferings || !offerings) {
+  if (isLoadingOfferings) {
     return (
       <SafeAreaView style={styles.loadingContainer} edges={['top']}>
         <LinearGradient
@@ -275,6 +276,47 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
         >
           <ActivityIndicator size="large" color={colors.brand.gold} />
           <Text style={styles.loadingText}>Loading subscription options...</Text>
+        </LinearGradient>
+      </SafeAreaView>
+    );
+  }
+
+  /**
+   * Render Error State - when offerings failed to load
+   */
+  if (!offerings) {
+    return (
+      <SafeAreaView style={styles.loadingContainer} edges={['top']}>
+        <LinearGradient
+          colors={[colors.background.primary, colors.background.purple]}
+          style={styles.gradient}
+        >
+          {/* Close Button */}
+          <Pressable
+            style={styles.closeButton}
+            onPress={handleDismiss}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel="Close"
+          >
+            <Text style={styles.closeButtonText}>✕</Text>
+          </Pressable>
+
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorIcon}>⚠️</Text>
+            <Text style={styles.errorTitle}>Unable to Load Subscriptions</Text>
+            <Text style={styles.errorMessage}>
+              {offeringsError || 'Please check your internet connection and try again.'}
+            </Text>
+            <Pressable
+              style={styles.retryButton}
+              onPress={() => loadOfferings()}
+              accessibilityRole="button"
+              accessibilityLabel="Retry loading subscriptions"
+            >
+              <Text style={styles.retryButtonText}>Try Again</Text>
+            </Pressable>
+          </View>
         </LinearGradient>
       </SafeAreaView>
     );
@@ -575,6 +617,43 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: colors.text.secondary,
+  },
+  // Error State Styles
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  errorIcon: {
+    fontSize: 48,
+    marginBottom: spacing.lg,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text.primary,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  errorMessage: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: spacing.xl,
+  },
+  retryButton: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: 24,
+    backgroundColor: colors.brand.gold,
+  },
+  retryButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.background.primary,
   },
   // Test Mode Styles
   testModeContainer: {
