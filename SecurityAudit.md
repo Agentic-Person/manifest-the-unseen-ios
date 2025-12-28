@@ -1073,6 +1073,59 @@ Use this section to track changes as they're made.
 
 ---
 
+### 2025-12-27 - Claude Code - RevenueCat Configuration Investigation
+
+**Issue:** Features locked despite previous sandbox purchases showing in RevenueCat
+
+**Investigation Method:** Used Playwright MCP to inspect RevenueCat dashboard
+
+**Findings:**
+
+1. **Sandbox Data Review:**
+   - Customer `fd0bbfb1-768d-48d3-abab-650891725f43` made purchases on Dec 11
+   - Products purchased: `monthly`, `yearly` (old placeholder products)
+   - Total sandbox revenue: $450
+   - Subscriptions expired 16 days ago (sandbox renewals are accelerated)
+
+2. **Root Cause Identified:**
+   - Old "default" offering (Dec 8) contained products: `monthly`, `yearly`, `lifetime`
+   - These products were **NOT attached to any entitlements**
+   - New "current" offering (Dec 12) contains properly named products with entitlements
+   - "current" is now the default offering
+
+3. **Product Configuration:**
+
+   | Product | Entitlement | Status |
+   |---------|-------------|--------|
+   | `monthly` (old) | None | ❌ Unattached |
+   | `yearly` (old) | None | ❌ Unattached |
+   | `manifest_enlightenment_monthly` | enlightenment_path | ✅ Attached |
+   | `manifest_enlightenment_yearly` | enlightenment_path | ✅ Attached |
+   | `manifest_awakening_monthly` | awakening_path | ✅ Attached |
+   | `manifest_awakening_yearly` | awakening_path | ✅ Attached |
+   | `manifest_novice_monthly` | novice_path | ✅ Attached |
+   | `manifest_novice_yearly` | novice_path | ✅ Attached |
+
+4. **Entitlements Configured:**
+   - `novice_path` - 2 products attached
+   - `awakening_path` - 2 products attached
+   - `enlightenment_path` - 2 products attached
+
+**Conclusion:**
+- The security changes did NOT cause the subscription issue
+- It was a pre-existing misconfiguration from Dec 8-11
+- The "current" offering became default on Dec 12, AFTER the test purchases
+- New purchases will use properly configured products with entitlements
+
+**Current Status:** ✅ RevenueCat configuration is correct
+- "current" offering is the default
+- All 6 products are attached to appropriate entitlements
+- New sandbox purchases should unlock features correctly
+
+**Next Step:** Make a new sandbox purchase in TestFlight Build 34 to verify
+
+---
+
 ### [Date] - [Developer] - [Change Description]
 
 ```
