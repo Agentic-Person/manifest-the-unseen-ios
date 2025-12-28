@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-26 (JWT Key Issue Resolved)
+**Last Updated**: 2025-12-28 (PaywallScreen Loading Fix + RevenueCat Investigation)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟡 **BUILD 29 - WAITING FOR APP STORE REVIEW** + 🔒 **SECURITY HARDENING COMPLETE**
+**Status**: 🟡 **BUILD 34 ON TESTFLIGHT** + 🔒 **SECURITY HARDENING COMPLETE**
 
 ---
 
@@ -86,6 +86,48 @@
 
 ---
 
+## 📱 SUBSCRIPTION SYSTEM - December 27-28, 2025
+
+### Build 34 (Dec 27) - Subscription Sync Fixes
+- ✅ **ProfileScreen** now uses RevenueCat tier (was reading stale database tier)
+- ✅ **subscriptionStore** syncs database after purchase/restore
+- ✅ **Production profile** has `TESTFLIGHT_FULL_ACCESS=false` (no bypass)
+
+### RevenueCat Investigation (Dec 27-28)
+**Issue:** Features locked despite previous sandbox purchases
+
+**Root Cause Found:**
+- Old "default" offering (Dec 8) had products NOT attached to entitlements
+- Customer purchased `monthly`/`yearly` → no entitlements granted
+- "current" offering (Dec 12) has properly configured products
+- "current" is now the default → new purchases should work
+
+**Product Configuration:**
+| Product | Entitlement | Status |
+|---------|-------------|--------|
+| `monthly` (old) | None | ❌ Unattached |
+| `yearly` (old) | None | ❌ Unattached |
+| `manifest_enlightenment_monthly` | enlightenment_path | ✅ Attached |
+| `manifest_enlightenment_yearly` | enlightenment_path | ✅ Attached |
+| `manifest_awakening_monthly` | awakening_path | ✅ Attached |
+| `manifest_awakening_yearly` | awakening_path | ✅ Attached |
+| `manifest_novice_monthly` | novice_path | ✅ Attached |
+| `manifest_novice_yearly` | novice_path | ✅ Attached |
+
+### PaywallScreen Loading Fix (Dec 28)
+**Issue:** Clicking "Manage" button showed infinite loading spinner
+
+**Root Cause:** PaywallScreen condition `isLoadingOfferings || !offerings` kept showing spinner when:
+- `isLoadingOfferings = false` (loading complete)
+- `offerings = null` (RevenueCat failed to fetch)
+
+**Fix Applied:**
+- Separated loading state from error state
+- Show error UI with "Try Again" button when offerings fail
+- Commit: `37f7369`
+
+---
+
 ## 🎉 MILESTONE: App Store Resubmission Complete!
 
 | Item | Value |
@@ -93,7 +135,7 @@
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
 | **Build (TestFlight)** | 30 (testflight profile) |
-| **Build (Latest)** | 32 (production - post-security fixes) |
+| **Build (Latest)** | 34 (production - Dec 27, subscription fixes) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -218,12 +260,12 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
+37f7369 fix: PaywallScreen infinite loading spinner when offerings fail
+54ba289 docs: add RevenueCat configuration investigation findings
+d0c36c7 docs: update SecurityAudit.md with Build 34 and subscription sync fixes
+60158b5 docs: document JWT ES256 compatibility issue and resolution
 70d00d1 config: add Edge Function JWT verification settings with documentation
 7eee8ef security: complete API key rotation (C1 fix) - hybrid publishable/legacy approach
-f7c1fb2 docs: update project status and security audit with deployment confirmation
-36f6304 security: fix Edge Functions (C4, H1, H4) - reduce service role usage and restrict CORS
-560bbda security: remove dev auth bypass and add security audit documentation
-f69c767 build: increment to Build 32 for production App Store fix
 ```
 
 ---
@@ -237,6 +279,24 @@ f69c767 build: increment to Build 32 for production App Store fix
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 28, 2025 - PaywallScreen Loading Fix
+- **Duration**: ~1 hour
+- **What Was Done**: Fixed infinite loading spinner on PaywallScreen when offerings fail to load
+- **Status**: ✅ **COMPLETE** - Fix committed and pushed to GitHub
+- **Commits**:
+  - `37f7369` - fix: PaywallScreen infinite loading spinner when offerings fail
+  - `54ba289` - docs: add RevenueCat configuration investigation findings
+  - `d0c36c7` - docs: update SecurityAudit.md with Build 34 and subscription sync fixes
+
+### Previous Activity
+- **Date**: December 27, 2025 - Build 34 + Subscription System Fixes
+- **Duration**: ~3 hours
+- **What Was Done**: Fixed subscription sync, investigated RevenueCat configuration, deployed Build 34
+- **Status**: ✅ **COMPLETE**
+- **Commits**:
+  - `60158b5` - docs: document JWT ES256 compatibility issue and resolution
+
+### Previous Activity
 - **Date**: December 21, 2025 - Profile Section Enhancements
 - **Duration**: ~2 hours
 - **What Was Done**: Enhanced profile section with avatar upload, font scaling, spoken prayer reminders
@@ -924,6 +984,21 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2025-12-28 - PaywallScreen Loading Fix
+**Duration**: ~1 hour | **Status**: ✅ Complete
+- Fixed infinite loading spinner when RevenueCat offerings fail to load
+- Separated loading state from error state in PaywallScreen
+- Added error UI with "Try Again" button for retry capability
+- Also fixed ProfileScreen to use `statusLabel` instead of `statusText`
+
+### 2025-12-27 - Build 34 + Subscription System Investigation
+**Duration**: ~3 hours | **Status**: ✅ Complete
+- Built and deployed Build 34 to TestFlight (production profile)
+- Investigated RevenueCat configuration via Playwright
+- Found root cause: old products not attached to entitlements
+- Fixed ProfileScreen to use RevenueCat tier instead of database
+- Added database sync after purchase/restore in subscriptionStore
+
 ### 2025-12-16 - Guru AI Enhancement
 **Duration**: ~3 hours | **Status**: ✅ Complete
 - Fixed `guruService.ts` to use `ai_conversations` table (was querying non-existent table)
@@ -1055,6 +1130,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Phase 2 Status File Cleanup)
-**Session Date**: December 25, 2025
-**Document Version**: 2.1.0
+**Last Updated by**: Claude Code (PaywallScreen Loading Fix + RevenueCat Investigation)
+**Session Date**: December 28, 2025
+**Document Version**: 2.2.0
