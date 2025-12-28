@@ -1,8 +1,8 @@
 # Security Audit - Manifest the Unseen iOS
 
 **Audit Date:** December 25, 2025
-**Last Updated:** December 26, 2025 (Final)
-**Status:** 🟢 ALL HIGH SEVERITY COMPLETE - 5/5 Critical + 6/6 High Fixed
+**Last Updated:** December 27, 2025
+**Status:** 🟢 ALL HIGH SEVERITY COMPLETE - 5/5 Critical + 6/6 High Fixed + Subscription Sync Fixed
 
 ---
 
@@ -1027,6 +1027,52 @@ Use this section to track changes as they're made.
 
 ---
 
+### 2025-12-27 - Claude Code - Build 34 + Subscription Sync Fixes
+
+**Build Deployed:**
+- Build 34 submitted to TestFlight via EAS Build
+- Build ID: `ec80b0cd-9ec2-48e6-b81b-d6e1ce670274`
+- App Version: 1.0.0, Build Number: 34
+- TestFlight URL: https://appstoreconnect.apple.com/apps/6756403109/testflight/ios
+
+**Issue Investigated:** Features locked despite Profile showing "Enlightenment Path"
+
+**Root Cause Analysis:**
+- Profile screen was reading from database `users.subscription_tier` (stale dev data)
+- Feature gating correctly reads from RevenueCat (returns "free" - no actual purchase)
+- These are two different data sources that were not synced
+
+**RevenueCat Dashboard Investigation (via Playwright):**
+- Entitlements ARE correctly configured: `novice_path`, `awakening_path`, `enlightenment_path`
+- API key `appl_syRiYucCEYWABHxxiKjporBRJVM` matches app configuration
+- 0 Active Subscriptions, 0 Active Trials (expected - no sandbox purchase made)
+
+**Files Modified:**
+1. `mobile/src/screens/ProfileScreen.tsx`
+   - Changed from database tier to RevenueCat tier display
+   - Added: `const { tierName, statusText } = useSubscriptionSummary();`
+   - Profile now shows actual subscription status from RevenueCat
+
+2. `mobile/src/stores/subscriptionStore.ts`
+   - Added database sync after successful RevenueCat purchase
+   - Added database sync after successful restore
+   - Uses `getTierFromCustomerInfo()` to extract tier from CustomerInfo
+   - Syncs to `users.subscription_tier` and `users.subscription_status`
+
+3. `mobile/eas.json`
+   - Production profile: `EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS: "false"` (correctly set)
+   - Build 34 used production profile - bypass is disabled as intended
+
+**Verification:**
+- [x] ProfileScreen imports `useSubscriptionSummary` from subscription hooks
+- [x] ProfileScreen displays `tierName` and `statusText` from RevenueCat
+- [x] subscriptionStore syncs database after purchase
+- [x] subscriptionStore syncs database after restore
+- [x] Edge Functions deployed with all security fixes
+- [ ] Sandbox purchase test (requires TestFlight + sandbox account)
+
+---
+
 ### [Date] - [Developer] - [Change Description]
 
 ```
@@ -1125,6 +1171,15 @@ Run this checklist after completing all remediations:
 - [x] JournalEntryService with encrypt/decrypt
 - [x] Database columns added (encryption_iv, encryption_tag, encryption_version)
 - [ ] End-to-end encryption test on iOS device
+
+### Subscription System
+- [x] ProfileScreen uses RevenueCat tier (not database)
+- [x] subscriptionStore syncs database after purchase
+- [x] subscriptionStore syncs database after restore
+- [x] RevenueCat entitlements configured: novice_path, awakening_path, enlightenment_path
+- [x] Production TESTFLIGHT_FULL_ACCESS set to "false" (verified in eas.json)
+- [x] Build 34 deployed with bypass disabled (uses production profile)
+- [ ] Sandbox purchase test completed (requires TestFlight + sandbox tester account)
 
 ### Build Security
 - [ ] Source maps not included in release build
