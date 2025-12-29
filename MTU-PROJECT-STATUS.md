@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-28 (Build 36 - Feature Gating Fix + Guru Rate Limiting)
+**Last Updated**: 2025-12-28 (Build 38 - Trial System Fix + Guru Access Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **BUILD 36 ON TESTFLIGHT** + 🔒 **SECURITY HARDENING COMPLETE**
+**Status**: 🟢 **BUILD 38 ON TESTFLIGHT** + 🔒 **SECURITY HARDENING COMPLETE**
 
 ---
 
@@ -131,7 +131,7 @@
 - ✅ Added error UI with "Try Again" button
 - ⚠️ **Issue discovered:** All features locked for free users (wrong FEATURE_LIMITS)
 
-### Build 36 (Dec 28) - Feature Gating Fix + Guru Rate Limiting
+### Build 36 (Dec 28) - Feature Gating Fix + Guru Rate Limiting (BROKEN)
 **Issue:** Free users had NO access to workbook/meditations when RevenueCat failed
 
 **Root Cause:** `FEATURE_LIMITS.free` had `maxPhase: 0` and `maxMeditations: 0`
@@ -143,19 +143,77 @@
 - ✅ **Rate limit modal** added: Shows upgrade prompt when limit exceeded
 - ✅ **Documentation** added: `docs/SUBSCRIPTION_FEATURE_GATING.md`
 
-**New Business Model:**
+**Problem Discovered:** Build 36 used `production` profile which disabled TestFlight bypass. User's account had no real paid subscription - everything broke.
+
+### Build 37 (Dec 28) - Complete Trial System Overhaul
+**Issue:** Build 36 conflated "free tier" with "7-day trial" - wrong approach
+
+**Root Cause Analysis:**
+- TestFlight bypass was disabled in production builds
+- User had no real RevenueCat subscription
+- `FEATURE_LIMITS.free` giving full access meant trial expired users also got access (wrong)
+- RevenueCat only tracks trials WITHIN subscriptions, not standalone 7-day trials
+
+**Solution - Separate Trial Tracking:**
+- ✅ **trialStore.ts** NEW: Tracks 7-day trial via AsyncStorage (independent of RevenueCat)
+- ✅ **FEATURE_LIMITS.free** REVERTED: Back to locked (maxPhase: 0, maxMeditations: 0)
+- ✅ **useEffectiveAccess hook** NEW: Combines trial status + subscription tier
+- ✅ **subscriptionStore.ts** FIX: Added 10-second timeout to loadSubscription
+- ✅ **App.tsx** UPDATED: Initializes trial on startup
+- ✅ **GuruScreen, WorkbookScreen, MeditateScreen** UPDATED: Use useEffectiveAccess
+
+**New Architecture:**
+```
+Trial users (first 7 days) → trialStore.isInTrialPeriod = true
+                          → useEffectiveAccess returns Enlightenment-level access
+                          → Guru rate-limited to 3/day
+
+Trial expired, no sub     → trialStore.isInTrialPeriod = false
+                          → tier = 'free' from RevenueCat
+                          → useEffectiveAccess returns LOCKED (FEATURE_LIMITS.free)
+
+Paid subscribers          → tier from RevenueCat (novice/awakening/enlightenment)
+                          → useEffectiveAccess returns tier's limits
+                          → Awakening+ = unlimited Guru
+```
+
+**Files Created:**
+- `mobile/src/stores/trialStore.ts` - 7-day trial tracking
+
+**Files Modified:**
+- `mobile/src/types/subscription.ts` - Reverted FEATURE_LIMITS.free to locked
+- `mobile/src/hooks/useSubscription.ts` - Added useEffectiveAccess hook
+- `mobile/src/stores/subscriptionStore.ts` - Added timeout
+- `mobile/src/stores/index.ts` - Export trialStore
+- `mobile/App.tsx` - Initialize trial on startup
+- `mobile/src/screens/GuruScreen.tsx` - Use useEffectiveAccess
+- `mobile/src/screens/WorkbookScreen.tsx` - Use useEffectiveAccess
+- `mobile/src/screens/MeditateScreen.tsx` - Use useEffectiveAccess
+
+### Build 38 (Dec 28) - Guru Access Fix + Offerings Timeout
+**Issues Found in Build 37:**
+1. Guru still said "need Awakening path" for trial users
+2. "Unable to load subscriptions" error on PaywallScreen
+
+**Root Causes:**
+1. `useGuru.ts` used `useGuruAccess()` which doesn't check trial status
+2. `loadOfferings()` had no timeout - hung forever if RevenueCat slow
+
+**Fixes Applied:**
+- ✅ **useGuru.ts** FIX: Uses `useEffectiveAccess().hasGuruAnalysis` instead of `useGuruAccess()`
+- ✅ **subscriptionStore.ts** FIX: Added 10-second timeout to `loadOfferings()`
+
+**Files Modified:**
+- `mobile/src/hooks/useGuru.ts` - Use useEffectiveAccess
+- `mobile/src/stores/subscriptionStore.ts` - Timeout on loadOfferings
+
+**Business Model (Final):**
 | Tier | Workbook | Meditations | Guru |
 |------|----------|-------------|------|
-| Free/Trial (7 days) | ✅ All phases | ✅ All | ✅ **3/day** |
+| Trial (7 days) | ✅ All phases | ✅ All | ✅ **3/day** |
+| Free (trial expired) | ❌ Locked | ❌ Locked | ❌ Locked |
 | Novice | ✅ All phases | ✅ Music only | ❌ Locked |
 | Awakening+ | ✅ All phases | ✅ All | ✅ Unlimited |
-
-**Files Changed:**
-- `mobile/src/types/subscription.ts` - Updated FEATURE_LIMITS
-- `mobile/src/stores/guruRateLimitStore.ts` - NEW: Daily usage tracking
-- `mobile/src/screens/GuruScreen.tsx` - Rate limit check + modal
-- `docs/SUBSCRIPTION_FEATURE_GATING.md` - NEW: Comprehensive docs
-- Commit: `3246f48`
 
 ---
 
@@ -166,7 +224,7 @@
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
 | **Build (TestFlight)** | 30 (testflight profile) |
-| **Build (Latest)** | 36 (production - Dec 28, feature gating + Guru rate limit) |
+| **Build (Latest)** | 38 (production - Dec 28, trial system + Guru access fix) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -291,12 +349,12 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
+a9c4f3c fix: Build 38 - fix Guru trial access and offerings timeout
+e7b8441 fix: Build 37 - proper trial tracking system
 3246f48 feat: fix feature gating for free users + add Guru rate limiting (3/day)
 37f7369 fix: PaywallScreen infinite loading spinner when offerings fail
 54ba289 docs: add RevenueCat configuration investigation findings
 d0c36c7 docs: update SecurityAudit.md with Build 34 and subscription sync fixes
-60158b5 docs: document JWT ES256 compatibility issue and resolution
-70d00d1 config: add Edge Function JWT verification settings with documentation
 ```
 
 ---
@@ -310,20 +368,20 @@ d0c36c7 docs: update SecurityAudit.md with Build 34 and subscription sync fixes
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
-- **Date**: December 28, 2025 - Build 36: Feature Gating Fix + Guru Rate Limiting
-- **Duration**: ~2 hours
-- **What Was Done**: Fixed feature gating for free users + added Guru rate limiting (3/day)
-- **Status**: ✅ **COMPLETE** - Build 36 submitted to TestFlight
+- **Date**: December 28, 2025 - Build 38: Trial System Fix + Guru Access Fix
+- **Duration**: ~4 hours (Builds 36-38)
+- **What Was Done**: Complete trial system overhaul + fixed remaining access issues
+- **Status**: ✅ **COMPLETE** - Build 38 submitted to TestFlight
 - **Commits**:
+  - `a9c4f3c` - fix: Build 38 - fix Guru trial access and offerings timeout
+  - `e7b8441` - fix: Build 37 - proper trial tracking system
   - `3246f48` - feat: fix feature gating for free users + add Guru rate limiting (3/day)
-  - `37f7369` - fix: PaywallScreen infinite loading spinner when offerings fail
-  - `54ba289` - docs: add RevenueCat configuration investigation findings
 - **Key Changes**:
-  - Free/trial users now have full app access (was locked due to wrong FEATURE_LIMITS)
-  - Guru limited to 3 requests/day for free/trial users
-  - Novice tier has Guru locked (must upgrade to Awakening)
-  - Awakening+ tiers have unlimited Guru access
-  - Added `docs/SUBSCRIPTION_FEATURE_GATING.md` for documentation
+  - NEW: `trialStore.ts` - Tracks 7-day trial via AsyncStorage (independent of RevenueCat)
+  - NEW: `useEffectiveAccess` hook - Combines trial + subscription for feature access
+  - FIX: `useGuru.ts` - Now uses useEffectiveAccess for trial user access
+  - FIX: `loadOfferings()` - Added 10-second timeout to prevent hanging
+  - REVERTED: `FEATURE_LIMITS.free` back to locked (trial access via trialStore)
 
 ### Previous Activity
 - **Date**: December 27, 2025 - Build 34 + Subscription System Fixes
@@ -1021,15 +1079,27 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
-### 2025-12-28 - Build 36: Feature Gating Fix + Guru Rate Limiting
+### 2025-12-28 - Build 38: Guru Access Fix + Offerings Timeout
+**Duration**: ~30 min | **Status**: ✅ Complete
+- Fixed Guru access for trial users (was still checking old useGuruAccess hook)
+- Added 10-second timeout to loadOfferings() to prevent hanging
+- useGuru.ts now uses useEffectiveAccess().hasGuruAnalysis
+
+### 2025-12-28 - Build 37: Complete Trial System Overhaul
 **Duration**: ~2 hours | **Status**: ✅ Complete
-- Fixed feature gating: Free/trial users now have full app access
-- Updated FEATURE_LIMITS.free to grant all phases, meditations, vision board
-- Updated FEATURE_LIMITS.novice: Guru locked (must upgrade to Awakening)
+- Created trialStore.ts for 7-day trial tracking (independent of RevenueCat)
+- Created useEffectiveAccess hook to combine trial + subscription status
+- Reverted FEATURE_LIMITS.free back to locked state
+- Added timeout to loadSubscription() in subscriptionStore
+- Updated GuruScreen, WorkbookScreen, MeditateScreen to use useEffectiveAccess
+- Initialized trial on app startup in App.tsx
+
+### 2025-12-28 - Build 36: Feature Gating Fix + Guru Rate Limiting (BROKEN)
+**Duration**: ~2 hours | **Status**: ⚠️ Broken (see Build 37)
+- Attempted fix for feature gating by updating FEATURE_LIMITS.free
 - Added Guru rate limiting: 3 requests/day for free/trial users
 - Created guruRateLimitStore.ts for daily usage tracking
-- Added rate limit exceeded modal with upgrade prompt
-- Created comprehensive documentation: docs/SUBSCRIPTION_FEATURE_GATING.md
+- Problem: Conflated "free tier" with "trial" - broke when TestFlight bypass disabled
 
 ### 2025-12-28 - Build 35: PaywallScreen Loading Fix
 **Duration**: ~1 hour | **Status**: ✅ Complete
@@ -1177,6 +1247,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (PaywallScreen Loading Fix + RevenueCat Investigation)
+**Last Updated by**: Claude Code (Build 38 - Trial System + Guru Access Fix)
 **Session Date**: December 28, 2025
-**Document Version**: 2.2.0
+**Document Version**: 2.3.0
