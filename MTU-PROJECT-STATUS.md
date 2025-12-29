@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-28 (PaywallScreen Loading Fix + RevenueCat Investigation)
+**Last Updated**: 2025-12-28 (Build 36 - Feature Gating Fix + Guru Rate Limiting)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟡 **BUILD 34 ON TESTFLIGHT** + 🔒 **SECURITY HARDENING COMPLETE**
+**Status**: 🟢 **BUILD 36 ON TESTFLIGHT** + 🔒 **SECURITY HARDENING COMPLETE**
 
 ---
 
@@ -126,6 +126,37 @@
 - Show error UI with "Try Again" button when offerings fail
 - Commit: `37f7369`
 
+### Build 35 (Dec 28) - PaywallScreen Fix
+- ✅ Fixed infinite loading spinner when RevenueCat offerings fail
+- ✅ Added error UI with "Try Again" button
+- ⚠️ **Issue discovered:** All features locked for free users (wrong FEATURE_LIMITS)
+
+### Build 36 (Dec 28) - Feature Gating Fix + Guru Rate Limiting
+**Issue:** Free users had NO access to workbook/meditations when RevenueCat failed
+
+**Root Cause:** `FEATURE_LIMITS.free` had `maxPhase: 0` and `maxMeditations: 0`
+
+**Fixes Applied:**
+- ✅ **FEATURE_LIMITS.free** updated: Full access during 7-day trial
+- ✅ **FEATURE_LIMITS.novice** updated: Guru locked (must upgrade to Awakening)
+- ✅ **Guru rate limiting** added: Free/trial users get 3 requests/day
+- ✅ **Rate limit modal** added: Shows upgrade prompt when limit exceeded
+- ✅ **Documentation** added: `docs/SUBSCRIPTION_FEATURE_GATING.md`
+
+**New Business Model:**
+| Tier | Workbook | Meditations | Guru |
+|------|----------|-------------|------|
+| Free/Trial (7 days) | ✅ All phases | ✅ All | ✅ **3/day** |
+| Novice | ✅ All phases | ✅ Music only | ❌ Locked |
+| Awakening+ | ✅ All phases | ✅ All | ✅ Unlimited |
+
+**Files Changed:**
+- `mobile/src/types/subscription.ts` - Updated FEATURE_LIMITS
+- `mobile/src/stores/guruRateLimitStore.ts` - NEW: Daily usage tracking
+- `mobile/src/screens/GuruScreen.tsx` - Rate limit check + modal
+- `docs/SUBSCRIPTION_FEATURE_GATING.md` - NEW: Comprehensive docs
+- Commit: `3246f48`
+
 ---
 
 ## 🎉 MILESTONE: App Store Resubmission Complete!
@@ -135,7 +166,7 @@
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
 | **Build (TestFlight)** | 30 (testflight profile) |
-| **Build (Latest)** | 34 (production - Dec 27, subscription fixes) |
+| **Build (Latest)** | 36 (production - Dec 28, feature gating + Guru rate limit) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -260,12 +291,12 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
+3246f48 feat: fix feature gating for free users + add Guru rate limiting (3/day)
 37f7369 fix: PaywallScreen infinite loading spinner when offerings fail
 54ba289 docs: add RevenueCat configuration investigation findings
 d0c36c7 docs: update SecurityAudit.md with Build 34 and subscription sync fixes
 60158b5 docs: document JWT ES256 compatibility issue and resolution
 70d00d1 config: add Edge Function JWT verification settings with documentation
-7eee8ef security: complete API key rotation (C1 fix) - hybrid publishable/legacy approach
 ```
 
 ---
@@ -279,14 +310,20 @@ d0c36c7 docs: update SecurityAudit.md with Build 34 and subscription sync fixes
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
-- **Date**: December 28, 2025 - PaywallScreen Loading Fix
-- **Duration**: ~1 hour
-- **What Was Done**: Fixed infinite loading spinner on PaywallScreen when offerings fail to load
-- **Status**: ✅ **COMPLETE** - Fix committed and pushed to GitHub
+- **Date**: December 28, 2025 - Build 36: Feature Gating Fix + Guru Rate Limiting
+- **Duration**: ~2 hours
+- **What Was Done**: Fixed feature gating for free users + added Guru rate limiting (3/day)
+- **Status**: ✅ **COMPLETE** - Build 36 submitted to TestFlight
 - **Commits**:
+  - `3246f48` - feat: fix feature gating for free users + add Guru rate limiting (3/day)
   - `37f7369` - fix: PaywallScreen infinite loading spinner when offerings fail
   - `54ba289` - docs: add RevenueCat configuration investigation findings
-  - `d0c36c7` - docs: update SecurityAudit.md with Build 34 and subscription sync fixes
+- **Key Changes**:
+  - Free/trial users now have full app access (was locked due to wrong FEATURE_LIMITS)
+  - Guru limited to 3 requests/day for free/trial users
+  - Novice tier has Guru locked (must upgrade to Awakening)
+  - Awakening+ tiers have unlimited Guru access
+  - Added `docs/SUBSCRIPTION_FEATURE_GATING.md` for documentation
 
 ### Previous Activity
 - **Date**: December 27, 2025 - Build 34 + Subscription System Fixes
@@ -984,7 +1021,17 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
-### 2025-12-28 - PaywallScreen Loading Fix
+### 2025-12-28 - Build 36: Feature Gating Fix + Guru Rate Limiting
+**Duration**: ~2 hours | **Status**: ✅ Complete
+- Fixed feature gating: Free/trial users now have full app access
+- Updated FEATURE_LIMITS.free to grant all phases, meditations, vision board
+- Updated FEATURE_LIMITS.novice: Guru locked (must upgrade to Awakening)
+- Added Guru rate limiting: 3 requests/day for free/trial users
+- Created guruRateLimitStore.ts for daily usage tracking
+- Added rate limit exceeded modal with upgrade prompt
+- Created comprehensive documentation: docs/SUBSCRIPTION_FEATURE_GATING.md
+
+### 2025-12-28 - Build 35: PaywallScreen Loading Fix
 **Duration**: ~1 hour | **Status**: ✅ Complete
 - Fixed infinite loading spinner when RevenueCat offerings fail to load
 - Separated loading state from error state in PaywallScreen
