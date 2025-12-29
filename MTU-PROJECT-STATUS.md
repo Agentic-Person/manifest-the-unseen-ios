@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-28 (Build 38 - Trial System Fix + Guru Access Fix)
+**Last Updated**: 2025-12-29 (Build 39 - RevenueCat Integration Fix + 3-Tier Paywall)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **BUILD 38 ON TESTFLIGHT** + 🔒 **SECURITY HARDENING COMPLETE**
+**Status**: 🟢 **BUILD 39 ON TESTFLIGHT** + 🔒 **REVENUECAT INTEGRATION FIXED**
 
 ---
 
@@ -215,6 +215,53 @@ Paid subscribers          → tier from RevenueCat (novice/awakening/enlightenme
 | Novice | ✅ All phases | ✅ Music only | ❌ Locked |
 | Awakening+ | ✅ All phases | ✅ All | ✅ Unlimited |
 
+### Build 39 (Dec 29) - RevenueCat Integration Fix + 3-Tier Paywall
+**Critical Issues Found:**
+1. Code searched for wrong package IDs (`monthly`, `yearly`, `lifetime`)
+2. RevenueCat has different package IDs (`novice_monthly`, `awakening_annual`, etc.)
+3. 4 App Store products were missing entitlement attachments
+4. All TestFlight builds bypassed RevenueCat (never tested real purchases)
+
+**Root Cause Analysis (via RevenueCat Dashboard Screenshots):**
+- Code's `findPackage()` looked for `PRODUCT_IDS.MONTHLY` = `'monthly'`
+- RevenueCat "current" offering has packages: `novice_monthly`, `awakening_monthly`, `enlightenment_monthly`, etc.
+- Result: `getOfferings()` returned NULL for all packages → no offerings displayed
+
+**Fixes Applied:**
+- ✅ **subscription.ts** - Updated `SubscriptionOffering` type for 6 packages (3 tiers × monthly/annual)
+- ✅ **subscription.ts** - Added `PACKAGE_IDS` constant matching RevenueCat identifiers
+- ✅ **subscriptionService.ts** - Rewrote `getOfferings()` with `findPackageById()` function
+- ✅ **PaywallScreen.tsx** - Redesigned with tier selector tabs (Novice/Awakening/Enlightenment)
+- ✅ **eas.json** - Added `testflight-sandbox` profile (`TESTFLIGHT_FULL_ACCESS=false`)
+- ✅ **RevenueCat Dashboard** - Attached entitlements to all 6 App Store products
+
+**Files Modified:**
+- `mobile/src/types/subscription.ts` - SubscriptionOffering type + PACKAGE_IDS
+- `mobile/src/services/subscriptionService.ts` - getOfferings() rewrite
+- `mobile/src/screens/subscription/PaywallScreen.tsx` - 3-tier UI
+- `mobile/eas.json` - testflight-sandbox profile
+
+**New Build Profiles:**
+| Profile | TESTFLIGHT_FULL_ACCESS | RevenueCat | Use For |
+|---------|------------------------|------------|---------|
+| `testflight` | `true` | Bypassed | Beta testing (full access) |
+| `testflight-sandbox` | `false` | **Connected** | Testing real purchases |
+| `production` | `false` | Connected | App Store release |
+
+**Package ID Mapping (Code → RevenueCat):**
+| Code Package ID | RevenueCat Package | Product | Entitlement |
+|-----------------|-------------------|---------|-------------|
+| `novice_monthly` | `novice_monthly` | `manifest_novice_monthly` | `novice_path` |
+| `novice_annual` | `novice_annual` | `manifest_novice_yearly` | `novice_path` |
+| `awakening_monthly` | `awakening_monthly` | `manifest_awakening_monthly` | `awakening_path` |
+| `awakening_annual` | `awakening_annual` | `manifest_awakening_yearly` | `awakening_path` |
+| `enlightenment_monthly` | `enlightenment_monthly` | `manifest_enlightenment_monthly` | `enlightenment_path` |
+| `enlightenment_annual` | `enlightenment_annual` | `manifest_enlightenment_yearly` | `enlightenment_path` |
+
+**Commits:**
+- `767e215` - feat: fix RevenueCat integration with 3-tier paywall
+- `986f6d1` - build: increment iOS build number to 39
+
 ---
 
 ## 🎉 MILESTONE: App Store Resubmission Complete!
@@ -224,7 +271,7 @@ Paid subscribers          → tier from RevenueCat (novice/awakening/enlightenme
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
 | **Build (TestFlight)** | 30 (testflight profile) |
-| **Build (Latest)** | 38 (production - Dec 28, trial system + Guru access fix) |
+| **Build (Latest)** | 39 (testflight-sandbox - Dec 29, RevenueCat integration fix) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -349,12 +396,12 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
+986f6d1 build: increment iOS build number to 39
+767e215 feat: fix RevenueCat integration with 3-tier paywall
 a9c4f3c fix: Build 38 - fix Guru trial access and offerings timeout
 e7b8441 fix: Build 37 - proper trial tracking system
 3246f48 feat: fix feature gating for free users + add Guru rate limiting (3/day)
 37f7369 fix: PaywallScreen infinite loading spinner when offerings fail
-54ba289 docs: add RevenueCat configuration investigation findings
-d0c36c7 docs: update SecurityAudit.md with Build 34 and subscription sync fixes
 ```
 
 ---
@@ -368,20 +415,26 @@ d0c36c7 docs: update SecurityAudit.md with Build 34 and subscription sync fixes
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 29, 2025 - Build 39: RevenueCat Integration Fix + 3-Tier Paywall
+- **Duration**: ~3 hours
+- **What Was Done**: Fixed critical RevenueCat package ID mismatch + redesigned paywall for 3 tiers
+- **Status**: ✅ **COMPLETE** - Build 39 submitted to TestFlight
+- **Commits**:
+  - `986f6d1` - build: increment iOS build number to 39
+  - `767e215` - feat: fix RevenueCat integration with 3-tier paywall
+- **Key Changes**:
+  - FIX: `SubscriptionOffering` type now has 6 packages (novice/awakening/enlightenment × monthly/annual)
+  - FIX: `getOfferings()` uses correct RevenueCat package IDs (`novice_monthly`, etc.)
+  - NEW: `findPackageById()` helper matches RevenueCat package identifiers
+  - NEW: PaywallScreen has tier selector tabs (Novice/Awakening/Enlightenment)
+  - NEW: `testflight-sandbox` build profile (`TESTFLIGHT_FULL_ACCESS=false`)
+  - FIX: RevenueCat entitlements attached to all 6 App Store products (manual)
+
+### Previous Activity
 - **Date**: December 28, 2025 - Build 38: Trial System Fix + Guru Access Fix
 - **Duration**: ~4 hours (Builds 36-38)
 - **What Was Done**: Complete trial system overhaul + fixed remaining access issues
 - **Status**: ✅ **COMPLETE** - Build 38 submitted to TestFlight
-- **Commits**:
-  - `a9c4f3c` - fix: Build 38 - fix Guru trial access and offerings timeout
-  - `e7b8441` - fix: Build 37 - proper trial tracking system
-  - `3246f48` - feat: fix feature gating for free users + add Guru rate limiting (3/day)
-- **Key Changes**:
-  - NEW: `trialStore.ts` - Tracks 7-day trial via AsyncStorage (independent of RevenueCat)
-  - NEW: `useEffectiveAccess` hook - Combines trial + subscription for feature access
-  - FIX: `useGuru.ts` - Now uses useEffectiveAccess for trial user access
-  - FIX: `loadOfferings()` - Added 10-second timeout to prevent hanging
-  - REVERTED: `FEATURE_LIMITS.free` back to locked (trial access via trialStore)
 
 ### Previous Activity
 - **Date**: December 27, 2025 - Build 34 + Subscription System Fixes
@@ -1079,6 +1132,16 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2025-12-29 - Build 39: RevenueCat Integration Fix + 3-Tier Paywall
+**Duration**: ~3 hours | **Status**: ✅ Complete
+- Fixed critical package ID mismatch (code used `monthly`, RevenueCat has `novice_monthly`, etc.)
+- Updated `SubscriptionOffering` type for 6 packages (3 tiers × monthly/annual)
+- Added `PACKAGE_IDS` constant matching RevenueCat package identifiers
+- Rewrote `getOfferings()` with `findPackageById()` function
+- Redesigned PaywallScreen with tier selector tabs (Novice/Awakening/Enlightenment)
+- Added `testflight-sandbox` build profile for testing real purchases
+- Attached entitlements to all 6 App Store products in RevenueCat dashboard
+
 ### 2025-12-28 - Build 38: Guru Access Fix + Offerings Timeout
 **Duration**: ~30 min | **Status**: ✅ Complete
 - Fixed Guru access for trial users (was still checking old useGuruAccess hook)
@@ -1247,6 +1310,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Build 38 - Trial System + Guru Access Fix)
-**Session Date**: December 28, 2025
-**Document Version**: 2.3.0
+**Last Updated by**: Claude Code (Build 39 - RevenueCat Integration Fix + 3-Tier Paywall)
+**Session Date**: December 29, 2025
+**Document Version**: 2.4.0
