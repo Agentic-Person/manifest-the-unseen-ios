@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-29 (Build 39 - RevenueCat Integration Fix + 3-Tier Paywall)
+**Last Updated**: 2025-12-29 (Build 39 - RevenueCat Integration Fix + App Store Connect Metadata)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **BUILD 39 ON TESTFLIGHT** + 🔒 **REVENUECAT INTEGRATION FIXED**
+**Status**: 🟢 **BUILD 39 ON TESTFLIGHT** + 🔒 **REVENUECAT + APP STORE CONNECT CONFIGURED**
 
 ---
 
@@ -262,6 +262,35 @@ Paid subscribers          → tier from RevenueCat (novice/awakening/enlightenme
 - `767e215` - feat: fix RevenueCat integration with 3-tier paywall
 - `986f6d1` - build: increment iOS build number to 39
 
+### App Store Connect Subscription Metadata Fix (Dec 29)
+**Issue:** RevenueCat failing to fetch offerings - products showing "Missing Metadata" in App Store Connect
+
+**Root Cause:**
+- Subscription group localization was not configured
+- Individual subscription availability was not set up (countries/regions)
+
+**Fixes Applied via Playwright MCP (App Store Connect):**
+1. ✅ **Subscription Group Localization** - Added "Premium Access" display name for English (U.S.)
+2. ✅ **Availability Configuration** - Set all 175 countries/regions for each subscription
+
+| Product ID | Display Name | Price | Duration | Availability |
+|------------|--------------|-------|----------|--------------|
+| manifest_novice_monthly | Novice Path Monthly | $7.99 | 1 month | 175 countries ✅ |
+| manifest_novice_yearly | Novice Path Yearly | $79.99 | 1 year | 175 countries ✅ |
+| manifest_awakening_monthly | Awakening Path Monthly | $19.99 | 1 month | 175 countries ✅ |
+| manifest_awakening_yearly | Awakening Path Yearly | $199.99 | 1 year | 175 countries ✅ |
+| manifest_enlightenment_monthly | Enlightenment Path Monthly | $49.99 | 1 month | 175 countries ✅ |
+| manifest_enlightenment_yearly | Enlightenment Path Yearly | $499.99 | 1 year | 175 countries ✅ |
+
+**Verified Configuration:**
+- ✅ Pricing already set correctly for all 6 products
+- ✅ Subscription durations correct (monthly = 1 month, yearly = 1 year)
+- ✅ Individual localization (display name + description) already configured
+- ✅ Subscription group localization now configured ("Premium Access")
+- ✅ All subscriptions available in 175 countries/regions
+
+**Note:** Subscriptions may still show "Missing Metadata" until Review Screenshot is added (required for App Store submission but not for RevenueCat). RevenueCat should now be able to fetch offerings.
+
 ---
 
 ## 🎉 MILESTONE: App Store Resubmission Complete!
@@ -415,6 +444,17 @@ e7b8441 fix: Build 37 - proper trial tracking system
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 29, 2025 - App Store Connect Subscription Metadata Configuration
+- **Duration**: ~1 hour
+- **What Was Done**: Configured missing subscription metadata in App Store Connect via Playwright MCP
+- **Status**: ✅ **COMPLETE** - All 6 subscriptions now have availability and group localization
+- **Key Changes**:
+  - FIX: Added subscription group localization ("Premium Access" for English U.S.)
+  - FIX: Configured availability (175 countries) for all 6 subscription products
+  - VERIFIED: Pricing, durations, and individual localizations were already correctly set
+  - NOTE: "Missing Metadata" status may persist until Review Screenshots are added
+
+### Previous Activity
 - **Date**: December 29, 2025 - Build 39: RevenueCat Integration Fix + 3-Tier Paywall
 - **Duration**: ~3 hours
 - **What Was Done**: Fixed critical RevenueCat package ID mismatch + redesigned paywall for 3 tiers
@@ -1132,6 +1172,13 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2025-12-29 - App Store Connect Subscription Metadata Configuration
+**Duration**: ~1 hour | **Status**: ✅ Complete
+- Configured subscription group localization ("Premium Access" for English U.S.)
+- Set up availability (175 countries/regions) for all 6 subscription products
+- Verified pricing and individual localizations were already correctly configured
+- All subscriptions now have: pricing, duration, localization, and availability set
+
 ### 2025-12-29 - Build 39: RevenueCat Integration Fix + 3-Tier Paywall
 **Duration**: ~3 hours | **Status**: ✅ Complete
 - Fixed critical package ID mismatch (code used `monthly`, RevenueCat has `novice_monthly`, etc.)
@@ -1310,6 +1357,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Build 39 - RevenueCat Integration Fix + 3-Tier Paywall)
+**Last Updated by**: Claude Code (App Store Connect Subscription Metadata Configuration)
 **Session Date**: December 29, 2025
-**Document Version**: 2.4.0
+**Document Version**: 2.5.0
