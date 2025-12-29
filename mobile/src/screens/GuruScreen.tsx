@@ -33,7 +33,7 @@ import { PhaseSelector } from '../components/guru/PhaseSelector';
 import { GuruEmptyState } from '../components/guru/GuruEmptyState';
 import GuruLockedScreen from './GuruLockedScreen';
 import { useGuruRateLimit, GURU_DAILY_LIMIT } from '../stores/guruRateLimitStore';
-import { useSubscriptionStore } from '../stores/subscriptionStore';
+import { useEffectiveAccess } from '../hooks/useSubscription';
 import { colors, spacing, shadows } from '../theme';
 import type { GuruMessage } from '../types/guru';
 import type { MainTabScreenProps } from '../types/navigation';
@@ -56,13 +56,16 @@ export function GuruScreen() {
     sendMessage,
   } = useGuru();
 
-  // Rate limiting for free/trial users
-  const tier = useSubscriptionStore((state) => state.tier);
+  // Get effective access (combines trial + subscription)
+  const { effectiveTier, isTrialUser, hasGuruAnalysis } = useEffectiveAccess();
+
+  // Rate limiting for trial users only
   const { canMakeRequest, incrementUsage, getResetTime, loadUsage } = useGuruRateLimit();
   const [showRateLimitModal, setShowRateLimitModal] = useState(false);
 
-  // Check if user has unlimited Guru access (Awakening+)
-  const hasUnlimitedGuru = tier === 'awakening' || tier === 'enlightenment';
+  // Rate limit only applies to trial users, paid Awakening+ users have unlimited
+  const shouldRateLimit = isTrialUser;
+  const hasUnlimitedGuru = !isTrialUser && (effectiveTier === 'awakening' || effectiveTier === 'enlightenment');
 
   // Load rate limit usage on mount
   useEffect(() => {
@@ -112,16 +115,16 @@ export function GuruScreen() {
 
   // Handle send message with rate limiting
   const handleSend = async (message: string) => {
-    // Check rate limit for non-premium users
-    if (!hasUnlimitedGuru && !canMakeRequest()) {
+    // Check rate limit for trial users only (paid Awakening+ have unlimited)
+    if (shouldRateLimit && !canMakeRequest()) {
       setShowRateLimitModal(true);
       return;
     }
 
     await sendMessage(message);
 
-    // Increment usage after successful send for non-premium users
-    if (!hasUnlimitedGuru) {
+    // Increment usage after successful send for trial users only
+    if (shouldRateLimit) {
       await incrementUsage();
     }
   };

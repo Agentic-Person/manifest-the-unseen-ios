@@ -180,21 +180,25 @@ export const TRIAL_DURATION_DAYS = 7;
  * Feature Access Limits by Tier
  *
  * Business Model:
- * - Free/Trial (7 days): FULL access, Guru rate-limited to 3/day
+ * - Free (no subscription, trial expired): LOCKED - must subscribe
+ * - Trial (7 days): FULL access via useEffectiveAccess hook, Guru rate-limited to 3/day
  * - Novice: Workbook, progress, music meditations - NO Guru
  * - Awakening: + Guided meditations, Guru UNLIMITED, analytics
  * - Enlightenment: + Coming Soon features (full AI chat, journaling, etc.)
+ *
+ * IMPORTANT: Trial access is NOT in FEATURE_LIMITS.free!
+ * Trial access comes from trialStore.isInTrialPeriod + useEffectiveAccess hook.
  */
 export const FEATURE_LIMITS = {
   free: {
-    maxPhase: 10,                 // All phases during trial
-    maxMeditations: 18,           // All meditations during trial
-    hasGuidedMeditations: true,   // Guided meditations during trial
-    hasGuruAnalysis: true,        // Guru enabled (rate-limited to 3/day - see guruRateLimitStore)
+    maxPhase: 0,                  // LOCKED - must subscribe
+    maxMeditations: 0,            // LOCKED - must subscribe
+    hasGuidedMeditations: false,  // LOCKED - must subscribe
+    hasGuruAnalysis: false,       // LOCKED - must subscribe
     hasFullGuruChat: false,       // Coming Soon
     hasJournaling: false,         // Coming Soon
     hasAdvancedAnalytics: false,
-    hasVisionBoard: true,         // Vision board during trial
+    hasVisionBoard: false,        // LOCKED - must subscribe
   },
   novice: {
     maxPhase: 10,                 // All phases

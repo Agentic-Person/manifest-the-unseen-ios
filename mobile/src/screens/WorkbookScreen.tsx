@@ -14,7 +14,7 @@ import { colors } from '../theme';
 import { PhaseImages } from '../assets';
 import { useAllPhasesProgress, getProgressMessage } from '../hooks';
 import { GradientProgressBar, getProgressColor } from '../components/workbook';
-import { useFeatureAccess } from '../hooks/useSubscription';
+import { useEffectiveAccess } from '../hooks/useSubscription';
 import { UpgradePrompt } from '../components/UpgradePrompt';
 import { TIER_PRICING } from '../types/subscription';
 
@@ -46,8 +46,8 @@ const WorkbookScreen = ({ navigation }: Props) => {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [lockedPhaseNumber, setLockedPhaseNumber] = useState<number>(3);
 
-  // Subscription access
-  const { maxPhase } = useFeatureAccess();
+  // Subscription access (combines trial + subscription)
+  const { maxPhase } = useEffectiveAccess();
 
   // Fetch progress for all phases
   const { phases: phasesProgress, overallPercentage, isLoading } = useAllPhasesProgress();

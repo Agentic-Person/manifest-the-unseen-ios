@@ -37,7 +37,7 @@ import {
   BreathingImages,
   InstrumentalImages,
 } from '../assets';
-import { useFeatureAccess } from '../hooks/useSubscription';
+import { useEffectiveAccess } from '../hooks/useSubscription';
 import { UpgradePrompt } from '../components/UpgradePrompt';
 import { TIER_PRICING } from '../types/subscription';
 
@@ -117,8 +117,8 @@ const MeditateScreen = () => {
   // Get preferred narrator from settings
   const preferredNarrator = useSettingsStore((state) => state.preferredNarrator);
 
-  // Subscription access - simplified: tier is all we need
-  const { tier } = useFeatureAccess();
+  // Subscription access (combines trial + subscription)
+  const { effectiveTier, isTrialUser, maxMeditations } = useEffectiveAccess();
 
   // Fetch data for each tab
   const {
@@ -153,15 +153,16 @@ const MeditateScreen = () => {
 
   /**
    * Check if meditation is accessible based on subscription
-   * Simplified: Any subscriber (Novice or Enlightenment) has access to all meditations
+   * Trial users and any subscriber have access to meditations
    */
   const isMeditationAccessible = useCallback(
     (): boolean => {
-      // Free tier has no meditation access
-      // Both Novice and Enlightenment have full access
-      return tier !== 'free';
+      // Trial users have full access
+      if (isTrialUser) return true;
+      // Paid subscribers have access based on tier
+      return effectiveTier !== 'free';
     },
-    [tier]
+    [effectiveTier, isTrialUser]
   );
 
   /**

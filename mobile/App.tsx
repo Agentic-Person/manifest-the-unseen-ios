@@ -25,6 +25,7 @@ import { FontSizeProvider } from './src/contexts/FontSizeContext';
 import { useAppStore } from './src/stores/appStore';
 import { useSubscriptionStore } from './src/stores/subscriptionStore';
 import { useAuthStore } from './src/stores/authStore';
+import { useTrialStore } from './src/stores/trialStore';
 
 /**
  * App Component
@@ -43,21 +44,25 @@ const App = () => {
       try {
         console.log('🚀 Initializing Manifest the Unseen...');
 
-        // 1. Initialize RevenueCat SDK
+        // 1. Initialize trial tracking (independent of RevenueCat)
+        await useTrialStore.getState().initializeTrial();
+        console.log('✅ Trial status initialized');
+
+        // 2. Initialize RevenueCat SDK
         await configurePurchases();
         console.log('✅ RevenueCat initialized');
 
-        // 2. If user is logged in, sync their ID with RevenueCat
+        // 3. If user is logged in, sync their ID with RevenueCat
         if (user?.id) {
           await setUserId(user.id);
           console.log('✅ RevenueCat user ID synced:', user.id);
         }
 
-        // 3. Load subscription state
+        // 4. Load subscription state
         await loadSubscription();
         console.log('✅ Subscription state loaded');
 
-        // 4. Load available subscription offerings
+        // 5. Load available subscription offerings
         await loadOfferings();
         console.log('✅ Subscription offerings loaded');
 

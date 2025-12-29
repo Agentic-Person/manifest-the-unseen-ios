@@ -13,6 +13,7 @@
 
 import { useEffect, useMemo } from 'react';
 import { useSubscriptionStore } from '../stores/subscriptionStore';
+import { useTrialStore } from '../stores/trialStore';
 import { FEATURE_LIMITS } from '../types/subscription';
 import type { SubscriptionTier } from '../types/subscription';
 
@@ -227,4 +228,82 @@ export function useUpgradeTierRecommendation(
 
     return null;
   }, [currentTier, feature]);
+}
+
+/**
+ * Get Effective Feature Access
+ *
+ * CRITICAL: This is the hook all screens should use for feature gating!
+ *
+ * Combines:
+ * 1. Trial status (from trialStore) - 7-day free trial with full access
+ * 2. Subscription tier (from RevenueCat/subscriptionStore) - paid subscriptions
+ *
+ * Returns effective access based on whichever grants more access.
+ *
+ * Business Logic:
+ * - Trial users (first 7 days): Full access like Enlightenment, but Guru is rate-limited
+ * - After trial expires: Access based on subscription tier (free = locked)
+ * - Paid subscribers: Access based on their tier, unlimited Guru for Awakening+
+ */
+export function useEffectiveAccess() {
+  const tier = useSubscriptionStore((state) => state.tier);
+  const isInTrialPeriod = useTrialStore((state) => state.isInTrialPeriod);
+  const trialDaysRemaining = useTrialStore((state) => state.trialDaysRemaining);
+  const trialLoading = useTrialStore((state) => state.isLoading);
+  const subscriptionLoading = useSubscriptionStore((state) => state.isLoading);
+
+  return useMemo(() => {
+    const isLoading = trialLoading || subscriptionLoading;
+
+    // Trial users get full access (like enlightenment but with rate-limited Guru)
+    if (isInTrialPeriod) {
+      return {
+        // Status
+        tier: 'free' as SubscriptionTier, // Actual tier from RevenueCat
+        effectiveTier: 'enlightenment' as SubscriptionTier, // Effective access level
+        isTrialUser: true,
+        trialDaysRemaining,
+        isLoading,
+
+        // Feature access (full access during trial)
+        maxPhase: FEATURE_LIMITS.enlightenment.maxPhase,
+        maxMeditations: FEATURE_LIMITS.enlightenment.maxMeditations,
+        hasGuidedMeditations: FEATURE_LIMITS.enlightenment.hasGuidedMeditations,
+        hasGuruAnalysis: true, // Enabled but rate-limited (handled by guruRateLimitStore)
+        hasFullGuruChat: FEATURE_LIMITS.enlightenment.hasFullGuruChat,
+        hasJournaling: FEATURE_LIMITS.enlightenment.hasJournaling,
+        hasAdvancedAnalytics: FEATURE_LIMITS.enlightenment.hasAdvancedAnalytics,
+        hasVisionBoard: FEATURE_LIMITS.enlightenment.hasVisionBoard,
+
+        // Subscription status
+        isSubscribed: false,
+      };
+    }
+
+    // Non-trial users: use actual tier from RevenueCat
+    const limits = FEATURE_LIMITS[tier];
+
+    return {
+      // Status
+      tier,
+      effectiveTier: tier,
+      isTrialUser: false,
+      trialDaysRemaining: 0,
+      isLoading,
+
+      // Feature access from tier
+      maxPhase: limits.maxPhase,
+      maxMeditations: limits.maxMeditations,
+      hasGuidedMeditations: limits.hasGuidedMeditations,
+      hasGuruAnalysis: limits.hasGuruAnalysis,
+      hasFullGuruChat: limits.hasFullGuruChat,
+      hasJournaling: limits.hasJournaling,
+      hasAdvancedAnalytics: limits.hasAdvancedAnalytics,
+      hasVisionBoard: limits.hasVisionBoard,
+
+      // Subscription status
+      isSubscribed: tier !== 'free',
+    };
+  }, [tier, isInTrialPeriod, trialDaysRemaining, trialLoading, subscriptionLoading]);
 }

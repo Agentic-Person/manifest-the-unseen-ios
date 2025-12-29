@@ -139,7 +139,16 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const info: SubscriptionInfo = await getSubscriptionInfo();
+      // Add timeout to prevent hanging forever if RevenueCat is slow/unresponsive
+      const SUBSCRIPTION_TIMEOUT = 10000; // 10 seconds
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Subscription load timeout')), SUBSCRIPTION_TIMEOUT)
+      );
+
+      const info = await Promise.race([
+        getSubscriptionInfo(),
+        timeoutPromise,
+      ]) as SubscriptionInfo;
 
       set({
         tier: info.tier,
@@ -154,9 +163,20 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         isLoading: false,
         error: null,
       });
+
+      console.log('[Subscription] Loaded successfully:', info.tier, info.status);
     } catch (error: any) {
-      console.error('Failed to load subscription:', error);
+      console.error('[Subscription] Load failed:', error);
+      // On error, set to free tier - trial access will be determined by trialStore
       set({
+        tier: 'free',
+        status: 'none',
+        isSubscribed: false,
+        isInTrial: false,
+        period: null,
+        trialEndDate: null,
+        expirationDate: null,
+        willRenew: false,
         isLoading: false,
         error: error.message || 'Failed to load subscription',
       });

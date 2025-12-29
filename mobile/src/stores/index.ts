@@ -49,3 +49,9 @@ export {
   useLastSavedAt,
   useSaveError,
 } from './workbookStore';
+
+// Trial store - 7-day free trial tracking
+export {
+  useTrialStore,
+  TRIAL_DURATION_DAYS,
+} from './trialStore';
