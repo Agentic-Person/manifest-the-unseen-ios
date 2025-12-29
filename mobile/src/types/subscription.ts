@@ -179,30 +179,28 @@ export const TRIAL_DURATION_DAYS = 7;
 /**
  * Feature Access Limits by Tier
  *
- * Three-tier model:
- * - Free: No access (pre-trial or expired)
- * - Novice: Workbook, progress, music meditations
- * - Awakening: + Guided meditations, Guru workbook analysis, analytics
+ * Business Model:
+ * - Free/Trial (7 days): FULL access, Guru rate-limited to 3/day
+ * - Novice: Workbook, progress, music meditations - NO Guru
+ * - Awakening: + Guided meditations, Guru UNLIMITED, analytics
  * - Enlightenment: + Coming Soon features (full AI chat, journaling, etc.)
- *
- * 7-day free trial = Novice-level access
  */
 export const FEATURE_LIMITS = {
   free: {
-    maxPhase: 0,
-    maxMeditations: 0,
-    hasGuidedMeditations: false,
-    hasGuruAnalysis: false,      // Guru workbook analysis (Awakening+)
-    hasFullGuruChat: false,       // Full conversational AI (Enlightenment - Coming Soon)
+    maxPhase: 10,                 // All phases during trial
+    maxMeditations: 18,           // All meditations during trial
+    hasGuidedMeditations: true,   // Guided meditations during trial
+    hasGuruAnalysis: true,        // Guru enabled (rate-limited to 3/day - see guruRateLimitStore)
+    hasFullGuruChat: false,       // Coming Soon
     hasJournaling: false,         // Coming Soon
     hasAdvancedAnalytics: false,
-    hasVisionBoard: false,
+    hasVisionBoard: true,         // Vision board during trial
   },
   novice: {
     maxPhase: 10,                 // All phases
     maxMeditations: 6,            // Music tracks only
     hasGuidedMeditations: false,  // NO guided meditations
-    hasGuruAnalysis: false,       // NO Guru access
+    hasGuruAnalysis: false,       // NO Guru - must upgrade to Awakening
     hasFullGuruChat: false,
     hasJournaling: false,
     hasAdvancedAnalytics: false,

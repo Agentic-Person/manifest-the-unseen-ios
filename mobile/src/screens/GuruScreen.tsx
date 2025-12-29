@@ -11,7 +11,7 @@
  * - conversation: Show chat interface
  */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   View,
   FlatList,
@@ -19,6 +19,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,6 +32,8 @@ import { TypingIndicator } from '../components/chat/TypingIndicator';
 import { PhaseSelector } from '../components/guru/PhaseSelector';
 import { GuruEmptyState } from '../components/guru/GuruEmptyState';
 import GuruLockedScreen from './GuruLockedScreen';
+import { useGuruRateLimit, GURU_DAILY_LIMIT } from '../stores/guruRateLimitStore';
+import { useSubscriptionStore } from '../stores/subscriptionStore';
 import { colors, spacing, shadows } from '../theme';
 import type { GuruMessage } from '../types/guru';
 import type { MainTabScreenProps } from '../types/navigation';
@@ -51,6 +55,19 @@ export function GuruScreen() {
     clearSelectedPhase,
     sendMessage,
   } = useGuru();
+
+  // Rate limiting for free/trial users
+  const tier = useSubscriptionStore((state) => state.tier);
+  const { canMakeRequest, incrementUsage, getResetTime, loadUsage } = useGuruRateLimit();
+  const [showRateLimitModal, setShowRateLimitModal] = useState(false);
+
+  // Check if user has unlimited Guru access (Awakening+)
+  const hasUnlimitedGuru = tier === 'awakening' || tier === 'enlightenment';
+
+  // Load rate limit usage on mount
+  useEffect(() => {
+    loadUsage();
+  }, [loadUsage]);
 
   // Handle pre-selected phase from navigation params
   useEffect(() => {
@@ -93,9 +110,20 @@ export function GuruScreen() {
     clearSelectedPhase();
   };
 
-  // Handle send message
+  // Handle send message with rate limiting
   const handleSend = async (message: string) => {
+    // Check rate limit for non-premium users
+    if (!hasUnlimitedGuru && !canMakeRequest()) {
+      setShowRateLimitModal(true);
+      return;
+    }
+
     await sendMessage(message);
+
+    // Increment usage after successful send for non-premium users
+    if (!hasUnlimitedGuru) {
+      await incrementUsage();
+    }
   };
 
   // STATE: Locked (no access)
@@ -246,6 +274,48 @@ export function GuruScreen() {
       <View style={styles.inputWrapper}>
         <ChatInput onSend={handleSend} disabled={isSending} />
       </View>
+
+      {/* Rate Limit Exceeded Modal */}
+      <Modal
+        visible={showRateLimitModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowRateLimitModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalIconContainer}>
+              <Ionicons name="time-outline" size={48} color={colors.brand.amber} />
+            </View>
+            <Text style={styles.modalTitle}>Daily Limit Reached</Text>
+            <Text style={styles.modalMessage}>
+              You've used your {GURU_DAILY_LIMIT} free Guru analyses for today.
+              {'\n\n'}
+              Upgrade to Awakening for unlimited Guru access!
+            </Text>
+            <Text style={styles.modalResetText}>
+              Resets in {getResetTime()}
+            </Text>
+            <View style={styles.modalButtons}>
+              <Pressable
+                style={styles.modalSecondaryButton}
+                onPress={() => setShowRateLimitModal(false)}
+              >
+                <Text style={styles.modalSecondaryButtonText}>Close</Text>
+              </Pressable>
+              <Pressable
+                style={styles.modalPrimaryButton}
+                onPress={() => {
+                  setShowRateLimitModal(false);
+                  navigation.navigate('Paywall' as any);
+                }}
+              >
+                <Text style={styles.modalPrimaryButtonText}>Upgrade</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -385,6 +455,77 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     textAlign: 'center',
     lineHeight: 24,
+  },
+  // Rate limit modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+  },
+  modalContent: {
+    backgroundColor: colors.background.elevated,
+    borderRadius: 16,
+    padding: spacing.xl,
+    width: '100%',
+    maxWidth: 340,
+    alignItems: 'center',
+    ...shadows.lg,
+  },
+  modalIconContainer: {
+    marginBottom: spacing.md,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text.primary,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  modalMessage: {
+    fontSize: 15,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: spacing.sm,
+  },
+  modalResetText: {
+    fontSize: 14,
+    color: colors.brand.amber,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: spacing.md,
+  },
+  modalSecondaryButton: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    alignItems: 'center',
+  },
+  modalSecondaryButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.secondary,
+  },
+  modalPrimaryButton: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: 12,
+    backgroundColor: colors.brand.gold,
+    alignItems: 'center',
+  },
+  modalPrimaryButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.background.primary,
   },
 });
 
