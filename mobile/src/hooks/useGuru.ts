@@ -15,7 +15,7 @@ import { getAllWorkbookProgress } from '../services/workbook';
 import { guruService } from '../services';
 import { supabase } from '../services/supabase';
 import type { GuruMessage } from '../types/guru';
-import { useGuruAccess } from './useSubscription';
+import { useEffectiveAccess } from './useSubscription';
 
 export interface UseGuruReturn {
   // Subscription check - Awakening+ tiers have access to workbook analysis
@@ -50,9 +50,9 @@ export function useGuru(): UseGuruReturn {
   // Get subscription tier
   const tier = useSubscriptionStore((state) => state.tier);
 
-  // Awakening+ tiers have Guru workbook analysis access
-  // Novice and free users do NOT have access
-  const hasAccess = useGuruAccess();
+  // Use effective access which includes trial status
+  // Trial users and Awakening+ tiers have Guru workbook analysis access
+  const { hasGuruAnalysis: hasAccess } = useEffectiveAccess();
 
   // Get current user ID
   const [userId, setUserId] = useState<string | undefined>();

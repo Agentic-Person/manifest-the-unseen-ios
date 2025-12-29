@@ -191,16 +191,28 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     set({ isLoadingOfferings: true, error: null });
 
     try {
-      const offerings = await getOfferings();
+      // Add timeout to prevent hanging forever if RevenueCat is slow/unresponsive
+      const OFFERINGS_TIMEOUT = 10000; // 10 seconds
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Offerings load timeout')), OFFERINGS_TIMEOUT)
+      );
+
+      const offerings = await Promise.race([
+        getOfferings(),
+        timeoutPromise,
+      ]);
 
       set({
         offerings,
         isLoadingOfferings: false,
         error: null,
       });
+
+      console.log('[Subscription] Offerings loaded successfully');
     } catch (error: any) {
-      console.error('Failed to load offerings:', error);
+      console.error('[Subscription] Failed to load offerings:', error);
       set({
+        offerings: null,
         isLoadingOfferings: false,
         error: error.message || 'Failed to load offerings',
       });
