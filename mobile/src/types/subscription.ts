@@ -51,14 +51,34 @@ export interface SubscriptionPackage {
 }
 
 /**
- * Subscription Offering - Simplified for Test Store
- * In production, each tier would have monthly/yearly options
+ * Subscription Offering - Production Three-Tier Model
+ * Each tier has monthly and annual options
  */
 export interface SubscriptionOffering {
-  monthly: SubscriptionPackage | null;
-  yearly: SubscriptionPackage | null;
-  lifetime: SubscriptionPackage | null;
+  // Novice tier
+  novice_monthly: SubscriptionPackage | null;
+  novice_annual: SubscriptionPackage | null;
+  // Awakening tier
+  awakening_monthly: SubscriptionPackage | null;
+  awakening_annual: SubscriptionPackage | null;
+  // Enlightenment tier
+  enlightenment_monthly: SubscriptionPackage | null;
+  enlightenment_annual: SubscriptionPackage | null;
 }
+
+/**
+ * Package IDs - matches RevenueCat "current" offering package identifiers
+ */
+export const PACKAGE_IDS = {
+  NOVICE_MONTHLY: 'novice_monthly',
+  NOVICE_ANNUAL: 'novice_annual',
+  AWAKENING_MONTHLY: 'awakening_monthly',
+  AWAKENING_ANNUAL: 'awakening_annual',
+  ENLIGHTENMENT_MONTHLY: 'enlightenment_monthly',
+  ENLIGHTENMENT_ANNUAL: 'enlightenment_annual',
+} as const;
+
+export type PackageId = typeof PACKAGE_IDS[keyof typeof PACKAGE_IDS];
 
 /**
  * Purchase Result

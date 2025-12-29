@@ -22,7 +22,7 @@ import type {
   SubscriptionStatus,
   SubscriptionPeriod,
 } from '../types/subscription';
-import { ENTITLEMENT_IDS, PRODUCT_IDS } from '../types/subscription';
+import { ENTITLEMENT_IDS, PACKAGE_IDS } from '../types/subscription';
 
 /**
  * RevenueCat Configuration
@@ -113,47 +113,82 @@ export async function logoutUser(): Promise<void> {
 
 /**
  * Get Available Offerings
- * Returns subscription packages for test store (simplified)
+ * Returns subscription packages for the three-tier model
  *
- * Test Store Setup: Uses simplified product IDs (monthly, yearly, lifetime)
- * All map to 'enlightenment' tier for testing purposes
+ * Production Setup: Uses RevenueCat package identifiers
+ * - novice_monthly, novice_annual
+ * - awakening_monthly, awakening_annual
+ * - enlightenment_monthly, enlightenment_annual
  */
 export async function getOfferings(): Promise<SubscriptionOffering | null> {
   // Return mock offerings for web mode (RevenueCat doesn't work in browser)
   if (Platform.OS === 'web') {
     console.log('[Subscription] Web mode - returning mock offerings for UI testing');
     return {
-      monthly: {
-        id: 'mock_monthly',
+      novice_monthly: {
+        id: 'mock_novice_monthly',
+        tier: 'novice',
+        period: 'monthly',
+        price: '$7.99',
+        pricePerMonth: '$7.99/mo',
+        currencyCode: 'USD',
+        title: 'Novice Path Monthly',
+        description: 'Workbook + Progress + Music',
+        rcPackage: {} as any,
+      },
+      novice_annual: {
+        id: 'mock_novice_annual',
+        tier: 'novice',
+        period: 'yearly',
+        price: '$79.99',
+        pricePerMonth: '$6.67/mo',
+        currencyCode: 'USD',
+        title: 'Novice Path Annual',
+        description: 'Workbook + Progress + Music - Save 17%',
+        rcPackage: {} as any,
+      },
+      awakening_monthly: {
+        id: 'mock_awakening_monthly',
+        tier: 'awakening',
+        period: 'monthly',
+        price: '$19.99',
+        pricePerMonth: '$19.99/mo',
+        currencyCode: 'USD',
+        title: 'Awakening Path Monthly',
+        description: '+ Guided Meditations + Guru Analysis',
+        rcPackage: {} as any,
+      },
+      awakening_annual: {
+        id: 'mock_awakening_annual',
+        tier: 'awakening',
+        period: 'yearly',
+        price: '$199.99',
+        pricePerMonth: '$16.67/mo',
+        currencyCode: 'USD',
+        title: 'Awakening Path Annual',
+        description: '+ Guided Meditations + Guru Analysis - Save 17%',
+        rcPackage: {} as any,
+      },
+      enlightenment_monthly: {
+        id: 'mock_enlightenment_monthly',
         tier: 'enlightenment',
         period: 'monthly',
-        price: '$24.99',
-        pricePerMonth: '$24.99/mo',
+        price: '$49.99',
+        pricePerMonth: '$49.99/mo',
         currencyCode: 'USD',
-        title: 'Monthly Subscription',
-        description: 'Full access - billed monthly',
+        title: 'Enlightenment Path Monthly',
+        description: 'Everything + Coming Soon features',
         rcPackage: {} as any,
       },
-      yearly: {
-        id: 'mock_yearly',
+      enlightenment_annual: {
+        id: 'mock_enlightenment_annual',
         tier: 'enlightenment',
         period: 'yearly',
-        price: '$249.95',
-        pricePerMonth: '$20.83/mo',
-        currencyCode: 'USD',
-        title: 'Annual Subscription',
-        description: 'Full access - billed annually',
-        rcPackage: {} as any,
-      },
-      lifetime: {
-        id: 'mock_lifetime',
-        tier: 'enlightenment',
-        period: 'lifetime',
         price: '$499.99',
-        pricePerMonth: 'One-time',
+        pricePerMonth: '$41.67/mo',
         currencyCode: 'USD',
-        title: 'Lifetime Access',
-        description: 'Full access - forever',
+        title: 'Enlightenment Path Annual',
+        description: 'Everything + Coming Soon features - Save 17%',
         rcPackage: {} as any,
       },
     };
@@ -170,19 +205,34 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
     const currentOffering = offerings.current;
     const packages = currentOffering.availablePackages;
 
-    console.log('Available packages:', packages.map(p => ({
+    console.log('[Subscription] Available packages:', packages.map(p => ({
       id: p.identifier,
       productId: p.product.identifier,
       price: p.product.priceString,
     })));
 
-    // Test Store: Simplified offering with monthly/yearly/lifetime
-    // All products grant 'enlightenment' tier for testing
+    // Production: Three-tier model with monthly/annual options
+    // Packages are found by their RevenueCat package identifier
     const offering: SubscriptionOffering = {
-      monthly: findPackage(packages, PRODUCT_IDS.MONTHLY, 'enlightenment', 'monthly'),
-      yearly: findPackage(packages, PRODUCT_IDS.YEARLY, 'enlightenment', 'yearly'),
-      lifetime: findPackage(packages, PRODUCT_IDS.LIFETIME, 'enlightenment', 'lifetime'),
+      // Novice tier
+      novice_monthly: findPackageById(packages, PACKAGE_IDS.NOVICE_MONTHLY, 'novice', 'monthly'),
+      novice_annual: findPackageById(packages, PACKAGE_IDS.NOVICE_ANNUAL, 'novice', 'yearly'),
+      // Awakening tier
+      awakening_monthly: findPackageById(packages, PACKAGE_IDS.AWAKENING_MONTHLY, 'awakening', 'monthly'),
+      awakening_annual: findPackageById(packages, PACKAGE_IDS.AWAKENING_ANNUAL, 'awakening', 'yearly'),
+      // Enlightenment tier
+      enlightenment_monthly: findPackageById(packages, PACKAGE_IDS.ENLIGHTENMENT_MONTHLY, 'enlightenment', 'monthly'),
+      enlightenment_annual: findPackageById(packages, PACKAGE_IDS.ENLIGHTENMENT_ANNUAL, 'enlightenment', 'yearly'),
     };
+
+    console.log('[Subscription] Parsed offerings:', {
+      novice_monthly: offering.novice_monthly?.price,
+      novice_annual: offering.novice_annual?.price,
+      awakening_monthly: offering.awakening_monthly?.price,
+      awakening_annual: offering.awakening_annual?.price,
+      enlightenment_monthly: offering.enlightenment_monthly?.price,
+      enlightenment_annual: offering.enlightenment_annual?.price,
+    });
 
     return offering;
   } catch (error) {
@@ -192,21 +242,20 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
 }
 
 /**
- * Helper: Find and map package by product ID
+ * Helper: Find and map package by RevenueCat package identifier
+ * This matches against the package identifier in RevenueCat offerings (e.g., 'novice_monthly')
  */
-function findPackage(
+function findPackageById(
   packages: PurchasesPackage[],
-  productId: string,
+  packageId: string,
   tier: SubscriptionTier,
   period: SubscriptionPeriod
 ): SubscriptionPackage | null {
-  // Try to find by product identifier first, then by package identifier
-  const rcPackage = packages.find(
-    (pkg) => pkg.product.identifier === productId || pkg.identifier === productId
-  );
+  // Find by package identifier (the ID shown in RevenueCat offerings)
+  const rcPackage = packages.find((pkg) => pkg.identifier === packageId);
 
   if (!rcPackage) {
-    console.warn(`Package not found: ${productId}`);
+    console.warn(`[Subscription] Package not found: ${packageId}`);
     return null;
   }
 
@@ -214,27 +263,25 @@ function findPackage(
   const price = product.priceString;
   const priceAmount = product.price;
 
-  // Calculate price per month for yearly/lifetime subscriptions
+  // Calculate price per month for yearly subscriptions
   let pricePerMonth: string;
   if (period === 'yearly') {
     pricePerMonth = `$${(priceAmount / 12).toFixed(2)}/mo`;
-  } else if (period === 'lifetime') {
-    pricePerMonth = 'One-time';
   } else {
-    pricePerMonth = price;
+    pricePerMonth = `${price}/mo`;
   }
 
   // Get display name for period
-  const periodDisplay = period === 'monthly' ? 'Monthly' : period === 'yearly' ? 'Annual' : 'Lifetime';
+  const periodDisplay = period === 'monthly' ? 'Monthly' : 'Annual';
 
   return {
-    id: productId,
+    id: packageId,
     tier,
     period,
     price,
     pricePerMonth,
     currencyCode: product.currencyCode || 'USD',
-    title: product.title || getTierDisplayName(tier),
+    title: product.title || `${getTierDisplayName(tier)} ${periodDisplay}`,
     description: product.description || `${getTierDisplayName(tier)} - ${periodDisplay}`,
     rcPackage,
   };

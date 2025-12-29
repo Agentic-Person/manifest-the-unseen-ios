@@ -22,8 +22,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing } from '../../theme';
-import type { SubscriptionPeriod, SubscriptionPackage } from '../../types/subscription';
-import { TIER_PRICING, getSaleConfig } from '../../types/subscription';
+import type { SubscriptionPackage, PackageId } from '../../types/subscription';
+import { TIER_PRICING, getSaleConfig, PACKAGE_IDS } from '../../types/subscription';
 import { SaleBanner } from '../../components/subscription/SaleBanner';
 import { SaleBadge } from '../../components/subscription/SaleBadge';
 import { StrikethroughPrice } from '../../components/subscription/StrikethroughPrice';
@@ -127,7 +127,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [purchasingPeriod, setPurchasingPeriod] = useState<SubscriptionPeriod | null>(null);
+  const [purchasingPackageId, setPurchasingPackageId] = useState<PackageId | null>(null);
+  const [selectedTier, setSelectedTier] = useState<'novice' | 'awakening' | 'enlightenment'>('awakening');
 
   const { offerings, isLoading: isLoadingOfferings } = useOfferings();
   const { isRestoring } = usePurchaseState();
@@ -163,22 +164,22 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
 
   /**
    * Handle Purchase
-   * TEST MODE: Uses simplified monthly/yearly/lifetime products
+   * Uses package ID to select the correct offering
    */
-  const handlePurchase = async (period: SubscriptionPeriod) => {
+  const handlePurchase = async (packageId: PackageId) => {
     if (!offerings) {
       Alert.alert('Error', 'Subscription packages are not available yet. Please try again.');
       return;
     }
 
-    const packageData = offerings[period];
+    const packageData = offerings[packageId];
 
     if (!packageData) {
       Alert.alert('Error', 'Selected subscription package is not available.');
       return;
     }
 
-    setPurchasingPeriod(period);
+    setPurchasingPackageId(packageId);
 
     try {
       const result = await purchasePackage(packageData);
@@ -187,7 +188,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
         // Record promo code redemption if one was applied
         if (appliedPromoCode) {
           try {
-            await recordPromoRedemption(appliedPromoCode, 'enlightenment');
+            await recordPromoRedemption(appliedPromoCode, packageData.tier);
             console.log('[Paywall] Promo code redemption recorded:', appliedPromoCode);
           } catch (promoError) {
             // Don't fail the purchase if promo recording fails
@@ -218,7 +219,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
     } catch (error: any) {
       Alert.alert('Error', error.message || 'An unexpected error occurred.');
     } finally {
-      setPurchasingPeriod(null);
+      setPurchasingPackageId(null);
     }
   };
 
@@ -399,51 +400,158 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
             />
           )}
 
-          {/* Subscription Options */}
+          {/* Tier Selection Tabs */}
+          <View style={styles.tierTabs}>
+            <Pressable
+              style={[styles.tierTab, selectedTier === 'novice' && styles.tierTabSelected]}
+              onPress={() => setSelectedTier('novice')}
+            >
+              <Text style={[styles.tierTabText, selectedTier === 'novice' && styles.tierTabTextSelected]}>
+                Novice
+              </Text>
+              <Text style={styles.tierTabPrice}>$7.99/mo</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.tierTab, selectedTier === 'awakening' && styles.tierTabSelected, styles.tierTabPopular]}
+              onPress={() => setSelectedTier('awakening')}
+            >
+              <View style={styles.popularPill}>
+                <Text style={styles.popularPillText}>POPULAR</Text>
+              </View>
+              <Text style={[styles.tierTabText, selectedTier === 'awakening' && styles.tierTabTextSelected]}>
+                Awakening
+              </Text>
+              <Text style={styles.tierTabPrice}>$19.99/mo</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.tierTab, selectedTier === 'enlightenment' && styles.tierTabSelected]}
+              onPress={() => setSelectedTier('enlightenment')}
+            >
+              <Text style={[styles.tierTabText, selectedTier === 'enlightenment' && styles.tierTabTextSelected]}>
+                Enlightenment
+              </Text>
+              <Text style={styles.tierTabPrice}>$49.99/mo</Text>
+            </Pressable>
+          </View>
+
+          {/* Tier Features */}
+          <View style={styles.tierFeaturesContainer}>
+            {selectedTier === 'novice' && (
+              <>
+                {TIER_PRICING.novice.features.map((feature, index) => (
+                  <View key={index} style={styles.featureRow}>
+                    <Text style={styles.featureCheckmark}>✓</Text>
+                    <Text style={styles.featureText}>{feature}</Text>
+                  </View>
+                ))}
+              </>
+            )}
+            {selectedTier === 'awakening' && (
+              <>
+                {TIER_PRICING.awakening.features.map((feature, index) => (
+                  <View key={index} style={styles.featureRow}>
+                    <Text style={styles.featureCheckmark}>✓</Text>
+                    <Text style={styles.featureText}>{feature}</Text>
+                  </View>
+                ))}
+              </>
+            )}
+            {selectedTier === 'enlightenment' && (
+              <>
+                {TIER_PRICING.enlightenment.features.map((feature, index) => (
+                  <View key={index} style={styles.featureRow}>
+                    <Text style={styles.featureCheckmark}>✓</Text>
+                    <Text style={styles.featureText}>{feature}</Text>
+                  </View>
+                ))}
+              </>
+            )}
+          </View>
+
+          {/* Subscription Options for Selected Tier */}
           <View style={styles.optionsContainer}>
-            {/* Yearly - Best Value */}
-            {offerings.yearly && (
+            {/* Annual - Best Value */}
+            {selectedTier === 'novice' && offerings.novice_annual && (
               <TestPackageCard
-                packageData={offerings.yearly}
+                packageData={offerings.novice_annual}
                 label="Annual"
-                sublabel={saleConfig.isActive ? '50% OFF + Save 37% vs Monthly' : 'Best Value - Save 37%'}
+                sublabel="Best Value - Save 17%"
                 isPopular
-                onPurchase={() => handlePurchase('yearly')}
-                isPurchasing={purchasingPeriod === 'yearly'}
-                isDisabled={isSubscribed}
+                onPurchase={() => handlePurchase(PACKAGE_IDS.NOVICE_ANNUAL)}
+                isPurchasing={purchasingPackageId === PACKAGE_IDS.NOVICE_ANNUAL}
+                isDisabled={isSubscribed && currentTier === 'novice'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.yearly.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.novice_annual.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
               />
             )}
-
-            {/* Monthly */}
-            {offerings.monthly && (
+            {selectedTier === 'novice' && offerings.novice_monthly && (
               <TestPackageCard
-                packageData={offerings.monthly}
+                packageData={offerings.novice_monthly}
                 label="Monthly"
-                sublabel={saleConfig.isActive ? '50% OFF - Cancel anytime' : 'Cancel anytime'}
-                onPurchase={() => handlePurchase('monthly')}
-                isPurchasing={purchasingPeriod === 'monthly'}
-                isDisabled={isSubscribed}
+                sublabel="Cancel anytime"
+                onPurchase={() => handlePurchase(PACKAGE_IDS.NOVICE_MONTHLY)}
+                isPurchasing={purchasingPackageId === PACKAGE_IDS.NOVICE_MONTHLY}
+                isDisabled={isSubscribed && currentTier === 'novice'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.monthly.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.novice_monthly.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
               />
             )}
 
-            {/* Lifetime */}
-            {offerings.lifetime && (
+            {selectedTier === 'awakening' && offerings.awakening_annual && (
               <TestPackageCard
-                packageData={offerings.lifetime}
-                label="Lifetime"
-                sublabel={saleConfig.isActive ? '50% OFF - One-time, forever access' : 'One-time purchase, forever access'}
-                onPurchase={() => handlePurchase('lifetime')}
-                isPurchasing={purchasingPeriod === 'lifetime'}
+                packageData={offerings.awakening_annual}
+                label="Annual"
+                sublabel="Best Value - Save 17%"
+                isPopular
+                onPurchase={() => handlePurchase(PACKAGE_IDS.AWAKENING_ANNUAL)}
+                isPurchasing={purchasingPackageId === PACKAGE_IDS.AWAKENING_ANNUAL}
+                isDisabled={isSubscribed && currentTier === 'awakening'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.lifetime.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.awakening_annual.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
-                isDisabled={isSubscribed}
+              />
+            )}
+            {selectedTier === 'awakening' && offerings.awakening_monthly && (
+              <TestPackageCard
+                packageData={offerings.awakening_monthly}
+                label="Monthly"
+                sublabel="Cancel anytime"
+                onPurchase={() => handlePurchase(PACKAGE_IDS.AWAKENING_MONTHLY)}
+                isPurchasing={purchasingPackageId === PACKAGE_IDS.AWAKENING_MONTHLY}
+                isDisabled={isSubscribed && currentTier === 'awakening'}
+                isSaleActive={saleConfig.isActive}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.awakening_monthly.price, saleConfig.discountPercentage) : undefined}
+                discountPercentage={saleConfig.discountPercentage}
+              />
+            )}
+
+            {selectedTier === 'enlightenment' && offerings.enlightenment_annual && (
+              <TestPackageCard
+                packageData={offerings.enlightenment_annual}
+                label="Annual"
+                sublabel="Best Value - Save 17%"
+                isPopular
+                onPurchase={() => handlePurchase(PACKAGE_IDS.ENLIGHTENMENT_ANNUAL)}
+                isPurchasing={purchasingPackageId === PACKAGE_IDS.ENLIGHTENMENT_ANNUAL}
+                isDisabled={isSubscribed && currentTier === 'enlightenment'}
+                isSaleActive={saleConfig.isActive}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.enlightenment_annual.price, saleConfig.discountPercentage) : undefined}
+                discountPercentage={saleConfig.discountPercentage}
+              />
+            )}
+            {selectedTier === 'enlightenment' && offerings.enlightenment_monthly && (
+              <TestPackageCard
+                packageData={offerings.enlightenment_monthly}
+                label="Monthly"
+                sublabel="Cancel anytime"
+                onPurchase={() => handlePurchase(PACKAGE_IDS.ENLIGHTENMENT_MONTHLY)}
+                isPurchasing={purchasingPackageId === PACKAGE_IDS.ENLIGHTENMENT_MONTHLY}
+                isDisabled={isSubscribed && currentTier === 'enlightenment'}
+                isSaleActive={saleConfig.isActive}
+                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.enlightenment_monthly.price, saleConfig.discountPercentage) : undefined}
+                discountPercentage={saleConfig.discountPercentage}
               />
             )}
           </View>
@@ -703,6 +811,68 @@ const styles = StyleSheet.create({
   optionsContainer: {
     paddingHorizontal: spacing.lg,
     gap: spacing.md,
+  },
+  // Tier tab styles
+  tierTabs: {
+    flexDirection: 'row',
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    borderRadius: 12,
+    backgroundColor: 'rgba(26, 26, 36, 0.8)',
+    padding: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+  },
+  tierTab: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xs,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  tierTabSelected: {
+    backgroundColor: colors.brand.gold,
+  },
+  tierTabPopular: {
+    position: 'relative',
+  },
+  tierTabText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.text.secondary,
+    textAlign: 'center',
+  },
+  tierTabTextSelected: {
+    color: colors.background.primary,
+  },
+  tierTabPrice: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: colors.text.tertiary,
+    marginTop: 2,
+  },
+  popularPill: {
+    position: 'absolute',
+    top: -8,
+    backgroundColor: colors.brand.gold,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  popularPillText: {
+    fontSize: 8,
+    fontWeight: '800',
+    color: colors.background.primary,
+    letterSpacing: 0.5,
+  },
+  tierFeaturesContainer: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    padding: spacing.md,
+    backgroundColor: 'rgba(26, 26, 36, 0.6)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border.default,
   },
   packageCard: {
     backgroundColor: 'rgba(26, 26, 36, 0.9)',
