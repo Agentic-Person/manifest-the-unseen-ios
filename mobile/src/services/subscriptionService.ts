@@ -33,23 +33,83 @@ const REVENUECAT_API_KEY_ANDROID =
   process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '';
 
 /**
+ * Debug State - tracks RevenueCat SDK status for debugging
+ * Access via getRevenueCatDebugState()
+ */
+interface RevenueCatDebugState {
+  sdkConfigured: boolean;
+  configureAttempted: boolean;
+  configureError: string | null;
+  apiKeyPresent: boolean;
+  apiKeyPrefix: string;
+  platform: string;
+  isTestFlightBypass: boolean;
+  isDev: boolean;
+  lastOfferingsError: string | null;
+  lastOfferingsAttempt: string | null;
+  offeringsResponse: {
+    hasOfferings: boolean;
+    hasCurrent: boolean;
+    currentId: string | null;
+    packageCount: number;
+    packageIds: string[];
+  } | null;
+}
+
+let debugState: RevenueCatDebugState = {
+  sdkConfigured: false,
+  configureAttempted: false,
+  configureError: null,
+  apiKeyPresent: false,
+  apiKeyPrefix: '',
+  platform: Platform.OS,
+  isTestFlightBypass: false,
+  isDev: __DEV__,
+  lastOfferingsError: null,
+  lastOfferingsAttempt: null,
+  offeringsResponse: null,
+};
+
+/**
+ * Get RevenueCat Debug State
+ * Use this to display debug info in the app
+ */
+export function getRevenueCatDebugState(): RevenueCatDebugState {
+  return { ...debugState };
+}
+
+/**
  * Initialize RevenueCat SDK
  * Call this early in app lifecycle (e.g., App.tsx)
  *
  * @param userId - Optional user ID to sync with your backend
  */
 export async function configurePurchases(userId?: string): Promise<void> {
+  console.log('[RC Debug] 🚀 configurePurchases() called');
+  console.log('[RC Debug] Platform:', Platform.OS);
+  console.log('[RC Debug] __DEV__:', __DEV__);
+  console.log('[RC Debug] TESTFLIGHT_FULL_ACCESS:', process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS);
+
+  // Mark that configuration was attempted
+  debugState.configureAttempted = true;
+  debugState.platform = Platform.OS;
+  debugState.isDev = __DEV__;
+
   // Skip RevenueCat in web browser - it doesn't work and causes errors
   if (Platform.OS === 'web') {
-    console.log('[Subscription] Web platform detected - skipping RevenueCat (use subscriptionStore DEV bypass)');
+    console.log('[RC Debug] ⏭️ Web platform - skipping RevenueCat');
+    debugState.configureError = 'Web platform - SDK not supported';
     return;
   }
 
-  // Skip in DEV/TestFlight mode to avoid API key issues during testing
-  // EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS is set in eas.json for TestFlight builds
+  // Only skip if TESTFLIGHT_FULL_ACCESS is explicitly true
+  // NOTE: Removed __DEV__ check to allow local testing!
   const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
-  if (__DEV__ || isTestFlight) {
-    console.log('[Subscription] DEV/TestFlight mode - skipping RevenueCat configuration');
+  debugState.isTestFlightBypass = isTestFlight;
+
+  if (isTestFlight) {
+    console.log('[RC Debug] ⏭️ TestFlight bypass mode - skipping RevenueCat');
+    debugState.configureError = 'TestFlight bypass mode - SDK skipped';
     return;
   }
 
@@ -57,25 +117,36 @@ export async function configurePurchases(userId?: string): Promise<void> {
     const apiKey =
       Platform.OS === 'ios' ? REVENUECAT_API_KEY_IOS : REVENUECAT_API_KEY_ANDROID;
 
+    debugState.apiKeyPresent = !!apiKey;
+    debugState.apiKeyPrefix = apiKey ? apiKey.substring(0, 15) + '...' : 'MISSING';
+
+    console.log('[RC Debug] API Key prefix:', apiKey ? apiKey.substring(0, 10) + '...' : 'MISSING');
+
     if (!apiKey) {
-      console.warn(
-        'RevenueCat API key not found. Subscriptions will not work until configured.'
-      );
+      console.error('[RC Debug] ❌ No API key found!');
+      debugState.configureError = 'No API key found in environment';
       return;
     }
 
-    // Configure SDK
+    // Configure SDK with verbose logging for debugging
     Purchases.configure({
       apiKey,
-      appUserID: userId, // Optional: sync with your auth system
+      appUserID: userId,
     });
 
-    // Set log level (use ERROR in production)
-    Purchases.setLogLevel(LOG_LEVEL.ERROR);
+    // Set DEBUG log level to see everything
+    Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR);
 
-    console.log('RevenueCat configured successfully');
-  } catch (error) {
-    console.error('Failed to configure RevenueCat:', error);
+    debugState.sdkConfigured = true;
+    debugState.configureError = null;
+    console.log('[RC Debug] ✅ RevenueCat SDK configured successfully');
+  } catch (error: any) {
+    debugState.configureError = error.message || 'Unknown configuration error';
+    console.error('[RC Debug] ❌ configurePurchases() failed:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack,
+    });
     throw error;
   }
 }
@@ -121,6 +192,8 @@ export async function logoutUser(): Promise<void> {
  * - enlightenment_monthly, enlightenment_annual
  */
 export async function getOfferings(): Promise<SubscriptionOffering | null> {
+  debugState.lastOfferingsAttempt = new Date().toISOString();
+
   // Return mock offerings for web mode (RevenueCat doesn't work in browser)
   if (Platform.OS === 'web') {
     console.log('[Subscription] Web mode - returning mock offerings for UI testing');
@@ -195,21 +268,59 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
   }
 
   try {
+    console.log('[RC Debug] 🔍 Calling Purchases.getOfferings()...');
+    console.log('[RC Debug] SDK configured:', debugState.sdkConfigured);
+
+    // Check if SDK was configured before calling
+    if (!debugState.sdkConfigured) {
+      const errorMsg = `SDK not configured. Config attempted: ${debugState.configureAttempted}, Error: ${debugState.configureError}`;
+      console.error('[RC Debug] ❌ ' + errorMsg);
+      debugState.lastOfferingsError = errorMsg;
+      return null;
+    }
+
     const offerings: PurchasesOfferings = await Purchases.getOfferings();
 
+    console.log('[RC Debug] Raw offerings response:', {
+      hasOfferings: !!offerings,
+      allOfferingsCount: Object.keys(offerings.all || {}).length,
+      allOfferingsKeys: Object.keys(offerings.all || {}),
+      hasCurrent: !!offerings.current,
+      currentIdentifier: offerings.current?.identifier,
+    });
+
+    // Update debug state with offerings response
+    debugState.offeringsResponse = {
+      hasOfferings: !!offerings,
+      hasCurrent: !!offerings.current,
+      currentId: offerings.current?.identifier || null,
+      packageCount: offerings.current?.availablePackages?.length || 0,
+      packageIds: offerings.current?.availablePackages?.map(p => p.identifier) || [],
+    };
+
     if (!offerings.current) {
-      console.warn('No current offerings available');
+      const errorMsg = 'No current offering! Check RevenueCat dashboard - must set one offering as "current"';
+      console.error('[RC Debug] ❌ ' + errorMsg);
+      debugState.lastOfferingsError = errorMsg;
       return null;
     }
 
     const currentOffering = offerings.current;
     const packages = currentOffering.availablePackages;
 
-    console.log('[Subscription] Available packages:', packages.map(p => ({
-      id: p.identifier,
-      productId: p.product.identifier,
-      price: p.product.priceString,
-    })));
+    console.log('[RC Debug] Current offering details:', {
+      identifier: currentOffering.identifier,
+      packageCount: packages.length,
+      packages: packages.map(p => ({
+        id: p.identifier,
+        productId: p.product.identifier,
+        price: p.product.priceString,
+      })),
+    });
+
+    // Log what we're looking for vs what we have
+    console.log('[RC Debug] 🎯 Looking for package IDs:', PACKAGE_IDS);
+    console.log('[RC Debug] 📦 Available package IDs:', packages.map(p => p.identifier));
 
     // Production: Three-tier model with monthly/annual options
     // Packages are found by their RevenueCat package identifier
@@ -225,18 +336,26 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
       enlightenment_annual: findPackageById(packages, PACKAGE_IDS.ENLIGHTENMENT_ANNUAL, 'enlightenment', 'yearly'),
     };
 
-    console.log('[Subscription] Parsed offerings:', {
-      novice_monthly: offering.novice_monthly?.price,
-      novice_annual: offering.novice_annual?.price,
-      awakening_monthly: offering.awakening_monthly?.price,
-      awakening_annual: offering.awakening_annual?.price,
-      enlightenment_monthly: offering.enlightenment_monthly?.price,
-      enlightenment_annual: offering.enlightenment_annual?.price,
+    console.log('[RC Debug] ✅ Parsed offerings result:', {
+      novice_monthly: offering.novice_monthly ? '✓ ' + offering.novice_monthly.price : '✗ NOT FOUND',
+      novice_annual: offering.novice_annual ? '✓ ' + offering.novice_annual.price : '✗ NOT FOUND',
+      awakening_monthly: offering.awakening_monthly ? '✓ ' + offering.awakening_monthly.price : '✗ NOT FOUND',
+      awakening_annual: offering.awakening_annual ? '✓ ' + offering.awakening_annual.price : '✗ NOT FOUND',
+      enlightenment_monthly: offering.enlightenment_monthly ? '✓ ' + offering.enlightenment_monthly.price : '✗ NOT FOUND',
+      enlightenment_annual: offering.enlightenment_annual ? '✓ ' + offering.enlightenment_annual.price : '✗ NOT FOUND',
     });
 
+    debugState.lastOfferingsError = null;
     return offering;
-  } catch (error) {
-    console.error('Failed to get offerings:', error);
+  } catch (error: any) {
+    const errorMsg = `${error.code || 'ERROR'}: ${error.message || 'Unknown error'}`;
+    debugState.lastOfferingsError = errorMsg;
+    console.error('[RC Debug] ❌ getOfferings() FAILED:', {
+      message: error.message,
+      code: error.code,
+      userInfo: error.userInfo,
+      stack: error.stack,
+    });
     return null;
   }
 }

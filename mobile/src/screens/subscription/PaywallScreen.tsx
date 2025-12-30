@@ -30,6 +30,7 @@ import { StrikethroughPrice } from '../../components/subscription/StrikethroughP
 import { useSubscriptionStore, useOfferings, usePurchaseState, usePromoCodeState } from '../../stores/subscriptionStore';
 import { PromoCodeInput } from '../../components/PromoCodeInput';
 import { recordPromoRedemption } from '../../services/promoService';
+import { getRevenueCatDebugState } from '../../services/subscriptionService';
 
 interface PaywallScreenProps {
   navigation: any;
@@ -58,6 +59,176 @@ interface TestPackageCardProps {
   originalPrice?: string;
   discountPercentage?: number;
 }
+
+/**
+ * Debug Overlay Component
+ * Shows RevenueCat SDK status for debugging
+ * Tap the title 5 times to toggle visibility
+ */
+interface DebugOverlayProps {
+  visible: boolean;
+  offeringsError: string | null;
+}
+
+const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError }) => {
+  if (!visible) return null;
+
+  const debugState = getRevenueCatDebugState();
+
+  return (
+    <View style={debugStyles.container}>
+      <Text style={debugStyles.title}>🔧 RevenueCat Debug</Text>
+
+      <View style={debugStyles.row}>
+        <Text style={debugStyles.label}>Platform:</Text>
+        <Text style={debugStyles.value}>{debugState.platform}</Text>
+      </View>
+
+      <View style={debugStyles.row}>
+        <Text style={debugStyles.label}>__DEV__:</Text>
+        <Text style={[debugStyles.value, debugState.isDev ? debugStyles.warning : debugStyles.success]}>
+          {String(debugState.isDev)}
+        </Text>
+      </View>
+
+      <View style={debugStyles.row}>
+        <Text style={debugStyles.label}>TestFlight Bypass:</Text>
+        <Text style={[debugStyles.value, debugState.isTestFlightBypass ? debugStyles.warning : debugStyles.success]}>
+          {String(debugState.isTestFlightBypass)}
+        </Text>
+      </View>
+
+      <View style={debugStyles.row}>
+        <Text style={debugStyles.label}>API Key Present:</Text>
+        <Text style={[debugStyles.value, debugState.apiKeyPresent ? debugStyles.success : debugStyles.error]}>
+          {String(debugState.apiKeyPresent)}
+        </Text>
+      </View>
+
+      <View style={debugStyles.row}>
+        <Text style={debugStyles.label}>API Key:</Text>
+        <Text style={debugStyles.value}>{debugState.apiKeyPrefix || 'N/A'}</Text>
+      </View>
+
+      <View style={debugStyles.row}>
+        <Text style={debugStyles.label}>Config Attempted:</Text>
+        <Text style={debugStyles.value}>{String(debugState.configureAttempted)}</Text>
+      </View>
+
+      <View style={debugStyles.row}>
+        <Text style={debugStyles.label}>SDK Configured:</Text>
+        <Text style={[debugStyles.value, debugState.sdkConfigured ? debugStyles.success : debugStyles.error]}>
+          {String(debugState.sdkConfigured)}
+        </Text>
+      </View>
+
+      {debugState.configureError && (
+        <View style={debugStyles.row}>
+          <Text style={debugStyles.label}>Config Error:</Text>
+          <Text style={[debugStyles.value, debugStyles.error]}>{debugState.configureError}</Text>
+        </View>
+      )}
+
+      {debugState.lastOfferingsAttempt && (
+        <View style={debugStyles.row}>
+          <Text style={debugStyles.label}>Last Attempt:</Text>
+          <Text style={debugStyles.value}>{new Date(debugState.lastOfferingsAttempt).toLocaleTimeString()}</Text>
+        </View>
+      )}
+
+      {debugState.lastOfferingsError && (
+        <View style={debugStyles.row}>
+          <Text style={debugStyles.label}>Offerings Error:</Text>
+          <Text style={[debugStyles.value, debugStyles.error]}>{debugState.lastOfferingsError}</Text>
+        </View>
+      )}
+
+      {debugState.offeringsResponse && (
+        <>
+          <View style={debugStyles.row}>
+            <Text style={debugStyles.label}>Has Current:</Text>
+            <Text style={[debugStyles.value, debugState.offeringsResponse.hasCurrent ? debugStyles.success : debugStyles.error]}>
+              {String(debugState.offeringsResponse.hasCurrent)}
+            </Text>
+          </View>
+          <View style={debugStyles.row}>
+            <Text style={debugStyles.label}>Current ID:</Text>
+            <Text style={debugStyles.value}>{debugState.offeringsResponse.currentId || 'N/A'}</Text>
+          </View>
+          <View style={debugStyles.row}>
+            <Text style={debugStyles.label}>Packages:</Text>
+            <Text style={debugStyles.value}>{debugState.offeringsResponse.packageCount}</Text>
+          </View>
+          {debugState.offeringsResponse.packageIds.length > 0 && (
+            <View style={debugStyles.row}>
+              <Text style={debugStyles.label}>IDs:</Text>
+              <Text style={[debugStyles.value, { flex: 1 }]}>{debugState.offeringsResponse.packageIds.join(', ')}</Text>
+            </View>
+          )}
+        </>
+      )}
+
+      {offeringsError && (
+        <View style={debugStyles.row}>
+          <Text style={debugStyles.label}>Store Error:</Text>
+          <Text style={[debugStyles.value, debugStyles.error]}>{offeringsError}</Text>
+        </View>
+      )}
+
+      <Text style={debugStyles.hint}>Tap title 5x to hide</Text>
+    </View>
+  );
+};
+
+const debugStyles = StyleSheet.create({
+  container: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg,
+    padding: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FF6B35',
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FF6B35',
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    marginBottom: 4,
+    flexWrap: 'wrap',
+  },
+  label: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#999',
+    width: 110,
+  },
+  value: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#FFF',
+  },
+  success: {
+    color: '#22C55E',
+  },
+  warning: {
+    color: '#F59E0B',
+  },
+  error: {
+    color: '#EF4444',
+  },
+  hint: {
+    fontSize: 10,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: spacing.sm,
+  },
+});
 
 const TestPackageCard: React.FC<TestPackageCardProps> = ({
   packageData,
@@ -129,6 +300,20 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
 }) => {
   const [purchasingPackageId, setPurchasingPackageId] = useState<PackageId | null>(null);
   const [selectedTier, setSelectedTier] = useState<'novice' | 'awakening' | 'enlightenment'>('awakening');
+  const [showDebug, setShowDebug] = useState(false);
+  const [titleTapCount, setTitleTapCount] = useState(0);
+
+  // Handle title tap for debug toggle
+  const handleTitleTap = () => {
+    const newCount = titleTapCount + 1;
+    setTitleTapCount(newCount);
+    if (newCount >= 5) {
+      setShowDebug(!showDebug);
+      setTitleTapCount(0);
+    }
+    // Reset tap count after 2 seconds of no taps
+    setTimeout(() => setTitleTapCount(0), 2000);
+  };
 
   const { offerings, isLoading: isLoadingOfferings } = useOfferings();
   const { isRestoring } = usePurchaseState();
@@ -303,21 +488,42 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
             <Text style={styles.closeButtonText}>✕</Text>
           </Pressable>
 
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorIcon}>⚠️</Text>
-            <Text style={styles.errorTitle}>Unable to Load Subscriptions</Text>
-            <Text style={styles.errorMessage}>
-              {offeringsError || 'Please check your internet connection and try again.'}
-            </Text>
-            <Pressable
-              style={styles.retryButton}
-              onPress={() => loadOfferings()}
-              accessibilityRole="button"
-              accessibilityLabel="Retry loading subscriptions"
-            >
-              <Text style={styles.retryButtonText}>Try Again</Text>
-            </Pressable>
-          </View>
+          <ScrollView contentContainerStyle={styles.errorScrollContent}>
+            {/* Debug Overlay - always visible in error state for debugging */}
+            <DebugOverlay visible={true} offeringsError={offeringsError} />
+
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorIcon}>⚠️</Text>
+              <Pressable onPress={handleTitleTap}>
+                <Text style={styles.errorTitle}>Unable to Load Subscriptions</Text>
+              </Pressable>
+              <Text style={styles.errorMessage}>
+                {offeringsError || 'Please check your internet connection and try again.'}
+              </Text>
+              <Pressable
+                style={styles.retryButton}
+                onPress={() => loadOfferings()}
+                accessibilityRole="button"
+                accessibilityLabel="Retry loading subscriptions"
+              >
+                <Text style={styles.retryButtonText}>Try Again</Text>
+              </Pressable>
+
+              {/* Sandbox Account Info */}
+              <View style={styles.sandboxInfoContainer}>
+                <Text style={styles.sandboxInfoTitle}>📱 Sandbox Account Required</Text>
+                <Text style={styles.sandboxInfoText}>
+                  To test purchases on TestFlight, you need a Sandbox Apple ID:
+                </Text>
+                <Text style={styles.sandboxInfoStep}>1. Go to Settings → App Store</Text>
+                <Text style={styles.sandboxInfoStep}>2. Scroll down and tap "Sandbox Account"</Text>
+                <Text style={styles.sandboxInfoStep}>3. Sign in with a test Apple ID</Text>
+                <Text style={styles.sandboxInfoHint}>
+                  Create sandbox accounts at App Store Connect → Users and Access → Sandbox Testers
+                </Text>
+              </View>
+            </View>
+          </ScrollView>
         </LinearGradient>
       </SafeAreaView>
     );
@@ -727,6 +933,11 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   // Error State Styles
+  errorScrollContent: {
+    flexGrow: 1,
+    paddingTop: spacing.xl * 2,
+    paddingBottom: spacing.xl,
+  },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -762,6 +973,45 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.background.primary,
+  },
+  // Sandbox Account Info Styles
+  sandboxInfoContainer: {
+    marginTop: spacing.xl,
+    padding: spacing.md,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    width: '100%',
+  },
+  sandboxInfoTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#3B82F6',
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  sandboxInfoText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.text.secondary,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  sandboxInfoStep: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: colors.text.primary,
+    marginBottom: 4,
+    paddingLeft: spacing.md,
+  },
+  sandboxInfoHint: {
+    fontSize: 11,
+    fontWeight: '400',
+    color: colors.text.tertiary,
+    marginTop: spacing.sm,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   // Test Mode Styles
   testModeContainer: {

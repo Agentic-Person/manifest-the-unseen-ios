@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manifesttheunseen.app",
-      "buildNumber": "39",
+      "buildNumber": "40",
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
