@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-29 (Build 39 - RevenueCat Integration Fix + App Store Connect Metadata)
+**Last Updated**: 2025-12-29 (Build 40 - RevenueCat Debug Overlay)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **BUILD 39 ON TESTFLIGHT** + 🔒 **REVENUECAT + APP STORE CONNECT CONFIGURED**
+**Status**: 🟡 **BUILD 40 READY** - RevenueCat Debug Overlay for TestFlight Troubleshooting
 
 ---
 
@@ -291,6 +291,45 @@ Paid subscribers          → tier from RevenueCat (novice/awakening/enlightenme
 
 **Note:** Subscriptions may still show "Missing Metadata" until Review Screenshot is added (required for App Store submission but not for RevenueCat). RevenueCat should now be able to fetch offerings.
 
+### Build 40 (Dec 29) - RevenueCat Debug Overlay
+**Issue:** Offerings not loading in TestFlight - error appears IMMEDIATELY (not after timeout)
+
+**Debug Investigation via Playwright:**
+- ✅ RevenueCat dashboard verified: "current" offering exists with 6 packages
+- ✅ Package IDs match code exactly (`novice_monthly`, `novice_annual`, etc.)
+- ✅ All products attached to entitlements
+- ✅ API key in eas.json matches RevenueCat dashboard
+- ✅ In-App Purchase Key and App Store Connect API both show "Valid credentials"
+
+**Likely Root Cause:** SDK not configured at runtime (API key possibly empty or missing Sandbox Apple ID)
+
+**Debug Features Added:**
+- ✅ **RevenueCatDebugState** - Tracks SDK configuration status, API key presence, errors
+- ✅ **Debug Overlay on PaywallScreen** - Shows all debug info on error screen (always visible)
+- ✅ **Sandbox Account Instructions** - In-app guide for setting up Sandbox Apple ID
+
+**Files Modified:**
+- `mobile/src/services/subscriptionService.ts` - Added debug state tracker + `getRevenueCatDebugState()`
+- `mobile/src/screens/subscription/PaywallScreen.tsx` - Added DebugOverlay component
+
+**Debug Overlay Shows:**
+- Platform, __DEV__ status, TestFlight bypass mode
+- API Key present (true/false), API Key prefix
+- SDK configuration attempted, SDK configured (true/false)
+- Configuration error message (if any)
+- Last offerings attempt timestamp
+- Offerings response details (has current, package count, IDs)
+
+**Next Steps:**
+1. Build with: `cd mobile && eas build --platform ios --profile testflight-sandbox`
+2. Set up Sandbox Apple ID: Settings → App Store → Sandbox Account
+3. Test on device and check debug overlay output
+4. Fix based on revealed error
+
+**Commits:**
+- `6e7a39e` - feat: add RevenueCat debug overlay for TestFlight debugging
+- `dbebf6d` - docs: update project status with RevenueCat debugging progress
+
 ---
 
 ## 🎉 MILESTONE: App Store Resubmission Complete!
@@ -300,7 +339,7 @@ Paid subscribers          → tier from RevenueCat (novice/awakening/enlightenme
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
 | **Build (TestFlight)** | 30 (testflight profile) |
-| **Build (Latest)** | 39 (testflight-sandbox - Dec 29, RevenueCat integration fix) |
+| **Build (Latest)** | 40 (testflight-sandbox - Dec 29, RevenueCat debug overlay) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -444,15 +483,25 @@ e7b8441 fix: Build 37 - proper trial tracking system
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: December 29, 2025 - Build 40: RevenueCat Debug Overlay
+- **Duration**: ~1 hour
+- **What Was Done**: Added comprehensive debug overlay to diagnose RevenueCat offerings loading failure
+- **Status**: 🟡 **READY TO BUILD** - Code committed and pushed, needs EAS build
+- **Key Changes**:
+  - NEW: `RevenueCatDebugState` tracker in subscriptionService.ts
+  - NEW: Debug overlay component on PaywallScreen (visible on error)
+  - NEW: Sandbox account setup instructions displayed on error screen
+  - FIX: Early return from getOfferings() if SDK not configured (with error message)
+- **Commits**:
+  - `6e7a39e` - feat: add RevenueCat debug overlay for TestFlight debugging
+  - `dbebf6d` - docs: update project status with RevenueCat debugging progress
+- **Next Step**: `cd mobile && eas build --platform ios --profile testflight-sandbox`
+
+### Previous Activity
 - **Date**: December 29, 2025 - App Store Connect Subscription Metadata Configuration
 - **Duration**: ~1 hour
 - **What Was Done**: Configured missing subscription metadata in App Store Connect via Playwright MCP
 - **Status**: ✅ **COMPLETE** - All 6 subscriptions now have availability and group localization
-- **Key Changes**:
-  - FIX: Added subscription group localization ("Premium Access" for English U.S.)
-  - FIX: Configured availability (175 countries) for all 6 subscription products
-  - VERIFIED: Pricing, durations, and individual localizations were already correctly set
-  - NOTE: "Missing Metadata" status may persist until Review Screenshots are added
 
 ### Previous Activity
 - **Date**: December 29, 2025 - Build 39: RevenueCat Integration Fix + 3-Tier Paywall
@@ -1172,6 +1221,15 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2025-12-29 - Build 40: RevenueCat Debug Overlay
+**Duration**: ~1 hour | **Status**: 🟡 Ready to Build
+- Added RevenueCatDebugState tracker to subscriptionService.ts
+- Added DebugOverlay component to PaywallScreen (shows SDK status, API key, errors)
+- Added Sandbox account setup instructions on error screen
+- Debug overlay always visible on error state for easier troubleshooting
+- Verified RevenueCat dashboard config via Playwright (all correct)
+- Next: Build 40 with testflight-sandbox profile and test with Sandbox Apple ID
+
 ### 2025-12-29 - App Store Connect Subscription Metadata Configuration
 **Duration**: ~1 hour | **Status**: ✅ Complete
 - Configured subscription group localization ("Premium Access" for English U.S.)
@@ -1357,6 +1415,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (App Store Connect Subscription Metadata Configuration)
+**Last Updated by**: Claude Code (Build 40 - RevenueCat Debug Overlay)
 **Session Date**: December 29, 2025
-**Document Version**: 2.5.0
+**Document Version**: 2.6.0
