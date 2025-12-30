@@ -1,32 +1,42 @@
 # Manifest the Unseen - Project Roadmap & Status Audit
 
-**Date**: December 21, 2025
+**Date**: December 29, 2025
 **Project**: Manifest the Unseen iOS App
-**Status**: 60% Complete - Profile Section Enhanced
+**Status**: 75% Complete - RevenueCat Integration In Progress
 
 ---
 
 ## Executive Summary
 
 ### Current State
-- **Overall Completion**: 60% (MVP features built, profile section enhanced)
-- **Recent Updates**: Profile section with avatar upload, font scaling, spoken prayer reminders
-- **Screens Built**: 63+ total screens (47 exercises + 10 dashboards + 6 core features + profile)
+- **Overall Completion**: 75% (MVP features built, subscriptions in progress)
+- **Recent Updates**: RevenueCat 3-tier paywall, TestFlight builds, debug overlay for troubleshooting
+- **Screens Built**: 63+ total screens (47 exercises + 10 dashboards + 6 core features + profile + paywall)
 - **All 10 Workbook Phases**: Implemented with interactive exercises
 - **Content Ready**: 18 meditation audio files, 327 AI embeddings, 180+ images
+- **Current Build**: 40 (testflight-sandbox profile)
 
 ### Timeline Estimates
-- **TypeScript Fix**: 15-40 minutes (immediate priority)
-- **MVP Ready**: 2 weeks (after blocker resolved)
-- **Production Ready**: 5-6 weeks
-- **App Store Launch**: 8-12 weeks
+- **RevenueCat Fix**: 1-2 days (current priority - sandbox account setup + debugging)
+- **MVP Ready**: 1-2 weeks (after RevenueCat working)
+- **Production Ready**: 3-4 weeks
+- **App Store Launch**: 6-8 weeks
 
 ### Critical Path
-1. ⚠️ **BLOCKER**: Fix 44 TypeScript compilation errors (immediate)
-2. Build EAS development build for iPhone testing
-3. Test core features on device (audio, recording, transcription)
-4. Implement subscriptions (RevenueCat)
+1. ⚠️ **CURRENT**: RevenueCat offerings not loading in TestFlight (debug overlay added)
+2. Set up Sandbox Apple ID for testing
+3. Test subscription purchase flow
+4. App Store Connect subscription metadata (screenshots)
 5. Production deployment + App Store submission
+
+### Recent Completed (Dec 21-29, 2025)
+- ✅ Fixed 44 TypeScript compilation errors
+- ✅ Built EAS development builds (Builds 37-40)
+- ✅ Implemented RevenueCat 3-tier paywall UI
+- ✅ Configured RevenueCat dashboard (offerings, packages, entitlements)
+- ✅ Configured App Store Connect products (6 subscriptions)
+- ✅ Added RevenueCat debug overlay for TestFlight troubleshooting
+- ✅ Added sandbox account setup instructions to PaywallScreen
 
 ---
 
@@ -222,51 +232,50 @@
 
 ## Critical Blocker ⚠️
 
-### TypeScript Compilation Errors (44 Files)
+### ~~TypeScript Compilation Errors (44 Files)~~ ✅ RESOLVED
+
+**Status**: Fixed on December 21, 2025
+
+---
+
+### Current Blocker: RevenueCat Offerings Not Loading
 
 **Error Message**:
 ```
-Property 'progress' does not exist on type 'WorkbookProgress'
+Unable to load subscriptions. Please check your internet connection.
 ```
 
-**Impact**:
-- ❌ TypeScript compilation fails
-- ❌ Cannot build EAS development build
-- ❌ Cannot test on iPhone
-- ❌ Blocks all forward progress
+**Symptoms**:
+- Error appears IMMEDIATELY when opening PaywallScreen (not after timeout)
+- Suggests SDK may not be configured or API key issue
 
-**Affected Files**:
-- All 37 workbook exercise screens (Phase 1-10)
-- 7 additional files (phase dashboards, hooks)
+**What's Verified Working** (checked via Playwright on Dec 29):
+- ✅ RevenueCat dashboard has "current" offering with 6 packages
+- ✅ Package IDs match code (`novice_monthly`, `novice_annual`, etc.)
+- ✅ All 6 App Store products attached to entitlements
+- ✅ In-App Purchase Key configured with valid credentials
+- ✅ App Store Connect API configured with valid credentials
+- ✅ API key in eas.json matches RevenueCat dashboard
 
-**Root Cause**:
-Type definition in `mobile/src/types/workbook.ts` missing `progress` property, but 44 files access `exercises[exerciseId].progress`.
+**Debug Overlay Added** (Build 40):
+- Shows SDK configuration status, API key presence, and detailed error info
+- Visible on PaywallScreen error state
+- Will reveal exact failure point when tested on device
 
-**Expected Fix** (15-40 minutes):
-```typescript
-// mobile/src/types/workbook.ts
-export interface ExerciseProgress {
-  exerciseId: string;
-  data: Record<string, any>;
-  completed: boolean;
-  progress?: number; // ADD THIS - 0, 50, or 100
-  lastModified: string;
-  completedAt?: string;
-}
-```
+**Likely Causes** (to investigate with debug overlay):
+1. SDK not initialized (API key empty at runtime)
+2. No Sandbox Apple ID signed in on device
+3. App Store Connect products not synced (though should work in sandbox)
 
-**Fix Plan**:
-1. Launch 3 parallel Explore agents to investigate:
-   - Agent 1: Type definitions (`mobile/src/types/workbook.ts`)
-   - Agent 2: Progress calculation logic (`mobile/src/hooks/usePhaseExercises.ts`)
-   - Agent 3: Usage patterns in exercise screens
-2. Review findings and confirm fix approach
-3. Implement fix (add `progress` property to type)
-4. Verify with `npx tsc --noEmit`
-5. Test in Expo Go browser
-6. Commit changes
+**Next Steps**:
+1. Build 40 with debug overlay → TestFlight
+2. Set up Sandbox Apple ID on test device:
+   - Settings → App Store → Sandbox Account
+   - Create tester at App Store Connect → Users → Sandbox Testers
+3. Check debug overlay output for specific error
+4. Fix based on findings
 
-**Status**: Plan ready, awaiting execution
+**Status**: Debug overlay added, awaiting Build 40 test
 
 ---
 
