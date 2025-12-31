@@ -1245,30 +1245,28 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 ## Documentation Index
 
 ### Essential Reading (Start Here)
-1. **[MTU-PROJECT-STATUS.md](./MTU-PROJECT-STATUS.md)** - This file (current state snapshot)
-2. **[CLAUDE.md](./CLAUDE.md)** - Project instructions for Claude Code (always read first when starting work)
-3. **[README.md](./README.md)** - Project overview and quick start
+1. **[project-status.md](./project-status.md)** - This file (current state snapshot)
+2. **[CLAUDE.md](../../../CLAUDE.md)** - Project instructions for Claude Code (always read first when starting work)
+3. **[README.md](../../../README.md)** - Project overview and quick start
 
 ### Product & Technical Specs
-- **[PRD](./docs/manifest-the-unseen-prd.md)** - Complete Product Requirements Document (202KB, 1,663 lines)
-- **[TDD](./docs/manifest-the-unseen-tdd.md)** - Technical Design Document (architecture, API specs, database schema)
-- **[Summary](./docs/manifest-the-unseen-summary.md)** - Quick reference for key decisions and tech stack
+- **[PRD](../../planning/manifest-the-unseen-prd.md)** - Complete Product Requirements Document (202KB, 1,663 lines)
+- **[TDD](../../planning/manifest-the-unseen-tdd.md)** - Technical Design Document (architecture, API specs, database schema)
+- **[Summary](../../planning/manifest-the-unseen-summary.md)** - Quick reference for key decisions and tech stack
 
 ### Design Assets (NEW - Nov 22)
-- **[App Design Spec](./docs/APP-DESIGN.md)** - Visual design system, screen mockups, logo, color palette (v1.2)
-- **[Color Palette Tool](./docs/color-palette.html)** - Interactive HTML tool for color preview/editing
+- **[App Design Spec](../../planning/app-design.md)** - Visual design system, screen mockups, logo, color palette (v1.2)
+- **[Color Palette Tool](../../color-palette.html)** - Interactive HTML tool for color preview/editing
 - **[Final Logo](https://www.canva.com/design/DAG5fDUuSKw/vrxVe9MlJt0uA7o-oI2BhQ/edit)** - Approved: Monk + Chakras + Mandala (Canva)
 
 ### Setup Guides (For New Sessions/Context)
-- **[Android Emulator Setup](./docs/android-emulator-setup.md)** (650 lines) - Complete Android Studio installation
-- **[iOS Expo Go Setup](./docs/ios-expo-go-setup.md)** (550 lines) - iPhone/iPad testing workflow
-- **[Expo Setup Complete](./docs/expo-setup-complete.md)** (650 lines) - Full Expo configuration report
-- **[Database Execution Guide](./docs/database-execution-guide.md)** (900+ lines) - Supabase migrations and RLS policies
+- **[Android Emulator Setup](../../guides/setup/android-emulator-setup.md)** (650 lines) - Complete Android Studio installation
+- **[iOS Expo Go Setup](../../guides/setup/ios-expo-go-setup.md)** (550 lines) - iPhone/iPad testing workflow
+- **[Expo Setup Complete](../../guides/setup/expo-setup.md)** (650 lines) - Full Expo configuration report
+- **[Database Execution Guide](../../guides/setup/database-execution-guide.md)** (900+ lines) - Supabase migrations and RLS policies
 
 ### Architecture Decisions (ADRs)
-- **[ADR-001: React Native + TypeScript](./agent-orchestration/decisions/ADR-001-react-native-typescript.md)** - Why React Native over native Swift
-- **[ADR-002: Supabase Backend](./agent-orchestration/decisions/ADR-002-supabase-backend.md)** - Why Supabase over Firebase/Convex
-- **[ADR-003: On-Device Whisper](./agent-orchestration/decisions/ADR-003-on-device-whisper.md)** - Privacy-first transcription choice
+- **[ADR-001: React Native + TypeScript](../../architecture/decisions/adr-001-react-native-tech-stack.md)** - Why React Native over native Swift
 
 ---
 

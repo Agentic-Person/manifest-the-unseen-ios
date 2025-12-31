@@ -138,3 +138,6 @@ mobile/android/
 docs/REVENUECAT_IOS_SWIFT_SETUP.md
 
 .claude/settings.local.json
+
+# Private files with secrets
+.private/

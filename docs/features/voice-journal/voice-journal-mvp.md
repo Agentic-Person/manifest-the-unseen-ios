@@ -502,7 +502,7 @@ UI Agent needs: Outputs from Audio + Backend agents
 ## References
 
 - [TDD Voice Journaling Section](./manifest-the-unseen-tdd.md#voice-journaling)
-- [Audio Specialist Agent Prompt](../agent-orchestration/prompts/system-prompts/audio-specialist.md)
+- [Audio Specialist Agent Prompt](../../archive/agent-orchestration/prompts/system-prompts/audio-specialist.md)
 - [Supabase Journal Schema](../supabase/migrations/20250101000000_initial_schema.sql)
 - [whisper.rn Documentation](https://github.com/whisper-rn/whisper.rn)
 

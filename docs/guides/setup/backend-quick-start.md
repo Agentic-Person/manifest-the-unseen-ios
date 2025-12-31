@@ -319,7 +319,7 @@ Now that Supabase is set up:
 4. ⏭️ **Then**: Build core features
 
 **Proceed to:**
-- [TASK-003: React Native Project Initialization](../agent-orchestration/tasks/active/TASK-2025-11-003.md)
+- [TASK-003: React Native Project Initialization](../../archive/agent-orchestration/tasks/active/TASK-2025-11-003.md)
 - [Supabase Setup Guide](./supabase-setup-guide.md) for advanced configuration
 - [Auth Providers Config](./auth-providers-config.md) for detailed auth setup
 

@@ -186,7 +186,7 @@ const handleRecord = async () => {
 - `mobile/src/hooks/useWhisper.ts`
 - `mobile/src/hooks/useAudioRecorder.ts`
 - `mobile/src/types/whisper.rn.d.ts`
-- `agent-orchestration/reports/VOICE-JOURNAL-AUDIO-REPORT.md`
+- `docs/archive/agent-orchestration/reports/VOICE-JOURNAL-AUDIO-REPORT.md`
 
 ### Modified
 - `mobile/package.json` (added 3 dependencies)
@@ -198,7 +198,7 @@ const handleRecord = async () => {
 ## Documentation
 
 Full implementation details in:
-`agent-orchestration/reports/VOICE-JOURNAL-AUDIO-REPORT.md`
+`docs/archive/agent-orchestration/reports/VOICE-JOURNAL-AUDIO-REPORT.md`
 
 ---
 
