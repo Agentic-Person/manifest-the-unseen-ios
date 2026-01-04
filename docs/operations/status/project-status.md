@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2025-12-30 (Paid Apps Agreement RESOLVED!)
+**Last Updated**: 2025-01-04 (Build 41 - Purchase Spinner Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **READY TO TEST** - Paid Apps Agreement now Active, subscriptions should work!
+**Status**: 🟢 **BUILD 41 ON TESTFLIGHT** - Purchase flow fix + Paid Apps Agreement active
 
 ---
 
@@ -365,7 +365,7 @@ Paid subscribers          → tier from RevenueCat (novice/awakening/enlightenme
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
 | **Build (TestFlight)** | 30 (testflight profile) |
-| **Build (Latest)** | 40 (testflight-sandbox - Dec 29, RevenueCat debug overlay) |
+| **Build (Latest)** | 41 (testflight-sandbox - Jan 4, Purchase spinner fix) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -380,6 +380,7 @@ Paid subscribers          → tier from RevenueCat (novice/awakening/enlightenme
 | Profile | Command | Purpose |
 |---------|---------|---------|
 | `testflight` | `eas build --profile testflight` | Testing with full access bypass enabled |
+| `testflight-sandbox` | `eas build --profile testflight-sandbox` | **Auto-submits to TestFlight**, RevenueCat enabled |
 | `production` | `eas build --profile production` | App Store (RevenueCat enabled, no bypasses) |
 
 **What's Included in Build 32+ (Post-Security Fixes - Dec 25):**
@@ -509,22 +510,27 @@ e7b8441 fix: Build 37 - proper trial tracking system
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: January 4, 2026 - Build 41: Purchase Spinner Fix
+- **Duration**: ~1 hour
+- **What Was Done**: Fixed purchase flow hanging after Apple authentication + configured auto-submit
+- **Status**: 🟢 **BUILD 41 ON TESTFLIGHT** - Ready to test subscriptions!
+- **Root Cause**: After successful purchase, `await loadSubscription()` could hang/timeout, blocking the purchase completion flow
+- **Fixes Applied**:
+  - ✅ `subscriptionStore.ts`: Don't await `loadSubscription()` after purchase - refresh in background
+  - ✅ `PaywallScreen.tsx`: Added error logging for debugging
+  - ✅ `eas.json`: Configured `testflight-sandbox` profile to auto-submit to TestFlight
+- **Commits**:
+  - `0e980f5` - fix: prevent purchase spinner from hanging after Apple authentication
+  - `c160958` - build: increment iOS build number to 41
+  - `39c48f1` - config: enable auto-submit to TestFlight for testflight-sandbox profile
+- **Next Step**: Test subscription purchase flow in Build 41
+
+### Previous Activity
 - **Date**: December 30, 2025 - Paid Apps Agreement RESOLVED! 🎉
 - **Duration**: ~1 hour (total investigation + resolution)
 - **What Was Done**: Identified root cause AND confirmed resolution of RevenueCat subscription issues
-- **Status**: 🟢 **RESOLVED** - Paid Apps Agreement now Active, ready to test subscriptions!
-- **Root Cause Found & Fixed**:
-  - Paid Apps Agreement in App Store Connect was "New" status (not signed)
-  - Apple was blocking ALL in-app purchase/subscription product fetches
-  - RevenueCat Error 23 = Apple refusing to return product info
-  - Code was correct all along - purely an Apple administrative issue
-- **Resolution Complete**:
-  - ✅ Legal entity information updated
-  - ✅ Banking information verified and Active (Blaze 2079)
-  - ✅ Paid Apps Agreement signed and Active (Dec 30, 2025 - Dec 2, 2026)
-  - ✅ Tax Forms (W-9) Active
-  - ✅ Digital Services Act compliance Active
-- **Next Step**: Test subscriptions in TestFlight Build 40 - should work now!
+- **Status**: ✅ **RESOLVED** - Paid Apps Agreement now Active
+- **Key Changes**: Paid Apps Agreement signed, Banking verified, Tax Forms active
 
 ### Previous Activity
 - **Date**: December 29, 2025 - Build 40: RevenueCat Debug Overlay
@@ -1263,6 +1269,15 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2026-01-04 - Build 41: Purchase Spinner Fix + Auto-Submit Config
+**Duration**: ~1 hour | **Status**: ✅ Complete
+- **FIX**: Purchase spinner hanging after Apple authentication
+- **ROOT CAUSE**: `await loadSubscription()` after purchase could hang/timeout
+- **SOLUTION**: Don't await loadSubscription() - refresh in background
+- **CONFIG**: `testflight-sandbox` profile now auto-submits to TestFlight
+- Files modified: `subscriptionStore.ts`, `PaywallScreen.tsx`, `eas.json`
+- Commits: `0e980f5`, `c160958`, `39c48f1`
+
 ### 2025-12-30 - Paid Apps Agreement RESOLVED! 🎉
 **Duration**: ~1 hour | **Status**: ✅ **RESOLVED**
 - **ROOT CAUSE**: Paid Apps Agreement in App Store Connect was not signed
@@ -1468,6 +1483,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Paid Apps Agreement RESOLVED!)
-**Session Date**: December 30, 2025
-**Document Version**: 2.8.0
+**Last Updated by**: Claude Code (Build 41 - Purchase Spinner Fix)
+**Session Date**: January 4, 2026
+**Document Version**: 2.9.0
