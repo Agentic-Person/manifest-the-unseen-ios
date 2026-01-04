@@ -402,7 +402,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
         );
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'An unexpected error occurred.');
+      console.error('[Paywall] Purchase error:', error);
+      Alert.alert('Error', error.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setPurchasingPackageId(null);
     }

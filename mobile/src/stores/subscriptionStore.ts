@@ -246,8 +246,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
               .eq('id', user.id);
           }
         }
-        // Refresh subscription info after successful purchase
-        await get().loadSubscription();
+        // Refresh subscription info in background - don't block purchase completion
+        get().loadSubscription().catch((err) => {
+          console.warn('Background subscription refresh failed:', err);
+        });
       }
 
       set({ isPurchasing: false });
