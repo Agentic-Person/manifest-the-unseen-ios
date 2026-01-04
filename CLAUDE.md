@@ -6,16 +6,46 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Manifest the Unseen** is a transformative iOS application that digitizes a 202-page manifestation workbook, combining structured exercises with AI-guided wisdom, voice journaling, and meditation practices.
 
-**Current Status**: Planning/Pre-Development Phase - This repository contains comprehensive planning documents but no implementation code yet.
+**Current Status**: Active Development (~60% complete) - Build 36 on TestFlight, all 10 workbook phases implemented.
 
-## Critical Context
+## Documentation Structure
 
-This is currently a **documentation-only repository**. All project requirements, technical specifications, and business decisions are documented in `/docs/`:
+All documentation is organized in `/docs/` with a central navigation hub at `docs/README.md`:
 
-- **manifest-the-unseen-prd.md** - Complete Product Requirements Document (202KB, definitive source)
-- **manifest-the-unseen-tdd.md** - Technical Design Document with React Native + Supabase architecture
-- **manifest-the-unseen-summary.md** - Quick reference summary of key decisions
-- Additional transcripts with source wisdom content (Shi Heng Yi, Book Essence Hub)
+```
+docs/
+├── README.md                    # Start here - navigation hub
+├── planning/                    # Core planning documents
+│   ├── manifest-the-unseen-prd.md   # Product Requirements (definitive source)
+│   ├── manifest-the-unseen-tdd.md   # Technical Design Document
+│   ├── manifest-the-unseen-summary.md
+│   └── mtu-roadmap.md               # Development roadmap
+├── guides/
+│   ├── setup/                   # 13 setup guides (React Native, Supabase, etc.)
+│   ├── development/             # Code standards, tooling, testing
+│   └── deployment/              # iOS workflow, TestFlight, migrations
+├── features/
+│   ├── guru-ai/                 # AI wisdom chat documentation
+│   ├── subscriptions/           # RevenueCat integration
+│   ├── voice-journal/           # Voice recording feature
+│   └── meditation/              # Meditation player
+├── security/
+│   ├── audits/                  # Security audit reports
+│   ├── guides/                  # Environment variables, API keys
+│   └── scans/                   # Vulnerability scan results
+├── operations/
+│   ├── status/project-status.md # Current build status
+│   └── known-issues.md
+├── content/wisdom-sources/      # AI training content (transcripts, scriptures)
+├── architecture/decisions/      # Architecture Decision Records (ADRs)
+└── archive/                     # Historical docs (read-only)
+```
+
+### Key Documents
+- **PRD**: `docs/planning/manifest-the-unseen-prd.md` - Complete requirements (1,670 lines)
+- **TDD**: `docs/planning/manifest-the-unseen-tdd.md` - Technical architecture
+- **Status**: `docs/operations/status/project-status.md` - Current build status
+- **Security**: `docs/security/README.md` - Security documentation index
 
 ## Tech Stack (Finalized)
 
@@ -78,16 +108,28 @@ This is currently a **documentation-only repository**. All project requirements,
 4. Stream response back to user
 5. Save conversation to Supabase
 
-## Project Structure (Planned)
+## Project Structure
 
 ```
-manifest-the-unseen/
-├── docs/                      # Current: Planning documents
+manifest-the-unseen-ios/
+├── CLAUDE.md                 # This file - AI assistant instructions
+├── docs/                     # All documentation (see structure above)
+├── mobile/                   # React Native app (Expo)
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── screens/          # Screen components (workbook phases, etc.)
+│   │   ├── services/         # API clients, Supabase, RevenueCat
+│   │   ├── stores/           # Zustand state management
+│   │   ├── hooks/            # Custom React hooks
+│   │   ├── utils/            # Utilities and helpers
+│   │   └── theme/            # Design tokens, colors
+│   └── app.json              # Expo configuration
 ├── packages/
-│   └── shared/               # Shared TypeScript (models, validation, API, hooks)
-├── mobile/                   # React Native app (iOS primary, Android future)
-├── web/                      # Optional: Next.js companion web app
-└── supabase/                 # Database migrations, Edge Functions, seed data
+│   └── shared/               # Shared TypeScript (models, validation, API)
+├── supabase/
+│   ├── migrations/           # Database migrations
+│   └── functions/            # Edge Functions (Deno)
+└── meditation-audio/         # Audio assets for meditations
 ```
 
 ## TestFlight Build Checklist
@@ -229,15 +271,11 @@ Feature gating enforced via:
 
 ### When Starting Development
 
-1. **Read the PRD first** (`docs/manifest-the-unseen-prd.md`) - it's the comprehensive source of truth (1,663 lines)
-2. **Reference TDD** (`docs/manifest-the-unseen-tdd.md`) for implementation details
-3. **Initialize in this order**:
-   - Set up Supabase project + run migrations
-   - Create React Native app with TypeScript
-   - Set up monorepo structure
-   - Configure authentication (Apple Sign-In)
-   - Build shared package first (models, API client)
-   - Then build mobile app features
+1. **Read the PRD first** (`docs/planning/manifest-the-unseen-prd.md`) - comprehensive source of truth
+2. **Reference TDD** (`docs/planning/manifest-the-unseen-tdd.md`) for implementation details
+3. **Check current status** (`docs/operations/status/project-status.md`) for what's already built
+4. **Review setup guides** in `docs/guides/setup/` for environment configuration
+5. **Check security docs** (`docs/security/`) before handling sensitive data
 
 ### Code Organization
 
@@ -288,23 +326,24 @@ The app digitizes a 202-page workbook with 10 phases:
 9. Trust & Surrender
 10. Trust & Letting Go
 
-**Content to Prepare**:
-- 12 meditation audio files (6 sessions × 2 narrators: male + female)
-- Workbook exercise content digitization (forms, prompts)
-- 365+ daily inspiration quotes
-- AI knowledge base ingestion (PDFs, transcripts in `/docs`)
-- UI assets (icons, illustrations, animations)
+**Content Status**:
+- 18 meditation audio files completed (in `meditation-audio/`)
+- All 10 workbook phases digitized and implemented
+- Daily inspiration quotes integrated
+- AI knowledge base populated (see `docs/content/wisdom-sources/`)
+- UI assets complete
 
 ## AI Knowledge Sources
 
-AI monk companion trained on:
-- Complete Lunar Rivers "Manifest the Unseen" book content
-- Workbook methodology (all 10 phases)
-- Shi Heng Yi mindset teachings (transcript in `/docs`)
-- Book Essence Hub content (transcript in `/docs`)
-- Nikola Tesla writings on energy, frequency, vibration, 3-6-9 principles
+AI monk companion (Guru) trained on wisdom sources in `docs/content/wisdom-sources/`:
+- `shi-heng-yi-mindset.md` - Mindset and manifestation teachings
+- `book-essence-hub.md` - Book summaries and wisdom
+- `scriptures-kjv.md` - Biblical references for meditation content
+- `system-instructions-app-dev.md` - App-specific AI instructions
 
 **RAG Implementation**: Content chunked, embedded with OpenAI (text-embedding-3-small), stored in Supabase pgvector for similarity search.
+
+**Guru AI Documentation**: See `docs/features/guru-ai/` for system prompt design and testing.
 
 ## Common Pitfalls to Avoid
 
@@ -378,16 +417,26 @@ Target: 60%+ code coverage for shared package, critical paths tested for mobile 
 - Featured in App Store wellness category
 - Android version planning begins
 
-## When Implementation Begins
+## Current Development Focus
 
-Future Claude instances should:
+The app is ~60% complete. Key areas for continued development:
 
-1. Start by creating the Supabase project and running database migrations from TDD
-2. Initialize React Native with TypeScript template
-3. Set up monorepo structure with Yarn/pnpm workspaces
-4. Build shared package first (foundation for everything)
-5. Implement authentication before any features
-6. Follow the 28-week timeline from PRD Section 12
-7. Reference both PRD and TDD constantly - they're comprehensive and authoritative
+1. **Check `docs/operations/status/project-status.md`** for current build status and blockers
+2. **Review `docs/planning/mtu-roadmap.md`** for remaining features
+3. **Test on TestFlight** - Build 36 is live for testing
+4. **Security**: All critical security issues resolved (see `docs/security/audits/`)
 
-This is a **well-planned, ambitious project** with clear requirements, solid architecture decisions, and realistic timeline. The planning phase is complete - ready for implementation.
+### Recently Completed
+- All 10 workbook phases implemented
+- Guru AI with dynamic phase analysis
+- Subscription tiers with RevenueCat
+- Feature gating for free/paid users
+- 18 meditation audio files
+
+### Remaining Work
+- TypeScript error fixes
+- UI polish and animations
+- Additional testing
+- App Store submission preparation
+
+This is a **well-planned, ambitious project** with clear requirements and solid architecture. Reference the PRD and TDD in `docs/planning/` for any implementation questions.
