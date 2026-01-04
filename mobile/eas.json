@@ -43,6 +43,7 @@
       "cache": {
         "key": "splash-rebuild-v1"
       },
+      "autoSubmit": true,
       "ios": {
         "resourceClass": "default"
       },
@@ -76,6 +77,11 @@
   },
   "submit": {
     "production": {
+      "ios": {
+        "ascAppId": "6756403109"
+      }
+    },
+    "testflight-sandbox": {
       "ios": {
         "ascAppId": "6756403109"
       }
