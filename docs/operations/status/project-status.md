@@ -17,7 +17,7 @@
 | **Trial/Tier Confusion** | Profile shows "Novice" but user has Guru access | 7-day trial grants Enlightenment access - working as designed but confusing UX | 🟡 UX fix needed |
 | **Buttons Not Clickable** | Can't click subscribe on higher tiers | Under investigation | 🔴 Investigating |
 | **No UI Update After Purchase** | Tier indicators don't change after subscribing | Background `loadSubscription()` is async | 🟡 Fix needed |
-| **Product Images Wrong** | App images differ from App Store | Need to audit PaywallScreen image sources | 🔴 Investigating |
+| **Product Images Wrong** | App images differ from App Store | PaywallScreen has NO images, RevenueCat has NO images - **images come from App Store Connect** subscription localization | 🟡 Check ASC |
 
 ### Root Cause Analysis
 
