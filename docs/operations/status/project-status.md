@@ -1,10 +1,36 @@
 # MTU Project Status
 
-**Last Updated**: 2025-01-04 (Build 41 - Purchase Spinner Fix)
+**Last Updated**: 2026-01-04 (Build 41 Testing - Issues Found)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **BUILD 41 ON TESTFLIGHT** - Purchase flow fix + Paid Apps Agreement active
+**Status**: 🟡 **BUILD 41 TESTING** - Subscription system issues under investigation
+
+---
+
+## 🔍 CURRENT INVESTIGATION - January 4, 2026
+
+### Issues Found During Build 41 Testing
+
+| Issue | Description | Root Cause | Status |
+|-------|-------------|------------|--------|
+| **Trial/Tier Confusion** | Profile shows "Novice" but user has Guru access | 7-day trial grants Enlightenment access - working as designed but confusing UX | 🟡 UX fix needed |
+| **Buttons Not Clickable** | Can't click subscribe on higher tiers | Under investigation | 🔴 Investigating |
+| **No UI Update After Purchase** | Tier indicators don't change after subscribing | Background `loadSubscription()` is async | 🟡 Fix needed |
+| **Product Images Wrong** | App images differ from App Store | Need to audit PaywallScreen image sources | 🔴 Investigating |
+
+### Root Cause Analysis
+
+**Trial System Behavior (Working as Designed):**
+- Users in 7-day trial get **Enlightenment-level access** regardless of subscription
+- Profile shows actual RevenueCat tier → "Novice"
+- Features use `effectiveTier` from trial → "Enlightenment" (with Guru access)
+- This is intentional but causes UX confusion
+
+**Fix Plan:**
+1. Update Profile to show "Trial (X days left)" when in trial period
+2. Fix UI refresh after purchase to update indicators immediately
+3. Audit and fix product images in PaywallScreen
 
 ---
 
@@ -510,20 +536,31 @@ e7b8441 fix: Build 37 - proper trial tracking system
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: January 4, 2026 - Build 41 Testing: Issues Found
+- **Duration**: ~2 hours (build + testing + investigation)
+- **What Was Done**: Built and tested Build 41, discovered subscription system issues
+- **Status**: 🟡 **INVESTIGATING** - Multiple issues found during testing
+- **Issues Discovered**:
+  - Trial/Tier confusion: Profile shows "Novice" but user has Guru access (trial grants Enlightenment)
+  - Buttons not clickable on higher tiers
+  - No UI update after purchase (async loadSubscription issue)
+  - Product images differ from App Store submissions
+- **Investigation Findings**:
+  - 7-day trial system grants Enlightenment access regardless of subscription tier
+  - This is working as designed but UX is confusing
+  - Need to update Profile to show "Trial (X days left)" status
+  - Need to audit PaywallScreen image sources
+- **Next Steps**:
+  - Fix Profile to show trial status clearly
+  - Audit and fix product images
+  - Test button clickability logic
+
+### Previous Activity
 - **Date**: January 4, 2026 - Build 41: Purchase Spinner Fix
 - **Duration**: ~1 hour
 - **What Was Done**: Fixed purchase flow hanging after Apple authentication + configured auto-submit
-- **Status**: 🟢 **BUILD 41 ON TESTFLIGHT** - Ready to test subscriptions!
-- **Root Cause**: After successful purchase, `await loadSubscription()` could hang/timeout, blocking the purchase completion flow
-- **Fixes Applied**:
-  - ✅ `subscriptionStore.ts`: Don't await `loadSubscription()` after purchase - refresh in background
-  - ✅ `PaywallScreen.tsx`: Added error logging for debugging
-  - ✅ `eas.json`: Configured `testflight-sandbox` profile to auto-submit to TestFlight
-- **Commits**:
-  - `0e980f5` - fix: prevent purchase spinner from hanging after Apple authentication
-  - `c160958` - build: increment iOS build number to 41
-  - `39c48f1` - config: enable auto-submit to TestFlight for testflight-sandbox profile
-- **Next Step**: Test subscription purchase flow in Build 41
+- **Status**: ✅ **COMPLETE** - Build 41 submitted to TestFlight
+- **Commits**: `0e980f5`, `c160958`, `39c48f1`
 
 ### Previous Activity
 - **Date**: December 30, 2025 - Paid Apps Agreement RESOLVED! 🎉
@@ -1269,7 +1306,19 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
-### 2026-01-04 - Build 41: Purchase Spinner Fix + Auto-Submit Config
+### 2026-01-04 (PM) - Build 41 Testing: Issues Found
+**Duration**: ~2 hours | **Status**: 🟡 Investigating
+- **TESTED**: Build 41 on TestFlight with real subscription purchase
+- **ISSUES FOUND**:
+  1. Trial/Tier confusion - Profile shows "Novice" but user has Guru access
+  2. Subscribe buttons not clickable on higher tiers
+  3. No UI update after purchase
+  4. Product images differ from App Store submissions
+- **ROOT CAUSE (Trial)**: 7-day trial grants Enlightenment access regardless of subscription
+- **UX FIX NEEDED**: Show "Trial (X days left)" in Profile
+- **IMAGE FIX NEEDED**: Audit PaywallScreen image sources
+
+### 2026-01-04 (AM) - Build 41: Purchase Spinner Fix + Auto-Submit Config
 **Duration**: ~1 hour | **Status**: ✅ Complete
 - **FIX**: Purchase spinner hanging after Apple authentication
 - **ROOT CAUSE**: `await loadSubscription()` after purchase could hang/timeout
@@ -1483,6 +1532,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Build 41 - Purchase Spinner Fix)
+**Last Updated by**: Claude Code (Build 41 Testing - Issues Investigation)
 **Session Date**: January 4, 2026
-**Document Version**: 2.9.0
+**Document Version**: 2.10.0
