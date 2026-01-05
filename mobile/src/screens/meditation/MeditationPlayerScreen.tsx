@@ -29,6 +29,7 @@ import {
   useCompleteMeditationSession,
   getMeditationAudioUrl,
 } from '../../hooks/useMeditation';
+import { usePrayer, getPrayerAudioUrl } from '../../hooks/usePrayer';
 import { formatTime, getMeditationIcon, getMeditationTypeLabel } from '../../types/meditation';
 import type { MeditateStackScreenProps } from '../../types/navigation';
 import { Loading } from '../../components/Loading';
@@ -37,6 +38,7 @@ import {
   BreathingImages,
   InstrumentalImages,
 } from '../../assets';
+import { PrayerTextDisplay } from '../../components/prayer';
 
 // Image arrays for each category (same order as MeditateScreen)
 const GUIDED_IMAGES = [
@@ -71,7 +73,7 @@ const INSTRUMENTAL_IMAGES = [
  * Get image for meditation based on type and index
  */
 const getMeditationImage = (
-  type: 'guided' | 'breathing' | 'music' | undefined,
+  type: 'guided' | 'breathing' | 'music' | 'prayer' | undefined,
   index: number | undefined
 ): ImageSourcePropType | undefined => {
   if (index === undefined || type === undefined) return undefined;
@@ -83,6 +85,9 @@ const getMeditationImage = (
       return BREATHING_IMAGES[index % BREATHING_IMAGES.length];
     case 'music':
       return INSTRUMENTAL_IMAGES[index % INSTRUMENTAL_IMAGES.length];
+    case 'prayer':
+      // Prayers use text display instead of images
+      return undefined;
     default:
       return undefined;
   }
@@ -94,13 +99,48 @@ type Props = MeditateStackScreenProps<'MeditationPlayer'>;
  * MeditationPlayerScreen Component
  */
 const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { meditationId, imageIndex, meditationType } = route.params;
+  const { meditationId, imageIndex, meditationType, prayerContent } = route.params;
+
+  // Check if this is a prayer with synchronized text display
+  const isPrayer = meditationType === 'prayer' && !!prayerContent;
 
   // Get the meditation image based on type and index
   const meditationImage = getMeditationImage(meditationType, imageIndex);
 
-  // Fetch meditation details
-  const { data: meditation, isLoading, error } = useMeditation(meditationId);
+  // Fetch meditation or prayer details based on type
+  const {
+    data: meditationData,
+    isLoading: isLoadingMeditation,
+    error: meditationError,
+  } = useMeditation(meditationId);
+
+  const {
+    data: prayerData,
+    isLoading: isLoadingPrayer,
+    error: prayerError,
+  } = usePrayer(isPrayer ? meditationId : '');
+
+  // Use the appropriate data based on type
+  const meditation = isPrayer
+    ? prayerData
+      ? {
+          id: prayerData.id,
+          title: prayerData.title,
+          description: prayerData.description,
+          audio_url: prayerData.audio_url || '',
+          duration_seconds: prayerData.duration_seconds,
+          type: 'guided' as const, // Prayer displays as guided type
+          narrator_gender: 'female' as const,
+          tier_required: prayerData.tier_required,
+          tags: prayerData.tags,
+          order_index: prayerData.order_index,
+          created_at: prayerData.created_at,
+        }
+      : null
+    : meditationData;
+
+  const isLoading = isPrayer ? isLoadingPrayer : isLoadingMeditation;
+  const error = isPrayer ? prayerError : meditationError;
 
   // Session tracking
   const { mutate: startSession } = useStartMeditationSession();
@@ -186,11 +226,15 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
    */
   useEffect(() => {
     if (meditation?.audio_url) {
-      const audioUrl = getMeditationAudioUrl(meditation.audio_url);
+      // Use appropriate audio URL getter based on content type
+      const audioUrl = isPrayer
+        ? getPrayerAudioUrl(meditation.audio_url)
+        : getMeditationAudioUrl(meditation.audio_url);
       console.log('[MeditationPlayer] Loading audio:', {
         title: meditation.title,
         rawPath: meditation.audio_url,
         fullUrl: audioUrl,
+        isPrayer,
       });
       load(audioUrl);
     }
@@ -338,35 +382,50 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
 
       {/* Main Content */}
       <View style={styles.content}>
-        {/* Album Art / Image */}
-        <Animated.View
-          style={[
-            styles.artwork,
-            {
-              transform: [
-                { scale: pulseAnim },
-                { rotate: meditation.type === 'music' ? rotation : '0deg' },
-              ],
-            },
-          ]}
-        >
-          {meditationImage ? (
-            <Image
-              source={meditationImage}
-              style={styles.artworkImage}
-              resizeMode="cover"
+        {/* Prayer Text Display - replaces artwork for prayers */}
+        {isPrayer ? (
+          <View style={styles.prayerContainer}>
+            <Text style={styles.prayerTitle}>{meditation.title}</Text>
+            <PrayerTextDisplay
+              prayerContent={prayerContent}
+              audioDurationMs={progress.duration}
+              currentPositionMs={progress.position}
+              isPlaying={state === 'playing'}
             />
-          ) : (
-            <Ionicons name={iconName} size={80} color={colors.dark.accentGold} />
-          )}
-        </Animated.View>
+          </View>
+        ) : (
+          <>
+            {/* Album Art / Image */}
+            <Animated.View
+              style={[
+                styles.artwork,
+                {
+                  transform: [
+                    { scale: pulseAnim },
+                    { rotate: meditation.type === 'music' ? rotation : '0deg' },
+                  ],
+                },
+              ]}
+            >
+              {meditationImage ? (
+                <Image
+                  source={meditationImage}
+                  style={styles.artworkImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Ionicons name={iconName} size={80} color={colors.dark.accentGold} />
+              )}
+            </Animated.View>
 
-        {/* Title & Description */}
-        <Text style={styles.title}>{meditation.title}</Text>
-        {meditation.description && (
-          <Text style={styles.description} numberOfLines={3}>
-            {meditation.description}
-          </Text>
+            {/* Title & Description */}
+            <Text style={styles.title}>{meditation.title}</Text>
+            {meditation.description && (
+              <Text style={styles.description} numberOfLines={3}>
+                {meditation.description}
+              </Text>
+            )}
+          </>
         )}
 
         {/* Progress Slider */}
@@ -495,6 +554,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xl,
+  },
+  prayerContainer: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  prayerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.brand.gold,
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+    letterSpacing: 0.5,
   },
   artwork: {
     width: 220,

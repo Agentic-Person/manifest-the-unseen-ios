@@ -118,6 +118,8 @@ export interface Prayer {
   title: string;
   description: string;
   content: string;
+  /** Path to audio file in Supabase Storage. When present, enables synchronized line-by-line text display. */
+  audio_url: string | null;
   duration_seconds: number;
   tier_required: 'novice' | 'awakening' | 'enlightenment';
   life_areas: string[];

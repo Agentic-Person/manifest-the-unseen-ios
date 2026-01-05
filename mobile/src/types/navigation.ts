@@ -130,7 +130,9 @@ export type MeditateStackParamList = {
     /** Index of the meditation in its category list (for image lookup) */
     imageIndex?: number;
     /** Type of meditation for image category selection */
-    meditationType?: 'guided' | 'breathing' | 'music';
+    meditationType?: 'guided' | 'breathing' | 'music' | 'prayer';
+    /** Prayer text content for synchronized display (only when meditationType is 'prayer') */
+    prayerContent?: string;
   };
   BreathingExercise: { exerciseType: 'box' | 'deep' | 'calm' };
 };

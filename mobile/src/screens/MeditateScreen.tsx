@@ -28,6 +28,8 @@ import {
   useMeditationMusic,
   useMeditationStats,
 } from '../hooks/useMeditation';
+import { usePrayersWithAudio } from '../hooks/usePrayer';
+import type { Prayer } from '../types/guru';
 import { MeditationCard } from '../components/meditation/MeditationCard';
 import { Loading } from '../components/Loading';
 import type { Meditation } from '../types/meditation';
@@ -43,7 +45,7 @@ import { TIER_PRICING } from '../types/subscription';
 
 type MeditateNavProp = NativeStackNavigationProp<MeditateStackParamList>;
 
-type TabType = 'guided' | 'breathing' | 'music';
+type TabType = 'guided' | 'breathing' | 'music' | 'prayers';
 
 interface TabConfig {
   key: TabType;
@@ -55,6 +57,7 @@ const TABS: TabConfig[] = [
   { key: 'guided', label: 'Meditations', icon: 'person-outline' },
   { key: 'breathing', label: 'Breathing', icon: 'leaf-outline' },
   { key: 'music', label: 'Music', icon: 'musical-notes-outline' },
+  { key: 'prayers', label: 'Prayers', icon: 'sparkles-outline' },
 ];
 
 // Image arrays for each category (ordered to match content)
@@ -100,6 +103,9 @@ const getMeditationImage = (
       return BREATHING_IMAGES[index % BREATHING_IMAGES.length];
     case 'music':
       return INSTRUMENTAL_IMAGES[index % INSTRUMENTAL_IMAGES.length];
+    case 'prayers':
+      // Prayers use text display instead of images
+      return undefined;
     default:
       return undefined;
   }
@@ -139,6 +145,13 @@ const MeditateScreen = () => {
     refetch: refetchMusic,
   } = useMeditationMusic();
 
+  // Prayers with audio
+  const {
+    data: prayers,
+    isLoading: isLoadingPrayers,
+    refetch: refetchPrayers,
+  } = usePrayersWithAudio();
+
   // User stats
   const { data: stats } = useMeditationStats();
 
@@ -147,9 +160,9 @@ const MeditateScreen = () => {
    */
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([refetchGuided(), refetchBreathing(), refetchMusic()]);
+    await Promise.all([refetchGuided(), refetchBreathing(), refetchMusic(), refetchPrayers()]);
     setRefreshing(false);
-  }, [refetchGuided, refetchBreathing, refetchMusic]);
+  }, [refetchGuided, refetchBreathing, refetchMusic, refetchPrayers]);
 
   /**
    * Check if meditation is accessible based on subscription
@@ -192,14 +205,41 @@ const MeditateScreen = () => {
         title: meditation.title,
         duration: meditation.duration_seconds,
         imageIndex: index,
-        meditationType: activeTab,
+        meditationType: activeTab as 'guided' | 'breathing' | 'music',
       });
     },
     [navigation, activeTab, isMeditationAccessible]
   );
 
   /**
-   * Get current tab data
+   * Handle prayer press
+   */
+  const handlePrayerPress = useCallback(
+    (prayer: Prayer) => {
+      // Check subscription access
+      if (!isMeditationAccessible()) {
+        setShowUpgradePrompt(true);
+        return;
+      }
+
+      // Prayers require audio_url to play
+      if (!prayer.audio_url) {
+        return;
+      }
+
+      navigation.navigate('MeditationPlayer', {
+        meditationId: prayer.id,
+        title: prayer.title,
+        duration: prayer.duration_seconds,
+        meditationType: 'prayer',
+        prayerContent: prayer.content,
+      });
+    },
+    [navigation, isMeditationAccessible]
+  );
+
+  /**
+   * Get current tab data (meditations only - prayers handled separately)
    */
   const getCurrentData = (): Meditation[] => {
     switch (activeTab) {
@@ -209,6 +249,10 @@ const MeditateScreen = () => {
         return breathingExercises || [];
       case 'music':
         return musicTracks || [];
+      case 'prayers':
+        return []; // Prayers handled separately
+      default:
+        return [];
     }
   };
 
@@ -223,6 +267,10 @@ const MeditateScreen = () => {
         return isLoadingBreathing;
       case 'music':
         return isLoadingMusic;
+      case 'prayers':
+        return isLoadingPrayers;
+      default:
+        return false;
     }
   };
 
@@ -237,6 +285,10 @@ const MeditateScreen = () => {
         return 'No breathing exercises available yet';
       case 'music':
         return 'No meditation music available yet';
+      case 'prayers':
+        return 'No prayers with audio available yet';
+      default:
+        return 'No content available';
     }
   };
 
@@ -308,6 +360,52 @@ const MeditateScreen = () => {
       {/* Content */}
       {isLoading() ? (
         <Loading accessibilityLabel="Loading meditations" />
+      ) : activeTab === 'prayers' ? (
+        // Prayers tab - uses Prayer type instead of Meditation
+        (prayers?.length || 0) === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="sparkles-outline" size={48} color={colors.text.tertiary} />
+            <Text style={styles.emptyText}>{getEmptyMessage()}</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={prayers}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <Pressable
+                style={styles.prayerCard}
+                onPress={() => handlePrayerPress(item)}
+                accessibilityLabel={`Play ${item.title}`}
+              >
+                <View style={styles.prayerIconContainer}>
+                  <Ionicons name="sparkles" size={32} color={colors.brand.gold} />
+                </View>
+                <View style={styles.prayerContent}>
+                  <Text style={styles.prayerTitle}>{item.title}</Text>
+                  <Text style={styles.prayerDescription} numberOfLines={2}>
+                    {item.description}
+                  </Text>
+                  <View style={styles.prayerMeta}>
+                    <Ionicons name="time-outline" size={14} color={colors.text.tertiary} />
+                    <Text style={styles.prayerDuration}>
+                      {Math.ceil(item.duration_seconds / 60)} min
+                    </Text>
+                  </View>
+                </View>
+                <Ionicons name="play-circle" size={36} color={colors.brand.gold} />
+              </Pressable>
+            )}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={colors.dark.accentGold}
+              />
+            }
+          />
+        )
       ) : currentData.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Ionicons
@@ -458,6 +556,51 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.md,
     fontStyle: 'italic',
+  },
+  // Prayer card styles
+  prayerCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.background.elevated, // Temple Stone (#1A1A24)
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    gap: spacing.md,
+    ...shadows.sm,
+  },
+  prayerIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: borderRadius.md,
+    backgroundColor: `${colors.brand.gold}15`,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  prayerContent: {
+    flex: 1,
+  },
+  prayerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
+    marginBottom: 4,
+  },
+  prayerDescription: {
+    fontSize: 14,
+    color: colors.text.secondary,
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  prayerMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  prayerDuration: {
+    fontSize: 12,
+    color: colors.text.tertiary,
   },
 });
 
