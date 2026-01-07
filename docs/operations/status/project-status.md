@@ -1,14 +1,71 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-06 (ASC Subscription Metadata Fixed)
+**Last Updated**: 2026-01-07 (Synchronized Prayer Text Display Feature)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟡 **PRE-BUILD FIXES** - Fixing remaining issues before new build
+**Status**: 🟢 **FEATURE DEVELOPMENT** - Prayer player with synchronized text display
 
 ---
 
-## 🔍 CURRENT INVESTIGATION - January 6, 2026
+## 🎉 NEW FEATURE - January 7, 2026: Synchronized Prayer Text Display
+
+### Feature Overview
+Implemented a karaoke-style prayer player that displays prayer text line-by-line synchronized with audio playback. Users can read and speak prayers aloud as the narrator guides them.
+
+### What Was Built
+
+**New Files Created:**
+| File | Purpose |
+|------|---------|
+| `mobile/src/components/prayer/PrayerTextDisplay.tsx` | Synchronized text display with fade animations |
+| `mobile/src/components/prayer/index.ts` | Barrel export |
+| `mobile/src/hooks/usePrayerTiming.ts` | Line timing calculation based on word count |
+| `mobile/src/hooks/usePrayer.ts` | TanStack Query hooks for prayer data |
+| `mobile/src/services/prayerService.ts` | Supabase CRUD operations for prayers |
+| `supabase/migrations/20260104000000_prayers_audio_support.sql` | Added `audio_url` column to prayers table |
+
+**Files Modified:**
+| File | Changes |
+|------|---------|
+| `mobile/src/types/guru.ts` | Added `audio_url: string \| null` to Prayer interface |
+| `mobile/src/types/navigation.ts` | Added `'prayer'` to meditationType, `prayerContent` param |
+| `mobile/src/screens/meditation/MeditationPlayerScreen.tsx` | Integrated PrayerTextDisplay, conditional rendering |
+| `mobile/src/screens/MeditateScreen.tsx` | Added "Prayers" tab with prayer cards |
+
+### How It Works
+1. **Auto-calculated timing**: Line timing based on word count ratio to total audio duration
+2. **Single-line focus display**: Shows one line at a time, large and centered
+3. **Fade animations**: Smooth 200ms out / 300ms in transitions between lines
+4. **Progress indicators**: Dots showing current position in prayer
+5. **Completion state**: Shows "Amen" when prayer finishes
+
+### Prayer Audio Files Uploaded
+Uploaded to Supabase Storage (`meditation-audio/prayers/`):
+- ✅ `the-presence-within.m4a` (~21MB, ~8 min)
+- ✅ `the-infinite-within.m4a` (~33MB, ~13 min)
+- ✅ `the-temple-of-the-heart.m4a` (~29MB, ~12 min)
+
+### Prayer Records Created in Database
+| Title | Description | Duration |
+|-------|-------------|----------|
+| The Presence Within | Connect with the Divine presence in your spiritual heart | ~8 min |
+| The Infinite Within | Journey from the small self to the infinite self | ~13 min |
+| The Temple of the Heart | Healing journey into the sacred temple of your heart | ~12 min |
+
+### Commits
+- `2d635e6` - feat: add synchronized prayer text display for spoken prayers
+- `efc4dbf` - chore: update prayerService to use meditation-audio bucket
+
+### Testing
+- Access prayers from: **Meditate tab → Prayers tab** (sparkles icon)
+- Prayer cards display with play button
+- Tap to open player with synchronized text display
+- Text appears line-by-line as audio plays
+
+---
+
+## 🔍 PREVIOUS INVESTIGATION - January 6, 2026
 
 ### Issues Found During Build 41 Testing
 
@@ -551,24 +608,28 @@ e7b8441 fix: Build 37 - proper trial tracking system
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
-- **Date**: January 4, 2026 - Build 41 Testing: Issues Found
+- **Date**: January 7, 2026 - Synchronized Prayer Text Display Feature
+- **Duration**: ~3 hours
+- **What Was Done**: Implemented karaoke-style prayer player with synchronized text display
+- **Status**: ✅ **COMPLETE** - Feature fully implemented and tested
+- **New Feature**:
+  - Prayer text displays line-by-line synchronized with audio playback
+  - Auto-calculated timing based on word count ratio
+  - Fade animations between lines
+  - "Prayers" tab added to Meditate screen
+- **Audio Files Uploaded**:
+  - The Presence Within (~8 min)
+  - The Infinite Within (~13 min)
+  - The Temple of the Heart (~12 min)
+- **Commits**:
+  - `2d635e6` - feat: add synchronized prayer text display for spoken prayers
+  - `efc4dbf` - chore: update prayerService to use meditation-audio bucket
+
+### Previous Activity
+- **Date**: January 6, 2026 - Build 41 Testing: Issues Found
 - **Duration**: ~2 hours (build + testing + investigation)
 - **What Was Done**: Built and tested Build 41, discovered subscription system issues
 - **Status**: 🟡 **INVESTIGATING** - Multiple issues found during testing
-- **Issues Discovered**:
-  - Trial/Tier confusion: Profile shows "Novice" but user has Guru access (trial grants Enlightenment)
-  - Buttons not clickable on higher tiers
-  - No UI update after purchase (async loadSubscription issue)
-  - Product images differ from App Store submissions
-- **Investigation Findings**:
-  - 7-day trial system grants Enlightenment access regardless of subscription tier
-  - This is working as designed but UX is confusing
-  - Need to update Profile to show "Trial (X days left)" status
-  - Need to audit PaywallScreen image sources
-- **Next Steps**:
-  - Fix Profile to show trial status clearly
-  - Audit and fix product images
-  - Test button clickability logic
 
 ### Previous Activity
 - **Date**: January 4, 2026 - Build 41: Purchase Spinner Fix
@@ -1321,6 +1382,26 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2026-01-07 - Synchronized Prayer Text Display Feature
+**Duration**: ~3 hours | **Status**: ✅ Complete
+- **NEW FEATURE**: Karaoke-style prayer player with synchronized text display
+- **How It Works**: Text displays line-by-line as audio plays, auto-calculated timing based on word count
+- **Components Built**:
+  - `PrayerTextDisplay.tsx` - Synchronized text with fade animations
+  - `usePrayerTiming.ts` - Line timing calculation hook
+  - `usePrayer.ts` - TanStack Query hooks
+  - `prayerService.ts` - Supabase CRUD operations
+- **UI Changes**:
+  - Added "Prayers" tab to Meditate screen (sparkles icon)
+  - Prayer cards with play button
+  - Integrated prayer text display into MeditationPlayerScreen
+- **Audio Uploaded** to `meditation-audio/prayers/`:
+  - `the-presence-within.m4a` (~8 min)
+  - `the-infinite-within.m4a` (~13 min)
+  - `the-temple-of-the-heart.m4a` (~12 min)
+- **Database**: Created 3 new prayer records with full content + audio URLs
+- **Commits**: `2d635e6`, `efc4dbf`
+
 ### 2026-01-06 - App Store Connect Review Screenshots Fixed
 **Duration**: ~30 min | **Status**: ✅ Complete
 - **FIXED**: All 6 subscriptions now show "Ready to Submit" in App Store Connect
@@ -1557,6 +1638,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Build 41 Testing - Issues Investigation)
-**Session Date**: January 4, 2026
-**Document Version**: 2.10.0
+**Last Updated by**: Claude Code (Synchronized Prayer Text Display Feature)
+**Session Date**: January 7, 2026
+**Document Version**: 2.11.0
