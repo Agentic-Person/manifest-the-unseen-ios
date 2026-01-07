@@ -1,14 +1,14 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-04 (Build 41 Testing - Issues Found)
+**Last Updated**: 2026-01-06 (ASC Subscription Metadata Fixed)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟡 **BUILD 41 TESTING** - Subscription system issues under investigation
+**Status**: 🟡 **PRE-BUILD FIXES** - Fixing remaining issues before new build
 
 ---
 
-## 🔍 CURRENT INVESTIGATION - January 4, 2026
+## 🔍 CURRENT INVESTIGATION - January 6, 2026
 
 ### Issues Found During Build 41 Testing
 
@@ -17,7 +17,22 @@
 | **Trial/Tier Confusion** | Profile shows "Novice" but user has Guru access | 7-day trial grants Enlightenment access - working as designed but confusing UX | 🟡 UX fix needed |
 | **Buttons Not Clickable** | Can't click subscribe on higher tiers | Under investigation | 🔴 Investigating |
 | **No UI Update After Purchase** | Tier indicators don't change after subscribing | Background `loadSubscription()` is async | 🟡 Fix needed |
-| **Product Images Wrong** | App images differ from App Store | PaywallScreen has NO images, RevenueCat has NO images - **images come from App Store Connect** subscription localization | 🟡 Check ASC |
+| **Product Images Wrong** | App images differ from App Store | **FIXED Jan 6** - Missing Review Screenshots in ASC (needed device-sized 1284x2778 images, not 1024x1024) | ✅ Fixed |
+
+### ✅ App Store Connect Review Screenshots Fixed (Jan 6, 2026)
+**Problem**: All 6 subscriptions showed "Missing Metadata" in App Store Connect
+
+**Root Cause**: The "Review Information → Screenshot" field requires device-sized screenshots (1284x2778), not the 1024x1024 promotional images. The `iOS-Subscriptions` folder had the wrong size images.
+
+**Solution**: Uploaded proper device screenshots from `snips/iOS-Subscriptions/ar-tall/` folder:
+| Subscription | Status |
+|--------------|--------|
+| Novice Path Monthly | ✅ Ready to Submit |
+| Novice Path Yearly | ✅ Ready to Submit |
+| Awakening Path Monthly | ✅ Ready to Submit |
+| Awakening Path Yearly | ✅ Ready to Submit |
+| Enlightenment Path Monthly | ✅ Ready to Submit |
+| Enlightenment Path Yearly | ✅ Ready to Submit |
 
 ### Root Cause Analysis
 
@@ -1305,6 +1320,16 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 ## Change Log
 
 *For full implementation details, see `MTU-project-status-archive.md`*
+
+### 2026-01-06 - App Store Connect Review Screenshots Fixed
+**Duration**: ~30 min | **Status**: ✅ Complete
+- **FIXED**: All 6 subscriptions now show "Ready to Submit" in App Store Connect
+- **ROOT CAUSE**: Review Screenshots required device-sized images (1284x2778), not 1024x1024
+- **SOLUTION**: Uploaded proper screenshots from `snips/iOS-Subscriptions/ar-tall/` folder via Playwright
+- **REMAINING ISSUES**:
+  - Trial/Tier confusion (UX fix needed)
+  - Subscribe buttons not clickable on higher tiers (investigating)
+  - No UI update after purchase (fix needed)
 
 ### 2026-01-04 (PM) - Build 41 Testing: Issues Found
 **Duration**: ~2 hours | **Status**: 🟡 Investigating

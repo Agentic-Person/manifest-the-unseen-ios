@@ -91,7 +91,7 @@ export async function getPrayersByTier(
 
 /**
  * Get the full public URL for a prayer audio file
- * Audio files are stored in Supabase Storage 'prayer-audio' bucket
+ * Audio files are stored in Supabase Storage 'meditation-audio' bucket under 'prayers/' folder
  */
 export function getPrayerAudioUrl(audioPath: string): string {
   // If already a full URL, return as-is
@@ -99,8 +99,9 @@ export function getPrayerAudioUrl(audioPath: string): string {
     return audioPath;
   }
 
-  // Otherwise, get public URL from Supabase Storage
-  return getPublicUrl('prayer-audio', audioPath);
+  // Prayers are stored in meditation-audio bucket under prayers/ folder
+  // audioPath should be like "prayers/the-presence-within.m4a"
+  return getPublicUrl('meditation-audio', audioPath);
 }
 
 /**

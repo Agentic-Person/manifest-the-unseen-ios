@@ -17,7 +17,7 @@ ON prayers(audio_url)
 WHERE audio_url IS NOT NULL;
 
 -- Add column comment
-COMMENT ON COLUMN prayers.audio_url IS 'Path to audio file in Supabase Storage (prayer-audio bucket). When present, enables synchronized line-by-line text display during playback.';
+COMMENT ON COLUMN prayers.audio_url IS 'Path to audio file in Supabase Storage (meditation-audio bucket, prayers/ folder). Example: prayers/the-presence-within.m4a. When present, enables synchronized line-by-line text display during playback.';
 
 -- =============================================================================
 -- VERIFICATION QUERY (uncomment to test)
