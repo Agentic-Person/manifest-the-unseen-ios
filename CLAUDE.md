@@ -75,6 +75,30 @@ When updating project-status.md:
 - Archived content goes to `MTU-project-status-archive.md`
 - This is a manual process, NOT automatic
 
+### File Size Governance
+
+**Size Threshold**: When project-status.md exceeds **2,000 lines** (~80KB), alert the user:
+> "Hey, project-status.md is now over 2,000 lines. Want to review for archiving?"
+
+**Archiving Candidates** (safe to archive WITH user approval):
+- Change log entries older than 30 days for features that are stable
+- "Previous Activity" entries older than 2 weeks
+- Resolved investigation sections where the fix is verified and shipped
+- Build history for builds older than 10 versions back
+
+**NEVER archive without asking**:
+- Current/recent activity (last 2 weeks)
+- Active bugs or investigations
+- Current build information
+- Features still being tested
+- Any section the user hasn't explicitly approved for archiving
+
+**Archive Process**:
+1. Claude identifies candidates and presents a list to user
+2. User approves/rejects each item
+3. Approved items are MOVED (not deleted) to `MTU-project-status-archive.md`
+4. A brief reference link remains in main file (e.g., "See archive for Dec 2025 entries")
+
 ### Why This Matters
 
 - This file is essential for context when returning to the project
