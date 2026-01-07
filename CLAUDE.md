@@ -47,6 +47,43 @@ docs/
 - **Status**: `docs/operations/status/project-status.md` - Current build status
 - **Security**: `docs/security/README.md` - Security documentation index
 
+## ⚠️ CRITICAL: Project Status File Rules
+
+**The `docs/operations/status/project-status.md` file is a VITAL working document.**
+
+### NEVER DELETE OR CONDENSE INFORMATION
+
+When updating project-status.md:
+
+1. **ONLY ADD, NEVER DELETE** - Add new sections at the top, push older content down
+2. **Keep ALL details** - Every bullet point, every file path, every commit hash matters
+3. **Do NOT summarize or condense** existing entries to "save space"
+4. **Do NOT replace detailed sections** with shorter versions
+5. **Preserve the full history** - This document tracks the entire project journey
+
+### When Adding New Entries
+
+- Add new "Last Activity" section at top
+- Move previous "Last Activity" to "Previous Activity"
+- Keep ALL existing "Previous Activity" entries intact with full details
+- Never truncate commit messages, file lists, or feature descriptions
+
+### Archiving (ONLY when explicitly requested)
+
+- The user will explicitly say "let's archive old entries" or similar
+- User will review and approve what gets moved to archive
+- Archived content goes to `MTU-project-status-archive.md`
+- This is a manual process, NOT automatic
+
+### Why This Matters
+
+- This file is essential for context when returning to the project
+- Details that seem "old" may be needed for debugging or reference
+- The user relies on this file to understand project history
+- Losing information causes real problems and frustration
+
+**If in doubt: ADD information, NEVER remove it.**
+
 ## Tech Stack (Finalized)
 
 ### Mobile App
