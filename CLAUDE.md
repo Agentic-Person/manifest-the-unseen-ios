@@ -77,8 +77,8 @@ When updating project-status.md:
 
 ### File Size Governance
 
-**Size Threshold**: When project-status.md exceeds **2,000 lines** (~80KB), alert the user:
-> "Hey, project-status.md is now over 2,000 lines. Want to review for archiving?"
+**Size Threshold**: When project-status.md exceeds **1,500 lines** (~60KB), alert the user:
+> "Hey, project-status.md is now over 1,500 lines. Want to review for archiving?"
 
 **Archiving Candidates** (safe to archive WITH user approval):
 - Change log entries older than 30 days for features that are stable
