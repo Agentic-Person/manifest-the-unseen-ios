@@ -141,6 +141,9 @@ export function useFeatureAccess() {
 /**
  * Get Subscription Summary
  * Returns complete subscription information for display in UI
+ *
+ * Combines data from both subscriptionStore (RevenueCat) and trialStore (local trial tracking)
+ * to provide accurate, user-friendly subscription status.
  */
 export function useSubscriptionSummary() {
   const tier = useSubscriptionStore((state) => state.tier);
@@ -151,6 +154,11 @@ export function useSubscriptionSummary() {
   const trialEndDate = useSubscriptionStore((state) => state.trialEndDate);
   const expirationDate = useSubscriptionStore((state) => state.expirationDate);
   const willRenew = useSubscriptionStore((state) => state.willRenew);
+  const testModeEnabled = useSubscriptionStore((state) => state.testModeEnabled);
+
+  // Also check local trial store for accurate trial status
+  const isInTrialPeriod = useTrialStore((state) => state.isInTrialPeriod);
+  const trialDaysRemaining = useTrialStore((state) => state.trialDaysRemaining);
 
   return useMemo(() => {
     const tierNames: Record<SubscriptionTier, string> = {
@@ -160,29 +168,72 @@ export function useSubscriptionSummary() {
       enlightenment: 'Enlightenment Path',
     };
 
-    const statusLabels = {
-      none: 'No Subscription',
-      active: 'Active',
-      trial: 'Trial',
-      expired: 'Expired',
-      cancelled: 'Cancelled',
-      grace_period: 'Grace Period',
-    };
+    // Check if we're in TestFlight/DEV mode (auto-subscribed)
+    const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
+    const isDevMode = __DEV__;
+    const isTestEnvironment = (isTestFlight || isDevMode) && !testModeEnabled;
+
+    // Determine the display tier name
+    let displayTierName = tierNames[tier];
+
+    // Determine the status label with more context
+    let statusLabel: string;
+
+    if (isTestEnvironment) {
+      // TestFlight/DEV with bypass active
+      statusLabel = 'TestFlight Access';
+    } else if (isInTrialPeriod && !isSubscribed) {
+      // User is in local trial period (not a paid subscription)
+      statusLabel = trialDaysRemaining === 1
+        ? 'Trial - 1 day left'
+        : `Trial - ${trialDaysRemaining} days left`;
+      displayTierName = 'Free Trial';
+    } else if (isInTrial && isSubscribed) {
+      // User has started a subscription trial (from RevenueCat)
+      if (trialEndDate) {
+        const daysLeft = Math.ceil((new Date(trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        statusLabel = daysLeft === 1
+          ? 'Trial - 1 day left'
+          : `Trial - ${daysLeft} days left`;
+      } else {
+        statusLabel = 'Trial';
+      }
+    } else if (status === 'active') {
+      statusLabel = period === 'monthly' ? 'Active - Monthly' : period === 'yearly' ? 'Active - Annual' : 'Active';
+    } else if (status === 'cancelled') {
+      if (expirationDate) {
+        const expDate = new Date(expirationDate);
+        statusLabel = `Cancelled - Expires ${expDate.toLocaleDateString()}`;
+      } else {
+        statusLabel = 'Cancelled';
+      }
+    } else if (status === 'expired') {
+      statusLabel = 'Expired';
+    } else if (status === 'grace_period') {
+      statusLabel = 'Payment Issue - Update billing';
+    } else if (tier === 'free' && !isInTrialPeriod) {
+      statusLabel = 'No Active Subscription';
+    } else {
+      statusLabel = 'No Subscription';
+    }
 
     return {
       tier,
-      tierName: tierNames[tier],
+      tierName: displayTierName,
       status,
-      statusLabel: statusLabels[status],
+      statusLabel,
       isSubscribed,
-      isInTrial,
+      isInTrial: isInTrial || isInTrialPeriod,
+      isInTrialPeriod, // Local trial (first 7 days of app use)
+      trialDaysRemaining,
       period,
       periodLabel: period === 'monthly' ? 'Monthly' : period === 'yearly' ? 'Annual' : period === 'lifetime' ? 'Lifetime' : null,
       trialEndDate,
       expirationDate,
       willRenew,
+      isTestEnvironment,
     };
-  }, [tier, status, isSubscribed, isInTrial, period, trialEndDate, expirationDate, willRenew]);
+  }, [tier, status, isSubscribed, isInTrial, period, trialEndDate, expirationDate, willRenew, isInTrialPeriod, trialDaysRemaining, testModeEnabled]);
 }
 
 /**

@@ -27,7 +27,7 @@ import { TIER_PRICING, getSaleConfig, PACKAGE_IDS } from '../../types/subscripti
 import { SaleBanner } from '../../components/subscription/SaleBanner';
 import { SaleBadge } from '../../components/subscription/SaleBadge';
 import { StrikethroughPrice } from '../../components/subscription/StrikethroughPrice';
-import { useSubscriptionStore, useOfferings, usePurchaseState, usePromoCodeState } from '../../stores/subscriptionStore';
+import { useSubscriptionStore, useOfferings, usePurchaseState, usePromoCodeState, useTestMode } from '../../stores/subscriptionStore';
 import { PromoCodeInput } from '../../components/PromoCodeInput';
 import { recordPromoRedemption } from '../../services/promoService';
 import { getRevenueCatDebugState } from '../../services/subscriptionService';
@@ -68,9 +68,11 @@ interface TestPackageCardProps {
 interface DebugOverlayProps {
   visible: boolean;
   offeringsError: string | null;
+  testModeEnabled: boolean;
+  onToggleTestMode: () => void;
 }
 
-const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError }) => {
+const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError, testModeEnabled, onToggleTestMode }) => {
   if (!visible) return null;
 
   const debugState = getRevenueCatDebugState();
@@ -175,6 +177,29 @@ const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError }) 
         </View>
       )}
 
+      {/* Test Mode Toggle */}
+      <View style={debugStyles.testModeSection}>
+        <View style={debugStyles.row}>
+          <Text style={debugStyles.label}>Test Mode:</Text>
+          <Text style={[debugStyles.value, testModeEnabled ? debugStyles.success : debugStyles.warning]}>
+            {testModeEnabled ? 'ON (Free User)' : 'OFF (Auto-Subscribe)'}
+          </Text>
+        </View>
+        <Pressable
+          style={[debugStyles.testModeButton, testModeEnabled && debugStyles.testModeButtonActive]}
+          onPress={onToggleTestMode}
+        >
+          <Text style={debugStyles.testModeButtonText}>
+            {testModeEnabled ? 'Disable Test Mode' : 'Enable Test Mode'}
+          </Text>
+        </Pressable>
+        <Text style={debugStyles.testModeHint}>
+          {testModeEnabled
+            ? 'Showing as free user - all buttons clickable'
+            : 'TestFlight bypass active - auto-subscribed to Enlightenment'}
+        </Text>
+      </View>
+
       <Text style={debugStyles.hint}>Tap title 5x to hide</Text>
     </View>
   );
@@ -227,6 +252,35 @@ const debugStyles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     marginTop: spacing.sm,
+  },
+  testModeSection: {
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: '#333',
+  },
+  testModeButton: {
+    backgroundColor: '#1E40AF',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: spacing.sm,
+    alignItems: 'center',
+  },
+  testModeButtonActive: {
+    backgroundColor: '#22C55E',
+  },
+  testModeButtonText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  testModeHint: {
+    fontSize: 9,
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 4,
+    fontStyle: 'italic',
   },
 });
 
@@ -326,6 +380,9 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   const loadOfferings = useSubscriptionStore((state) => state.loadOfferings);
   const clearPromo = useSubscriptionStore((state) => state.clearPromo);
   const offeringsError = useSubscriptionStore((state) => state.error);
+
+  // Test mode for bypassing auto-subscription in TestFlight
+  const { testModeEnabled, toggleTestMode } = useTestMode();
 
   // Get sale configuration
   const saleConfig = getSaleConfig();
@@ -491,7 +548,12 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
 
           <ScrollView contentContainerStyle={styles.errorScrollContent}>
             {/* Debug Overlay - always visible in error state for debugging */}
-            <DebugOverlay visible={true} offeringsError={offeringsError} />
+            <DebugOverlay
+              visible={true}
+              offeringsError={offeringsError}
+              testModeEnabled={testModeEnabled}
+              onToggleTestMode={toggleTestMode}
+            />
 
             <View style={styles.errorContainer}>
               <Text style={styles.errorIcon}>⚠️</Text>
@@ -553,11 +615,21 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
         >
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Choose Your Path</Text>
+            <Pressable onPress={handleTitleTap}>
+              <Text style={styles.title}>Choose Your Path</Text>
+            </Pressable>
             <Text style={styles.subtitle}>
               Start your 7-day free trial. Cancel anytime.
             </Text>
           </View>
+
+          {/* Debug Overlay - tap title 5x to show */}
+          <DebugOverlay
+            visible={showDebug}
+            offeringsError={offeringsError}
+            testModeEnabled={testModeEnabled}
+            onToggleTestMode={toggleTestMode}
+          />
 
           {/* Sale Banner - shown when sale is active */}
           {saleConfig.isActive && !isSubscribed && (

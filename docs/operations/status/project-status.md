@@ -1,10 +1,70 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-07 (Synchronized Prayer Text Display Feature)
+**Last Updated**: 2026-01-07 (TestFlight Subscription Fixes)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **FEATURE DEVELOPMENT** - Prayer player with synchronized text display
+**Status**: 🟢 **PRE-BUILD FIXES** - TestFlight subscription system fixes complete
+
+---
+
+## 🔧 TESTFLIGHT SUBSCRIPTION FIXES - January 7, 2026
+
+### Issues Fixed
+
+| Issue | Root Cause | Fix Applied | Status |
+|-------|------------|-------------|--------|
+| **Buttons Not Clickable** | TestFlight mode skipped RevenueCat SDK, returning null offerings | Added mock offerings for TestFlight mode in `getOfferings()` | ✅ Fixed |
+| **No UI Update After Purchase** | `loadSubscription()` overrides state in TestFlight mode | Added simulated purchase flow + direct state update | ✅ Fixed |
+| **Trial/Tier Confusion** | Profile showed tier name without trial context | Enhanced `useSubscriptionSummary()` with trial days remaining | ✅ Fixed |
+| **Can't Test Purchase Flow** | Auto-subscribed to Enlightenment in TestFlight | Added Test Mode toggle in debug panel | ✅ Fixed |
+
+### Changes Made
+
+**File: `mobile/src/services/subscriptionService.ts`**
+- `getOfferings()`: Now returns mock offerings in TestFlight mode (like web mode)
+- `purchasePackage()`: Simulates successful purchase in TestFlight/DEV mode, returns purchased tier info
+
+**File: `mobile/src/stores/subscriptionStore.ts`**
+- Added `testModeEnabled` state and `toggleTestMode()` action
+- `loadSubscription()`: Respects testModeEnabled flag - shows as free user when enabled
+- `purchasePackage()`: Directly updates state with purchased tier (doesn't rely on loadSubscription)
+- Added `useTestMode()` selector hook
+
+**File: `mobile/src/screens/subscription/PaywallScreen.tsx`**
+- Added Test Mode toggle to debug overlay (tap title 5x to show)
+- Shows test mode status and toggle button
+- Visual indicator: "TestFlight Access" vs "Free User" mode
+
+**File: `mobile/src/hooks/useSubscription.ts`**
+- `useSubscriptionSummary()`: Now combines subscriptionStore + trialStore data
+- Shows contextual status labels:
+  - "TestFlight Access" - when in test environment with bypass active
+  - "Trial - X days left" - when in local or subscription trial
+  - "Active - Monthly/Annual" - when subscribed
+  - "No Active Subscription" - when free with expired trial
+- Shows "Free Trial" as tier name during trial period
+
+### How Test Mode Works
+
+1. Open PaywallScreen (tap "Manage" in Profile or any upgrade prompt)
+2. Tap "Choose Your Path" title 5 times to show debug panel
+3. Click "Enable Test Mode" to appear as a free user
+4. All subscription buttons become clickable
+5. Tap any button to simulate a purchase
+6. UI updates immediately to show the purchased tier
+7. Click "Disable Test Mode" to return to auto-subscribed state
+
+### Profile Display Examples
+
+| Scenario | Tier Name | Status Label |
+|----------|-----------|--------------|
+| TestFlight bypass active | Enlightenment Path | TestFlight Access |
+| Local trial (5 days left) | Free Trial | Trial - 5 days left |
+| Subscription trial (3 days) | Novice Path | Trial - 3 days left |
+| Active monthly sub | Awakening Path | Active - Monthly |
+| Cancelled subscription | Novice Path | Cancelled - Expires 1/15/2026 |
+| Expired, no subscription | Free | No Active Subscription |
 
 ---
 
@@ -71,9 +131,9 @@ Uploaded to Supabase Storage (`meditation-audio/prayers/`):
 
 | Issue | Description | Root Cause | Status |
 |-------|-------------|------------|--------|
-| **Trial/Tier Confusion** | Profile shows "Novice" but user has Guru access | 7-day trial grants Enlightenment access - working as designed but confusing UX | 🟡 UX fix needed |
-| **Buttons Not Clickable** | Can't click subscribe on higher tiers | Under investigation | 🔴 Investigating |
-| **No UI Update After Purchase** | Tier indicators don't change after subscribing | Background `loadSubscription()` is async | 🟡 Fix needed |
+| **Trial/Tier Confusion** | Profile shows "Novice" but user has Guru access | 7-day trial grants Enlightenment access - working as designed but confusing UX | ✅ **Fixed Jan 7** |
+| **Buttons Not Clickable** | Can't click subscribe on higher tiers | TestFlight mode skipped RevenueCat SDK, returning null offerings | ✅ **Fixed Jan 7** |
+| **No UI Update After Purchase** | Tier indicators don't change after subscribing | `loadSubscription()` overrides state in TestFlight mode | ✅ **Fixed Jan 7** |
 | **Product Images Wrong** | App images differ from App Store | **FIXED Jan 6** - Missing Review Screenshots in ASC (needed device-sized 1284x2778 images, not 1024x1024) | ✅ Fixed |
 
 ### ✅ App Store Connect Review Screenshots Fixed (Jan 6, 2026)
@@ -608,6 +668,19 @@ e7b8441 fix: Build 37 - proper trial tracking system
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: January 7, 2026 - TestFlight Subscription System Fixes
+- **Duration**: ~2 hours
+- **What Was Done**: Fixed all TestFlight subscription issues found during Build 41 testing
+- **Status**: ✅ **COMPLETE** - All 4 issues fixed, ready for new build
+- **Issues Fixed**:
+  - Buttons not clickable on higher tiers → Mock offerings for TestFlight
+  - UI not updating after purchase → Direct state update + simulated purchase
+  - Trial/Tier confusion in Profile → Enhanced status labels with trial days
+  - Can't test purchase flow → Test Mode toggle in debug panel
+- **Files Modified**:
+  - `subscriptionService.ts`, `subscriptionStore.ts`, `PaywallScreen.tsx`, `useSubscription.ts`
+
+### Previous Activity
 - **Date**: January 7, 2026 - Synchronized Prayer Text Display Feature
 - **Duration**: ~3 hours
 - **What Was Done**: Implemented karaoke-style prayer player with synchronized text display
@@ -1382,7 +1455,19 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
-### 2026-01-07 - Synchronized Prayer Text Display Feature
+### 2026-01-07 (PM) - TestFlight Subscription System Fixes
+**Duration**: ~2 hours | **Status**: ✅ Complete
+- **FIXED**: Buttons not clickable on higher tiers (mock offerings for TestFlight)
+- **FIXED**: UI not updating after purchase (direct state update + simulated purchase)
+- **FIXED**: Trial/Tier confusion in Profile (enhanced status labels with trial days)
+- **NEW**: Test Mode toggle in PaywallScreen debug panel (tap title 5x)
+- **Files Modified**:
+  - `mobile/src/services/subscriptionService.ts` - Mock offerings + simulated purchase
+  - `mobile/src/stores/subscriptionStore.ts` - Test mode state + direct state updates
+  - `mobile/src/screens/subscription/PaywallScreen.tsx` - Test mode toggle in debug panel
+  - `mobile/src/hooks/useSubscription.ts` - Enhanced subscription summary with trial info
+
+### 2026-01-07 (AM) - Synchronized Prayer Text Display Feature
 **Duration**: ~3 hours | **Status**: ✅ Complete
 - **NEW FEATURE**: Karaoke-style prayer player with synchronized text display
 - **How It Works**: Text displays line-by-line as audio plays, auto-calculated timing based on word count
@@ -1638,6 +1723,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Synchronized Prayer Text Display Feature)
+**Last Updated by**: Claude Code (TestFlight Subscription System Fixes)
 **Session Date**: January 7, 2026
-**Document Version**: 2.11.0
+**Document Version**: 2.12.0

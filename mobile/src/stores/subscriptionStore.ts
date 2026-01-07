@@ -67,6 +67,9 @@ interface SubscriptionState {
   promoCodeValidation: PromoValidationResult | null;
   isValidatingPromo: boolean;
 
+  // Test Mode (disables TestFlight auto-subscription bypass)
+  testModeEnabled: boolean;
+
   // Actions
   loadSubscription: () => Promise<void>;
   loadOfferings: () => Promise<void>;
@@ -75,6 +78,7 @@ interface SubscriptionState {
   checkAccess: (feature: string) => boolean;
   validatePromo: (code: string, tier?: string) => Promise<PromoValidationResult>;
   clearPromo: () => void;
+  toggleTestMode: () => void;
   reset: () => void;
 }
 
@@ -102,6 +106,8 @@ const initialState = {
   promoCodeDiscount: null,
   promoCodeValidation: null,
   isValidatingPromo: false,
+  // Test mode initial state (disabled by default - TestFlight bypass active)
+  testModeEnabled: false,
 };
 
 /**
@@ -115,12 +121,15 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
    * Fetches current subscription status from RevenueCat
    */
   loadSubscription: async () => {
+    const { testModeEnabled } = get();
+
     // DEV/TestFlight bypass - grant full access for testing
     // __DEV__ is true in Expo Go/Metro, false in production builds
     // EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS is set in eas.json for TestFlight builds
+    // BUT: If testModeEnabled is true, skip the bypass to allow testing purchase flow
     const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
-    if (__DEV__ || isTestFlight) {
-      console.log('[Subscription] DEV/TestFlight mode - granting enlightenment tier access');
+    if ((__DEV__ || isTestFlight) && !testModeEnabled) {
+      console.log('[Subscription] DEV/TestFlight mode - granting enlightenment tier access (test mode disabled)');
       set({
         tier: 'enlightenment',
         status: 'active',
@@ -130,6 +139,24 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         trialEndDate: null,
         expirationDate: null,
         willRenew: true,
+        isLoading: false,
+        error: null,
+      });
+      return;
+    }
+
+    // Test mode is enabled - show as free user to test purchase flow
+    if (testModeEnabled) {
+      console.log('[Subscription] Test mode enabled - showing as free user for purchase testing');
+      set({
+        tier: 'free',
+        status: 'none',
+        isSubscribed: false,
+        isInTrial: false,
+        period: null,
+        trialEndDate: null,
+        expirationDate: null,
+        willRenew: false,
         isLoading: false,
         error: null,
       });
@@ -231,28 +258,51 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     try {
       const result = await purchaseSubscriptionPackage(pkg);
 
-      if (result.success && result.customerInfo) {
-        // Sync tier to database after successful RevenueCat purchase
-        const newTier = getTierFromCustomerInfo(result.customerInfo);
-        if (newTier !== 'free') {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            await supabase
-              .from('users')
-              .update({
-                subscription_tier: newTier,
-                subscription_status: 'active',
-              })
-              .eq('id', user.id);
+      if (result.success) {
+        // Check if this is a simulated purchase (TestFlight/DEV mode)
+        const simulatedResult = result as PurchaseResult & { purchasedTier?: SubscriptionTier; purchasedPeriod?: SubscriptionPeriod };
+        const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
+
+        if ((isTestFlight || __DEV__) && simulatedResult.purchasedTier) {
+          // TestFlight/DEV mode: directly update state with purchased tier
+          console.log('[Subscription] Updating state with simulated purchase:', simulatedResult.purchasedTier);
+          set({
+            tier: simulatedResult.purchasedTier,
+            status: 'trial', // Simulated purchases start as trial
+            isSubscribed: true,
+            isInTrial: true,
+            period: simulatedResult.purchasedPeriod || null,
+            trialEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+            expirationDate: null,
+            willRenew: true,
+            isPurchasing: false,
+            error: null,
+          });
+        } else if (result.customerInfo) {
+          // Real purchase: sync tier to database
+          const newTier = getTierFromCustomerInfo(result.customerInfo);
+          if (newTier !== 'free') {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+              await supabase
+                .from('users')
+                .update({
+                  subscription_tier: newTier,
+                  subscription_status: 'active',
+                })
+                .eq('id', user.id);
+            }
           }
+          // Refresh subscription info to get accurate state from RevenueCat
+          await get().loadSubscription();
+          set({ isPurchasing: false });
+        } else {
+          set({ isPurchasing: false });
         }
-        // Refresh subscription info in background - don't block purchase completion
-        get().loadSubscription().catch((err) => {
-          console.warn('Background subscription refresh failed:', err);
-        });
+      } else {
+        set({ isPurchasing: false });
       }
 
-      set({ isPurchasing: false });
       return result;
     } catch (error: any) {
       console.error('Purchase failed:', error);
@@ -436,6 +486,21 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
   },
 
   /**
+   * Toggle Test Mode
+   *
+   * When enabled, bypasses TestFlight auto-subscription to allow testing
+   * the purchase flow as a free user. Toggles the flag and reloads subscription.
+   */
+  toggleTestMode: () => {
+    const { testModeEnabled, loadSubscription } = get();
+    const newState = !testModeEnabled;
+    console.log(`[Subscription] Test mode ${newState ? 'ENABLED' : 'DISABLED'}`);
+    set({ testModeEnabled: newState });
+    // Reload subscription to apply the new mode
+    loadSubscription();
+  },
+
+  /**
    * Reset Store to Initial State
    * Use when user logs out
    */
@@ -532,4 +597,14 @@ export const usePromoActions = () =>
   useSubscriptionStore((state) => ({
     validatePromo: state.validatePromo,
     clearPromo: state.clearPromo,
+  }));
+
+/**
+ * Get Test Mode State and Actions
+ * Used in debug/development to test purchase flow as free user
+ */
+export const useTestMode = () =>
+  useSubscriptionStore((state) => ({
+    testModeEnabled: state.testModeEnabled,
+    toggleTestMode: state.toggleTestMode,
   }));

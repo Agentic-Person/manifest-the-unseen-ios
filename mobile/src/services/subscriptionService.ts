@@ -156,6 +156,12 @@ export async function configurePurchases(userId?: string): Promise<void> {
  * Call this after user logs in to sync purchases with user account
  */
 export async function setUserId(userId: string): Promise<void> {
+  // Skip on web - RevenueCat not supported
+  if (Platform.OS === 'web') {
+    console.log('[Subscription] Web platform - skipping setUserId');
+    return;
+  }
+
   try {
     await Purchases.logIn(userId);
     // H3 Security Fix: Don't log userId in production
@@ -173,6 +179,12 @@ export async function setUserId(userId: string): Promise<void> {
  * Call this when user logs out
  */
 export async function logoutUser(): Promise<void> {
+  // Skip on web - RevenueCat not supported
+  if (Platform.OS === 'web') {
+    console.log('[Subscription] Web platform - skipping logoutUser');
+    return;
+  }
+
   try {
     await Purchases.logOut();
     console.log('RevenueCat user logged out');
@@ -194,9 +206,12 @@ export async function logoutUser(): Promise<void> {
 export async function getOfferings(): Promise<SubscriptionOffering | null> {
   debugState.lastOfferingsAttempt = new Date().toISOString();
 
-  // Return mock offerings for web mode (RevenueCat doesn't work in browser)
-  if (Platform.OS === 'web') {
-    console.log('[Subscription] Web mode - returning mock offerings for UI testing');
+  // Check if TestFlight bypass is active
+  const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
+
+  // Return mock offerings for web mode or TestFlight (RevenueCat SDK is skipped in these modes)
+  if (Platform.OS === 'web' || isTestFlight) {
+    console.log(`[Subscription] ${Platform.OS === 'web' ? 'Web' : 'TestFlight'} mode - returning mock offerings for UI testing`);
     return {
       novice_monthly: {
         id: 'mock_novice_monthly',
@@ -415,6 +430,32 @@ function findPackageById(
 export async function purchasePackage(
   subscriptionPackage: SubscriptionPackage
 ): Promise<PurchaseResult> {
+  // Skip on web - RevenueCat not supported
+  if (Platform.OS === 'web') {
+    console.log('[Subscription] Web platform - purchases not supported');
+    return {
+      success: false,
+      error: new Error('Purchases not available on web'),
+    };
+  }
+
+  // Handle TestFlight mode - simulate purchase success for UI testing
+  // In TestFlight mode, RevenueCat SDK is not configured, so real purchases won't work
+  const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
+  if (isTestFlight || __DEV__) {
+    console.log('[Subscription] TestFlight/DEV mode - simulating purchase success for:', subscriptionPackage.id);
+    // Return success with the purchased tier info (no customerInfo since SDK not configured)
+    // Using Object.assign to add extra properties while maintaining PurchaseResult type
+    const result: PurchaseResult = {
+      success: true,
+      customerInfo: null as any, // null in test mode
+    };
+    // Attach purchased package info for state update (accessed via type assertion in store)
+    (result as any).purchasedTier = subscriptionPackage.tier;
+    (result as any).purchasedPeriod = subscriptionPackage.period;
+    return result;
+  }
+
   try {
     const { customerInfo, productIdentifier } =
       await Purchases.purchasePackage(subscriptionPackage.rcPackage);
@@ -448,6 +489,15 @@ export async function purchasePackage(
  * Use this for "Restore Purchases" button
  */
 export async function restorePurchases(): Promise<RestoreResult> {
+  // Skip on web - RevenueCat not supported
+  if (Platform.OS === 'web') {
+    console.log('[Subscription] Web platform - restore not supported');
+    return {
+      success: false,
+      error: new Error('Restore not available on web'),
+    };
+  }
+
   try {
     const customerInfo: CustomerInfo = await Purchases.restorePurchases();
 
@@ -472,6 +522,12 @@ export async function restorePurchases(): Promise<RestoreResult> {
  * Includes active subscriptions, entitlements, and trial status
  */
 export async function getCustomerInfo(): Promise<CustomerInfo | null> {
+  // Skip on web - RevenueCat not supported
+  if (Platform.OS === 'web') {
+    console.log('[Subscription] Web platform - returning null for getCustomerInfo');
+    return null;
+  }
+
   try {
     const customerInfo: CustomerInfo = await Purchases.getCustomerInfo();
     return customerInfo;
