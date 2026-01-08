@@ -108,11 +108,13 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
   const meditationImage = getMeditationImage(meditationType, imageIndex);
 
   // Fetch meditation or prayer details based on type
+  // IMPORTANT: Only fetch from meditations table if NOT a prayer
+  // Prayer IDs don't exist in meditations table, causing 406 errors
   const {
     data: meditationData,
     isLoading: isLoadingMeditation,
     error: meditationError,
-  } = useMeditation(meditationId);
+  } = useMeditation(isPrayer ? '' : meditationId);
 
   const {
     data: prayerData,
@@ -255,7 +257,9 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
       await pause();
     } else {
       // Start session tracking on first play
-      if (!sessionIdRef.current && meditation) {
+      // Skip for prayers - they don't have meditation_sessions records
+      // (prayer IDs are not valid foreign keys to meditations table)
+      if (!sessionIdRef.current && meditation && !isPrayer) {
         startTimeRef.current = Date.now();
         startSession(
           { meditation_id: meditation.id },
@@ -268,7 +272,7 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
       }
       await play();
     }
-  }, [state, pause, play, meditation, startSession]);
+  }, [state, pause, play, meditation, startSession, isPrayer]);
 
   /**
    * Handle session completion
@@ -387,10 +391,11 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
           <View style={styles.prayerContainer}>
             <Text style={styles.prayerTitle}>{meditation.title}</Text>
             <PrayerTextDisplay
-              prayerContent={prayerContent}
+              prayerContent={prayerData?.content || prayerContent}
               audioDurationMs={progress.duration}
               currentPositionMs={progress.position}
               isPlaying={state === 'playing'}
+              lineTimings={prayerData?.line_timings}
             />
           </View>
         ) : (
