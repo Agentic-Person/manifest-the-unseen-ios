@@ -42,7 +42,7 @@ export const PromoCodeInput: React.FC<PromoCodeInputProps> = ({ onApplied }) => 
 
   const {
     appliedPromoCode,
-    promoCodeDiscount,
+    promoCodeDiscount: _promoCodeDiscount,
     promoCodeValidation,
     isValidatingPromo,
   } = usePromoCodeState();

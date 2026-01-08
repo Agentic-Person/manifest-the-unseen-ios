@@ -120,7 +120,7 @@ export const useAvatarUpload = (): UseAvatarUploadResult => {
       } else {
         // For native, use FileSystem
         base64Data = await FileSystem.readAsStringAsync(selectedImage.uri, {
-          encoding: FileSystem.EncodingType.Base64,
+          encoding: 'base64',
         });
       }
 

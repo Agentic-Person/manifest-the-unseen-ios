@@ -57,7 +57,8 @@ export const ReviewWithGuruButton: React.FC<ReviewWithGuruButtonProps> = ({
   const handlePress = () => {
     if (!hasGuruAccess) {
       // Navigate to paywall with locked feature
-      navigation.navigate('Paywall', { lockedFeature: 'guru' });
+      // Cast to any since Paywall is in RootStack, not MainTabParamList
+      (navigation as any).navigate('Paywall', { lockedFeature: 'guru' });
       return;
     }
 

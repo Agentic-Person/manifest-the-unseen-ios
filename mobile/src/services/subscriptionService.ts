@@ -435,7 +435,7 @@ export async function purchasePackage(
     console.log('[Subscription] Web platform - purchases not supported');
     return {
       success: false,
-      error: new Error('Purchases not available on web'),
+      error: new Error('Purchases not available on web') as any,
     };
   }
 
@@ -494,7 +494,7 @@ export async function restorePurchases(): Promise<RestoreResult> {
     console.log('[Subscription] Web platform - restore not supported');
     return {
       success: false,
-      error: new Error('Restore not available on web'),
+      error: new Error('Restore not available on web') as any,
     };
   }
 

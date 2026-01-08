@@ -220,9 +220,9 @@ export const JournalEntryService = {
     if (entry.mood !== undefined) updateData.mood = entry.mood;
     if (entry.images !== undefined) updateData.images = entry.images;
 
-    // @ts-ignore - Supabase types not yet regenerated with encryption columns
     const { data, error } = await supabase
       .from('journal_entries')
+      // @ts-expect-error - Supabase types not regenerated
       .update(updateData as any)
       .eq('id', id)
       .select()
@@ -273,9 +273,9 @@ export const JournalEntryService = {
     // Encrypt the existing content
     const encrypted = await JournalEncryptionService.encrypt(row.content);
 
-    // @ts-ignore - Supabase types not yet regenerated with encryption columns
     await supabase
       .from('journal_entries')
+      // @ts-expect-error - Supabase types not regenerated
       .update({
         encrypted_content: encrypted.ciphertext,
         encryption_iv: encrypted.iv,

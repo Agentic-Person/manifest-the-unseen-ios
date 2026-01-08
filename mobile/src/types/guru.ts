@@ -111,6 +111,20 @@ export interface CompletedPhase {
 export type GuruState = 'locked' | 'selecting' | 'loading' | 'conversation';
 
 /**
+ * Line timing entry from Whisper transcription
+ */
+export interface PrayerLineTiming {
+  /** Zero-based line index */
+  line: number;
+  /** The text of this line */
+  text: string;
+  /** Start time in milliseconds */
+  startMs: number;
+  /** End time in milliseconds */
+  endMs: number;
+}
+
+/**
  * Prayer type (mirrors meditation structure)
  */
 export interface Prayer {
@@ -126,6 +140,8 @@ export interface Prayer {
   tags: string[];
   order_index: number;
   created_at: string;
+  /** Pre-generated line timings from Whisper transcription. When present, used for accurate text sync. */
+  line_timings: PrayerLineTiming[] | null;
 }
 
 /**

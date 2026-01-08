@@ -286,6 +286,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
             if (user) {
               await supabase
                 .from('users')
+                // @ts-expect-error - Supabase types not regenerated
                 .update({
                   subscription_tier: newTier,
                   subscription_status: 'active',
@@ -337,6 +338,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           if (user) {
             await supabase
               .from('users')
+              // @ts-expect-error - Supabase types not regenerated
               .update({
                 subscription_tier: newTier,
                 subscription_status: 'active',

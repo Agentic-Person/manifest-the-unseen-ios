@@ -28,7 +28,8 @@ const extractFontSize = (style: StyleProp<TextStyle>): number | undefined => {
   // Handle array of styles
   if (Array.isArray(style)) {
     for (let i = style.length - 1; i >= 0; i--) {
-      const fontSize = extractFontSize(style[i]);
+      // Cast to StyleProp<TextStyle> to handle readonly arrays
+      const fontSize = extractFontSize(style[i] as StyleProp<TextStyle>);
       if (fontSize !== undefined) return fontSize;
     }
     return undefined;

@@ -57,15 +57,14 @@ export function GuruScreen() {
   } = useGuru();
 
   // Get effective access (combines trial + subscription)
-  const { effectiveTier, isTrialUser, hasGuruAnalysis } = useEffectiveAccess();
+  const { effectiveTier: _effectiveTier, isTrialUser, hasGuruAnalysis: _hasGuruAnalysis } = useEffectiveAccess();
 
   // Rate limiting for trial users only
   const { canMakeRequest, incrementUsage, getResetTime, loadUsage } = useGuruRateLimit();
   const [showRateLimitModal, setShowRateLimitModal] = useState(false);
 
   // Rate limit only applies to trial users, paid Awakening+ users have unlimited
-  const shouldRateLimit = isTrialUser;
-  const hasUnlimitedGuru = !isTrialUser && (effectiveTier === 'awakening' || effectiveTier === 'enlightenment');
+  const shouldRateLimit = isTrialUser;
 
   // Load rate limit usage on mount
   useEffect(() => {

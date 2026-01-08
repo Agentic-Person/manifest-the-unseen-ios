@@ -6,9 +6,38 @@
  */
 
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import type { SettingsState } from '../types/store';
+
+/**
+ * Storage adapter that works on both web (localStorage) and native (AsyncStorage)
+ */
+const getStorage = (): StateStorage => {
+  if (Platform.OS === 'web') {
+    return {
+      getItem: (name: string) => {
+        try {
+          return localStorage.getItem(name) ?? null;
+        } catch {
+          return null;
+        }
+      },
+      setItem: (name: string, value: string) => {
+        try {
+          localStorage.setItem(name, value);
+        } catch {}
+      },
+      removeItem: (name: string) => {
+        try {
+          localStorage.removeItem(name);
+        } catch {}
+      },
+    };
+  }
+  return AsyncStorage;
+};
 
 /**
  * Default Settings
@@ -27,6 +56,7 @@ const defaultSettings: Omit<
   | 'setReducedMotion'
   | 'setAnalytics'
   | 'setCrashReporting'
+  | 'setSpokenPrayer'
   | 'loadSettings'
   | 'saveSettings'
   | 'reset'
@@ -90,7 +120,7 @@ const defaultSettings: Omit<
  */
 export const useSettingsStore = create<SettingsState>()(
   persist(
-    (set, _get) => ({
+    (set, get) => ({
       ...defaultSettings,
 
       /**
@@ -223,7 +253,7 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: 'manifest-settings-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => getStorage()),
     }
   )
 );
