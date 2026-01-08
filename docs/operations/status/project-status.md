@@ -1,10 +1,79 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-07 (TestFlight Subscription Fixes)
+**Last Updated**: 2026-01-08 (Prayer Sync & Web Platform Fixes)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **PRE-BUILD FIXES** - TestFlight subscription system fixes complete
+**Status**: 🟢 **PRAYER FEATURE FIXES** - Web platform and prayer synchronization fixes complete
+
+---
+
+## 🔧 PRAYER SYNC & WEB PLATFORM FIXES - January 8, 2026
+
+### Issues Fixed
+
+| Issue | Root Cause | Fix Applied | Status |
+|-------|------------|-------------|--------|
+| **Web Platform Hanging** | Supabase JS client deadlocking on web | Replaced client queries with direct fetch() to PostgREST API | ✅ Fixed |
+| **Prayer Player 406/409 Errors** | Using prayer ID to query meditations table | Skip useMeditation() and session tracking for prayers | ✅ Fixed |
+| **Text Sync Timing Off** | Audio has 5s intro not in Whisper timestamps | Added AUDIO_OFFSET_MS constant (5000ms) | ✅ Fixed |
+| **Wrong Text Displayed** | line_timings.text used instead of content | Changed to use content field for display, line_timings for timing only | ✅ Fixed |
+| **Flickering Animation** | Fade-out-then-fade-in sequence | Changed to subtle 70%→100% opacity pulse | ✅ Fixed |
+| **Communion Prayer Wrong Data** | Database had wrong title and content | SQL migration to fix title and content | ✅ Fixed |
+
+### Changes Made
+
+**File: `mobile/src/services/meditationService.ts`**
+- `getMeditations()`: Now uses direct fetch() instead of Supabase client
+- `getMeditationById()`: Now uses direct fetch() with proper headers
+- Bypasses Supabase client auth deadlock on web platform
+
+**File: `mobile/src/services/prayerService.ts`**
+- `getPrayersWithAudio()`: Now uses direct fetch() instead of Supabase client
+- `getPrayerById()`: Now uses direct fetch() with proper headers
+- Same fix as meditation service for web platform
+
+**File: `mobile/src/screens/meditation/MeditationPlayerScreen.tsx`**
+- Skip `useMeditation()` fetch when playing prayers (prayer IDs don't exist in meditations table)
+- Skip session tracking for prayers (no meditation_sessions records for prayers)
+- Use `prayerData.content` for text display (matches line_timings source)
+
+**File: `mobile/src/hooks/usePrayerTiming.ts`**
+- Added `AUDIO_OFFSET_MS = 5000` to compensate for audio intro/silence
+- Changed to use `content` field for display text (source of truth)
+- Use `line_timings` only for timing data (startMs/endMs)
+- Offset applied to both Whisper-based and calculated timing modes
+- Added fallback to calculated timing when line counts don't match
+
+**File: `mobile/src/components/prayer/PrayerTextDisplay.tsx`**
+- Fixed flickering animation when lines change
+- Old: Fade to 0, then fade to 1 (caused flicker)
+- New: Start at 70% opacity, fade to 100% (smooth pulse)
+
+**Database Migration: `20260108_fix_communion_prayer_content.sql`**
+- Updated "Communion with the Divine" prayer with correct content
+- Fixed title from "The Presence Within" to "Communion with the Divine"
+
+### Commits
+```
+511ec8a fix: bypass Supabase client hanging on web with direct fetch
+06a931d fix: prayer playback - skip meditation queries and session tracking
+0e84b91 fix: prayer text synchronization with audio
+712c608 fix: prayer text display flickering animation
+72ec074 chore: add debug logging to meditation hooks and screen
+2a41686 db: fix Communion with the Divine prayer title and content
+```
+
+### Technical Details
+
+**Why Supabase Client Hangs on Web:**
+The Supabase JS client has internal auth/session management that can deadlock on web platform. Despite having a `noopLock` workaround, queries would start but never complete - no network requests were made. Direct `fetch()` to the PostgREST API bypasses this entirely.
+
+**Prayer Text Sync Architecture:**
+1. `content` field = source of truth for display text
+2. `line_timings` = timing data only (startMs/endMs from Whisper)
+3. If line counts don't match, fall back to calculated timing
+4. AUDIO_OFFSET_MS compensates for audio intro not in original transcription
 
 ---
 
@@ -416,17 +485,27 @@ e7b8441 fix: Build 37 - proper trial tracking system
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: January 8, 2026 - Prayer Sync & Web Platform Fixes
+- **Duration**: ~3 hours
+- **What Was Done**: Fixed web platform hanging, prayer text synchronization, and database content
+- **Status**: ✅ **COMPLETE** - All 6 issues fixed
+- **Issues Fixed**:
+  - Web platform Supabase client hanging → Direct fetch() to PostgREST API
+  - Prayer player 406/409 errors → Skip meditation queries for prayers
+  - Text sync timing off by ~5 seconds → Added AUDIO_OFFSET_MS constant
+  - Wrong text displayed → Use content field instead of line_timings.text
+  - Flickering animation → Smooth 70%→100% opacity pulse
+  - Communion prayer wrong data → SQL migration to fix title/content
+- **Files Modified**:
+  - `meditationService.ts`, `prayerService.ts`, `MeditationPlayerScreen.tsx`
+  - `usePrayerTiming.ts`, `PrayerTextDisplay.tsx`, `useMeditation.ts`, `MeditateScreen.tsx`
+- **Commits**: `511ec8a`, `06a931d`, `0e84b91`, `712c608`, `72ec074`, `2a41686`
+
+### Previous Activity
 - **Date**: January 7, 2026 - TestFlight Subscription System Fixes
 - **Duration**: ~2 hours
 - **What Was Done**: Fixed all TestFlight subscription issues found during Build 41 testing
 - **Status**: ✅ **COMPLETE** - All 4 issues fixed, ready for new build
-- **Issues Fixed**:
-  - Buttons not clickable on higher tiers → Mock offerings for TestFlight
-  - UI not updating after purchase → Direct state update + simulated purchase
-  - Trial/Tier confusion in Profile → Enhanced status labels with trial days
-  - Can't test purchase flow → Test Mode toggle in debug panel
-- **Files Modified**:
-  - `subscriptionService.ts`, `subscriptionStore.ts`, `PaywallScreen.tsx`, `useSubscription.ts`
 
 ### Previous Activity
 - **Date**: January 7, 2026 - Synchronized Prayer Text Display Feature
@@ -847,6 +926,22 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2026-01-08 - Prayer Sync & Web Platform Fixes
+**Duration**: ~3 hours | **Status**: ✅ Complete
+- **FIXED**: Web platform Supabase client hanging (direct fetch to PostgREST)
+- **FIXED**: Prayer player 406/409 errors (skip meditation queries for prayers)
+- **FIXED**: Text sync timing off by ~5 seconds (AUDIO_OFFSET_MS constant)
+- **FIXED**: Wrong text displayed (use content field, not line_timings.text)
+- **FIXED**: Flickering animation (smooth 70%→100% opacity pulse)
+- **FIXED**: Communion prayer wrong data (SQL migration)
+- **Files Modified**:
+  - `mobile/src/services/meditationService.ts` - Direct fetch instead of Supabase client
+  - `mobile/src/services/prayerService.ts` - Direct fetch instead of Supabase client
+  - `mobile/src/screens/meditation/MeditationPlayerScreen.tsx` - Skip meditation fetch/sessions for prayers
+  - `mobile/src/hooks/usePrayerTiming.ts` - Audio offset, use content for display
+  - `mobile/src/components/prayer/PrayerTextDisplay.tsx` - Fixed flickering
+- **Commits**: `511ec8a`, `06a931d`, `0e84b91`, `712c608`, `72ec074`, `2a41686`
+
 ### 2026-01-07 (PM) - TestFlight Subscription System Fixes
 **Duration**: ~2 hours | **Status**: ✅ Complete
 - **FIXED**: Buttons not clickable on higher tiers (mock offerings for TestFlight)
@@ -1013,6 +1108,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (TestFlight Subscription System Fixes)
-**Session Date**: January 7, 2026
-**Document Version**: 2.12.0
+**Last Updated by**: Claude Code (Prayer Sync & Web Platform Fixes)
+**Session Date**: January 8, 2026
+**Document Version**: 2.13.0
