@@ -30,29 +30,85 @@ export async function getPrayers(): Promise<Prayer[]> {
  * Only returns prayers with audio_url set
  */
 export async function getPrayersWithAudio(): Promise<Prayer[]> {
-  const { data, error } = await supabase
-    .from('prayers')
-    .select('*')
-    .not('audio_url', 'is', null)
-    .order('order_index', { ascending: true });
+  console.log('[getPrayersWithAudio] Starting query...');
 
-  if (error) throw error;
-  return (data as Prayer[]) || [];
+  // Use direct fetch to bypass Supabase client hanging issue on web
+  const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+  const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+
+  const url = `${SUPABASE_URL}/rest/v1/prayers?select=*&audio_url=not.is.null&order=order_index.asc`;
+
+  console.log('[getPrayersWithAudio] Fetching via direct fetch...');
+  const startTime = Date.now();
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log('[getPrayersWithAudio] Fetch response status:', response.status);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('[getPrayersWithAudio] Query complete in', Date.now() - startTime, 'ms', { dataCount: data?.length });
+
+    return (data as Prayer[]) || [];
+  } catch (err) {
+    console.error('[getPrayersWithAudio] Query failed after', Date.now() - startTime, 'ms', err);
+    throw err;
+  }
 }
 
 /**
  * Get a single prayer by ID
  */
 export async function getPrayerById(id: string): Promise<Prayer | null> {
-  const { data, error } = await supabase
-    .from('prayers')
-    .select('*')
-    .eq('id', id)
-    .single();
+  if (!id) return null;
 
-  // PGRST116 = no rows returned
-  if (error && error.code !== 'PGRST116') throw error;
-  return data as Prayer | null;
+  console.log('[getPrayerById] Fetching prayer:', id);
+
+  // Use direct fetch to bypass Supabase client hanging issue on web
+  const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+  const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+
+  const url = `${SUPABASE_URL}/rest/v1/prayers?select=*&id=eq.${id}`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.pgrst.object+json', // Return single object instead of array
+      },
+    });
+
+    console.log('[getPrayerById] Fetch response status:', response.status);
+
+    // 406 means no rows found with Accept: application/vnd.pgrst.object+json
+    if (response.status === 406) {
+      return null;
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('[getPrayerById] Found prayer:', data?.title);
+
+    return data as Prayer | null;
+  } catch (err) {
+    console.error('[getPrayerById] Query failed:', err);
+    throw err;
+  }
 }
 
 /**
