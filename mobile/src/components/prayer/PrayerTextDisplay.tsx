@@ -18,6 +18,7 @@ import {
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
 import { useCurrentPrayerLine } from '../../hooks/usePrayerTiming';
+import type { PrayerLineTiming } from '../../types/guru';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -30,6 +31,8 @@ interface PrayerTextDisplayProps {
   currentPositionMs: number;
   /** Whether audio is currently playing */
   isPlaying: boolean;
+  /** Pre-generated line timings from Whisper (for accurate sync) */
+  lineTimings?: PrayerLineTiming[] | null;
 }
 
 /**
@@ -43,41 +46,43 @@ export function PrayerTextDisplay({
   audioDurationMs,
   currentPositionMs,
   isPlaying,
+  lineTimings,
 }: PrayerTextDisplayProps): React.JSX.Element {
   // Get current line based on playback position
+  // Uses Whisper-generated timestamps when available for accurate sync
   const { currentLine, totalLines, currentIndex } = useCurrentPrayerLine(
     prayerContent,
     audioDurationMs,
-    currentPositionMs
+    currentPositionMs,
+    lineTimings
   );
 
-  // Animation values
+  // Animation values - use two animated values for cross-fade effect
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const prevLineIndexRef = useRef<number>(-1);
+  const prevTextRef = useRef<string>('');
 
-  // Animate fade when line changes
+  // Smooth pulse animation when line changes (no flicker)
   useEffect(() => {
     const lineIndex = currentLine?.index ?? -1;
 
     // Only animate if the line actually changed
     if (lineIndex !== prevLineIndexRef.current && lineIndex >= 0) {
-      // Fade out, then fade in with new content
-      Animated.sequence([
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      // Store previous text for potential cross-fade
+      prevTextRef.current = currentLine?.text || '';
+
+      // Simple fade-in from slightly dim to full brightness
+      // This avoids the flicker of fade-out-then-in
+      fadeAnim.setValue(0.7);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
 
       prevLineIndexRef.current = lineIndex;
     }
-  }, [currentLine?.index, fadeAnim]);
+  }, [currentLine?.index, currentLine?.text, fadeAnim]);
 
   // Render progress dots
   const renderProgressDots = () => {
