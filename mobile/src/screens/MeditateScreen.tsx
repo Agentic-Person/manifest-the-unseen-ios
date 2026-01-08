@@ -115,6 +115,8 @@ const getMeditationImage = (
  * Meditate Screen Component
  */
 const MeditateScreen = () => {
+  console.log('[MeditateScreen] Rendering...');
+
   const navigation = useNavigation<MeditateNavProp>();
   const [activeTab, setActiveTab] = useState<TabType>('guided');
   const [refreshing, setRefreshing] = useState(false);
@@ -124,7 +126,7 @@ const MeditateScreen = () => {
   const preferredNarrator = useSettingsStore((state) => state.preferredNarrator);
 
   // Subscription access (combines trial + subscription)
-  const { effectiveTier, isTrialUser, maxMeditations } = useEffectiveAccess();
+  const { effectiveTier, isTrialUser, maxMeditations: _maxMeditations } = useEffectiveAccess();
 
   // Fetch data for each tab
   const {
@@ -154,6 +156,15 @@ const MeditateScreen = () => {
 
   // User stats
   const { data: stats } = useMeditationStats();
+
+  console.log('[MeditateScreen] Hooks called', {
+    isLoadingGuided,
+    isLoadingBreathing,
+    isLoadingMusic,
+    isLoadingPrayers,
+    guidedCount: guidedMeditations?.length,
+    prayersCount: prayers?.length,
+  });
 
   /**
    * Handle refresh

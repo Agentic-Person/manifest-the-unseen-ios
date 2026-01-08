@@ -100,7 +100,17 @@ export function useMeditation(id: string) {
 export function useGuidedMeditations(narrator?: NarratorGender) {
   return useQuery({
     queryKey: meditationKeys.list('guided', narrator),
-    queryFn: () => getGuidedMeditations(narrator),
+    queryFn: async () => {
+      console.log('[useGuidedMeditations] Fetching guided meditations...', { narrator });
+      try {
+        const result = await getGuidedMeditations(narrator);
+        console.log('[useGuidedMeditations] Fetched:', result?.length, 'meditations');
+        return result;
+      } catch (error) {
+        console.error('[useGuidedMeditations] Error:', error);
+        throw error;
+      }
+    },
     staleTime: 1000 * 60 * 30,
   });
 }
