@@ -26,7 +26,6 @@
       "cache": {
         "key": "splash-rebuild-v1"
       },
-      "autoSubmit": true,
       "ios": {
         "resourceClass": "default"
       },
