@@ -1,10 +1,44 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-08 (Prayer Sync & Web Platform Fixes)
+**Last Updated**: 2026-01-08 (Subscription Pricing Updates)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **PRAYER FEATURE FIXES** - Web platform and prayer synchronization fixes complete
+**Status**: 🟢 **SUBSCRIPTION PRICING UPDATED** - App Store Connect and landing page prices updated
+
+---
+
+## 💰 SUBSCRIPTION PRICING UPDATES - January 8, 2026
+
+### Summary
+Updated subscription prices across App Store Connect and the landing page to align with new pricing strategy.
+
+### App Store Connect Changes
+
+| Tier | Old Monthly | New Monthly | Old Yearly | New Yearly |
+|------|-------------|-------------|------------|------------|
+| **Novice** | $7.99 | $4.99 | $59.99 | $49.99 |
+| **Awakening** | $12.99 | $11.99 | $99.99 | $129.99 |
+| **Enlightenment** | $49.99 | $49.99 (unchanged) | $499.99 | $499.99 (unchanged)* |
+
+*Note: User requested $498.99/yr but this is not a valid Apple price point. Kept at $499.99.
+
+### Landing Page Changes
+
+**File: `web/components/Pricing.tsx`**
+- Seeker (Novice): $7.99 → $4.99/mo, $79.99 → $49.99/yr
+- Awakening: $19.99 → $11.99/mo, $199.99 → $129.99/yr
+- Enlightenment: Already at $49.99/mo, $499.99/yr (no change needed)
+
+### Commits
+```
+e1d7e83 fix: update landing page prices to match App Store Connect
+```
+
+### Notes
+- RevenueCat automatically syncs with App Store Connect - no manual changes needed
+- Prices recalculated for all 175 countries/regions in App Store Connect
+- 50% promo code (EARLY50) still applies on top of new prices
 
 ---
 
