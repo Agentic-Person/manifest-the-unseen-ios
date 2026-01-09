@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
 import Constants from 'expo-constants';
 import type { ProfileStackScreenProps } from '../types/navigation';
 import { useUser, useProfile, useSignOut } from '../stores/authStore';
@@ -53,9 +53,12 @@ const ProfileScreen = ({ navigation }: Props) => {
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Unable to load profile</Text>
-        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+        <Pressable
+          style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutButtonPressed]}
+          onPress={handleSignOut}
+        >
           <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   }
@@ -93,12 +96,12 @@ const ProfileScreen = ({ navigation }: Props) => {
                 {statusLabel}
               </Text>
             </View>
-            <TouchableOpacity
-              style={styles.upgradeButton}
+            <Pressable
+              style={({ pressed }) => [styles.upgradeButton, pressed && styles.upgradeButtonPressed]}
               onPress={() => navigation.navigate('Paywall')}
             >
               <Text style={styles.upgradeButtonText}>Manage</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       )}
@@ -107,67 +110,67 @@ const ProfileScreen = ({ navigation }: Props) => {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Settings</Text>
 
-        <TouchableOpacity
-          style={styles.option}
+        <Pressable
+          style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
           onPress={() => navigation.navigate('AccountSettings')}
         >
           <Text style={styles.optionText}>Account Settings</Text>
           <Text style={styles.optionArrow}>›</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
-          style={styles.option}
+        <Pressable
+          style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
           onPress={() => navigation.navigate('Notifications')}
         >
           <Text style={styles.optionText}>Notifications</Text>
           <Text style={styles.optionArrow}>›</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
-          style={styles.option}
+        <Pressable
+          style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
           onPress={() => navigation.navigate('Appearance')}
         >
           <Text style={styles.optionText}>Appearance</Text>
           <Text style={styles.optionArrow}>›</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
-          style={styles.option}
+        <Pressable
+          style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
           onPress={() => navigation.navigate('PrivacySecurity')}
         >
           <Text style={styles.optionText}>Privacy & Security</Text>
           <Text style={styles.optionArrow}>›</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Support Options */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Support</Text>
 
-        <TouchableOpacity
-          style={styles.option}
+        <Pressable
+          style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
           onPress={() => navigation.navigate('HelpCenter')}
         >
           <Text style={styles.optionText}>Help Center</Text>
           <Text style={styles.optionArrow}>›</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
-          style={styles.option}
+        <Pressable
+          style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
           onPress={() => navigation.navigate('About')}
         >
           <Text style={styles.optionText}>About</Text>
           <Text style={styles.optionArrow}>›</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Sign Out Button */}
-      <TouchableOpacity
-        style={styles.signOutButton}
+      <Pressable
+        style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutButtonPressed]}
         onPress={handleSignOut}
       >
         <Text style={styles.signOutText}>Sign Out</Text>
-      </TouchableOpacity>
+      </Pressable>
 
       {/* Version Info */}
       <Text style={styles.versionText}>Version {appVersion} ({buildNumber})</Text>
@@ -256,8 +259,11 @@ const styles = StyleSheet.create({
   upgradeButton: {
     backgroundColor: colors.primary[500],
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 8,
+  },
+  upgradeButtonPressed: {
+    opacity: 0.8,
   },
   upgradeButtonText: {
     fontSize: 14,
@@ -268,9 +274,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
+  },
+  optionPressed: {
+    opacity: 0.7,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   optionText: {
     fontSize: 16,
@@ -287,6 +297,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
     marginBottom: 16,
+  },
+  signOutButtonPressed: {
+    opacity: 0.8,
   },
   signOutText: {
     fontSize: 16,
