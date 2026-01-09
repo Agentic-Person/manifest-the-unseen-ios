@@ -27,7 +27,8 @@
         "key": "splash-rebuild-v1"
       },
       "ios": {
-        "resourceClass": "default"
+        "resourceClass": "default",
+        "autoSubmit": true
       },
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://zbyszxtwzoylyygtexdr.supabase.co",
@@ -76,6 +77,11 @@
   },
   "submit": {
     "production": {
+      "ios": {
+        "ascAppId": "6756403109"
+      }
+    },
+    "testflight": {
       "ios": {
         "ascAppId": "6756403109"
       }
