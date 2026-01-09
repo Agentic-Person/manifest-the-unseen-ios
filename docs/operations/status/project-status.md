@@ -1,10 +1,44 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-08 (App Store IAP Submission + Profile Tab Fix)
+**Last Updated**: 2026-01-08 (Build 43 Released to TestFlight)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
 **Status**: 🟢 **APP RESUBMITTED TO APP STORE** - IAPs included, Profile tab bug fixed
+
+---
+
+## 📱 BUILD 43 RELEASED TO TESTFLIGHT - January 8, 2026 (Late Evening)
+
+### Build Details
+| Item | Value |
+|------|-------|
+| **Build Number** | 43 |
+| **Version** | 1.0.0 |
+| **Profile** | testflight (full access bypass) |
+| **Submitted** | January 8, 2026 ~11:20 PM |
+| **Build ID** | `4936f7ea-4742-435e-a068-df2f6c2efe70` |
+| **EAS Link** | https://expo.dev/accounts/agentic-personnel/projects/manifest-the-unseen/builds/4936f7ea-4742-435e-a068-df2f6c2efe70 |
+
+### What's New in Build 43
+
+**Profile Tab iPad Fix:**
+- ✅ Added missing `tabBarIcon` to Profile tab (person/person-outline icon)
+- Root cause: Profile tab was the only tab without an icon, causing touch detection issues on iPad
+- File modified: `mobile/src/navigation/MainTabNavigator.tsx`
+
+**PaywallScreen Dynamic Pricing:**
+- ✅ Tier tabs now show dynamic prices from RevenueCat instead of hardcoded values
+
+**Config Fix:**
+- ✅ Added auto-submit for `testflight` profile in eas.json (was missing, causing manual submit needed)
+
+### Commits
+```
+b70a05f config: add auto-submit for testflight profile
+7efb33e build: increment iOS build number to 43 (Profile tab icon fix)
+0063711 fix: add Profile tab icon for iPad compatibility + IAP submission
+```
 
 ---
 
@@ -666,6 +700,20 @@ e3412bd fix: TypeScript errors and prayer timestamp tooling
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: January 8, 2026 (Late Evening) - Build 43 Released to TestFlight
+- **Duration**: ~30 minutes
+- **What Was Done**:
+  1. Built and submitted Build 43 to TestFlight with Profile tab icon fix
+  2. Added auto-submit config for testflight profile (was missing)
+- **Status**: ✅ **COMPLETE** - Build 43 submitted to TestFlight
+- **Build Details**:
+  - Build Number: 43
+  - Profile: testflight (full access bypass)
+  - Build ID: `4936f7ea-4742-435e-a068-df2f6c2efe70`
+- **Commits**: `b70a05f`, `7efb33e`, `0063711`
+- **Notes**: EAS build credits at 93% for the month
+
+### Previous Activity
 - **Date**: January 8, 2026 (Evening) - App Store IAP Submission + Profile Tab Fix
 - **Duration**: ~1 hour
 - **What Was Done**:
@@ -1134,6 +1182,14 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2026-01-08 (Late Evening) - Build 43 Released to TestFlight
+**Duration**: ~30 min | **Status**: ✅ Complete
+- **BUILD**: Compiled and submitted Build 43 to TestFlight
+- **Profile Tab Fix**: Added person icon to Profile tab for iPad compatibility
+- **Config Fix**: Added auto-submit for testflight profile in eas.json
+- **Build ID**: `4936f7ea-4742-435e-a068-df2f6c2efe70`
+- **Commits**: `b70a05f`, `7efb33e`, `0063711`
+
 ### 2026-01-08 (Evening) - App Store IAP Submission + Profile Tab Fix
 **Duration**: ~1 hour | **Status**: ✅ Complete
 - **IAP SUBMISSION**: Fixed and resubmitted all 6 subscriptions with app version via App Store Connect
@@ -1337,6 +1393,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (App Store IAP Submission + Profile Tab Fix)
+**Last Updated by**: Claude Code (Build 43 Released to TestFlight)
 **Session Date**: January 8, 2026
-**Document Version**: 2.14.0
+**Document Version**: 2.15.0
