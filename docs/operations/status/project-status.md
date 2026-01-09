@@ -1,10 +1,50 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-08 (Build 43 Released to TestFlight)
+**Last Updated**: 2026-01-09 (Build 44 Production Build for App Store)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **APP RESUBMITTED TO APP STORE** - IAPs included, Profile tab bug fixed
+**Status**: 🟢 **BUILD 44 READY FOR APP STORE** - Production build with all fixes included
+
+---
+
+## 📱 BUILD 44 PRODUCTION BUILD - January 9, 2026
+
+### Build Details
+| Item | Value |
+|------|-------|
+| **Build Number** | 44 |
+| **Version** | 1.0.0 |
+| **Profile** | production (App Store submission) |
+| **Built** | January 9, 2026 |
+| **Build ID** | `c46f0d53-1ef5-469a-9788-34c0041d8cec` |
+| **EAS Link** | https://expo.dev/accounts/agentic-personnel/projects/manifest-the-unseen/builds/c46f0d53-1ef5-469a-9788-34c0041d8cec |
+
+### What's Included in Build 44
+
+**This is a production build for App Store submission**, replacing the old Build 29. It includes:
+
+- ✅ **Profile Tab iPad Fix** - Added `tabBarIcon` to Profile tab (person icon)
+- ✅ **All IAP Configuration** - RevenueCat subscription integration
+- ✅ **All Latest Code** - Everything from Build 43 and earlier
+- ✅ **Production Environment** - TESTFLIGHT_FULL_ACCESS=false, proper subscription gating
+
+### Why Build 44?
+
+Previously submitted Build 29 to App Store, but that was an old build missing the Profile tab icon fix. Build 44 is a fresh production build with all fixes included.
+
+### Commits
+```
+850fbde fix: remove invalid autoSubmit from eas.json build config
+12ef778 fix: move autoSubmit to correct location in eas.json
+d3dc1bc build: increment iOS build number to 44 (production submission)
+```
+
+### Next Steps
+1. Wait for Build 44 to appear in App Store Connect (~15-20 min)
+2. Create new app submission using Build 44
+3. Include all 6 IAPs in the submission
+4. Submit for Apple review
 
 ---
 
@@ -539,18 +579,18 @@ Uploaded to Supabase Storage (`meditation-audio/prayers/`):
 
 ---
 
-## 🎉 MILESTONE: App Store Resubmission Complete!
+## 🎉 MILESTONE: Build 44 Ready for App Store!
 
 | Item | Value |
 |------|-------|
 | **Version** | 1.0.0 |
-| **Build (App Store)** | 29 (production profile) |
-| **Build (TestFlight)** | 42 (testflight profile - Jan 8, Prayer sync + subscription fixes) |
-| **Build (Latest)** | 42 (testflight - Jan 8, 2026) |
+| **Build (App Store)** | 44 (production profile - Jan 9, all fixes included) |
+| **Build (TestFlight)** | 43 (testflight profile - Jan 8, Profile tab icon fix) |
+| **Build (Latest)** | 44 (production - Jan 9, 2026) |
 | **Git Tag** | `v1.0.0-beta.13` |
-| **App Store Status** | 🟡 Waiting for Review |
-| **Submission Date** | December 25, 2025 12:35 PM |
-| **Submission ID** | 2115db35-9f20-4543-84eb-40979f7a6eb4 |
+| **App Store Status** | 🟡 Build 44 Ready - Needs Submission |
+| **Build Date** | January 9, 2026 |
+| **Build ID** | c46f0d53-1ef5-469a-9788-34c0041d8cec |
 
 ### Previous Rejection (Build 13 - Dec 15, 2025)
 - **Guideline 2.1 - Performance - App Completeness**
@@ -700,6 +740,22 @@ e3412bd fix: TypeScript errors and prayer timestamp tooling
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: January 9, 2026 - Build 44 Production Build for App Store
+- **Duration**: ~15 minutes
+- **What Was Done**:
+  1. Recognized that submitting old Build 29 was incorrect (missing Profile tab fix)
+  2. Incremented build number to 44
+  3. Fixed eas.json autoSubmit configuration error
+  4. Built fresh production build with all fixes included
+- **Status**: ✅ **COMPLETE** - Build 44 ready for App Store submission
+- **Build Details**:
+  - Build Number: 44
+  - Profile: production (App Store submission)
+  - Build ID: `c46f0d53-1ef5-469a-9788-34c0041d8cec`
+- **Commits**: `850fbde`, `12ef778`, `d3dc1bc`
+- **Notes**: EAS build credits at 97% for the month
+
+### Previous Activity
 - **Date**: January 8, 2026 (Late Evening) - Build 43 Released to TestFlight
 - **Duration**: ~30 minutes
 - **What Was Done**:
@@ -711,7 +767,7 @@ e3412bd fix: TypeScript errors and prayer timestamp tooling
   - Profile: testflight (full access bypass)
   - Build ID: `4936f7ea-4742-435e-a068-df2f6c2efe70`
 - **Commits**: `b70a05f`, `7efb33e`, `0063711`
-- **Notes**: EAS build credits at 93% for the month
+- **Notes**: Profile tab icon fix verified working on TestFlight
 
 ### Previous Activity
 - **Date**: January 8, 2026 (Evening) - App Store IAP Submission + Profile Tab Fix
@@ -1182,6 +1238,16 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 
 *For full implementation details, see `MTU-project-status-archive.md`*
 
+### 2026-01-09 - Build 44 Production Build for App Store
+**Duration**: ~15 min | **Status**: ✅ Complete
+- **BUILD**: Fresh production build (Build 44) for App Store submission
+- **FIX**: Previously submitted old Build 29 which was missing Profile tab icon fix
+- **INCLUDES**: All fixes from Build 43 - Profile tab icon, IAP configuration, all latest code
+- **CONFIG FIX**: Removed invalid `autoSubmit` from eas.json build config
+- **Build ID**: `c46f0d53-1ef5-469a-9788-34c0041d8cec`
+- **Commits**: `850fbde`, `12ef778`, `d3dc1bc`
+- **Notes**: EAS build credits at 97% for the month
+
 ### 2026-01-08 (Late Evening) - Build 43 Released to TestFlight
 **Duration**: ~30 min | **Status**: ✅ Complete
 - **BUILD**: Compiled and submitted Build 43 to TestFlight
@@ -1393,6 +1459,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Build 43 Released to TestFlight)
-**Session Date**: January 8, 2026
-**Document Version**: 2.15.0
+**Last Updated by**: Claude Code (Build 44 Production Build for App Store)
+**Session Date**: January 9, 2026
+**Document Version**: 2.16.0
