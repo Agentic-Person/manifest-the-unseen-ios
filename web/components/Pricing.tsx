@@ -17,8 +17,8 @@ const tiers = [
   {
     name: 'Seeker',
     tagline: 'Begin your journey',
-    monthlyPrice: 7.99,
-    yearlyPrice: 79.99,
+    monthlyPrice: 4.99,
+    yearlyPrice: 49.99,
     features: [
       'All 10 workbook phases',
       'Progress tracking',
@@ -29,8 +29,8 @@ const tiers = [
   {
     name: 'Awakening',
     tagline: 'Deepen your practice',
-    monthlyPrice: 19.99,
-    yearlyPrice: 199.99,
+    monthlyPrice: 11.99,
+    yearlyPrice: 129.99,
     features: [
       'Everything in Seeker',
       '6+ guided meditations',
