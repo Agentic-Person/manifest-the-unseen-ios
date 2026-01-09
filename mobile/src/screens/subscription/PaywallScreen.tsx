@@ -2,11 +2,12 @@
  * Paywall Screen
  *
  * Beautiful subscription paywall with pricing display and purchase flow.
+ * Prices are fetched dynamically from RevenueCat/App Store Connect.
  *
  * Three-tier subscription model:
- * - Novice: $7.99/mo - Workbook, progress, music meditations
- * - Awakening: $19.99/mo - + Guided meditations, Guru workbook analysis, Analytics
- * - Enlightenment: $49.99/mo - + Coming Soon features (journaling, full AI chat)
+ * - Novice: Workbook, progress, music meditations
+ * - Awakening: + Guided meditations, Guru workbook analysis, Analytics
+ * - Enlightenment: + Coming Soon features (journaling, full AI chat)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -688,7 +689,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
               <Text style={[styles.tierTabText, selectedTier === 'novice' && styles.tierTabTextSelected]}>
                 Novice
               </Text>
-              <Text style={styles.tierTabPrice}>$7.99/mo</Text>
+              <Text style={styles.tierTabPrice}>{offerings.novice_monthly?.pricePerMonth || '...'}</Text>
             </Pressable>
             <Pressable
               style={[styles.tierTab, selectedTier === 'awakening' && styles.tierTabSelected, styles.tierTabPopular]}
@@ -700,7 +701,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
               <Text style={[styles.tierTabText, selectedTier === 'awakening' && styles.tierTabTextSelected]}>
                 Awakening
               </Text>
-              <Text style={styles.tierTabPrice}>$19.99/mo</Text>
+              <Text style={styles.tierTabPrice}>{offerings.awakening_monthly?.pricePerMonth || '...'}</Text>
             </Pressable>
             <Pressable
               style={[styles.tierTab, selectedTier === 'enlightenment' && styles.tierTabSelected]}
@@ -709,7 +710,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
               <Text style={[styles.tierTabText, selectedTier === 'enlightenment' && styles.tierTabTextSelected]}>
                 Enlightenment
               </Text>
-              <Text style={styles.tierTabPrice}>$49.99/mo</Text>
+              <Text style={styles.tierTabPrice}>{offerings.enlightenment_monthly?.pricePerMonth || '...'}</Text>
             </Pressable>
           </View>
 

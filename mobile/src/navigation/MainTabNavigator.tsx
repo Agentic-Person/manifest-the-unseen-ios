@@ -9,6 +9,7 @@ import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import type { MainTabParamList } from '../types/navigation';
 import { colors } from '../theme';
 import { BackgroundImages } from '../assets';
@@ -166,6 +167,13 @@ export const MainTabNavigator = () => {
           title: 'Profile',
           tabBarLabel: 'Profile',
           headerShown: false, // ProfileNavigator handles its own headers
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              size={24}
+              color={focused ? colors.primary[500] : colors.text.tertiary}
+            />
+          ),
         }}
       />
     </Tab.Navigator>
