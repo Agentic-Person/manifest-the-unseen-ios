@@ -1,10 +1,63 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-08 (Subscription Pricing Updates)
+**Last Updated**: 2026-01-08 (Build 42 Released to TestFlight)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **SUBSCRIPTION PRICING UPDATED** - App Store Connect and landing page prices updated
+**Status**: 🟢 **BUILD 42 ON TESTFLIGHT** - All recent fixes and prayer feature ready for testing
+
+---
+
+## 📱 BUILD 42 RELEASED TO TESTFLIGHT - January 8, 2026
+
+### Build Details
+| Item | Value |
+|------|-------|
+| **Build Number** | 42 |
+| **Version** | 1.0.0 |
+| **Profile** | testflight (full access bypass) |
+| **Submitted** | January 8, 2026 10:22 AM |
+| **Build ID** | `1b6386b4-1f5d-4287-b39c-c3f27ce7a2a1` |
+| **EAS Link** | https://expo.dev/accounts/agentic-personnel/projects/manifest-the-unseen/builds/1b6386b4-1f5d-4287-b39c-c3f27ce7a2a1 |
+
+### What's New in Build 42
+
+**Prayer Sync & Web Platform Fixes (6 issues):**
+- ✅ Web platform Supabase client hanging → Direct fetch() to PostgREST API
+- ✅ Prayer player 406/409 errors → Skip meditation queries for prayers
+- ✅ Text sync timing off by ~5 seconds → Added AUDIO_OFFSET_MS constant
+- ✅ Wrong text displayed → Use content field instead of line_timings.text
+- ✅ Flickering animation → Smooth 70%→100% opacity pulse
+- ✅ Communion prayer wrong data → SQL migration to fix title/content
+
+**TestFlight Subscription Fixes (4 issues):**
+- ✅ Buttons not clickable on higher tiers → Mock offerings for TestFlight mode
+- ✅ UI not updating after purchase → Direct state update + simulated purchase
+- ✅ Trial/Tier confusion in Profile → Enhanced status labels with trial days
+- ✅ Test Mode toggle in PaywallScreen debug panel (tap title 5x)
+
+**New Feature - Synchronized Prayer Text Display:**
+- ✅ Karaoke-style prayer player with synchronized text display
+- ✅ Text displays line-by-line as audio plays
+- ✅ Auto-calculated timing based on word count ratio
+- ✅ "Prayers" tab added to Meditate screen
+
+**TypeScript & Tooling:**
+- ✅ TypeScript error fixes across multiple files
+- ✅ Prayer line timing migration for Whisper timestamps
+- ✅ Scripts for generating prayer timestamps
+
+### Commits Since Build 41
+```
+ef54993 fix: remove deprecated autoSubmit from eas.json
+97e41c1 build: increment iOS build number to 42
+e3412bd fix: TypeScript errors and prayer timestamp tooling
+4400ed5 docs: update project status with prayer sync fixes
+2a41686 db: fix Communion with the Divine prayer title and content
+72ec074 chore: add debug logging to meditation hooks and screen
+712c608 fix: prayer text display flickering animation
+0e84b91 fix: prayer text synchronization with audio
+```
 
 ---
 
@@ -373,8 +426,8 @@ Uploaded to Supabase Storage (`meditation-audio/prayers/`):
 |------|-------|
 | **Version** | 1.0.0 |
 | **Build (App Store)** | 29 (production profile) |
-| **Build (TestFlight)** | 30 (testflight profile) |
-| **Build (Latest)** | 41 (testflight-sandbox - Jan 4, Purchase spinner fix) |
+| **Build (TestFlight)** | 42 (testflight profile - Jan 8, Prayer sync + subscription fixes) |
+| **Build (Latest)** | 42 (testflight - Jan 8, 2026) |
 | **Git Tag** | `v1.0.0-beta.13` |
 | **App Store Status** | 🟡 Waiting for Review |
 | **Submission Date** | December 25, 2025 12:35 PM |
@@ -391,6 +444,14 @@ Uploaded to Supabase Storage (`meditation-audio/prayers/`):
 | `testflight` | `eas build --profile testflight` | Testing with full access bypass enabled |
 | `testflight-sandbox` | `eas build --profile testflight-sandbox` | **Auto-submits to TestFlight**, RevenueCat enabled |
 | `production` | `eas build --profile production` | App Store (RevenueCat enabled, no bypasses) |
+
+**What's Included in Build 42 (TestFlight - Jan 8, 2026):**
+- ✅ **Prayer Sync Fixes** - Web platform hanging, text sync timing, flickering animation
+- ✅ **Subscription Fixes** - Mock offerings, UI updates after purchase, test mode toggle
+- ✅ **Synchronized Prayer Display** - Karaoke-style prayer player with line-by-line text
+- ✅ **TypeScript Fixes** - Error fixes across multiple files
+- ✅ **Pricing Updates** - New subscription pricing in App Store Connect
+- ✅ All features from Build 41 and earlier
 
 **What's Included in Build 32+ (Post-Security Fixes - Dec 25):**
 - ✅ **DEV_SKIP_AUTH removed entirely** - No more auth bypass in any build
@@ -500,12 +561,13 @@ Phase 1 worksheets must use these exact IDs (defined in `types/workbook.ts`):
 
 ### Recent Commits Reference
 ```
-986f6d1 build: increment iOS build number to 39
-767e215 feat: fix RevenueCat integration with 3-tier paywall
-a9c4f3c fix: Build 38 - fix Guru trial access and offerings timeout
-e7b8441 fix: Build 37 - proper trial tracking system
-3246f48 feat: fix feature gating for free users + add Guru rate limiting (3/day)
-37f7369 fix: PaywallScreen infinite loading spinner when offerings fail
+ef54993 fix: remove deprecated autoSubmit from eas.json
+97e41c1 build: increment iOS build number to 42
+e3412bd fix: TypeScript errors and prayer timestamp tooling
+4400ed5 docs: update project status with prayer sync fixes
+2a41686 db: fix Communion with the Divine prayer title and content
+712c608 fix: prayer text display flickering animation
+0e84b91 fix: prayer text synchronization with audio
 ```
 
 ---
@@ -519,6 +581,18 @@ e7b8441 fix: Build 37 - proper trial tracking system
 - **Actual Status**: ✅ MVP COMPLETE - Awaiting Apple Review (24-48 hours typical)
 
 ### Last Activity
+- **Date**: January 8, 2026 - Build 42 Released to TestFlight
+- **Duration**: ~30 minutes
+- **What Was Done**: Compiled and submitted Build 42 to TestFlight with all recent fixes
+- **Status**: ✅ **COMPLETE** - Build 42 submitted and processing
+- **Build Details**:
+  - Build Number: 42
+  - Profile: testflight (full access bypass)
+  - Build ID: `1b6386b4-1f5d-4287-b39c-c3f27ce7a2a1`
+- **Commits**: `ef54993`, `97e41c1`, `e3412bd`
+- **Notes**: EAS build credits at 88% for the month
+
+### Previous Activity
 - **Date**: January 8, 2026 - Prayer Sync & Web Platform Fixes
 - **Duration**: ~3 hours
 - **What Was Done**: Fixed web platform hanging, prayer text synchronization, and database content
@@ -959,6 +1033,15 @@ See `MTU-project-status-archive.md` for detailed testing strategy and iOS deploy
 ## Change Log
 
 *For full implementation details, see `MTU-project-status-archive.md`*
+
+### 2026-01-08 - Build 42 Released to TestFlight
+**Duration**: ~30 min | **Status**: ✅ Complete
+- **BUILD**: Compiled and submitted Build 42 to TestFlight
+- **Profile**: testflight (full access bypass)
+- **Includes**: All fixes from Jan 7-8 (prayer sync, subscription fixes, prayer display feature)
+- **Build ID**: `1b6386b4-1f5d-4287-b39c-c3f27ce7a2a1`
+- **Commits**: `ef54993`, `97e41c1`, `e3412bd`
+- **Notes**: EAS build credits at 88% for the month
 
 ### 2026-01-08 - Prayer Sync & Web Platform Fixes
 **Duration**: ~3 hours | **Status**: ✅ Complete
