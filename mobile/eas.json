@@ -26,9 +26,9 @@
       "cache": {
         "key": "splash-rebuild-v1"
       },
+      "autoSubmit": true,
       "ios": {
-        "resourceClass": "default",
-        "autoSubmit": true
+        "resourceClass": "default"
       },
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://zbyszxtwzoylyygtexdr.supabase.co",
