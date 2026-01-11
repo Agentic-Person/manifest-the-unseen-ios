@@ -1,0 +1,519 @@
+-- Manifest the Unseen - New Meditation & Prayer Content Migration
+-- Migration: YYYYMMDD_add_meditation_content.sql (rename with actual date when ready)
+-- Description: Adds 30 new guided meditations and prayers from content library
+--
+-- Source: https://docs.google.com/spreadsheets/d/1sYa4PrrLJFWscYMurlRlwZmGkLNk7GAg
+--
+-- INSTRUCTIONS:
+-- 1. Rename this file with the actual date (e.g., 20260115000000_add_meditation_content.sql)
+-- 2. Fill in duration_seconds from actual audio file durations
+-- 3. Fill in audio_url paths after uploading to Supabase Storage
+-- 4. Run: npx supabase db push
+
+-- =============================================================================
+-- PRAYERS (15 total)
+-- =============================================================================
+
+INSERT INTO prayers (id, title, description, content, audio_url, duration_seconds, tier_required, life_areas, tags, order_index)
+VALUES
+
+-- ============= HEALING & RESTORATION (Phase 5) =============
+
+-- 001 - I Speak Healing (NOVICE)
+(
+  gen_random_uuid(),
+  'I Speak Healing',
+  'A powerful spoken declaration of healing over your body, mind, and spirit using biblical authority.',
+  E'I STAND IN THE TRUTH OF WHO I AM.\n\nI am not my diagnosis. I am not my symptoms. I am not the story of what has been broken.\n\nI am energy. I am frequency. I am a being designed for wholeness.\n\nThe Kingdom of God is within me...and so is my healing.\n\nI speak to every cell in my body...Align.\n\nI speak to every organ...every tissue...every system...Remember your original design.\n\nMy body is not fighting against me. My body is fighting for me. And today...I partner with it.\n\nI release the vibration of sickness. I release the frequency of fear. I release every belief that says healing is not for me.\n\nI am worthy of health. I am worthy of vitality. I am worthy of waking up in a body that feels alive.\n\nYeshua said...by His stripes I am healed. Not I will be healed. I am healed.\n\nI do not beg for healing. I receive it. I do not hope for restoration. I embody it.\n\nMy body hears the frequency of wholeness. My cells respond to the signal I am broadcasting.\n\nAnd that signal is health. That signal is restoration. That signal is life.\n\nI am healed. I am whole. I am restored.\n\nAnd so it is.',
+  'prayers/i-speak-healing.m4a',
+  0, -- TODO: duration_seconds
+  'novice',
+  ARRAY['health', 'spirituality'],
+  ARRAY['healing', 'declaration', 'faith', 'wholeness'],
+  10
+),
+
+-- 002 - Complete Declaration of Restoration (AWAKENING)
+(
+  gen_random_uuid(),
+  'Complete Declaration of Restoration',
+  'Comprehensive healing prayer covering every system of the body with scripture.',
+  E'BEFORE I SPEAK...I BREATHE.\n\nBefore I declare...I align. I place my hand on my heart...And I remember that this body has carried me through everything.\n\nEvery challenge. Every season. Every storm.\n\nI am not here to fight my body. I am here to speak life into it.\n\nI stand now in the frequency of healing. Not hoping. Not wishing. Knowing.\n\nThe Kingdom is within me. The healer is within me. The power to restore is not far away...it is as close as my next breath.\n\n[Extended content - see source document for full text]',
+  'prayers/complete-declaration-of-restoration.m4a',
+  0, -- TODO: duration_seconds
+  'awakening',
+  ARRAY['health', 'spirituality', 'personalGrowth'],
+  ARRAY['restoration', 'declaration', 'wholeness', 'comprehensive'],
+  11
+),
+
+-- ============= ABUNDANCE & PROSPERITY (Phase 6) =============
+
+-- 005 - I Am Open to Receive (NOVICE)
+(
+  gen_random_uuid(),
+  'I Am Open to Receive',
+  'Declaration of openness to divine abundance and provision.',
+  E'I STAND IN THE TRUTH OF ABUNDANCE.\n\nScarcity is not my origin. Lack is not my inheritance. I was born into a universe that overflows.\n\nThe apple tree does not count its fruit. The river does not hoard its water. The sun does not ration its light.\n\nAnd I...I am part of this same creation. Abundance is woven into my very design.\n\nI release every belief that says there is not enough. I release every fear that whispers I will run out. I release the frequency of lack...and I tune my antenna to overflow.\n\nYeshua said...Ask and it shall be given. Seek and you shall find. Knock and it shall be opened.\n\nSo today...I ask with confidence. I seek with expectation. I knock knowing the door is already opening.\n\nI do not chase abundance. I align with it. I do not beg for provision. I receive it.\n\nMy hands are open. My heart is open. My life is open to the overflow.\n\nMoney flows to me easily. Opportunities find me effortlessly. Resources arrive in expected and unexpected ways.\n\nI am a magnet for prosperity...not because I strain for it...but because I resonate with it.\n\nThe Kingdom is within me. And in the Kingdom...there is no lack.\n\nI am abundant. I am prosperous. I am supplied.\n\nAnd so it is.',
+  'prayers/i-am-open-to-receive.m4a',
+  0,
+  'novice',
+  ARRAY['finance', 'career', 'personalGrowth'],
+  ARRAY['abundance', 'receiving', 'prosperity', 'openness'],
+  12
+),
+
+-- 006 - The Frequency of Overflow (AWAKENING)
+(
+  gen_random_uuid(),
+  'The Frequency of Overflow',
+  'Comprehensive prayer shifting from lack consciousness to overflow.',
+  E'BEFORE I SPEAK...I open.\n\nI unclench my fists. I drop my shoulders. I release the tightness in my chest.\n\nBecause abundance cannot enter a closed vessel. And today...I am becoming open.\n\n[Extended content - see source document for full text]',
+  'prayers/frequency-of-overflow.m4a',
+  0,
+  'awakening',
+  ARRAY['finance', 'spirituality'],
+  ARRAY['overflow', 'abundance', 'frequency', 'prosperity'],
+  13
+),
+
+-- ============= SELF-WORTH & IDENTITY (Phase 1 + Phase 5) =============
+
+-- 009 - I Am Worthy (NOVICE)
+(
+  gen_random_uuid(),
+  'I Am Worthy',
+  'Declaration of inherent worthiness and divine identity.',
+  E'I STAND IN THE TRUTH OF WHO I AM.\n\nNot who I was told I am. Not who fear says I am. Not who failure tried to make me.\n\nI am who I was created to be. And that is enough.\n\nI release the lie that I must earn my worth. I release the belief that I am not enough. I release the voice that says I need to be more...do more...prove more.\n\nMy worth is not negotiable. It is not up for debate. It was settled before I took my first breath.\n\nYeshua said I am the light of the world. Not I could become the light. Not I might one day be the light. I am the light.\n\nAnd light does not apologize for shining.\n\nI am not my mistakes. I am not my past. I am not the worst thing I have ever done.\n\nI am a soul having a human experience. I am consciousness wrapped in skin. I am the Kingdom walking the earth.\n\nToday I choose to see myself as I truly am. Not through the lens of comparison. Not through the eyes of those who could not see my value. But through the eyes of the One who formed me.\n\nI am worthy of love. I am worthy of success. I am worthy of peace. I am worthy of good things.\n\nNot because I have earned them. But because I exist.\n\nMy identity is not what I do. My identity is who I am. And who I am is whole.\n\nI am enough. I have always been enough. I will always be enough.\n\nAnd so it is.',
+  'prayers/i-am-worthy.m4a',
+  0,
+  'novice',
+  ARRAY['personalGrowth', 'relationships'],
+  ARRAY['worthiness', 'identity', 'self-love', 'value'],
+  14
+),
+
+-- 010 - Reclaiming My True Identity (AWAKENING)
+(
+  gen_random_uuid(),
+  'Reclaiming My True Identity',
+  'Release of false labels and reclamation of true spiritual identity.',
+  E'BEFORE I SPEAK...I remember.\n\nI remember that I existed before anyone had an opinion of me. I remember that my worth was established before my first failure. I remember that the Kingdom within me has never doubted my value.\n\nToday...I come home to myself.\n\n[Extended content - see source document for full text]',
+  'prayers/reclaiming-my-true-identity.m4a',
+  0,
+  'awakening',
+  ARRAY['personalGrowth', 'spirituality'],
+  ARRAY['identity', 'reclaiming', 'truth', 'authentic'],
+  15
+),
+
+-- ============= FORGIVENESS & RELEASE (Phase 4) =============
+
+-- 013 - I Choose to Release (NOVICE)
+(
+  gen_random_uuid(),
+  'I Choose to Release',
+  'Declaration choosing forgiveness as a gift to self.',
+  E'I STAND IN THE TRUTH OF FREEDOM.\n\nI have carried weights that were never mine to hold. Resentments that poisoned only me. Memories that played on repeat...keeping me trapped in a moment that has already passed.\n\nToday...I choose release.\n\nI forgive. Not because what happened was okay. Not because the pain wasn''t real. But because I refuse to let the past hold my future hostage.\n\nForgiveness is not a gift I give to those who hurt me. Forgiveness is a gift I give to myself.\n\nI release the person who wounded me. I release them from the debt I thought they owed. I release myself from the role of judge and jailer.\n\nI am not meant to carry this.\n\nI release the anger that has lived in my body. I release the bitterness that has poisoned my thoughts. I release the replaying of moments I cannot change.\n\nThe past is over. It holds no power except what I give it. And today...I take my power back.\n\nI forgive myself. For the mistakes I made. For the times I knew better and didn''t do better. For the ways I betrayed my own heart.\n\nI was doing the best I could with what I had. And that is enough.\n\nYeshua said...Forgive and you will be forgiven. Release and you will be released.\n\nSo I forgive. And I am forgiven. I release. And I am released.\n\nMy hands are open. My heart is open. The chains are falling away.\n\nI am free. I am light. I am at peace.\n\nAnd so it is.',
+  'prayers/i-choose-to-release.m4a',
+  0,
+  'novice',
+  ARRAY['personalGrowth', 'health', 'relationships'],
+  ARRAY['forgiveness', 'release', 'freedom', 'peace'],
+  16
+),
+
+-- 014 - Breaking the Chains (AWAKENING)
+(
+  gen_random_uuid(),
+  'Breaking the Chains',
+  'Comprehensive prayer releasing past wounds and choosing freedom.',
+  E'BEFORE I SPEAK...I acknowledge the weight I have been carrying.\n\nI have held onto things that were meant to be released long ago. Hurts that calcified into resentment. Wounds that became part of my identity. Stories I have told myself so many times they feel like truth.\n\nBut today...I choose a different path. Today...I choose freedom.\n\n[Extended content - see source document for full text]',
+  'prayers/breaking-the-chains.m4a',
+  0,
+  'awakening',
+  ARRAY['personalGrowth', 'health'],
+  ARRAY['chains', 'freedom', 'liberation', 'release'],
+  17
+),
+
+-- ============= FEAR & COURAGE (Phase 4) =============
+
+-- 017 - I Am at Peace (NOVICE)
+(
+  gen_random_uuid(),
+  'I Am at Peace',
+  'Declaration of peace as birthright, releasing anxiety and control.',
+  E'I STAND IN THE TRUTH OF PEACE.\n\nNot peace that depends on circumstances. Not peace that waits until everything is resolved. Peace that exists in the midst of the storm. Peace that is my birthright.\n\nI was not given a spirit of fear. I was given a spirit of power...of love...and of a sound mind.\n\nFear is not my master. Anxiety is not my home. Worry is not my identity.\n\nI am a child of peace. And peace lives within me.\n\nI release the need to control what I cannot control. I release the obsession with outcomes. I release the replaying of worst case scenarios.\n\nThese habits have exhausted me. They have stolen my present moment. They have robbed me of joy.\n\nToday...I choose differently.\n\nI breathe in peace. I breathe out fear. I breathe in courage. I breathe out doubt.\n\nYeshua said...Peace I leave with you. My peace I give unto you. Not as the world gives do I give. Let not your heart be troubled...neither let it be afraid.\n\nSo I receive this peace. A peace that passes understanding. A peace that guards my heart and mind. A peace that the world cannot take away.\n\nI am calm in chaos. I am steady in uncertainty. I am anchored in something deeper than circumstances.\n\nFear may knock at my door. But I do not have to let it in. I acknowledge it. I thank it for trying to protect me. And I choose peace instead.\n\nI am brave. I am strong. I am held. I am at peace.\n\nAnd so it is.',
+  'prayers/i-am-at-peace.m4a',
+  0,
+  'novice',
+  ARRAY['health', 'spirituality'],
+  ARRAY['peace', 'anxiety', 'calm', 'courage'],
+  18
+),
+
+-- 018 - The Courage to Be Still (AWAKENING)
+(
+  gen_random_uuid(),
+  'The Courage to Be Still',
+  'Prayer embracing stillness as strength, speaking to fear and mind.',
+  E'BEFORE I SPEAK...I breathe.\n\nBefore I react...I pause. Before I decide...I return to myself.\n\nIn this breath...I find the space between stimulus and response. In this space...I find my power.\n\n[Extended content - see source document for full text]',
+  'prayers/courage-to-be-still.m4a',
+  0,
+  'awakening',
+  ARRAY['health', 'career', 'family'],
+  ARRAY['courage', 'stillness', 'calm', 'strength'],
+  19
+),
+
+-- ============= GRATITUDE & JOY (Phase 7) =============
+
+-- 021 - I Am Grateful (NOVICE)
+(
+  gen_random_uuid(),
+  'I Am Grateful',
+  'Declaration of gratitude for breath, body, provision, and people.',
+  E'I STAND IN THE TRUTH OF GRATITUDE.\n\nNot gratitude that waits for perfect circumstances. Not gratitude that comes only when I get what I want. Gratitude that exists right here...right now...in the midst of the unfinished and the imperfect.\n\nI am grateful.\n\nI am grateful for the breath in my lungs. I am grateful for the heart beating in my chest. I am grateful for the body that carries me through this life.\n\nI am grateful for the roof over my head. I am grateful for the food that nourishes me. I am grateful for the water that sustains me.\n\nI am grateful for the people who love me. I am grateful for the strangers who have shown me kindness. I am grateful even for those who challenged me...for they taught me who I am.\n\nWhat I appreciate...appreciates. What I focus on...expands. So I focus on blessings. And blessings multiply.\n\nI choose to see abundance instead of lack. I choose to notice what is working instead of what is broken. I choose to celebrate progress instead of obsessing over perfection.\n\nGratitude is not just a feeling. It is a frequency. And I am tuning myself to that frequency now.\n\nI am grateful for what I have. I am grateful for what is coming. I am grateful for this moment...exactly as it is.\n\nJoy is my birthright. Happiness is not something I chase. It is something I choose. And today...I choose joy.\n\nThank you. Thank you. Thank you.\n\nAnd so it is.',
+  'prayers/i-am-grateful.m4a',
+  0,
+  'novice',
+  ARRAY['spirituality', 'relationships'],
+  ARRAY['gratitude', 'joy', 'thankfulness', 'appreciation'],
+  20
+),
+
+-- 022 - The Frequency of Thankfulness (AWAKENING)
+(
+  gen_random_uuid(),
+  'The Frequency of Thankfulness',
+  'Comprehensive gratitude prayer for body, mind, relationships, challenges.',
+  E'BEFORE I SPEAK...I pause to notice.\n\nBefore I name what I want...I honor what already is. Before I ask for more...I acknowledge what has been given.\n\nI have been given so much. And too often...I have focused on what is missing.\n\n[Extended content - see source document for full text]',
+  'prayers/frequency-of-thankfulness.m4a',
+  0,
+  'awakening',
+  ARRAY['spirituality', 'recreation'],
+  ARRAY['thankfulness', 'frequency', 'gratitude', 'comprehensive'],
+  21
+),
+
+-- ============= SURRENDER & TRUST (Phases 9-10) =============
+
+-- 026 - Releasing into Divine Timing (AWAKENING)
+(
+  gen_random_uuid(),
+  'Releasing into Divine Timing',
+  'Comprehensive surrender prayer releasing how, when, and outcomes.',
+  E'BEFORE I SPEAK...I breathe.\n\nAnd in this breath...I soften my body. I loosen my grip. I begin to let go.\n\nI have carried so much. The weight of needing to figure it all out. The burden of managing every detail. The exhaustion of forcing what was meant to flow.\n\n[Extended content - see source document for full text]',
+  'prayers/releasing-into-divine-timing.m4a',
+  0,
+  'awakening',
+  ARRAY['spirituality', 'personalGrowth'],
+  ARRAY['surrender', 'trust', 'timing', 'release'],
+  22
+),
+
+-- ============= SPIRITUAL CONNECTION (Throughout + Phase 9) =============
+
+-- 037 - The Kingdom Is Within Me (NOVICE)
+(
+  gen_random_uuid(),
+  'The Kingdom Is Within Me',
+  'Declaration of Kingdom within, turning inward to sacred presence.',
+  E'I STAND IN THE TRUTH OF MY SPIRITUAL NATURE.\n\nBefore I speak...I take a breath...and I remember what I am.\n\nI am not just a body. I am not just a mind. I am not just my thoughts or my emotions.\n\nI am a soul having a human experience. I am spirit clothed in flesh. I am the infinite temporarily wearing the finite.\n\nThe Kingdom of God is within me. Not in a building made of stone. Not in a ritual performed on certain days. Not in a distant heaven I must earn my way into.\n\nWithin me. Right here. Right now. Already present. Already complete.\n\nYeshua spoke these words...The Kingdom of God cometh not with observation. Neither shall they say lo here or lo there. For behold...the Kingdom of God is within you.\n\nI have been searching outside for what has always been inside. Running to experiences hoping to feel connected. Chasing teachers who might show me the way. Looking everywhere except where the treasure was hidden.\n\nBut today I turn inward. Today I remember the truth.\n\nI turn toward the sacred space within me. The sanctuary that needs no building. The temple that needs no walls. The holy ground that is my own heart.\n\nHere...the Divine dwells. Here...all wisdom resides. Here...I am never alone. Here...I am always held. Here...I am always loved.\n\nI am connected. Not because I have done the right things. Not because I have believed the right beliefs. Not because I have earned this connection through effort.\n\nI am connected because connection is my nature. I am connected because I am made of the Divine. I am connected because separation was always an illusion.\n\nThe same presence that spins galaxies...lives within me. The same intelligence that grows forests...guides my steps. The same love that created everything...flows through my veins.\n\nI do not need to earn this connection. I do not need to be worthy of this presence. I was born with it. It is my birthright. It is the truth of what I am.\n\nI breathe in...and I receive divine presence. I breathe out...and I release the illusion of separation.\n\nThere is no distance between me and the Sacred. There never was. Only forgetting. Only distraction. Only the noise of the world drowning out the whisper within.\n\nBut I hear it now. I feel it now. I know it now.\n\nI am spiritual by nature. I am connected at my core. I am held in every moment. I am never...ever...alone.\n\nThe Kingdom is within me.\n\nNamaste. And so it is.',
+  'prayers/the-kingdom-is-within-me.m4a',
+  0,
+  'novice',
+  ARRAY['spirituality', 'personalGrowth'],
+  ARRAY['kingdom', 'within', 'divine', 'presence', 'connection'],
+  23
+),
+
+-- 038 - Communion with the Divine (AWAKENING)
+(
+  gen_random_uuid(),
+  'Communion with the Divine',
+  'Comprehensive prayer for deep spiritual connection and union.',
+  E'BEFORE I SPEAK...I quiet myself.\n\nI let the noise of the world fade. I let the demands of the day fall away. I let the endless thoughts slow their spinning.\n\nIn this stillness...I remember.\n\n[Extended content - see source document for full text]',
+  'prayers/communion-with-the-divine.m4a',
+  0,
+  'awakening',
+  ARRAY['spirituality'],
+  ARRAY['communion', 'divine', 'union', 'connection', 'presence'],
+  24
+);
+
+
+-- =============================================================================
+-- MEDITATIONS (15 total)
+-- =============================================================================
+
+INSERT INTO meditations (id, title, description, duration_seconds, audio_url, narrator_gender, tier_required, type, tags, life_areas, order_index)
+VALUES
+
+-- ============= HEALING & RESTORATION (Phase 5) =============
+
+-- 003 - Healing Light (NOVICE)
+(
+  gen_random_uuid(),
+  'Healing Light',
+  'Visualization of divine healing light entering and restoring the body.',
+  0, -- TODO: duration_seconds
+  'guided/healing-light.m4a',
+  'female',
+  'novice',
+  'guided',
+  ARRAY['healing', 'light', 'visualization', 'restoration'],
+  ARRAY['health', 'spirituality'],
+  200
+),
+
+-- 004 - Rivers of Living Water (AWAKENING)
+(
+  gen_random_uuid(),
+  'Rivers of Living Water',
+  'Deep visualization of living water flowing through the body bringing restoration.',
+  729, -- 12:09 from rendered audio
+  'guided/rivers-of-living-water.m4a',
+  'female',
+  'awakening',
+  'guided',
+  ARRAY['water', 'healing', 'flow', 'restoration', 'cleansing'],
+  ARRAY['health', 'spirituality'],
+  201
+),
+
+-- ============= ABUNDANCE & PROSPERITY (Phase 6) =============
+
+-- 007 - Opening to Receive (NOVICE)
+(
+  gen_random_uuid(),
+  'Opening to Receive',
+  'Visualization of opening heart and hands to receive abundance.',
+  0,
+  'guided/opening-to-receive.m4a',
+  'female',
+  'novice',
+  'guided',
+  ARRAY['receiving', 'abundance', 'openness', 'heart'],
+  ARRAY['finance', 'relationships'],
+  202
+),
+
+-- 008 - The River of Abundance (AWAKENING)
+(
+  gen_random_uuid(),
+  'The River of Abundance',
+  'Journey to the river of abundance, releasing lack and receiving flow.',
+  0,
+  'guided/river-of-abundance.m4a',
+  'female',
+  'awakening',
+  'guided',
+  ARRAY['abundance', 'river', 'flow', 'prosperity'],
+  ARRAY['finance', 'career'],
+  203
+),
+
+-- ============= SELF-WORTH & IDENTITY (Phase 1 + Phase 5) =============
+
+-- 011 - Coming Home to Yourself (NOVICE)
+(
+  gen_random_uuid(),
+  'Coming Home to Yourself',
+  'Meeting and embracing the inner child, returning to wholeness.',
+  0,
+  'guided/coming-home-to-yourself.m4a',
+  'female',
+  'novice',
+  'guided',
+  ARRAY['home', 'self', 'inner-child', 'wholeness', 'belonging'],
+  ARRAY['personalGrowth', 'family', 'relationships'],
+  204
+),
+
+-- 012 - The Mirror of Truth (ENLIGHTENMENT)
+(
+  gen_random_uuid(),
+  'The Mirror of Truth',
+  'Journey through false mirrors to discover true radiant identity.',
+  0,
+  'guided/mirror-of-truth.m4a',
+  'female',
+  'enlightenment',
+  'guided',
+  ARRAY['mirror', 'truth', 'identity', 'radiance', 'advanced'],
+  ARRAY['personalGrowth', 'spirituality'],
+  205
+),
+
+-- ============= FORGIVENESS & RELEASE (Phase 4) =============
+
+-- 015 - Cutting the Cords (AWAKENING)
+(
+  gen_random_uuid(),
+  'Cutting the Cords',
+  'Visualization of severing energetic attachments to past pain.',
+  0,
+  'guided/cutting-the-cords.m4a',
+  'female',
+  'awakening',
+  'guided',
+  ARRAY['cords', 'release', 'attachments', 'freedom', 'boundaries'],
+  ARRAY['relationships', 'family'],
+  206
+),
+
+-- 016 - The Temple of Release (ENLIGHTENMENT)
+(
+  gen_random_uuid(),
+  'The Temple of Release',
+  'Journey to sacred temple, placing burdens in transformative fire.',
+  0,
+  'guided/temple-of-release.m4a',
+  'female',
+  'enlightenment',
+  'guided',
+  ARRAY['temple', 'release', 'fire', 'transformation', 'advanced'],
+  ARRAY['spirituality', 'health'],
+  207
+),
+
+-- ============= FEAR & COURAGE (Phase 4) =============
+
+-- 019 - The Calm Within the Storm (NOVICE)
+(
+  gen_random_uuid(),
+  'The Calm Within the Storm',
+  'Becoming the eye of the storm, finding stillness amid chaos.',
+  0,
+  'guided/calm-within-the-storm.m4a',
+  'female',
+  'novice',
+  'guided',
+  ARRAY['calm', 'storm', 'stillness', 'center', 'peace'],
+  ARRAY['health', 'career', 'family'],
+  208
+),
+
+-- ============= SURRENDER & TRUST (Phases 9-10) =============
+
+-- 027 - Open Hands (NOVICE)
+(
+  gen_random_uuid(),
+  'Open Hands',
+  'Visualization of turning palms upward, releasing what is controlled.',
+  0,
+  'guided/open-hands.m4a',
+  'female',
+  'novice',
+  'guided',
+  ARRAY['hands', 'open', 'surrender', 'release', 'trust'],
+  ARRAY['spirituality', 'personalGrowth'],
+  209
+),
+
+-- ============= PURPOSE & VISION (Phase 2) =============
+
+-- 031 - The Seed of Purpose (NOVICE)
+(
+  gen_random_uuid(),
+  'The Seed of Purpose',
+  'Visualization of purpose seed in heart, nurturing its growth.',
+  0,
+  'guided/seed-of-purpose.m4a',
+  'female',
+  'novice',
+  'guided',
+  ARRAY['purpose', 'seed', 'growth', 'calling', 'vision'],
+  ARRAY['career', 'personalGrowth'],
+  210
+),
+
+-- 032 - The Hall of Vision (AWAKENING)
+(
+  gen_random_uuid(),
+  'The Hall of Vision',
+  'Journey to Hall of Vision, opening Book of Purpose, meeting Higher Self.',
+  0,
+  'guided/hall-of-vision.m4a',
+  'female',
+  'awakening',
+  'guided',
+  ARRAY['vision', 'hall', 'purpose', 'higher-self', 'guidance'],
+  ARRAY['career', 'personalGrowth'],
+  211
+),
+
+-- ============= RELATIONSHIPS & LOVE (Phase 5 + Life Areas) =============
+
+-- 035 - Opening the Heart (NOVICE)
+(
+  gen_random_uuid(),
+  'Opening the Heart',
+  'Visualization of heart as rose blooming, opening to love.',
+  0,
+  'guided/opening-the-heart.m4a',
+  'female',
+  'novice',
+  'guided',
+  ARRAY['heart', 'opening', 'rose', 'love', 'blooming'],
+  ARRAY['relationships', 'family'],
+  212
+),
+
+-- 036 - The Temple of the Heart (ENLIGHTENMENT)
+(
+  gen_random_uuid(),
+  'The Temple of the Heart',
+  'Journey into heart temple, healing walls, planting seed of desired love.',
+  0,
+  'guided/temple-of-the-heart.m4a',
+  'female',
+  'enlightenment',
+  'guided',
+  ARRAY['temple', 'heart', 'love', 'sacred', 'advanced'],
+  ARRAY['relationships', 'family', 'spirituality'],
+  213
+),
+
+-- ============= SPIRITUAL CONNECTION (Throughout + Phase 9) =============
+
+-- 039 - The Presence Within (NOVICE)
+(
+  gen_random_uuid(),
+  'The Presence Within',
+  'Entering inner sanctuary, sitting with divine presence.',
+  0,
+  'guided/presence-within.m4a',
+  'female',
+  'novice',
+  'guided',
+  ARRAY['presence', 'within', 'sanctuary', 'divine', 'stillness'],
+  ARRAY['spirituality'],
+  214
+),
+
+-- 040 - The Infinite Within (ENLIGHTENMENT)
+(
+  gen_random_uuid(),
+  'The Infinite Within',
+  'Transcendent journey from finite self to infinite consciousness.',
+  0,
+  'guided/infinite-within.m4a',
+  'female',
+  'enlightenment',
+  'guided',
+  ARRAY['infinite', 'consciousness', 'transcendence', 'advanced', 'union'],
+  ARRAY['spirituality', 'personalGrowth'],
+  215
+);
+
+
+-- =============================================================================
+-- VERIFICATION QUERIES (run after migration to verify)
+-- =============================================================================
+-- SELECT 'Prayers' as type, COUNT(*) as count FROM prayers;
+-- SELECT 'Meditations' as type, COUNT(*) as count FROM meditations WHERE type = 'guided';
+-- SELECT title, tier_required, life_areas FROM prayers ORDER BY order_index;
+-- SELECT title, tier_required, life_areas FROM meditations WHERE type = 'guided' ORDER BY order_index;

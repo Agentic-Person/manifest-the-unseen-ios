@@ -944,7 +944,7 @@ async function queryMeditationsByLifeAreas(
     .from('meditations')
     .select('id, title, description, life_areas')
     .overlaps('life_areas', dbLifeAreas)
-    .in('tier', allowedTiers)
+    .in('tier_required', allowedTiers)
     .limit(limit);
 
   if (error) {
@@ -994,7 +994,7 @@ async function queryPrayersByLifeAreas(
     .from('prayers')
     .select('id, title, description, content, life_areas')
     .overlaps('life_areas', dbLifeAreas)
-    .in('tier', allowedTiers)
+    .in('tier_required', allowedTiers)
     .limit(limit);
 
   if (error) {
