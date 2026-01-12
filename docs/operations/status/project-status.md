@@ -1,10 +1,67 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-09 (Build 44 Production Build for App Store)
+**Last Updated**: 2026-01-11 (Guru Bug Fix + Meditation Content Planning)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission Complete)
 **Status**: 🟢 **BUILD 44 READY FOR APP STORE** - Production build with all fixes included
+
+---
+
+## 🧘 MEDITATION SYSTEM AUDIT & GURU BUG FIX - January 11, 2026
+
+### Summary
+Audited the meditation/prayer/breathing system and fixed a critical bug in the Guru AI that was preventing dynamic content recommendations from working.
+
+### Critical Bug Fixed ✅
+
+**Issue**: Guru edge function was querying wrong column name for tier filtering
+- **File**: `supabase/functions/guru-analysis/index.ts`
+- **Lines 947, 997**: `.in('tier', allowedTiers)` → `.in('tier_required', allowedTiers)`
+- **Impact**: Dynamic meditation/prayer recommendations by life area were failing silently
+- **Status**: Fixed and deployed to production
+
+### Content Planning Completed
+
+**Created comprehensive content plan from Google Sheet tracking document:**
+- Source: [Content Spreadsheet](https://docs.google.com/spreadsheets/d/1sYa4PrrLJFWscYMurlRlwZmGkLNk7GAg)
+- 40 total scripts (30 active, 10 skipped)
+- 15 prayers + 15 meditations ready for production
+- Organized by 10 categories with life area mappings
+
+| Category | Phase | Prayers | Meditations |
+|----------|-------|---------|-------------|
+| Healing & Restoration | Phase 5 | 2 | 2 |
+| Abundance & Prosperity | Phase 6 | 2 | 2 |
+| Self-Worth & Identity | Phase 1+5 | 2 | 2 |
+| Forgiveness & Release | Phase 4 | 2 | 2 |
+| Fear & Courage | Phase 4 | 2 | 1 |
+| Gratitude & Joy | Phase 7 | 2 | 0 |
+| Surrender & Trust | Phases 9-10 | 1 | 1 |
+| Purpose & Vision | Phase 2 | 0 | 2 |
+| Relationships & Love | Phase 5 | 0 | 2 |
+| Spiritual Connection | Throughout | 2 | 2 |
+
+### Files Created/Modified
+
+| File | Action |
+|------|--------|
+| `supabase/functions/guru-analysis/index.ts` | Fixed tier_required bug (lines 947, 997) |
+| `docs/features/meditation/content-plan.md` | NEW - Complete content tracking document |
+| `supabase/migrations/YYYYMMDD_add_meditation_content.sql.template` | NEW - Migration template for 30 items |
+
+### Commit
+```
+6327662 fix: correct tier column name in Guru meditation/prayer queries
+```
+
+### Next Steps for Meditation System
+1. Record/render audio for all 30 scripts
+2. Get actual durations from audio files
+3. Upload audio to Supabase Storage
+4. Fill in migration template with durations
+5. Run migration to add content to database
+6. Update Guru phase suggestions with new content titles
 
 ---
 
