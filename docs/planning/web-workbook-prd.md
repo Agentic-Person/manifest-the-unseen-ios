@@ -408,6 +408,30 @@ REVENUECAT_WEBHOOK_SECRET=whsec_...
 
 > Copy these prompts to run the Ralph Wiggum plugin for each phase.
 
+## Global Rules (Apply to ALL Prompts)
+
+### Max Iterations: 30
+All prompts use `--max-iterations 30` as a hard cap to prevent infinite loops.
+
+### Success Criteria (for EVERY phase)
+1. **All requirements implemented** - Features specified in the prompt are built
+2. **No lint errors** - `npm run lint` passes clean
+3. **Documentation updated** - Add/update README or comments showing how features work
+
+### Failsafe: Force Exit After Max Iterations
+If 30 iterations reached without completion:
+1. Output: `"ITERATION LIMIT REACHED - HUMAN REVIEW REQUIRED"`
+2. Document what was completed vs. remaining
+3. Exit the loop - DO NOT continue
+4. Human will review and resume manually
+
+### Completion Promise
+All prompts use `--completion-promise "PHASE COMPLETE"` for consistency.
+
+When a phase is truly done, output exactly: `PHASE COMPLETE`
+
+---
+
 ## Foundation (Manual - Do First)
 
 Before running Ralph loops, manually set up:
@@ -454,10 +478,20 @@ Build shared UI components for the Manifest the Unseen web workbook.
 7. Create web/hooks/useAutoSave.ts
    - Debounced save hook (30s)
 
+## Success Criteria
+1. All requirements implemented - All 7 tasks above completed
+2. No lint errors - Run 'npm run lint' and fix any issues
+3. Documentation updated - Add brief usage docs/comments for each component
+
+## Failsafe
+If iteration 30 is reached without completion:
+- Output: 'ITERATION LIMIT REACHED - HUMAN REVIEW REQUIRED'
+- List what was completed vs. remaining
+- Exit immediately for human review
+
 ## Completion
-When all components have passing tests and TypeScript compiles clean, output exactly:
-'SHARED COMPONENTS COMPLETE'
-" --max-iterations 30 --completion-promise "SHARED COMPONENTS COMPLETE"
+When all criteria met, output exactly: 'PHASE COMPLETE'
+" --max-iterations 30 --completion-promise "PHASE COMPLETE"
 ```
 
 ---
@@ -505,7 +539,7 @@ Build authentication and subscription middleware for web workbook.
 ## Completion
 When auth flow works end-to-end with tests passing, output exactly:
 'AUTH COMPLETE'
-" --max-iterations 25 --completion-promise "AUTH COMPLETE"
+" --max-iterations 30 --completion-promise "PHASE COMPLETE"
 ```
 
 ---
@@ -550,7 +584,7 @@ Build RevenueCat webhook handler for subscription sync.
 ## Completion
 When webhook handles all event types with passing tests, output exactly:
 'WEBHOOK COMPLETE'
-" --max-iterations 20 --completion-promise "WEBHOOK COMPLETE"
+" --max-iterations 30 --completion-promise "PHASE COMPLETE"
 ```
 
 ---
@@ -632,18 +666,24 @@ Build Phase 1 (Self-Evaluation) worksheets for web workbook.
    - Verify UI matches landing page styling
    - Take screenshot for reference
 
-## Completion Criteria
-- All 11 worksheets have passing tests
-- TypeScript compiles without errors
-- Components render in browser without console errors
-- Visual check passed OR skipped with 'VISUAL CHECK SKIPPED' logged
+## Success Criteria
+1. All requirements implemented - All 11 worksheets built and working
+2. No lint errors - Run 'npm run lint' and fix any issues
+3. Documentation updated - Add README in web/components/workbook/Phase1/ explaining components
+
+## Visual Verification (Optional)
+If Playwright MCP available, verify styling matches landing page.
+If unavailable, log 'VISUAL CHECK SKIPPED' and continue.
 
 ## Failsafe
-If Playwright MCP is unavailable or errors, log 'VISUAL CHECK SKIPPED' and continue.
-Do NOT block completion for visual check failures.
+If iteration 30 is reached without completion:
+- Output: 'ITERATION LIMIT REACHED - HUMAN REVIEW REQUIRED'
+- List completed worksheets vs. remaining
+- Exit immediately for human review
 
-When complete, output exactly: 'PHASE 1 TESTS PASS'
-" --max-iterations 50 --completion-promise "PHASE 1 TESTS PASS"
+## Completion
+When all criteria met, output exactly: 'PHASE COMPLETE'
+" --max-iterations 30 --completion-promise "PHASE COMPLETE"
 ```
 
 ---
@@ -676,7 +716,7 @@ Build Phase 2 (Values & Vision) worksheets for web workbook.
 ## Completion
 When both worksheets work with passing tests, output exactly:
 'PHASE 2 TESTS PASS'
-" --max-iterations 20 --completion-promise "PHASE 2 TESTS PASS"
+" --max-iterations 30 --completion-promise "PHASE COMPLETE"
 ```
 
 ---
@@ -707,7 +747,7 @@ Build Phase 3 (Goal Setting) worksheets for web workbook.
 
 ## Completion
 'PHASE 3 TESTS PASS'
-" --max-iterations 25 --completion-promise "PHASE 3 TESTS PASS"
+" --max-iterations 30 --completion-promise "PHASE COMPLETE"
 ```
 
 ---
@@ -761,7 +801,7 @@ Build remaining phases (4-10) for web workbook.
 ## Completion
 When ALL phases 4-10 have passing tests, output exactly:
 'ALL PHASES COMPLETE'
-" --max-iterations 100 --completion-promise "ALL PHASES COMPLETE"
+" --max-iterations 30 --completion-promise "PHASE COMPLETE"
 ```
 
 ---
@@ -814,7 +854,7 @@ Complete final integration and polish for web workbook.
 ## Completion
 When dashboard, navigation, and all integration tests pass, output exactly:
 'WEB WORKBOOK COMPLETE'
-" --max-iterations 40 --completion-promise "WEB WORKBOOK COMPLETE"
+" --max-iterations 30 --completion-promise "PHASE COMPLETE"
 ```
 
 ---
