@@ -64,7 +64,11 @@ const ProfileScreen = ({ navigation }: Props) => {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+    >
       {/* Profile Header */}
       <View style={styles.profileHeader}>
         <View style={styles.avatar}>
@@ -164,10 +168,14 @@ const ProfileScreen = ({ navigation }: Props) => {
         </Pressable>
       </View>
 
-      {/* Sign Out Button */}
+      {/* Sign Out Button - Improved touch handling for iPad */}
       <Pressable
         style={({ pressed }) => [styles.signOutButton, pressed && styles.signOutButtonPressed]}
         onPress={handleSignOut}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        android_ripple={{ color: 'rgba(255, 255, 255, 0.2)' }}
+        accessibilityRole="button"
+        accessibilityLabel="Sign out of your account"
       >
         <Text style={styles.signOutText}>Sign Out</Text>
       </Pressable>
@@ -293,8 +301,10 @@ const styles = StyleSheet.create({
   signOutButton: {
     backgroundColor: colors.error[500],
     borderRadius: 12,
-    padding: 16,
+    padding: 18,
+    minHeight: 56,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 8,
     marginBottom: 16,
   },

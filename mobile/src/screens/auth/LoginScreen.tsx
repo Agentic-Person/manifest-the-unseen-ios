@@ -16,6 +16,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { Button } from '../../components/Button';
 import { TextInput } from '../../components/TextInput';
 import { Text } from '../../components/Text';
@@ -243,13 +244,13 @@ export const LoginScreen: React.FC = () => {
           <View style={styles.dividerLine} />
         </View>
 
-        {/* Apple Sign In */}
-        <Button
-          title="Sign in with Apple"
+        {/* Apple Sign In - Official Apple Button per HIG */}
+        <AppleAuthentication.AppleAuthenticationButton
+          buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+          buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE}
+          cornerRadius={12}
+          style={styles.appleButton}
           onPress={handleAppleSignIn}
-          disabled={isSubmitting}
-          variant="secondary"
-          style={styles.button}
         />
 
         {/* Sign Up Link */}
@@ -308,6 +309,11 @@ const styles = StyleSheet.create({
     color: colors.primary[600],
   },
   button: {
+    marginBottom: spacing.md,
+  },
+  appleButton: {
+    width: '100%',
+    height: 50,
     marginBottom: spacing.md,
   },
   divider: {
