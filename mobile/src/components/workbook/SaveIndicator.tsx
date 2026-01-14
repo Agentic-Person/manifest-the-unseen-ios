@@ -5,7 +5,7 @@
  * Displays in a pill/badge format, suitable for header or content areas.
  */
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { colors } from '../../theme/colors';
+
+// Maximum time to show "Saving..." before considering it stuck (10 seconds)
+const MAX_SAVING_DISPLAY_MS = 10000;
+// If lastSaved is within this time, consider it "just saved" even if isSaving is stuck
+const RECENT_SAVE_THRESHOLD_MS = 5000;
 
 interface SaveIndicatorProps {
   /** Whether a save is currently in progress */
@@ -60,7 +65,79 @@ export const SaveIndicator: React.FC<SaveIndicatorProps> = ({
   isError,
   onRetry,
 }) => {
-  // Saving state
+  // Track how long we've been showing "Saving..."
+  const [savingDuration, setSavingDuration] = useState(0);
+  const savingStartRef = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Track saving duration with an interval
+  useEffect(() => {
+    if (isSaving) {
+      // Start tracking when saving begins
+      if (savingStartRef.current === null) {
+        savingStartRef.current = Date.now();
+      }
+
+      // Update duration every second
+      intervalRef.current = setInterval(() => {
+        if (savingStartRef.current !== null) {
+          setSavingDuration(Date.now() - savingStartRef.current);
+        }
+      }, 1000);
+
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      };
+    } else {
+      // Reset when saving stops
+      savingStartRef.current = null;
+      setSavingDuration(0);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return undefined;
+    }
+  }, [isSaving]);
+
+  // Check if lastSaved is recent (within 5 seconds)
+  const isRecentlySaved = lastSaved
+    ? Date.now() - lastSaved.getTime() < RECENT_SAVE_THRESHOLD_MS
+    : false;
+
+  // Determine if the saving indicator is stuck
+  const isSavingStuck = isSaving && savingDuration > MAX_SAVING_DISPLAY_MS;
+
+  // Fallback: if lastSaved is very recent and isSaving is stuck, show "Saved" instead
+  if (isSaving && isRecentlySaved && savingDuration > 3000) {
+    // isSaving is stuck but we have a recent save - show saved state
+    return (
+      <View style={styles.container}>
+        <Text style={styles.checkIcon}>✓</Text>
+        <Text style={styles.text}>Saved at {formatTime(lastSaved!)}</Text>
+      </View>
+    );
+  }
+
+  // If saving is stuck for too long, show error/retry state
+  if (isSavingStuck) {
+    return (
+      <TouchableOpacity
+        style={[styles.container, styles.warningContainer]}
+        onPress={onRetry}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.warningIcon}>⏳</Text>
+        <Text style={[styles.text, styles.warningText]}>
+          Save may have failed. Tap to retry.
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+
+  // Normal saving state
   if (isSaving) {
     return (
       <View style={styles.container}>
@@ -119,6 +196,9 @@ const styles = StyleSheet.create({
   errorContainer: {
     backgroundColor: 'rgba(220, 38, 38, 0.2)',
   },
+  warningContainer: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+  },
   icon: {
     marginRight: 6,
   },
@@ -134,8 +214,14 @@ const styles = StyleSheet.create({
   errorIcon: {
     fontSize: 14,
   },
+  warningIcon: {
+    fontSize: 14,
+  },
   errorText: {
     color: colors.error[400],
+  },
+  warningText: {
+    color: '#F59E0B', // Amber/warning color
   },
 });
 

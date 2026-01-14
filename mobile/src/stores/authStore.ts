@@ -12,6 +12,19 @@ import { supabase } from '../services/supabase';
 import type { AuthState } from '../types/store';
 
 /**
+ * Timeout wrapper for promises
+ * Prevents hanging if Supabase is slow or unavailable
+ */
+const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout')), ms)
+  );
+  return Promise.race([promise, timeout]);
+};
+
+const AUTH_TIMEOUT_MS = 10000; // 10 seconds
+
+/**
  * Initial State
  */
 const initialState = {
@@ -62,8 +75,11 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true });
 
-          // Check for existing session
-          const { data: { session } } = await supabase.auth.getSession();
+          // Check for existing session with timeout protection
+          const { data: { session } } = await withTimeout(
+            supabase.auth.getSession(),
+            AUTH_TIMEOUT_MS
+          );
 
           if (session) {
             set({
@@ -72,21 +88,46 @@ export const useAuthStore = create<AuthState>()(
               isAuthenticated: true,
             });
 
-            const { data: profile, error } = await supabase
-              .from('users')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
+            // Fetch profile with timeout protection
+            try {
+              const fetchProfile = async () => {
+                const { data, error } = await supabase
+                  .from('users')
+                  .select('*')
+                  .eq('id', session.user.id)
+                  .single();
+                return { data, error };
+              };
 
-            if (!error && profile) {
-              set({ profile });
+              const profileResult = await withTimeout(
+                fetchProfile(),
+                AUTH_TIMEOUT_MS
+              );
+
+              if (!profileResult.error && profileResult.data) {
+                set({ profile: profileResult.data });
+              }
+            } catch (profileError) {
+              // Profile fetch failed but we still have the session
+              // Log and continue - user can still use the app
+              console.warn('Failed to fetch profile during init:', profileError);
             }
           }
 
           set({ isLoading: false });
         } catch (error) {
-          console.error('Failed to initialize auth:', error);
-          set({ isLoading: false });
+          // Handle timeout or other errors gracefully
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          console.error('Failed to initialize auth:', errorMessage);
+
+          // Don't crash the app - treat as "not logged in" state
+          set({
+            user: null,
+            session: null,
+            profile: null,
+            isAuthenticated: false,
+            isLoading: false,
+          });
         }
       },
 

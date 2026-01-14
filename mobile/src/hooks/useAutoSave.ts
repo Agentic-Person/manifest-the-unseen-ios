@@ -61,6 +61,9 @@ interface UseAutoSaveReturn {
  * );
  * ```
  */
+// Maximum time to show "saving" state before resetting (10 seconds)
+const SAVE_TIMEOUT_MS = 10000;
+
 export function useAutoSave<T extends Record<string, unknown>>({
   data,
   phaseNumber,
@@ -73,32 +76,64 @@ export function useAutoSave<T extends Record<string, unknown>>({
 }: UseAutoSaveOptions<T>): UseAutoSaveReturn {
   const { mutate: save, isPending, isError, error } = useSaveWorkbook();
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  // Local saving state that we control - doesn't rely solely on React Query's isPending
+  const [isSavingLocal, setIsSavingLocal] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstRender = useRef(true);
   const dataRef = useRef(data);
 
   // Keep data ref updated for use in callbacks
   dataRef.current = data;
 
+  // Clear the save timeout
+  const clearSaveTimeout = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+  }, []);
+
+  // Start local saving state with safety timeout
+  const startSaving = useCallback(() => {
+    setIsSavingLocal(true);
+    clearSaveTimeout();
+
+    // Safety timeout: reset saving state after 10 seconds max
+    saveTimeoutRef.current = setTimeout(() => {
+      console.warn('[useAutoSave] Save timeout reached - resetting saving state');
+      setIsSavingLocal(false);
+    }, SAVE_TIMEOUT_MS);
+  }, [clearSaveTimeout]);
+
+  // End local saving state
+  const endSaving = useCallback(() => {
+    setIsSavingLocal(false);
+    clearSaveTimeout();
+  }, [clearSaveTimeout]);
+
   // Perform the save operation
   const performSave = useCallback((options?: { completed?: boolean }) => {
+    startSaving();
     onSaveStart?.();
     save(
       { phaseNumber, worksheetId, data: dataRef.current, completed: options?.completed ?? false },
       {
         onSuccess: () => {
+          endSaving();
           const now = new Date();
           setLastSaved(now);
           onSaveSuccess?.(now);
         },
         onError: (err) => {
+          endSaving();
           // Always log errors to console for debugging
           console.error(`[useAutoSave] Failed to save phase ${phaseNumber}, worksheet ${worksheetId}:`, err);
           onSaveError?.(err as Error);
         },
       }
     );
-  }, [phaseNumber, worksheetId, save, onSaveStart, onSaveSuccess, onSaveError]);
+  }, [phaseNumber, worksheetId, save, startSaving, endSaving, onSaveStart, onSaveSuccess, onSaveError]);
 
   // Debounced save function
   const debouncedSave = useCallback(() => {
@@ -142,11 +177,16 @@ export function useAutoSave<T extends Record<string, unknown>>({
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      clearSaveTimeout();
     };
-  }, []);
+  }, [clearSaveTimeout]);
+
+  // Use local saving state as primary, with isPending as fallback
+  // This ensures we control the state and it can be reset by our safety timeout
+  const isSaving = isSavingLocal || isPending;
 
   return {
-    isSaving: isPending,
+    isSaving,
     isError,
     error: error as Error | null,
     lastSaved,

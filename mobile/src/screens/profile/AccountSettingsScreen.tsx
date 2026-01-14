@@ -118,8 +118,22 @@ const AccountSettingsScreen = (_props: Props) => {
     setIsDeleting(true);
     setDeleteError(null);
 
+    // Timeout protection: 15 seconds max for delete operation
+    const DELETION_TIMEOUT_MS = 15000;
+
     try {
-      const result = await authService.deleteAccount(deletePassword);
+      // Create a promise that rejects after timeout
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('TIMEOUT'));
+        }, DELETION_TIMEOUT_MS);
+      });
+
+      // Race between delete operation and timeout
+      const result = await Promise.race([
+        authService.deleteAccount(deletePassword),
+        timeoutPromise,
+      ]);
 
       if (result.error) {
         setDeleteError(result.error.message);
@@ -143,7 +157,12 @@ const AccountSettingsScreen = (_props: Props) => {
       // Navigation will happen automatically when auth state changes
 
     } catch (error) {
-      setDeleteError('An unexpected error occurred. Please try again.');
+      // Handle timeout specifically
+      if (error instanceof Error && error.message === 'TIMEOUT') {
+        setDeleteError('Request timed out. Please check your connection and try again.');
+      } else {
+        setDeleteError('An unexpected error occurred. Please try again.');
+      }
       setIsDeleting(false);
     }
   };
