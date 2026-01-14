@@ -4,7 +4,7 @@
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission - 3rd Attempt)
-**Status**: 🟡 **BUILD 45 CODE READY** - Supabase Apple provider config in progress
+**Status**: 🟢 **BUILD 45 READY FOR SUBMISSION** - All Apple Sign-In configuration complete
 
 ---
 
@@ -58,20 +58,26 @@ e515a46 fix: Apple App Store rejection - Sign in with Apple button and iPad fixe
 | Key ID | `SHNNVJ7L5Z` |
 | Private Key | (contents of downloaded .p8 file) |
 
-### Remaining Steps - IN PROGRESS
+### Supabase Apple Provider Configuration Completed ✅
 
-1. **Configure Supabase Apple Provider** (NEXT)
-   - Go to Supabase Dashboard > Authentication > Providers > Apple
-   - Toggle Apple provider ON
-   - Enter credentials from table above
-   - Paste .p8 file contents as Private Key
+**Configured via Supabase Dashboard > Authentication > Providers > Apple:**
+- Apple provider: ENABLED
+- Authorized Client IDs: `com.manifesttheunseen.app`
+- Secret Key: (not required for native iOS authentication)
+- Status: "Successfully updated settings" confirmed
 
-2. **Test on iPad** - Verify Sign in with Apple works after Supabase config
+**Note**: For native iOS Sign in with Apple (using `expo-apple-authentication`), the Secret Key/Private Key is NOT required in Supabase. The native flow handles authentication directly with Apple on-device, then sends the identity token to Supabase. The Secret Key is only needed for web-based OAuth flows.
 
-3. **Build & Submit**
+### Remaining Steps
+
+1. ✅ ~~Configure Supabase Apple Provider~~ - DONE
+
+2. **Build & Submit** (NEXT)
    ```bash
    cd mobile && eas build --platform ios --profile production
    ```
+
+3. **Test on iPad** - Verify Sign in with Apple works with new build
 
 4. **Submit to App Store Connect**
 
