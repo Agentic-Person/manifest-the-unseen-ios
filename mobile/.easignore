@@ -18,6 +18,9 @@ src/assets/images - Copy/
 ../snips/
 ../.private/
 
+# Snips folder (240MB of code snippets)
+../snips/
+
 # Development files
 *.md
 !README.md
