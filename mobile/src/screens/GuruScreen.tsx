@@ -272,6 +272,14 @@ export function GuruScreen() {
         )}
       </View>
 
+      {/* Disclaimer Footer */}
+      <View style={styles.disclaimerFooter}>
+        <Ionicons name="information-circle-outline" size={14} color={colors.text.tertiary} style={styles.disclaimerIcon} />
+        <Text style={styles.disclaimerText}>
+          AI guidance is not professional medical or psychological advice
+        </Text>
+      </View>
+
       {/* Input - wrapped with bottom margin for tab bar clearance */}
       <View style={styles.inputWrapper}>
         <ChatInput onSend={handleSend} disabled={isSending} />
@@ -432,6 +440,24 @@ const styles = StyleSheet.create({
   },
   typingContainer: {
     paddingHorizontal: spacing.md,
+  },
+  disclaimerFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    backgroundColor: colors.background.elevated,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.default,
+  },
+  disclaimerIcon: {
+    marginRight: spacing.xs,
+  },
+  disclaimerText: {
+    fontSize: 12,
+    color: colors.text.tertiary,
+    textAlign: 'center',
   },
   inputWrapper: {
     marginBottom: 80,

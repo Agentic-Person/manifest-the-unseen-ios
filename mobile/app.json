@@ -19,12 +19,20 @@
       "bundleIdentifier": "com.manifesttheunseen.app",
       "buildNumber": "47",
       "usesAppleSignIn": true,
+      "config": {
+        "privacyManifestAggregationEnabled": true
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPICategoryUserDefaults": {
+          "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+        }
+      },
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
         ],
         "ITSAppUsesNonExemptEncryption": false,
-        "NSMicrophoneUsageDescription": "Manifest the Unseen needs microphone access to record voice journal entries for transcription.",
+        "NSMicrophoneUsageDescription": "Record voice journal entries that are transcribed on your device. Audio never leaves your device—only text is saved.",
         "NSPhotoLibraryUsageDescription": "Manifest the Unseen needs photo library access to add images to your vision board and profile picture.",
         "NSCameraUsageDescription": "Manifest the Unseen needs camera access to take photos for your vision board.",
         "NSFaceIDUsageDescription": "Manifest the Unseen uses Face ID to secure your personal journal entries and workbook data."

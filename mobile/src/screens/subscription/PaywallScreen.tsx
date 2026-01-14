@@ -19,6 +19,7 @@ import {
   Pressable,
   Alert,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -884,9 +885,13 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
               your Apple ID account at confirmation of purchase.
             </Text>
             <View style={styles.legalLinks}>
-              <Text style={styles.legalLink}>Terms of Service</Text>
+              <Pressable onPress={() => Linking.openURL('https://manifesttheunseen.app/terms')}>
+                <Text style={styles.legalLink}>Terms of Service</Text>
+              </Pressable>
               <Text style={styles.legalSeparator}> • </Text>
-              <Text style={styles.legalLink}>Privacy Policy</Text>
+              <Pressable onPress={() => Linking.openURL('https://manifesttheunseen.app/privacy')}>
+                <Text style={styles.legalLink}>Privacy Policy</Text>
+              </Pressable>
             </View>
           </View>
         </ScrollView>
