@@ -1,14 +1,97 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-11 (Guru Bug Fix + Meditation Content Planning)
+**Last Updated**: 2026-01-13 (Apple App Store Rejection Fix - Build 45)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
-**Timeline**: Week 8 of 28 (App Store Submission Complete)
-**Status**: 🟢 **BUILD 44 READY FOR APP STORE** - Production build with all fixes included
+**Timeline**: Week 8 of 28 (App Store Submission - 3rd Attempt)
+**Status**: 🟡 **BUILD 45 CODE READY** - Supabase Apple provider config in progress
 
 ---
 
-## 🧘 MEDITATION SYSTEM AUDIT & GURU BUG FIX - January 11, 2026
+## 🍎 APPLE APP STORE REJECTION FIX - January 13, 2026
+
+### Summary
+Third App Store rejection addressed. Apple cited two issues:
+1. **Guideline 4.0 (Design)**: Sign in with Apple button missing Apple logo
+2. **Guideline 2.1 (Performance)**: "Provider is not enabled" error on iPad after Sign in with Apple
+
+### Root Causes Identified
+1. Custom `Button` component used instead of official `AppleAuthenticationButton`
+2. Missing `usesAppleSignIn: true` in app.json
+3. **Supabase Apple provider was NOT configured** (primary cause of iPad error)
+4. iPad sign out button touch handling issues
+
+### Code Changes Completed ✅
+
+| File | Change |
+|------|--------|
+| `mobile/app.json` | Added `usesAppleSignIn: true`, incremented build to 45 |
+| `mobile/src/screens/auth/LoginScreen.tsx` | Replaced custom Button with official `AppleAuthenticationButton` |
+| `mobile/src/screens/auth/SignupScreen.tsx` | Replaced custom Button with official `AppleAuthenticationButton` |
+| `mobile/src/screens/ProfileScreen.tsx` | Improved sign out button touch handling (hitSlop, minHeight, keyboardShouldPersistTaps) |
+
+### Commit
+```
+e515a46 fix: Apple App Store rejection - Sign in with Apple button and iPad fixes
+```
+
+### Apple Developer Portal Configuration Completed ✅
+
+**Services ID Configuration:**
+- Services ID: `app.manifesttheunseen`
+- Sign in with Apple: ENABLED
+- Domain: `zbyszxtwzoylyygtexdr.supabase.co`
+- Return URL: `https://zbyszxtwzoylyygtexdr.supabase.co/auth/v1/callback`
+- Primary App ID: `ZGGFWCAT7B.com.manifesttheunseen.app`
+
+**New Sign in with Apple Key Created:**
+- Key Name: `MTU Supabase Auth Key`
+- Key ID: `SHNNVJ7L5Z`
+- .p8 private key file: DOWNLOADED (saved locally)
+
+**Important Credentials for Supabase:**
+| Field | Value |
+|-------|-------|
+| Services ID | `app.manifesttheunseen` |
+| Authorized Client IDs | `com.manifesttheunseen.app` |
+| Team ID | `ZGGFWCAT7B` |
+| Key ID | `SHNNVJ7L5Z` |
+| Private Key | (contents of downloaded .p8 file) |
+
+### Remaining Steps - IN PROGRESS
+
+1. **Configure Supabase Apple Provider** (NEXT)
+   - Go to Supabase Dashboard > Authentication > Providers > Apple
+   - Toggle Apple provider ON
+   - Enter credentials from table above
+   - Paste .p8 file contents as Private Key
+
+2. **Test on iPad** - Verify Sign in with Apple works after Supabase config
+
+3. **Build & Submit**
+   ```bash
+   cd mobile && eas build --platform ios --profile production
+   ```
+
+4. **Submit to App Store Connect**
+
+### Previous Rejection Details (January 11, 2026)
+
+**Review Environment:**
+- Submission ID: 6f2c691d-e993-4ed2-ad15-639a416fe91b
+- Review Device: iPad Air 11-inch (M3)
+- iPadOS Version: 26.2
+- Version: 1.0.0
+
+**Screenshots from Apple Review:**
+- Login screen showing custom gold-bordered "Sign in with Apple" button (no Apple logo)
+- Error message: `Provider (issuer "https://appleid.apple.com") is not enabled`
+
+---
+
+## Previous Activity
+
+### 🧘 MEDITATION SYSTEM AUDIT & GURU BUG FIX - January 11, 2026
 
 ### Summary
 Audited the meditation/prayer/breathing system and fixed a critical bug in the Guru AI that was preventing dynamic content recommendations from working.
