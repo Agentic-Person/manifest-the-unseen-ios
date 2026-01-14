@@ -49,7 +49,7 @@ export function usePhaseExercises(
   phaseNumber: number,
   exercises: ExerciseConfig[]
 ) {
-  const { data: phaseProgress, isLoading, refetch } = usePhaseProgress(phaseNumber);
+  const { data: phaseProgress, isLoading, isError, error, refetch } = usePhaseProgress(phaseNumber);
 
   const exercisesWithProgress = useMemo<ExerciseWithProgress[]>(() => {
     return exercises.map((exercise) => {
@@ -98,6 +98,8 @@ export function usePhaseExercises(
     totalCount,
     overallProgress,
     isLoading,
+    isError,
+    error,
     refetch,
   };
 }

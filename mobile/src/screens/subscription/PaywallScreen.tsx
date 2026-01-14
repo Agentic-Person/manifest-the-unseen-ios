@@ -10,7 +10,7 @@
  * - Enlightenment: + Coming Soon features (journaling, full AI chat)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -358,6 +358,9 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   const [showDebug, setShowDebug] = useState(false);
   const [titleTapCount, setTitleTapCount] = useState(0);
 
+  // Ref to prevent rapid taps causing race conditions
+  const purchaseInProgressRef = useRef(false);
+
   // Handle title tap for debug toggle
   const handleTitleTap = () => {
     const newCount = titleTapCount + 1;
@@ -408,8 +411,15 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   /**
    * Handle Purchase
    * Uses package ID to select the correct offering
+   * Includes debouncing to prevent rapid taps causing race conditions
    */
   const handlePurchase = async (packageId: PackageId) => {
+    // Prevent concurrent purchase attempts (debouncing)
+    if (purchaseInProgressRef.current) {
+      console.log('[Paywall] Purchase already in progress, ignoring tap');
+      return;
+    }
+
     if (!offerings) {
       Alert.alert('Error', 'Subscription packages are not available yet. Please try again.');
       return;
@@ -422,6 +432,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
       return;
     }
 
+    // Set debounce flag
+    purchaseInProgressRef.current = true;
     setPurchasingPackageId(packageId);
 
     try {
@@ -463,6 +475,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
       console.error('[Paywall] Purchase error:', error);
       Alert.alert('Error', error.message || 'An unexpected error occurred. Please try again.');
     } finally {
+      // Always reset both the ref and state
+      purchaseInProgressRef.current = false;
       setPurchasingPackageId(null);
     }
   };

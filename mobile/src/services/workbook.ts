@@ -80,14 +80,40 @@ export const getWorkbookProgress = async (
 export const getAllWorkbookProgress = async (
   userId: string
 ): Promise<WorkbookProgress[]> => {
-  const { data, error } = await supabase
-    .from('workbook_progress')
-    .select('*')
-    .eq('user_id', userId)
-    .order('phase_number', { ascending: true });
+  if (__DEV__) {
+    console.log('[workbook.service] Starting getAllWorkbookProgress query');
+  }
 
-  if (error) throw error;
-  return (data as WorkbookProgress[]) || [];
+  try {
+    const queryPromise = supabase
+      .from('workbook_progress')
+      .select('*')
+      .eq('user_id', userId)
+      .order('phase_number', { ascending: true }).then(r => r);
+
+    // Add timeout to prevent infinite loading if Supabase SDK hangs
+    const { data, error } = await withTimeout(
+      queryPromise,
+      5000, // 5 second timeout
+      { data: [], error: { code: 'TIMEOUT', message: 'Query timed out' } } as any
+    );
+
+    if (__DEV__) {
+      console.log('[workbook.service] getAllWorkbookProgress completed:', { hasData: !!data, count: data?.length, error });
+    }
+
+    // TIMEOUT is acceptable - return empty array
+    if (error && error.code === 'TIMEOUT') {
+      console.warn('[workbook.service] getAllWorkbookProgress timed out - returning empty array');
+      return [];
+    }
+
+    if (error) throw error;
+    return (data as WorkbookProgress[]) || [];
+  } catch (err) {
+    console.error('[workbook.service] Exception in getAllWorkbookProgress:', err);
+    throw err;
+  }
 };
 
 /**
@@ -97,16 +123,9 @@ export const getPhaseProgress = async (
   userId: string,
   phaseNumber: number
 ): Promise<{ completed: number; total: number; worksheets: WorkbookProgress[] }> => {
-  const { data, error } = await supabase
-    .from('workbook_progress')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('phase_number', phaseNumber);
-
-  if (error) throw error;
-
-  const worksheets = (data as WorkbookProgress[]) || [];
-  const completed = worksheets.filter((w) => w.completed).length;
+  if (__DEV__) {
+    console.log('[workbook.service] Starting getPhaseProgress query:', { phaseNumber });
+  }
 
   // Total worksheets per phase (from PRD)
   const totalPerPhase: Record<number, number> = {
@@ -122,11 +141,48 @@ export const getPhaseProgress = async (
     10: 3,
   };
 
-  return {
-    completed,
-    total: totalPerPhase[phaseNumber] || 3,
-    worksheets,
-  };
+  try {
+    const queryPromise = supabase
+      .from('workbook_progress')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('phase_number', phaseNumber).then(r => r);
+
+    // Add timeout to prevent infinite loading if Supabase SDK hangs
+    const { data, error } = await withTimeout(
+      queryPromise,
+      5000, // 5 second timeout
+      { data: [], error: { code: 'TIMEOUT', message: 'Query timed out' } } as any
+    );
+
+    if (__DEV__) {
+      console.log('[workbook.service] getPhaseProgress completed:', { phaseNumber, hasData: !!data, count: data?.length, error });
+    }
+
+    // TIMEOUT is acceptable - return empty progress
+    if (error && error.code === 'TIMEOUT') {
+      console.warn('[workbook.service] getPhaseProgress timed out - returning empty worksheets');
+      return {
+        completed: 0,
+        total: totalPerPhase[phaseNumber] || 3,
+        worksheets: [],
+      };
+    }
+
+    if (error) throw error;
+
+    const worksheets = (data as WorkbookProgress[]) || [];
+    const completed = worksheets.filter((w) => w.completed).length;
+
+    return {
+      completed,
+      total: totalPerPhase[phaseNumber] || 3,
+      worksheets,
+    };
+  } catch (err) {
+    console.error('[workbook.service] Exception in getPhaseProgress:', err);
+    throw err;
+  }
 };
 
 /**

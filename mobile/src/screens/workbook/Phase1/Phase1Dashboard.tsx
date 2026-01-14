@@ -180,6 +180,9 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
     totalCount,
     overallProgress,
     isLoading,
+    isError,
+    error,
+    refetch,
   } = usePhaseExercises(1, PHASE1_EXERCISES);
   /**
    * Handle exercise card press - navigate to appropriate screen
@@ -228,6 +231,25 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary[600]} />
+      </View>
+    );
+  }
+
+  // Show error state with retry option
+  if (isError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorTitle}>Unable to Load Exercises</Text>
+        <Text style={styles.errorMessage}>
+          {error instanceof Error ? error.message : 'Something went wrong while loading your progress.'}
+        </Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => refetch()}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -322,6 +344,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background.secondary,
+  },
+  // Error State Styles
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background.secondary,
+    padding: spacing.xl,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: colors.text.primary,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 15,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+    lineHeight: 22,
+  },
+  retryButton: {
+    backgroundColor: colors.primary[600],
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+  },
+  retryButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.white,
   },
   // New Header Styles
   newHeader: {

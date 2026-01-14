@@ -275,7 +275,6 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
             trialEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
             expirationDate: null,
             willRenew: true,
-            isPurchasing: false,
             error: null,
           });
         } else if (result.customerInfo) {
@@ -295,20 +294,19 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
             }
           }
           // Refresh subscription info to get accurate state from RevenueCat
-          await get().loadSubscription();
-          set({ isPurchasing: false });
-        } else {
-          set({ isPurchasing: false });
+          // Wrap in try/catch so loadSubscription failure doesn't prevent isPurchasing reset
+          try {
+            await get().loadSubscription();
+          } catch (loadError) {
+            console.error('[Subscription] Failed to reload subscription after purchase:', loadError);
+          }
         }
-      } else {
-        set({ isPurchasing: false });
       }
 
       return result;
     } catch (error: any) {
       console.error('Purchase failed:', error);
       set({
-        isPurchasing: false,
         error: error.message || 'Purchase failed',
       });
 
@@ -316,6 +314,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         success: false,
         error,
       };
+    } finally {
+      // Always reset isPurchasing state, regardless of success or failure
+      set({ isPurchasing: false });
     }
   },
 
