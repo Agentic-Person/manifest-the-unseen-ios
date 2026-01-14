@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-13 (Build 46 - Spinner Fixes)
+**Last Updated**: 2026-01-14 (Build 47 - Comprehensive Spinner Fixes)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission - 3rd Attempt)
-**Status**: 🟡 **BUILD 46 IN TESTFLIGHT** - Testing spinner fixes before App Store submission
+**Status**: 🟡 **BUILD 47 IN TESTFLIGHT** - Testing comprehensive spinner fixes before App Store submission
 
 ---
 
@@ -72,9 +72,81 @@ e515a46 fix: Apple App Store rejection - Sign in with Apple button and iPad fixe
 
 1. ✅ ~~Configure Supabase Apple Provider~~ - DONE
 2. ✅ ~~Build 45~~ - Built and tested, found spinner issues
-3. ✅ ~~Fix spinner issues~~ - Build 46 created
-4. **Test Build 46 on iPad** (IN PROGRESS) - Verify all fixes work
-5. **Submit to App Store Connect** - After successful testing
+3. ✅ ~~Fix spinner issues (Build 46)~~ - Fixed Phase 1 loading + subscription spinners
+4. ✅ ~~Fix more spinner issues (Build 47)~~ - Fixed workbook save + auth init + account deletion
+5. **Test Build 47 on iPad** (IN PROGRESS) - Verify all fixes work
+6. **Submit to App Store Connect** - After successful testing
+
+---
+
+## 🔄 COMPREHENSIVE SPINNER FIXES - January 14, 2026 (Build 47)
+
+### Summary
+During Build 46 testing on iPad, discovered additional spinner issues in workbook save functionality and identified app-wide loading state vulnerabilities through comprehensive audit.
+
+### Full App Spinner Audit Completed
+Audited 84+ files with loading states, 45 files using ActivityIndicator, 7 React Query mutation hooks, and 4 Zustand stores.
+
+### Issue 1: Workbook Save Spinner Stuck (Phase IV and all phases)
+
+**Symptoms:** "Saving..." indicator spins forever when editing workbook exercises and scrolling.
+
+**Root Causes Identified:**
+1. React Query mutation `isPending` state could get stuck due to callback architecture
+2. `SaveIndicator` only checked `isSaving`, no fallback for stuck states
+3. No safety timeout to recover from stuck saves
+
+**Fixes Applied:**
+
+| File | Change |
+|------|--------|
+| `mobile/src/hooks/useAutoSave.ts` | Added local `isSavingLocal` state with 10-second safety timeout; always resets even if React Query gets confused |
+| `mobile/src/components/workbook/SaveIndicator.tsx` | Added "recently saved" fallback if `lastSaved` within 5 seconds; shows warning with retry option after 10 seconds stuck |
+
+### Issue 2: Auth Initialization Can Hang Forever
+
+**Symptoms:** App stuck on loading screen if Supabase is slow or unavailable.
+
+**Root Cause:** `authStore.initialize()` had NO timeout on `getSession()` or profile fetch.
+
+**Fix Applied:**
+
+| File | Change |
+|------|--------|
+| `mobile/src/stores/authStore.ts` | Added 10-second timeout to both `getSession()` and profile fetch; gracefully treats timeout as "not logged in" state |
+
+### Issue 3: Account Deletion Can Hang Forever
+
+**Symptoms:** Delete account spinner never stops if operation fails.
+
+**Root Cause:** `authService.deleteAccount()` call had no timeout protection.
+
+**Fix Applied:**
+
+| File | Change |
+|------|--------|
+| `mobile/src/screens/profile/AccountSettingsScreen.tsx` | Added 15-second timeout with user-friendly error message; resets `isDeleting` state on timeout |
+
+### Commits
+```
+7830997 fix: comprehensive spinner/loading state fixes across app
+4d76197 build: increment iOS build number to 47
+```
+
+### Build 47 Details
+- **Build ID**: `0975d97f-32ba-448d-9d37-1e793497e9a9`
+- **TestFlight**: https://appstoreconnect.apple.com/apps/6756403109/testflight/ios
+- **IPA**: https://expo.dev/artifacts/eas/2aKQFQonCdVcQajyGPeYYz.ipa
+
+### Testing Checklist for Build 47
+- [ ] Workbook save indicator works properly (shows "Saved" or recovers from stuck)
+- [ ] App launches without hanging (even on slow network)
+- [ ] Account deletion shows timeout error if slow (doesn't hang)
+- [ ] All previous Build 46 fixes still work:
+  - [ ] Phase 1 workbook loads or shows error with retry
+  - [ ] Subscription switching completes properly
+  - [ ] Sign in with Apple works on iPad
+  - [ ] Sign out button responds on iPad
 
 ---
 
