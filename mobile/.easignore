@@ -1,0 +1,70 @@
+# EAS Build Ignore File
+# Excludes unnecessary files from the build to reduce size
+
+# Large audio files - meditation audio is streamed from Supabase Storage
+../meditation-audio/
+
+# Original uncompressed images - use images-compressed instead
+src/assets/images/
+src/assets/images - Copy/
+
+# Documentation and marketing (not needed in app)
+../docs/
+../marketing/
+../test-screenshots/
+../web/
+../tools/
+../scripts/
+../snips/
+../.private/
+
+# Development files
+*.md
+!README.md
+../CLAUDE.md
+../design-mockup.html
+../*.png
+../package.json
+../package-lock.json
+../tsconfig.json
+../.eslintrc.js
+../.prettierrc
+../.prettierignore
+../.lintstagedrc.json
+
+# Supabase local dev (functions deploy separately)
+../supabase/
+
+# Git and IDE
+../.git/
+../.vscode/
+../.expo/
+.expo/
+
+# Test files
+tests/
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+playwright.config.ts
+
+# Debug and temporary files
+*.log
+*.tmp
+DEBUG_*.md
+ENCRYPTION_*.md
+ENVIRONMENT_*.md
+EAS_SECRETS_*.md
+SETUP_*.md
+INSTALL_*.md
+NAVIGATION_*.md
+audit_report.json
+nul
+
+# Android (iOS-only build)
+android/
+
+# Node modules at root level (mobile has its own)
+../node_modules/
+../packages/
