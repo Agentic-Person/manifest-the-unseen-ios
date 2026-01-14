@@ -1,10 +1,10 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-13 (Apple App Store Rejection Fix - Build 45)
+**Last Updated**: 2026-01-13 (Build 46 - Spinner Fixes)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission - 3rd Attempt)
-**Status**: 🟢 **BUILD 45 READY FOR SUBMISSION** - All Apple Sign-In configuration complete
+**Status**: 🟡 **BUILD 46 IN TESTFLIGHT** - Testing spinner fixes before App Store submission
 
 ---
 
@@ -71,15 +71,70 @@ e515a46 fix: Apple App Store rejection - Sign in with Apple button and iPad fixe
 ### Remaining Steps
 
 1. ✅ ~~Configure Supabase Apple Provider~~ - DONE
+2. ✅ ~~Build 45~~ - Built and tested, found spinner issues
+3. ✅ ~~Fix spinner issues~~ - Build 46 created
+4. **Test Build 46 on iPad** (IN PROGRESS) - Verify all fixes work
+5. **Submit to App Store Connect** - After successful testing
 
-2. **Build & Submit** (NEXT)
-   ```bash
-   cd mobile && eas build --platform ios --profile production
-   ```
+---
 
-3. **Test on iPad** - Verify Sign in with Apple works with new build
+## 🔄 INFINITE SPINNER FIXES - January 13, 2026 (Build 46)
 
-4. **Submit to App Store Connect**
+### Summary
+During Build 45 testing, discovered infinite spinner issues in workbook Phase 1 and subscription plan switching. Both issues investigated and fixed in Build 46.
+
+### Issue 1: Workbook Phase 1 Infinite Spinner
+
+**Symptoms:** Phase 1 Self-Evaluation screen shows gold spinner indefinitely, never loads exercises.
+
+**Root Causes Identified:**
+1. `getPhaseProgress()` and `getAllWorkbookProgress()` had no timeout protection - queries could hang forever
+2. `Phase1Dashboard` only checked `isLoading`, never showed error state if query failed
+3. React Query retry logic caused 7+ seconds of apparent "hanging" on failures
+
+**Fixes Applied:**
+
+| File | Change |
+|------|--------|
+| `mobile/src/services/workbook.ts` | Added 5-second timeout to `getPhaseProgress()` and `getAllWorkbookProgress()` with fallback values |
+| `mobile/src/screens/workbook/Phase1/Phase1Dashboard.tsx` | Added error state UI with "Retry" button |
+| `mobile/src/hooks/usePhaseExercises.ts` | Updated hook to return `isError`, `error`, and `refetch` |
+
+### Issue 2: Subscription Plan Switching Hangs
+
+**Symptoms:** Switching subscription tiers (e.g., Enlightenment → Novice) causes infinite spinner, especially on "Start free trial" button.
+
+**Root Causes Identified:**
+1. `purchasePackage()` action didn't always reset `isPurchasing` state (multiple code paths)
+2. If `loadSubscription()` timed out after purchase, spinner never cleared
+3. No debouncing - rapid taps caused race conditions with conflicting state updates
+
+**Fixes Applied:**
+
+| File | Change |
+|------|--------|
+| `mobile/src/stores/subscriptionStore.ts` | Added `finally` block to always reset `isPurchasing`; wrapped `loadSubscription()` in try/catch |
+| `mobile/src/screens/subscription/PaywallScreen.tsx` | Added `purchaseInProgressRef` for debouncing; prevents concurrent purchase attempts |
+
+### Commits
+```
+69240b5 fix: resolve infinite spinner issues in workbook and subscription screens
+4a6db6c build: increment iOS build number to 46
+```
+
+### Build 46 Details
+- **Build ID**: `d767516f-bd56-4beb-b1ed-30839c1c9cb3`
+- **TestFlight**: https://appstoreconnect.apple.com/apps/6756403109/testflight/ios
+- **IPA**: https://expo.dev/artifacts/eas/sAJSX3hHk52upG523RwMR6.ipa
+
+### Testing Checklist for Build 46
+- [ ] Phase 1 workbook loads exercises (or shows error with retry button)
+- [ ] Subscription switching completes (spinner always stops)
+- [ ] Rapid taps on purchase button are debounced
+- [ ] Sign in with Apple works on iPad
+- [ ] Sign out button responds on iPad
+
+---
 
 ### Previous Rejection Details (January 11, 2026)
 
