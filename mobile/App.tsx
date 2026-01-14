@@ -5,7 +5,7 @@
  * Sets up providers for navigation, state management, and server state.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -20,6 +20,7 @@ import { queryClient } from './src/services/queryClient';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { configurePurchases, setUserId } from './src/services/subscriptionService';
 import { FontSizeProvider } from './src/contexts/FontSizeContext';
+import { DisclaimerScreen, hasAcceptedDisclaimer } from './src/screens/onboarding/DisclaimerScreen';
 
 // Import stores for initialization
 import { useAppStore } from './src/stores/appStore';
@@ -36,10 +37,42 @@ const App = () => {
   const loadOfferings = useSubscriptionStore((state) => state.loadOfferings);
   const user = useAuthStore((state) => state.user);
 
+  // Health disclaimer state
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [disclaimerChecked, setDisclaimerChecked] = useState(false);
+
   /**
-   * Initialize App
+   * Check Disclaimer Acceptance
+   * This runs first to determine if we need to show the disclaimer
    */
   useEffect(() => {
+    const checkDisclaimer = async () => {
+      try {
+        const accepted = await hasAcceptedDisclaimer();
+        setDisclaimerAccepted(accepted);
+        setDisclaimerChecked(true);
+        console.log('✅ Disclaimer check complete:', accepted ? 'Accepted' : 'Not accepted');
+      } catch (error) {
+        console.error('❌ Disclaimer check error:', error);
+        // On error, assume accepted to avoid blocking app
+        setDisclaimerAccepted(true);
+        setDisclaimerChecked(true);
+      }
+    };
+
+    checkDisclaimer();
+  }, []);
+
+  /**
+   * Initialize App
+   * Only runs after disclaimer is checked and accepted
+   */
+  useEffect(() => {
+    // Don't initialize until disclaimer is checked and accepted
+    if (!disclaimerChecked || !disclaimerAccepted) {
+      return;
+    }
+
     const initializeApp = async () => {
       try {
         console.log('🚀 Initializing Manifest the Unseen...');
@@ -89,8 +122,28 @@ const App = () => {
     };
 
     initializeApp();
-  }, [setAppReady, loadSubscription, loadOfferings, user]);
+  }, [disclaimerChecked, disclaimerAccepted, setAppReady, loadSubscription, loadOfferings, user]);
 
+  /**
+   * Handle Disclaimer Acceptance
+   */
+  const handleDisclaimerAccept = () => {
+    setDisclaimerAccepted(true);
+    console.log('✅ Disclaimer accepted by user');
+  };
+
+  // Show disclaimer if not yet checked or not accepted
+  if (!disclaimerChecked || !disclaimerAccepted) {
+    return (
+      <GestureHandlerRootView style={styles.container}>
+        <SafeAreaProvider>
+          <DisclaimerScreen onAccept={handleDisclaimerAccept} />
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    );
+  }
+
+  // Show main app after disclaimer accepted
   return (
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
