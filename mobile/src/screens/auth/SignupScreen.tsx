@@ -12,6 +12,8 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  Linking,
+  Pressable,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -311,10 +313,34 @@ export const SignupScreen: React.FC = () => {
           <View style={[styles.checkbox, agreeToTerms && styles.checkboxChecked]}>
             {agreeToTerms && <Text style={styles.checkmark}>✓</Text>}
           </View>
-          <Text variant="body" style={styles.termsText}>
-            I agree to the{' '}
-            <Text style={styles.termsLink}>Terms and Conditions</Text>
-          </Text>
+          <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
+            <Text variant="body" style={styles.termsText}>
+              I agree to the{' '}
+            </Text>
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                Linking.openURL('https://manifesttheunseen.app/terms');
+              }}
+            >
+              <Text variant="body" style={[styles.termsText, styles.termsLink]}>
+                Terms of Service
+              </Text>
+            </Pressable>
+            <Text variant="body" style={styles.termsText}>
+              {' and '}
+            </Text>
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                Linking.openURL('https://manifesttheunseen.app/privacy');
+              }}
+            >
+              <Text variant="body" style={[styles.termsText, styles.termsLink]}>
+                Privacy Policy
+              </Text>
+            </Pressable>
+          </View>
         </TouchableOpacity>
 
         {/* Sign Up Button */}
