@@ -53,9 +53,7 @@ export const CompletionButton: React.FC<CompletionButtonProps> = ({
           )}
         </LinearGradient>
       </TouchableOpacity>
-      {isAutoCompleted && (
-        <Text style={styles.hint}>All required fields filled!</Text>
-      )}
+      {isAutoCompleted && <Text style={styles.hint}>All required fields filled!</Text>}
     </View>
   );
 };

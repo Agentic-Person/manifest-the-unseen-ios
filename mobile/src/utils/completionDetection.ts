@@ -28,9 +28,7 @@ export const detectCompletion = (
   criteria: CompletionCriteria
 ): boolean => {
   // Count filled fields (non-null, non-undefined, non-empty)
-  const filledFields = Object.values(data).filter(
-    v => v !== null && v !== undefined && v !== ''
-  );
+  const filledFields = Object.values(data).filter((v) => v !== null && v !== undefined && v !== '');
 
   // Check if minimum number of fields are filled
   if (criteria.requiredFields !== undefined && filledFields.length < criteria.requiredFields) {
@@ -39,8 +37,8 @@ export const detectCompletion = (
 
   // Check if all fields meet minimum character count
   if (criteria.minCharsPerField !== undefined) {
-    const hasShortFields = Object.values(data).some(v =>
-      typeof v === 'string' && v.trim().length < criteria.minCharsPerField
+    const hasShortFields = Object.values(data).some(
+      (v) => typeof v === 'string' && v.trim().length < criteria.minCharsPerField
     );
     if (hasShortFields) return false;
   }
@@ -48,7 +46,7 @@ export const detectCompletion = (
   // Check if all mandatory fields are filled
   if (criteria.mandatoryFields && criteria.mandatoryFields.length > 0) {
     const allFilled = criteria.mandatoryFields.every(
-      key => data[key] && String(data[key]).trim().length > 0
+      (key) => data[key] && String(data[key]).trim().length > 0
     );
     if (!allFilled) return false;
   }
