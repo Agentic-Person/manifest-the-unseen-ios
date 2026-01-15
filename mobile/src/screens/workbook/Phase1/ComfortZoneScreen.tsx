@@ -21,6 +21,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
@@ -173,13 +174,9 @@ const ZoneSection: React.FC<{
  * Comfort Zone Screen Component
  */
 const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
-      const insets = useSafeAreaInsets();
-
   const insets = useSafeAreaInsets();
-
   const [data, setData] = useState<ComfortZoneData>(DEFAULT_DATA);
   const hasLoadedInitialData = useRef(false);
-  const insets = useSafeAreaInsets();
 
   // Load saved data from Supabase
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.COMFORT_ZONE);
@@ -323,7 +320,6 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
         title="Comfort Zone Map"
         subtitle="Understanding where you feel comfortable, challenged, or overwhelmed helps you plan meaningful growth."
         progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
         isCompleted={savedProgress?.completed || false}
       />
 

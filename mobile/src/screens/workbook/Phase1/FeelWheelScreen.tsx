@@ -20,6 +20,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
 import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
@@ -89,12 +90,10 @@ type Props = WorkbookStackScreenProps<'FeelWheel'>;
  * Feel Wheel Screen Component
  */
 const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
-    const insets = useSafeAreaInsets();
-
+  const insets = useSafeAreaInsets();
   const [values, setValues] = useState<FeelWheelValues>(DEFAULT_VALUES);
   const [selectedEmotion, setSelectedEmotion] = useState<EmotionKey | null>(null);
   const hasLoadedInitialData = useRef(false);
-  const insets = useSafeAreaInsets();
 
   // Load saved data from Supabase
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.FEEL_WHEEL);
@@ -178,7 +177,6 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
         title="Feel Wheel"
         subtitle="Identify and rate the intensity of your current emotions. Understanding your emotional state is key to self-awareness."
         progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
         isCompleted={savedProgress?.completed || false}
       />
 

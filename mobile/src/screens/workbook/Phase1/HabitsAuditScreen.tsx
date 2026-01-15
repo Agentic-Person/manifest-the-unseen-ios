@@ -20,6 +20,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card, Text, Button } from '../../../components';
 import HabitSection, { TimeOfDay, Habit } from '../../../components/workbook/HabitSection';
 import { HabitCategory } from '../../../components/workbook/HabitEntry';
@@ -64,14 +65,9 @@ type Props = WorkbookStackScreenProps<'HabitTracking'>;
  * Habits Audit Screen Component
  */
 const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-  // State for habits data
-    const insets = useSafeAreaInsets();
-
-  const [habitsData, setHabitsData] = useState<HabitsData>(INITIAL_DATA);
-
-  // Track if we've done the initial data load (prevents overwriting user changes on save)
-  const hasLoadedInitialData = useRef(false);
   const insets = useSafeAreaInsets();
+  const [habitsData, setHabitsData] = useState<HabitsData>(INITIAL_DATA);
+  const hasLoadedInitialData = useRef(false);
 
   // Load saved data from Supabase
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.HABITS_AUDIT);
@@ -255,7 +251,6 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         title="Current Habits Audit"
         subtitle="Review your daily routines and identify which habits serve you well and which ones might need changing."
         progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
         isCompleted={savedProgress?.completed || false}
       />
 

@@ -18,6 +18,7 @@ import {
   StyleSheet,
   Animated,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, Button } from '../../../components';
 import { SWOTQuadrant } from '../../../components/workbook/SWOTQuadrant';
 import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';

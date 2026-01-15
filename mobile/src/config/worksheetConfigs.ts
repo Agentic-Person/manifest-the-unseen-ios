@@ -158,7 +158,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
       customValidator: (data) => {
         // Should rate all 12 abilities
         const ratingsData = data as { ratings?: Record<string, number> };
-        return ratingsData.ratings && Object.keys(ratingsData.ratings).length >= 12;
+        return !!(ratingsData.ratings && Object.keys(ratingsData.ratings).length >= 12);
       },
     },
   },
