@@ -7,6 +7,8 @@
 
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { useSaveWorkbook } from './useWorkbook';
+import { getWorksheetConfig } from '../config/worksheetConfigs';
+import { detectCompletion } from '../utils/completionDetection';
 
 interface UseAutoSaveOptions<T> {
   /** The data to save */
@@ -148,13 +150,6 @@ export function useAutoSave<T extends Record<string, unknown>>({
 
     if (enableAutoComplete && !shouldComplete) {
       try {
-        // Try to import completion detection utilities if they exist
-        // These will be created by other agents
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { getWorksheetConfig } = require('../config/worksheetConfigs');
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const { detectCompletion } = require('../utils/completionDetection');
-
         const config = getWorksheetConfig(worksheetId);
         if (config && config.completionCriteria) {
           const meetsCompletion = detectCompletion(dataRef.current, config.completionCriteria);
@@ -163,8 +158,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
           shouldComplete = meetsCompletion;
         }
       } catch (err) {
-        // Utilities not yet available - this is expected during development
-        // No-op, just proceed with manual completion only
+        // Config not found for this worksheet - proceed with manual completion only
       }
     }
 
