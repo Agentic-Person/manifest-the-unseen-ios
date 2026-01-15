@@ -52,11 +52,18 @@ const App = () => {
         setDisclaimerAccepted(accepted);
         setDisclaimerChecked(true);
         console.log('✅ Disclaimer check complete:', accepted ? 'Accepted' : 'Not accepted');
+
+        // Hide splash screen now that we know whether to show disclaimer
+        await SplashScreen.hideAsync();
+        console.log('✅ Splash screen hidden');
       } catch (error) {
         console.error('❌ Disclaimer check error:', error);
         // On error, assume accepted to avoid blocking app
         setDisclaimerAccepted(true);
         setDisclaimerChecked(true);
+
+        // Still hide splash screen
+        await SplashScreen.hideAsync();
       }
     };
 
@@ -108,16 +115,10 @@ const App = () => {
         // Mark app as ready
         setAppReady(true);
         console.log('✅ App ready');
-
-        // Hide splash screen now that app is ready
-        await SplashScreen.hideAsync();
-        console.log('✅ Splash screen hidden');
       } catch (error) {
         console.error('❌ App initialization error:', error);
         // Still mark as ready to show error screen
         setAppReady(true);
-        // Still hide splash on error
-        await SplashScreen.hideAsync();
       }
     };
 
