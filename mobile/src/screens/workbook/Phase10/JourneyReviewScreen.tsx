@@ -32,7 +32,7 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseProgressCard } from '../../../components/workbook/PhaseProgressCard';
 import type { PhaseProgressData } from '../../../components/workbook/PhaseProgressCard';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase10ExerciseImages } from '../../../assets';
 import { useAllWorkbookProgress, useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -99,6 +99,8 @@ const PHASE_NUMBER = 10;
  */
 const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch all workbook progress (for showing phase summary)
+    const insets = useSafeAreaInsets();
+
   const { data: allProgress, isLoading: isLoadingAll } = useAllWorkbookProgress();
 
   // Fetch this worksheet's data
@@ -116,7 +118,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
 
   // Auto-save hook
   const formData: JourneyReviewData = useMemo(() => ({ transformation }), [transformation]);
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.JOURNEY_REVIEW,
@@ -253,6 +255,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
         title="Your Transformation Journey"
         subtitle="Reflect on how far you've come. Every step has shaped who you're becoming."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Overall Progress Card */}
@@ -423,7 +426,16 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.continueButtonText}>Continue: Letter to Future Self</Text>
       </Pressable>
 
-      <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

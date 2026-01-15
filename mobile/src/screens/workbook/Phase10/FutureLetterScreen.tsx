@@ -34,7 +34,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { SealedLetter } from '../../../components/workbook/SealedLetter';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase10ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -109,6 +109,8 @@ const PHASE_NUMBER = 10;
  */
 const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
     WORKSHEET_IDS.FUTURE_LETTER
@@ -130,7 +132,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
     existingLetter
   }), [letterContent, promptResponses, existingLetter]);
 
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.FUTURE_LETTER,
@@ -316,7 +318,8 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
             ? 'Your letter is safely sealed, waiting for the perfect moment.'
             : 'Your letter has arrived. Read the message from your past self.'}
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         <SealedLetter
           isSealed={existingLetter.isSealed}
@@ -352,7 +355,16 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.continueButtonText}>Continue to Graduation</Text>
         </Pressable>
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
     );
   }
@@ -375,7 +387,8 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
           title="Letter to Future Self"
           subtitle="Write a letter to yourself, one year from today. Express your hopes, dreams, and the person you're becoming."
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Open Date Display */}
         <View style={styles.openDateCard}>
@@ -488,7 +501,16 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
           Once sealed, your letter cannot be edited until the open date.
         </Text>
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

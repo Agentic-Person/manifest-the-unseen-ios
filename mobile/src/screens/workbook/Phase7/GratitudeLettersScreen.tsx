@@ -39,7 +39,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
@@ -112,6 +112,8 @@ type Props = WorkbookStackScreenProps<'GratitudeLetters'>;
  * GratitudeLettersScreen Component
  */
 const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+    const insets = useSafeAreaInsets();
+
   const [letters, setLetters] = useState<GratitudeLetter[]>([]);
   const [selectedLetter, setSelectedLetter] = useState<GratitudeLetter | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -127,7 +129,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
   // Supabase integration hooks
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_LETTERS);
 
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: letters as unknown as Record<string, unknown>,
     phaseNumber: 7,
     worksheetId: WORKSHEET_IDS.GRATITUDE_LETTERS,
@@ -358,7 +360,8 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
           title="Gratitude Letters"
           subtitle="Write heartfelt letters to express gratitude to important people"
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Stats Summary */}
         <View style={styles.statsRow}>
@@ -424,7 +427,16 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
         {/* Save Indicator */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Template Selection Modal */}

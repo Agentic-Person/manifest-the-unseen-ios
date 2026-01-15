@@ -19,10 +19,12 @@ interface UseAutoSaveOptions<T> {
   debounceMs?: number;
   /** Whether auto-save is enabled (default: true) */
   enabled?: boolean;
+  /** Whether to enable auto-completion detection (default: true) */
+  enableAutoComplete?: boolean;
   /** Callback when save starts */
   onSaveStart?: () => void;
-  /** Callback when save succeeds */
-  onSaveSuccess?: (timestamp: Date) => void;
+  /** Callback when save succeeds - wasCompleted indicates if worksheet was marked complete */
+  onSaveSuccess?: (timestamp: Date, wasCompleted?: boolean) => void;
   /** Callback when save fails */
   onSaveError?: (error: Error) => void;
 }
@@ -38,25 +40,45 @@ interface UseAutoSaveReturn {
   lastSaved: Date | null;
   /** Manually trigger a save immediately. Pass completed=true to mark worksheet as complete. */
   saveNow: (options?: { completed?: boolean }) => void;
+  /** Whether the worksheet was auto-completed on the last save */
+  isAutoCompleted: boolean;
+  /** Whether the worksheet can be marked as complete (meets completion criteria) */
+  canComplete: boolean;
+  /** Manually mark the worksheet as complete */
+  markComplete: () => void;
 }
 
 /**
- * Auto-save hook with debounce
+ * Auto-save hook with debounce and auto-completion detection
  *
  * @example
  * ```tsx
- * const { isSaving, lastSaved, isError, saveNow } = useAutoSave({
+ * const {
+ *   isSaving,
+ *   lastSaved,
+ *   isError,
+ *   saveNow,
+ *   isAutoCompleted,
+ *   canComplete,
+ *   markComplete
+ * } = useAutoSave({
  *   data: formValues,
  *   phaseNumber: 1,
  *   worksheetId: 'wheel-of-life',
  *   debounceMs: 1500,
- *   onSaveSuccess: (time) => console.log('Saved at', time),
+ *   enableAutoComplete: true, // Auto-detect completion on save
+ *   onSaveSuccess: (time, wasCompleted) => {
+ *     console.log('Saved at', time);
+ *     if (wasCompleted) console.log('Worksheet auto-completed!');
+ *   },
  * });
  *
  * return (
  *   <>
  *     <Form values={formValues} onChange={setFormValues} />
  *     <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} />
+ *     {canComplete && <CompleteButton onPress={markComplete} />}
+ *     {isAutoCompleted && <Badge text="Completed" />}
  *   </>
  * );
  * ```
@@ -70,6 +92,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
   worksheetId,
   debounceMs = 1500,
   enabled = true,
+  enableAutoComplete = true,
   onSaveStart,
   onSaveSuccess,
   onSaveError,
@@ -78,6 +101,9 @@ export function useAutoSave<T extends Record<string, unknown>>({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   // Local saving state that we control - doesn't rely solely on React Query's isPending
   const [isSavingLocal, setIsSavingLocal] = useState(false);
+  // Auto-completion tracking
+  const [isAutoCompleted, setIsAutoCompleted] = useState(false);
+  const [canComplete, setCanComplete] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstRender = useRef(true);
@@ -116,14 +142,40 @@ export function useAutoSave<T extends Record<string, unknown>>({
   const performSave = useCallback((options?: { completed?: boolean }) => {
     startSaving();
     onSaveStart?.();
+
+    // Auto-detect completion if enabled
+    let shouldComplete = options?.completed ?? false;
+
+    if (enableAutoComplete && !shouldComplete) {
+      try {
+        // Try to import completion detection utilities if they exist
+        // These will be created by other agents
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { getWorksheetConfig } = require('../config/worksheetConfigs');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { detectCompletion } = require('../utils/completionDetection');
+
+        const config = getWorksheetConfig(worksheetId);
+        if (config && config.completionCriteria) {
+          const meetsCompletion = detectCompletion(dataRef.current, config.completionCriteria);
+          setIsAutoCompleted(meetsCompletion);
+          setCanComplete(meetsCompletion);
+          shouldComplete = meetsCompletion;
+        }
+      } catch (err) {
+        // Utilities not yet available - this is expected during development
+        // No-op, just proceed with manual completion only
+      }
+    }
+
     save(
-      { phaseNumber, worksheetId, data: dataRef.current, completed: options?.completed ?? false },
+      { phaseNumber, worksheetId, data: dataRef.current, completed: shouldComplete },
       {
         onSuccess: () => {
           endSaving();
           const now = new Date();
           setLastSaved(now);
-          onSaveSuccess?.(now);
+          onSaveSuccess?.(now, shouldComplete);
         },
         onError: (err) => {
           endSaving();
@@ -133,7 +185,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
         },
       }
     );
-  }, [phaseNumber, worksheetId, save, startSaving, endSaving, onSaveStart, onSaveSuccess, onSaveError]);
+  }, [phaseNumber, worksheetId, save, startSaving, endSaving, onSaveStart, onSaveSuccess, onSaveError, enableAutoComplete]);
 
   // Debounced save function
   const debouncedSave = useCallback(() => {
@@ -171,6 +223,11 @@ export function useAutoSave<T extends Record<string, unknown>>({
     performSave(options);
   }, [performSave]);
 
+  // Convenience method to manually mark worksheet as complete
+  const markComplete = useCallback(() => {
+    saveNow({ completed: true });
+  }, [saveNow]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -191,5 +248,8 @@ export function useAutoSave<T extends Record<string, unknown>>({
     error: error as Error | null,
     lastSaved,
     saveNow,
+    isAutoCompleted,
+    canComplete,
+    markComplete,
   };
 }

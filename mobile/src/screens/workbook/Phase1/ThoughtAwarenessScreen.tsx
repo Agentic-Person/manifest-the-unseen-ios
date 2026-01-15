@@ -22,8 +22,9 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -103,6 +104,7 @@ type Props = WorkbookStackScreenProps<'ThoughtAwareness'>;
  * Thought Awareness Screen Component
  */
 const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const [data, setData] = useState<ThoughtAwarenessData>(DEFAULT_DATA);
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const [showDistortionHelper, setShowDistortionHelper] = useState(false);
@@ -112,7 +114,7 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.THOUGHT_AWARENESS);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.THOUGHT_AWARENESS,
@@ -260,15 +262,6 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [data.entries]);
 
-  /**
-   * Handle save and continue
-   */
-  const handleSaveAndContinue = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
-  };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -281,7 +274,7 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom }]}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
@@ -291,6 +284,7 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
         title="Thought Awareness"
         subtitle="Track your thoughts to recognize patterns and cognitive habits. Awareness is the first step to change."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Stats Summary */}
@@ -547,19 +541,17 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
         />
       </View>
 
-      {/* Action Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
 
       {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

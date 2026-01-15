@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Card, Text, TextInput } from '../../../components';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -287,7 +288,16 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
           />
         </View>
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

@@ -6,6 +6,20 @@
  */
 
 /**
+ * Completion criteria for worksheet validation
+ */
+export interface CompletionCriteria {
+  /** Minimum number of fields that must be filled */
+  requiredFields?: number;
+  /** Minimum character count per field */
+  minCharsPerField?: number;
+  /** Specific fields that MUST be filled */
+  mandatoryFields?: string[];
+  /** Custom validation function for complex criteria */
+  customValidator?: (data: Record<string, unknown>) => boolean;
+}
+
+/**
  * Database row type (matches Supabase schema)
  */
 export interface WorkbookProgress {

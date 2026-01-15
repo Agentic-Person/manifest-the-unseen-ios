@@ -43,7 +43,7 @@ import type { StreakData } from '../../../components/workbook/StreakDisplay';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
@@ -97,6 +97,8 @@ type Props = WorkbookStackScreenProps<'GratitudeJournal'>;
  * GratitudeJournalScreen Component
  */
 const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+    const insets = useSafeAreaInsets();
+
   const [selectedDate, setSelectedDate] = useState<string>(getTodayKey());
   const [entries, setEntries] = useState<Record<string, DailyEntry>>({});
   const [streakData, setStreakData] = useState<StreakData>({
@@ -111,7 +113,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
   // Supabase integration hooks
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_JOURNAL);
 
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: entries as Record<string, unknown>,
     phaseNumber: 7,
     worksheetId: WORKSHEET_IDS.GRATITUDE_JOURNAL,
@@ -314,12 +316,6 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
   /**
    * Save and continue
    */
-  const handleSaveAndContinue = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    _navigation.goBack();
-  };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -342,6 +338,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
         title="Gratitude Journal"
         subtitle="Take a moment to reflect on what you're grateful for today"
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Streak Display */}
@@ -464,20 +461,30 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
       {/* Save Indicator */}
       <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
-      {/* Save Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-        accessibilityRole="button"
-        accessibilityLabel="Save and continue"
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
 
-      <View style={styles.bottomSpacer} />
+
+      <CompletionButton
+
+
+        isCompleted={savedProgress?.completed || false}
+
+
+        canComplete={canComplete}
+
+
+        isAutoCompleted={isAutoCompleted}
+
+
+        isSaving={isSaving}
+
+
+        onPress={markComplete}
+
+
+      />
+
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

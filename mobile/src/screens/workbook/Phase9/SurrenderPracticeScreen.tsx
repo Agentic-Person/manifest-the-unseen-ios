@@ -36,7 +36,7 @@ import {
   SurrenderEntryData,
   SURRENDER_AFFIRMATIONS,
 } from '../../../components/workbook/SurrenderCard';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase9ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -83,6 +83,8 @@ const PHASE_NUMBER = 9;
  */
 const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
     WORKSHEET_IDS.SURRENDER_PRACTICE
@@ -94,7 +96,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
 
   // Auto-save hook
   const formData: SurrenderPracticeData = useMemo(() => ({ entries, totalReleased }), [entries, totalReleased]);
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.SURRENDER_PRACTICE,
@@ -265,6 +267,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
         title="Surrender Practice"
         subtitle="Let go of what you cannot control. Write what you're holding onto, then release it with intention and trust."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Stats */}
@@ -402,20 +405,30 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
       </View>
 
-      {/* Save Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-        accessibilityRole="button"
-        accessibilityLabel="Save and continue"
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
 
-      <View style={styles.bottomSpacer} />
+
+      <CompletionButton
+
+
+        isCompleted={savedProgress?.completed || false}
+
+
+        canComplete={canComplete}
+
+
+        isAutoCompleted={isAutoCompleted}
+
+
+        isSaving={isSaving}
+
+
+        onPress={markComplete}
+
+
+      />
+
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

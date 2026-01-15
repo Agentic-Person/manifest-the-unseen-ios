@@ -33,7 +33,7 @@ import StreakCounter from '../../../components/workbook/StreakCounter';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase5ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
@@ -108,6 +108,8 @@ interface SelfCareFormData {
 
 const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
+    const insets = useSafeAreaInsets();
+
   const [morningActivities, setMorningActivities] = useState<RoutineActivityData[]>([]);
   const [eveningActivities, setEveningActivities] = useState<RoutineActivityData[]>([]);
   const [activeTab, setActiveTab] = useState<'morning' | 'evening'>('morning');
@@ -135,7 +137,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
     bestEveningStreak,
   }), [morningActivities, eveningActivities, morningStreak, eveningStreak, bestMorningStreak, bestEveningStreak]);
 
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 5,
     worksheetId: WORKSHEET_IDS.SELF_CARE_ROUTINE,
@@ -539,7 +541,16 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Add Activity Modal (Presets) */}

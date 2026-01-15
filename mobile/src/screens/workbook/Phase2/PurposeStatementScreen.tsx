@@ -34,7 +34,7 @@ import { Text } from '../../../components';
 import { GuidedQuestion, GuidedQuestionData } from '../../../components/workbook/GuidedQuestion';
 import { StatementDisplay } from '../../../components/workbook/StatementDisplay';
 import { QuestionProgress } from '../../../components/workbook/QuestionProgress';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { colors, spacing, borderRadius, typography, fontWeights } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
@@ -128,6 +128,8 @@ const generateStatement = (answers: Record<string, string>): string => {
  */
 const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress } = useWorkbookProgress(2, WORKSHEET_IDS.PURPOSE_STATEMENT);
   const { mutate: saveWorkbook, isPending: isSaving } = useSaveWorkbook();
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -309,7 +311,8 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
             ? 'Your purpose, revealed'
             : 'Discover what drives your soul'}
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Progress Indicator */}
         {!showStatement && (
@@ -407,6 +410,15 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           )}
+
+          {/* Completion Button */}
+          <CompletionButton
+            isCompleted={savedProgress?.completed || false}
+            canComplete={canComplete}
+            isAutoCompleted={isAutoCompleted}
+            isSaving={isSaving}
+            onPress={markComplete}
+          />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

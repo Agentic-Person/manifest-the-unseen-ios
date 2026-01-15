@@ -42,6 +42,17 @@ export const ExerciseHeader: React.FC<ExerciseHeaderProps> = ({
           colors={['transparent', 'rgba(0,0,0,0.7)']}
           style={styles.imageGradient}
         />
+        {/* Completion Badge (Top-Left) */}
+        {isCompleted && (
+          <View style={styles.completionBadge}>
+            <LinearGradient
+              colors={['#22c55e', '#16a34a']}
+              style={styles.badgeGradient}
+            >
+              <Text style={styles.badgeText}>✓ Completed</Text>
+            </LinearGradient>
+          </View>
+        )}
         {/* Progress Indicator */}
         <View style={styles.progressContainer}>
           <View style={styles.progressBarBg}>
@@ -99,6 +110,23 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 60,
+  },
+  completionBadge: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+  },
+  badgeGradient: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: colors.white,
+    letterSpacing: 0.5,
   },
   progressContainer: {
     position: 'absolute',

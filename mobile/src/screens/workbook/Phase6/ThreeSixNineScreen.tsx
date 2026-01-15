@@ -34,7 +34,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase6ExerciseImages } from '../../../assets';
 
 /**
@@ -109,6 +109,8 @@ interface ThreeSixNineFormData {
 
 const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
+    const insets = useSafeAreaInsets();
+
   const [practice, setPractice] = useState<ThreeSixNineData>(createEmptyPractice());
   const [todayProgress, setTodayProgress] = useState<DailyProgress>({
     date: getTodayString(),
@@ -128,7 +130,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     todayProgress,
   }), [practice, todayProgress]);
 
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 6,
     worksheetId: WORKSHEET_IDS.THREE_SIX_NINE,
@@ -252,7 +254,8 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           title="369 Method"
           subtitle="Nikola Tesla's sacred manifestation technique"
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Progress Card */}
         <View style={styles.progressCard}>
@@ -421,7 +424,16 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
 
         {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
     </View>
   );

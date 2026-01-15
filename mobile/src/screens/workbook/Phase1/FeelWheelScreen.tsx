@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -89,15 +89,18 @@ type Props = WorkbookStackScreenProps<'FeelWheel'>;
  * Feel Wheel Screen Component
  */
 const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
+    const insets = useSafeAreaInsets();
+
   const [values, setValues] = useState<FeelWheelValues>(DEFAULT_VALUES);
   const [selectedEmotion, setSelectedEmotion] = useState<EmotionKey | null>(null);
   const hasLoadedInitialData = useRef(false);
+  const insets = useSafeAreaInsets();
 
   // Load saved data from Supabase
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.FEEL_WHEEL);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: values as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.FEEL_WHEEL,
@@ -151,15 +154,6 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
     return { message: 'Your emotions are balanced. You\'re aware of the full spectrum of your feelings.', type: 'balanced' };
   };
 
-  /**
-   * Handle save and continue
-   */
-  const handleSaveAndContinue = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
-  };
-
   const dominantEmotion = getDominantEmotion();
   const insight = getEmotionalInsight();
 
@@ -184,6 +178,8 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
         title="Feel Wheel"
         subtitle="Identify and rate the intensity of your current emotions. Understanding your emotional state is key to self-awareness."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Dominant Emotion Card */}
@@ -262,19 +258,17 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
         />
       </View>
 
-      {/* Action Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
 
       {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

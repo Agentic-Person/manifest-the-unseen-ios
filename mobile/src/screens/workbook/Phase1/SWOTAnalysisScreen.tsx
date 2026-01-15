@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 import { Text, Button } from '../../../components';
 import { SWOTQuadrant } from '../../../components/workbook/SWOTQuadrant';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -110,6 +110,8 @@ const CentralMandala: React.FC<{ totalItems: number }> = ({ totalItems }) => {
  * SWOT Analysis Screen Component
  */
 const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
+    const insets = useSafeAreaInsets();
+
   const [swotData, setSWOTData] = useState<SWOTData>(getDefaultSWOTData());
 
   // Track if we've done the initial data load (prevents overwriting user changes on save)
@@ -119,7 +121,7 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.SWOT_ANALYSIS);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: swotData as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.SWOT_ANALYSIS,
@@ -171,6 +173,7 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
         title="SWOT Analysis"
         subtitle="Explore your inner landscape through the four petals of self-discovery"
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Flower Petal Layout */}
@@ -245,7 +248,16 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

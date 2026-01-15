@@ -33,7 +33,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import { Fear, FEAR_CATEGORIES, FearCategory } from '../../../components/workbook/FearCard';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -137,6 +137,8 @@ interface FearFacingPlanData {
  */
 const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // Fetch saved progress from Supabase
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress } = useWorkbookProgress(4, WORKSHEET_IDS.FEAR_FACING_PLAN);
 
   // State
@@ -155,7 +157,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: { plans, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
     phaseNumber: 4,
     worksheetId: WORKSHEET_IDS.FEAR_FACING_PLAN,
@@ -531,7 +533,16 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           <Text style={styles.quoteAuthor}>- Ambrose Redmoon</Text>
         </View>
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Floating Action Button */}

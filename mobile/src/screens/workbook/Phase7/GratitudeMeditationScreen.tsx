@@ -41,7 +41,7 @@ import type { TimerState } from '../../../components/workbook/MeditationTimer';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
@@ -117,6 +117,8 @@ type Props = WorkbookStackScreenProps<'GratitudeMeditation'>;
  * GratitudeMeditationScreen Component
  */
 const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+    const insets = useSafeAreaInsets();
+
   const [timerState, setTimerState] = useState<TimerState>('idle');
   const [sessions, setSessions] = useState<MeditationSession[]>([]);
   const [stats, setStats] = useState<SessionStats>({
@@ -137,7 +139,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
   // Supabase integration hooks
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_MEDITATION);
 
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: { sessions, stats } as Record<string, unknown>,
     phaseNumber: 7,
     worksheetId: WORKSHEET_IDS.GRATITUDE_MEDITATION,
@@ -373,7 +375,8 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
           title="Gratitude Meditation"
           subtitle="Center yourself in gratitude through guided visualization"
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Stats Summary */}
         <View style={styles.statsRow}>
@@ -490,7 +493,16 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
         {/* Save Indicator */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Reflection Modal */}

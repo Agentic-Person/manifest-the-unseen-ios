@@ -27,7 +27,7 @@ import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { ReframeCard, ReframeData } from '../../../components/workbook/ReframeCard';
 import { EnvyItem } from '../../../components/workbook/EnvyCard';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -84,6 +84,8 @@ const PHASE_NUMBER = 8;
  */
 const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress } = useWorkbookProgress(
     PHASE_NUMBER,
     WORKSHEET_IDS.INSPIRATION_REFRAME
@@ -97,7 +99,7 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
 
   // Auto-save hook
   const formData: InspirationReframeData = useMemo(() => ({ reframes, envyItems }), [reframes, envyItems]);
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.INSPIRATION_REFRAME,
@@ -294,6 +296,7 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         title="Transform Envy to Inspiration"
         subtitle="Reframe each source of envy by discovering what you truly value and how you can achieve it."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       <View style={styles.headerInfo}>
@@ -319,6 +322,15 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         ListEmptyComponent={renderEmptyState}
         showsVerticalScrollIndicator={false}
         testID="reframe-list"
+      />
+
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
       />
     </SafeAreaView>
   );

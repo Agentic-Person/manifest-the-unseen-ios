@@ -41,7 +41,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase6ExerciseImages } from '../../../assets';
 
 /**
@@ -85,6 +85,8 @@ interface ScriptingFormData {
 
 const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
+    const insets = useSafeAreaInsets();
+
   const [selectedTemplate, setSelectedTemplate] = useState<ScriptTemplateData | null>(null);
   const [scripts, setScripts] = useState<SavedScript[]>([]);
   const [currentScript, setCurrentScript] = useState<string>('');
@@ -106,7 +108,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     scripts,
   }), [scripts]);
 
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 6,
     worksheetId: WORKSHEET_IDS.SCRIPTING,
@@ -266,7 +268,8 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           title="Scripting"
           subtitle="Write your future into existence"
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Saved Scripts Button */}
         {scripts.length > 0 && (
@@ -358,7 +361,16 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
 
         {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Editor Modal */}

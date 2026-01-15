@@ -35,7 +35,7 @@ import GoalCard, {
   CATEGORY_NAMES,
 } from '../../../components/workbook/GoalCard';
 import SMARTGoalForm from '../../../components/workbook/SMARTGoalForm';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -82,6 +82,8 @@ interface SMARTGoalsData {
 
 const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // Fetch saved progress from Supabase
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.SMART_GOALS);
 
   // State
@@ -94,7 +96,7 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const fabScale = useRef(new Animated.Value(1)).current;
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: { goals, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
     phaseNumber: 3,
     worksheetId: WORKSHEET_IDS.SMART_GOALS,
@@ -226,7 +228,8 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           title="SMART Goals"
           subtitle="Define clear, actionable goals using the SMART framework"
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Stats Card */}
         <View style={styles.statsCard}>
@@ -371,7 +374,16 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         </View>
 
         {/* Bottom Spacer for FAB */}
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Floating Action Button */}

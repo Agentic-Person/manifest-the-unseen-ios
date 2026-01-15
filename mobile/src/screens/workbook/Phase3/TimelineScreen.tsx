@@ -33,7 +33,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { TimelineChart } from '../../../components/workbook/TimelineChart';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -170,6 +170,8 @@ interface TimelineData {
  */
 const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // Fetch saved progress from Supabase
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.TIMELINE);
 
   const [selectedView, setSelectedView] = useState<TimelineView>('month');
@@ -177,7 +179,7 @@ const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const [goals, setGoals] = useState<TimelineGoal[]>(MOCK_GOALS);
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: { goals, selectedView, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
     phaseNumber: 3,
     worksheetId: WORKSHEET_IDS.TIMELINE,
@@ -262,7 +264,8 @@ const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           title="Goal Timeline"
           subtitle="Visualize your journey toward achieving your goals"
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Save Status Indicator */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
@@ -342,7 +345,16 @@ const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         </View>
 
         {/* Bottom spacing */}
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Goal Details Modal */}

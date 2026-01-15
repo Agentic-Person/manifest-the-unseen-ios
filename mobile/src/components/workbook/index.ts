@@ -144,3 +144,6 @@ export { ExerciseHeader } from './ExerciseHeader';
 // Gradient Progress Bar (color-coded by percentage)
 export { GradientProgressBar, getProgressColor } from './GradientProgressBar';
 export type { GradientProgressBarProps } from './GradientProgressBar';
+
+// Completion Button Component
+export { CompletionButton } from './CompletionButton';

@@ -35,7 +35,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../../../components/Text';
 import { RoleModelCard, ROLE_MODEL_CATEGORIES, RoleModel, RoleModelCategory } from '../../../components/workbook/RoleModelCard';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -64,6 +64,8 @@ const PHASE_NUMBER = 8;
  */
 const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // Supabase data fetching
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress } = useWorkbookProgress(
     PHASE_NUMBER,
     WORKSHEET_IDS.ROLE_MODELS
@@ -78,7 +80,7 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   // Auto-save hook
   const formData: RoleModelsData = useMemo(() => ({ roleModels }), [roleModels]);
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.ROLE_MODELS,
@@ -342,6 +344,7 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         title="Role Models & Inspirations"
         subtitle="Create a board of people who inspire you. Document what you admire and the lessons you can learn."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       <View style={styles.headerInfo}>
@@ -359,6 +362,14 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         {Object.entries(ROLE_MODEL_CATEGORIES).map(([key, value]) =>
           renderCategoryChip(key as RoleModelCategory, value.label, value.color)
         )}
+            {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
       </ScrollView>
 
       {/* Items List */}
@@ -555,7 +566,15 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
                   testID="form-quote"
                 />
               </View>
-            </ScrollView>
+                  {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+      </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
       </Modal>

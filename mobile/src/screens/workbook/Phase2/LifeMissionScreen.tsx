@@ -22,13 +22,14 @@ import {
 import { Text } from '../../../components';
 import MissionSection, { MissionId } from '../../../components/workbook/MissionSection';
 import CombinedMissionView from '../../../components/workbook/CombinedMissionView';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
 import { Phase2ExerciseImages } from '../../../assets';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
  * Life Mission Data Structure
@@ -98,6 +99,9 @@ type Props = WorkbookStackScreenProps<'LifeMission'>;
  * Life Mission Screen Component
  */
 const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+  const insets = useSafeAreaInsets();
+  const bottomSpacing = 60 + insets.bottom + 8; // tab bar + safe area + buffer
+
   // Fetch saved progress from Supabase
   const { data: savedProgress } = useWorkbookProgress(2, WORKSHEET_IDS.LIFE_MISSION);
 
@@ -118,11 +122,20 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const [showCombinedView, setShowCombinedView] = useState(false);
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const {
+    isSaving,
+    isError,
+    lastSaved,
+    saveNow,
+    isAutoCompleted,
+    canComplete,
+    markComplete,
+  } = useAutoSave({
     data: missionData as unknown as Record<string, unknown>,
     phaseNumber: 2,
     worksheetId: WORKSHEET_IDS.LIFE_MISSION,
     debounceMs: 1500,
+    enableAutoComplete: true,
   });
 
   const hasLoadedInitialData = useRef(false);
@@ -165,26 +178,14 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     return missionData[key] as string;
   };
 
-  /**
-   * Calculate completion progress
-   */
-  const calculateProgress = useCallback(() => {
-    const sections = ['personal', 'professional', 'impact', 'legacy'] as const;
-    const completed = sections.filter(s => getMissionText(s).trim().length > 50).length;
-    return {
-      completed,
-      total: 4,
-      percentage: Math.round((completed / 4) * 100),
-    };
-  }, [missionData]);
-
-  const progress = calculateProgress();
-
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: bottomSpacing }
+        ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -194,26 +195,8 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           title="Life Mission"
           subtitle="Define your purpose across four dimensions of life"
           progress={savedProgress?.progress || 0}
+          isCompleted={savedProgress?.completed || false}
         />
-
-        {/* Progress Card */}
-        <View style={styles.progressCard}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressLabel}>Your Progress</Text>
-            <Text style={styles.progressPercentage}>{progress.percentage}%</Text>
-          </View>
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${progress.percentage}%` },
-              ]}
-            />
-          </View>
-          <Text style={styles.progressSubtext}>
-            {progress.completed} of {progress.total} missions written
-          </Text>
-        </View>
 
         {/* Save Status Indicator */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
@@ -242,10 +225,10 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         <TouchableOpacity
           style={[
             styles.viewCombinedButton,
-            progress.completed < 1 && styles.viewCombinedButtonDisabled,
+            !canComplete && styles.viewCombinedButtonDisabled,
           ]}
           onPress={() => setShowCombinedView(true)}
-          disabled={progress.completed < 1}
+          disabled={!canComplete}
           accessibilityRole="button"
           accessibilityLabel="View combined mission statement"
           accessibilityHint="Opens a view with all your mission statements combined"
@@ -263,6 +246,15 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             "Your life mission is not something to be created, but something to be discovered."
           </Text>
         </View>
+
+        {/* Completion Button */}
+        <CompletionButton
+          isCompleted={savedProgress?.completed || false}
+          canComplete={canComplete}
+          isAutoCompleted={isAutoCompleted}
+          isSaving={isSaving}
+          onPress={markComplete}
+        />
 
         {/* Bottom Spacer */}
         <View style={styles.bottomSpacer} />

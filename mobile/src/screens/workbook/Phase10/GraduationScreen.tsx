@@ -35,7 +35,7 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { CertificateView } from '../../../components/workbook/CertificateView';
 import { ConfettiCelebration, ConfettiBurst } from '../../../components/workbook/ConfettiCelebration';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase10ExerciseImages } from '../../../assets';
 import { useWorkbookProgress, useMarkComplete } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -134,6 +134,8 @@ const PHASE_NUMBER = 10;
  */
 const GraduationScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
     WORKSHEET_IDS.GRADUATION
@@ -164,7 +166,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
     graduatedAt: hasGraduated ? new Date().toISOString() : undefined,
   }), [commitmentStatement, selectedPractices, hasGraduated]);
 
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.GRADUATION,
@@ -343,7 +345,8 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
             ? "You've completed your transformation journey. Your new life awaits."
             : 'Make a commitment to yourself and celebrate your transformation.'}
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Certificate View (if graduated) */}
         {showCertificate && (
@@ -511,7 +514,16 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
           </Pressable>
         )}
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
     </View>
   );

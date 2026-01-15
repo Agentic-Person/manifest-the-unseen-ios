@@ -22,11 +22,11 @@ import {
   StyleSheet,
   Dimensions,
   Text,
-  Pressable,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { WheelChart, LifeAreaSlider, LIFE_AREAS, SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { WheelChart, LifeAreaSlider, LIFE_AREAS, SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import type { WheelOfLifeValues, LifeAreaKey } from '../../../components/workbook';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -94,7 +94,9 @@ type Props = WorkbookStackScreenProps<'WheelOfLife'>;
 /**
  * Wheel of Life Screen Component
  */
-const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
+const WheelOfLifeScreen: React.FC<Props> = () => {
+  const insets = useSafeAreaInsets();
+
   const [values, setValues] = useState<WheelOfLifeValues>(DEFAULT_VALUES);
   const [selectedArea, setSelectedArea] = useState<LifeAreaKey | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -110,7 +112,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.WHEEL_OF_LIFE);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: values as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.WHEEL_OF_LIFE,
@@ -168,15 +170,6 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
     return { message: 'Imbalanced. Focus on the lower-rated areas for growth.', type: 'unbalanced' };
   };
 
-  /**
-   * Handle save and continue
-   */
-  const handleSaveAndContinue = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
-  };
-
   const balanceStatus = getBalanceStatus();
 
   if (isLoading) {
@@ -201,6 +194,7 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
         title="Wheel of Life"
         subtitle="Rate each area of your life from 1-10 to visualize your current balance. A perfect circle represents a balanced life."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Wheel Chart Visualization */}
@@ -257,19 +251,17 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
         />
       </View>
 
-      {/* Action Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
 
       {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

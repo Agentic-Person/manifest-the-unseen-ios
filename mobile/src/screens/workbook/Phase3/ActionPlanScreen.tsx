@@ -37,7 +37,7 @@ import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import StepList from '../../../components/workbook/StepList';
 import type { ActionStepData } from '../../../components/workbook/StepList';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
 import { WORKSHEET_IDS } from '../../../types/workbook';
 import { Phase3ExerciseImages } from '../../../assets';
@@ -103,6 +103,8 @@ interface ActionPlanData {
  */
 const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.ACTION_PLAN);
   const { data: smartGoalsProgress, isLoading: isLoadingGoals } = useWorkbookProgress(3, WORKSHEET_IDS.SMART_GOALS);
   const { mutate: saveWorkbook, isPending: isSavingWorkbook } = useSaveWorkbook();
@@ -388,12 +390,6 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Save and navigate back
    */
-  const handleSaveAndContinue = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await autoSave();
-    navigation.goBack();
-  };
-
   // Get selected goal
   const selectedGoal = goals.find((g) => g.id === selectedGoalId);
 
@@ -447,7 +443,8 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
           title="Action Plan"
           subtitle="Break down your goals into actionable steps. Check off each step as you complete it."
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Goal Selector */}
         <View style={styles.goalSelectorContainer}>
@@ -521,22 +518,17 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         {/* Save Status */}
         <SaveIndicator isSaving={isSavingWorkbook} lastSaved={lastSaved} isError={saveError} onRetry={autoSave} />
 
-        {/* Save Button */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.saveButton,
-            pressed && styles.saveButtonPressed,
-          ]}
-          onPress={handleSaveAndContinue}
-          accessibilityRole="button"
-          accessibilityLabel="Save and continue"
-          testID="save-continue-button"
-        >
-          <Text style={styles.saveButtonText}>Save & Continue</Text>
-        </Pressable>
+{/* Completion Button */}
+<CompletionButton
+  isCompleted={savedProgress?.completed || false}
+  canComplete={canComplete}
+  isAutoCompleted={isAutoCompleted}
+  isSaving={isSaving}
+  onPress={markComplete}
+/>
 
-        {/* Bottom spacing */}
-        <View style={styles.bottomSpacer} />
+{/* Bottom spacing */}
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Goal Picker Modal */}

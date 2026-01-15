@@ -23,7 +23,7 @@ import {
 import { Card, Text, Button } from '../../../components';
 import HabitSection, { TimeOfDay, Habit } from '../../../components/workbook/HabitSection';
 import { HabitCategory } from '../../../components/workbook/HabitEntry';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -65,16 +65,19 @@ type Props = WorkbookStackScreenProps<'HabitTracking'>;
  */
 const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State for habits data
+    const insets = useSafeAreaInsets();
+
   const [habitsData, setHabitsData] = useState<HabitsData>(INITIAL_DATA);
 
   // Track if we've done the initial data load (prevents overwriting user changes on save)
   const hasLoadedInitialData = useRef(false);
+  const insets = useSafeAreaInsets();
 
   // Load saved data from Supabase
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.HABITS_AUDIT);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: habitsData as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.HABITS_AUDIT,
@@ -252,6 +255,8 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         title="Current Habits Audit"
         subtitle="Review your daily routines and identify which habits serve you well and which ones might need changing."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Summary Card */}
@@ -399,23 +404,17 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         onRetry={saveNow}
       />
 
-      {/* Save Button */}
-      <View style={styles.saveContainer}>
-        <Button
-          title={isSaving ? 'Saving...' : 'Save & Continue'}
-          onPress={handleSave}
-          variant="primary"
-          size="lg"
-          fullWidth
-          loading={isSaving}
-          disabled={isSaving}
-          accessibilityLabel="Save habits audit"
-          accessibilityHint="Saves your current habits to your profile"
-        />
-      </View>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
 
       {/* Bottom Spacing */}
-      <View style={styles.bottomSpacer} />
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

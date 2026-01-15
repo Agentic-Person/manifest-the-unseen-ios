@@ -26,8 +26,9 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -85,12 +86,13 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
   const [data, setData] = useState<ABCModelData>(DEFAULT_DATA);
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const hasLoadedInitialData = useRef(false);
+  const insets = useSafeAreaInsets();
 
   // Load saved data from Supabase
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.ABC_MODEL);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.ABC_MODEL,
@@ -171,29 +173,6 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
     );
   }, []);
 
-  /**
-   * Handle save and continue
-   */
-  const handleSaveAndContinue = async () => {
-    // Validate entries have required fields
-    const incompleteEntries = data.entries.filter(
-      (e) => !e.activatingEvent.trim() || !e.belief.trim() || !e.consequence.trim()
-    );
-
-    if (incompleteEntries.length > 0) {
-      Alert.alert(
-        'Incomplete Entries',
-        'Please complete all A-B-C fields for each entry, or delete incomplete entries.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
-  };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -216,6 +195,7 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
         title="ABC Model"
         subtitle="Understand how your beliefs shape your emotions. Identify the Activating event, your Beliefs about it, and the emotional Consequences."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* ABC Legend */}
@@ -396,19 +376,17 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
         />
       </View>
 
-      {/* Action Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
 
       {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

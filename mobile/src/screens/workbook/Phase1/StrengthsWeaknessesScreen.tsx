@@ -22,8 +22,9 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -124,6 +125,7 @@ const ItemCard: React.FC<{
  * Strengths & Weaknesses Screen Component
  */
 const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
   const [data, setData] = useState<StrengthsWeaknessesData>(DEFAULT_DATA);
   const hasLoadedInitialData = useRef(false);
 
@@ -131,7 +133,7 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.STRENGTHS_WEAKNESSES);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.STRENGTHS_WEAKNESSES,
@@ -226,39 +228,6 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   /**
-   * Handle save and continue
-   */
-  const handleSaveAndContinue = async () => {
-    // Validate at least one strength and one weakness
-    if (data.strengths.length === 0 || data.weaknesses.length === 0) {
-      Alert.alert(
-        'Incomplete Analysis',
-        'Please add at least one strength and one weakness before saving.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
-    // Validate all items have text
-    const emptyItems = [...data.strengths, ...data.weaknesses].filter(
-      (item) => !item.text.trim()
-    );
-
-    if (emptyItems.length > 0) {
-      Alert.alert(
-        'Empty Items',
-        'Please fill in all items or delete empty ones.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
-  };
-
-  /**
    * Get insights based on data
    */
   const getInsights = () => {
@@ -294,7 +263,7 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom }]}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >
@@ -304,6 +273,7 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
         title="Strengths & Weaknesses"
         subtitle="Honest self-assessment is the foundation of personal growth. Identify what makes you strong and where you can improve."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Insights Card */}
@@ -427,19 +397,17 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
         />
       </View>
 
-      {/* Action Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
 
       {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

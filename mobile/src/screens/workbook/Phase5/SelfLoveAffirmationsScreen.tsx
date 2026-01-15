@@ -34,7 +34,7 @@ import AffirmationCard, {
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase5ExerciseImages } from '../../../assets';
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
@@ -127,6 +127,8 @@ interface AffirmationsFormData {
 
 const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
+    const insets = useSafeAreaInsets();
+
   const [affirmations, setAffirmations] = useState<AffirmationData[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<AffirmationCategory | 'all' | 'favorites'>('all');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -153,7 +155,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
     customAffirmations: affirmations.filter(a => a.isCustom),
   }), [affirmations]);
 
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 5,
     worksheetId: WORKSHEET_IDS.SELF_LOVE_AFFIRMATIONS,
@@ -556,7 +558,16 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Add Affirmation Modal */}

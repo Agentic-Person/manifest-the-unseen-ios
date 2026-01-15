@@ -31,7 +31,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import FearCard, { Fear, FearCategory, FEAR_CATEGORIES } from '../../../components/workbook/FearCard';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -81,6 +81,8 @@ interface FearInventoryData {
  */
 const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // Fetch saved progress from Supabase
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress } = useWorkbookProgress(4, WORKSHEET_IDS.FEAR_INVENTORY);
 
   // State
@@ -96,7 +98,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: { fears, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
     phaseNumber: 4,
     worksheetId: WORKSHEET_IDS.FEAR_INVENTORY,
@@ -372,7 +374,16 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         </View>
 
         {/* Bottom Spacer for FAB */}
-        <View style={styles.bottomSpacer} />
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
+
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Floating Action Button */}

@@ -20,9 +20,10 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -135,12 +136,13 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
   const [data, setData] = useState<AbilitiesData>(DEFAULT_DATA);
   const [expandedCategory, setExpandedCategory] = useState<string | null>('Communication');
   const hasLoadedInitialData = useRef(false);
+  const insets = useSafeAreaInsets();
 
   // Load saved data from Supabase
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.ABILITIES_RATING);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.ABILITIES_RATING,
@@ -206,15 +208,6 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
     };
   }, [data.ratings]);
 
-  /**
-   * Handle save and continue
-   */
-  const handleSaveAndContinue = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
-  };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -236,6 +229,7 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
         title="Abilities Rating"
         subtitle="Honestly assess your current skill levels. Self-awareness is the foundation of targeted personal growth."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Summary Card */}
@@ -366,19 +360,17 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
         />
       </View>
 
-      {/* Action Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
 
       {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

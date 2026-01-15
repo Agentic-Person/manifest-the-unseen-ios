@@ -22,7 +22,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -173,14 +173,19 @@ const ZoneSection: React.FC<{
  * Comfort Zone Screen Component
  */
 const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
+      const insets = useSafeAreaInsets();
+
+  const insets = useSafeAreaInsets();
+
   const [data, setData] = useState<ComfortZoneData>(DEFAULT_DATA);
   const hasLoadedInitialData = useRef(false);
+  const insets = useSafeAreaInsets();
 
   // Load saved data from Supabase
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.COMFORT_ZONE);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.COMFORT_ZONE,
@@ -253,15 +258,6 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   /**
-   * Handle save and continue
-   */
-  const handleSaveAndContinue = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
-  };
-
-  /**
    * Get insight based on zone distribution
    */
   const getInsight = () => {
@@ -327,6 +323,8 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
         title="Comfort Zone Map"
         subtitle="Understanding where you feel comfortable, challenged, or overwhelmed helps you plan meaningful growth."
         progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
+        isCompleted={savedProgress?.completed || false}
       />
 
       {/* Visual Zone Diagram */}
@@ -406,19 +404,17 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
         />
       </View>
 
-      {/* Action Button */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.saveButton,
-          pressed && styles.saveButtonPressed,
-        ]}
-        onPress={handleSaveAndContinue}
-      >
-        <Text style={styles.saveButtonText}>Save & Continue</Text>
-      </Pressable>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
 
       {/* Bottom spacing */}
-      <View style={styles.bottomSpacer} />
+      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
     </ScrollView>
   );
 };

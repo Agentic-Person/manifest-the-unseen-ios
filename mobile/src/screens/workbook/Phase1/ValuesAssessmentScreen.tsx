@@ -19,10 +19,11 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Card, Text } from '../../../components';
 import { ValueCard } from '../../../components/workbook/ValueCard';
-import { ExerciseHeader } from '../../../components/workbook';
+import { ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -77,8 +78,11 @@ type Props = WorkbookStackScreenProps<'PersonalValues'>;
 /**
  * Values Assessment Screen Component
  */
-const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
+const ValuesAssessmentScreen: React.FC<Props> = () => {
+  const insets = useSafeAreaInsets();
+
   // State for selected values (ordered list)
+
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const hasLoadedInitialData = useRef(false);
 
@@ -86,7 +90,7 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.VALUES_ASSESSMENT);
 
   // Auto-save with debounce
-  const { isSaving, saveNow } = useAutoSave({
+  const { isSaving, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: { selectedValues, allValuesViewed: true, updatedAt: new Date().toISOString() },
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.VALUES_ASSESSMENT,
@@ -166,51 +170,6 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
     });
   }, []);
 
-  /**
-   * Save values to Supabase
-   */
-  const handleSave = useCallback(async () => {
-    if (selectedValues.length === 0) {
-      Alert.alert(
-        'No Values Selected',
-        'Please select at least one value before saving.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
-    if (selectedValues.length < MAX_SELECTIONS) {
-      Alert.alert(
-        'Incomplete Selection',
-        `You have selected ${selectedValues.length} of ${MAX_SELECTIONS} values. Are you sure you want to continue?`,
-        [
-          { text: 'Continue Selecting', style: 'cancel' },
-          { text: 'Save Anyway', onPress: performSave },
-        ]
-      );
-      return;
-    }
-
-    performSave();
-  }, [selectedValues]);
-
-  /**
-   * Perform the actual save operation
-   */
-  const performSave = async () => {
-    saveNow({ completed: true });
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert(
-      'Values Saved!',
-      'Your core values have been saved successfully.',
-      [
-        {
-          text: 'Continue',
-          onPress: () => navigation.goBack(),
-        },
-      ]
-    );
-  };
 
   /**
    * Calculate progress percentage
@@ -230,6 +189,7 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
           title="Personal Values"
           subtitle={`Select your top ${MAX_SELECTIONS} core values that define who you are and what matters most to you.`}
           progress={savedProgress?.progress || 0}
+          isCompleted={savedProgress?.completed || false}
         />
 
         {/* Progress Card */}
@@ -345,31 +305,17 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Bottom Spacer for button */}
-        <View style={styles.bottomSpacer} />
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
-      {/* Save Button */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[
-            styles.saveButton,
-            (selectedValues.length === 0 || isSaving) && styles.saveButtonDisabled,
-          ]}
-          onPress={handleSave}
-          disabled={selectedValues.length === 0 || isSaving}
-          accessibilityRole="button"
-          accessibilityLabel="Save your values"
-          accessibilityHint={
-            selectedValues.length === 0
-              ? 'Select at least one value to save'
-              : 'Saves your selected values'
-          }
-        >
-          <Text style={styles.saveButtonText}>
-            {isSaving ? 'Saving...' : 'Save Values'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {/* Completion Button */}
+      <CompletionButton
+        isCompleted={savedProgress?.completed || false}
+        canComplete={canComplete}
+        isAutoCompleted={isAutoCompleted}
+        isSaving={isSaving}
+        onPress={markComplete}
+      />
     </View>
   );
 };

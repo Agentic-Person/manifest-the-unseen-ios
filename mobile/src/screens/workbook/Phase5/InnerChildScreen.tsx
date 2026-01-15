@@ -29,7 +29,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase5ExerciseImages } from '../../../assets';
 
 // Design system colors - softer variant for nurturing feel
@@ -135,6 +135,8 @@ interface InnerChildFormData {
 
 const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   // State
+    const insets = useSafeAreaInsets();
+
   const [letters, setLetters] = useState<InnerChildLetter[]>([]);
   const [currentLetter, setCurrentLetter] = useState<InnerChildLetter | null>(null);
   const [showPromptsModal, setShowPromptsModal] = useState(false);
@@ -157,7 +159,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     letters,
   }), [letters]);
 
-  const { isSaving, lastSaved, saveNow } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 5,
     worksheetId: WORKSHEET_IDS.INNER_CHILD,
@@ -465,19 +467,28 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
               <Text style={styles.letterClosing}>With love,{'\n'}Your grown-up self</Text>
             </View>
 
-            {/* Save Button */}
-            <Pressable
-              style={({ pressed }) => [
-                styles.saveButton,
-                pressed && styles.saveButtonPressed,
-              ]}
-              onPress={handleSaveAndClose}
-              accessibilityRole="button"
-              accessibilityLabel="Save letter"
-              testID="save-letter-button"
-            >
-              <Text style={styles.saveButtonText}>Save Letter</Text>
-            </Pressable>
+            {/* Completion Button */}
+
+
+            <CompletionButton
+
+
+              isCompleted={savedProgress?.completed || false}
+
+
+              canComplete={canComplete}
+
+
+              isAutoCompleted={isAutoCompleted}
+
+
+              isSaving={isSaving}
+
+
+              onPress={markComplete}
+
+
+            />
           </View>
         )}
 
@@ -549,7 +560,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
         )}
 
-        <View style={styles.bottomSpacer} />
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </Animated.ScrollView>
 
       {/* Guided Prompts Modal */}

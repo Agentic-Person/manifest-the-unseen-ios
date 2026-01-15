@@ -46,7 +46,7 @@ import {
   DEFAULT_IMAGE_STYLE,
 } from '../../../components/vision-board';
 import type { VisionBoardItem, VisionBoardData } from '../../../components/vision-board';
-import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
 import { WORKSHEET_IDS } from '../../../types/workbook';
 import { Phase2ExerciseImages } from '../../../assets';
@@ -87,6 +87,8 @@ type Props = WorkbookStackScreenProps<'VisionBoard'>;
  */
 const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
   // Fetch saved progress from Supabase
+    const insets = useSafeAreaInsets();
+
   const { data: savedProgress, isLoading: isLoadingProgress } = useWorkbookProgress(2, WORKSHEET_IDS.VISION_BOARD);
   const { mutate: saveWorkbook, isPending: isSaving } = useSaveWorkbook();
 
@@ -281,12 +283,6 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
   /**
    * Manual save and navigate back
    */
-  const handleSaveAndContinue = async () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    await autoSave();
-    navigation.goBack();
-  };
-
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
@@ -313,7 +309,8 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
           title="Vision Board"
           subtitle="Create a visual representation of your dreams and goals. Add images and inspiring words to manifest your future."
           progress={savedProgress?.progress || 0}
-        />
+        isCompleted={savedProgress?.completed || false}
+      />
 
         {/* Vision Canvas */}
         <VisionCanvas
@@ -357,21 +354,17 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={saveError} onRetry={autoSave} />
 
-        {/* Save Button */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.saveButton,
-            pressed && styles.saveButtonPressed,
-          ]}
-          onPress={handleSaveAndContinue}
-          accessibilityRole="button"
-          accessibilityLabel="Save and continue"
-        >
-          <Text style={styles.saveButtonText}>Save & Continue</Text>
-        </Pressable>
+{/* Completion Button */}
+<CompletionButton
+  isCompleted={savedProgress?.completed || false}
+  canComplete={canComplete}
+  isAutoCompleted={isAutoCompleted}
+  isSaving={isSaving}
+  onPress={markComplete}
+/>
 
-        {/* Bottom spacing */}
-        <View style={styles.bottomSpacer} />
+{/* Bottom spacing */}
+        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>
 
       {/* Add Text Modal */}
