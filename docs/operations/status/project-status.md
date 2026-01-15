@@ -1,10 +1,100 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-15 (Build 50 - COMPLETE AND LIVE)
+**Last Updated**: 2026-01-15 (Build 50 - CRITICAL ISSUE FOUND)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
 **Timeline**: Week 8 of 28 (App Store Submission - 4th Attempt)
-**Status**: 🎉 **BUILD 50 COMPLETE** - Workbook progress tracking fully implemented. All 39 worksheets enhanced with auto-completion detection, completion buttons, and fixed UI issues. Build succeeded after 7 attempts.
+**Status**: 🚨 **CRITICAL: Build 50 has broken Supabase connection** - Publishable key format incompatible with SDK. Data not loading/saving. Fix applied, testing in progress.
+
+---
+
+## 🚨 CRITICAL ISSUE - January 15, 2026 (Build 50 - BLOCKING)
+
+### Summary
+**Build 50 submitted to TestFlight with BROKEN Supabase connection.** All workbook data fails to load/save. User reported weeks-old data not appearing. Root cause: `.env` file was switched from JWT anon key to new publishable key format right before build.
+
+**Status**: 🔴 **CRITICAL - Build 50 is broken**
+**Impact**: ALL users cannot load or save workbook data
+**Discovered**: January 15, 2026 1:20 AM (10 minutes after TestFlight submission)
+**Fix Status**: ✅ Fixed locally, ⏳ awaiting Build 51
+
+### Root Cause
+
+The `mobile/.env` file was changed to use Supabase's new publishable key format:
+```env
+# BROKEN (Build 50):
+EXPO_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_GlejN28GSh4yG5c7_d6RBg_oIZkFqdR
+
+# CORRECT (working):
+EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Why it broke**: The Supabase JS SDK (`@supabase/supabase-js`) currently **does not support** the new publishable key format (`sb_publishable_...`). It requires the JWT anon key format.
+
+**When it was changed**: Unknown - happened right before Build 50 submission. The `.env` file comment said "Using new publishable key format (replaces anon key for mobile)" but this is **incorrect** for the current SDK version.
+
+### Impact Analysis
+
+**Affected Features**:
+- ✗ Workbook data loading (all 39 worksheets)
+- ✗ Workbook auto-save
+- ✗ Progress tracking
+- ✗ Completion detection
+- ✗ Phase dashboard progress
+- ✗ All Supabase database operations
+
+**Not Affected**:
+- ✓ Authentication (uses separate auth token)
+- ✓ App navigation
+- ✓ UI rendering
+- ✓ Local state management
+
+### Fix Applied
+
+**File**: `mobile/.env`
+**Commit**: `9a0e5f3` - "fix: improve completion detection logic for empty fields"
+
+```diff
+- EXPO_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_GlejN28GSh4yG5c7_d6RBg_oIZkFqdR
++ EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpieXN6eHR3em95bHl5Z3RleGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3MDE1MDcsImV4cCI6MjA3NzI3NzUwN30.z4NDPLi_njS8Y_7T_9JQn9pdLyoJWlFuc2lnZJDXTu4
+```
+
+**Additional Fix**: Improved `completionDetection.ts` to only validate non-empty string fields (related cleanup).
+
+### Testing Status
+
+**Local Web Testing**: ⏳ In progress (http://localhost:3004)
+**Expected Results**:
+- Weeks-old data should load
+- Auto-save should work
+- Progress indicators should update
+- Completion buttons should appear
+
+### Next Steps
+
+1. ⏳ **Complete local testing** - Verify all workbook features work
+2. ⏳ **Increment to Build 51** - Update `mobile/app.json` build number
+3. ⏳ **Create Build 51** - Submit fixed build to TestFlight
+4. ⏳ **Test on devices** - Verify fix on iPhone/iPad TestFlight
+5. ⏳ **Monitor Sentry** - Watch for Supabase errors in production
+
+### Lessons Learned
+
+1. **Never change critical config right before builds** - Always test after env changes
+2. **SDK compatibility matters** - New key formats may not be supported yet
+3. **Test data loading immediately** - Build 50 would have failed basic smoke test
+4. **Document key format requirements** - Add comments explaining WHY we use JWT format
+5. **Add pre-build validation** - Script to verify Supabase connection before building
+
+### Prevention Checklist (Future Builds)
+
+Before submitting ANY build:
+- [ ] Verify `.env` file hasn't changed unexpectedly
+- [ ] Test Supabase connection locally
+- [ ] Verify workbook data loads
+- [ ] Test auto-save functionality
+- [ ] Check browser console for Supabase errors
+- [ ] Compare `.env` with last working build
 
 ---
 
