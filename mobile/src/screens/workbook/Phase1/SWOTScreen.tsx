@@ -6,7 +6,7 @@
  * Users can add multiple items per quadrant with auto-save functionality.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -19,6 +19,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Card, Text, TextInput } from '../../../components';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
+import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
+import { WORKSHEET_IDS } from '../../../types/workbook';
+import { Phase1ExerciseImages } from '../../../assets';
 
 /**
  * SWOT Item structure
@@ -116,47 +121,49 @@ const getDefaultSWOTData = (): SWOTQuadrant[] => [
 
 type Props = WorkbookStackScreenProps<'SWOT'>;
 
+const PHASE_NUMBER = 1;
+
 /**
  * SWOT Analysis Screen Component
  */
 const SWOTScreen: React.FC<Props> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
+
+  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
+    PHASE_NUMBER,
+    WORKSHEET_IDS.SWOT_ANALYSIS
+  );
+
   const [swotData, setSWOTData] = useState<SWOTQuadrant[]>(getDefaultSWOTData());
   const [expandedQuadrant, setExpandedQuadrant] = useState<string | null>(null);
   const [newItemText, setNewItemText] = useState<{ [key: string]: string }>({});
-  const [isSaving, setIsSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  /**
-   * Auto-save functionality
-   */
+  // Auto-save hook
+  const formData = useMemo(() => ({ swotData }), [swotData]);
+
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: PHASE_NUMBER,
+    worksheetId: WORKSHEET_IDS.SWOT_ANALYSIS,
+    debounceMs: 2000,
+  });
+
+  const hasLoadedInitialData = useRef(false);
+
+  // Load saved data into state ONLY on initial fetch
   useEffect(() => {
-    const saveTimer = setTimeout(() => {
-      autoSave();
-    }, 2000);
-
-    return () => clearTimeout(saveTimer);
-  }, [swotData]);
-
-  /**
-   * Auto-save progress to storage/backend
-   */
-  const autoSave = useCallback(async () => {
-    setIsSaving(true);
-    try {
-      // TODO: Save to Supabase
-      // await supabase.from('workbook_progress').upsert({
-      //   exercise_id: 'swot-analysis',
-      //   data: swotData,
-      //   updated_at: new Date().toISOString(),
-      // });
-      console.log('Auto-saving SWOT data:', swotData);
-      setLastSaved(new Date());
-    } catch (error) {
-      console.error('Failed to save:', error);
-    } finally {
-      setIsSaving(false);
+    if (isLoadError) {
+      console.error('[SWOTScreen] Failed to load progress:', loadError);
     }
-  }, [swotData]);
+
+    if (savedProgress?.data && !hasLoadedInitialData.current) {
+      const data = savedProgress.data as unknown as { swotData?: SWOTQuadrant[] };
+      if (data.swotData) {
+        setSWOTData(data.swotData);
+      }
+      hasLoadedInitialData.current = true;
+    }
+  }, [savedProgress, isLoadError, loadError]);
 
   /**
    * Add item to a quadrant
@@ -268,34 +275,28 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
           ))}
         </View>
 
-        {/* Save Status */}
-        {lastSaved && (
-          <Text style={styles.saveStatus}>
-            {isSaving ? 'Saving...' : `Last saved: ${lastSaved.toLocaleTimeString()}`}
-          </Text>
-        )}
+        {/* Exercise Header */}
+        <ExerciseHeader
+          image={Phase1ExerciseImages.swotAnalysis}
+          title="SWOT Analysis"
+          subtitle="Analyze your personal Strengths, Weaknesses, Opportunities, and Threats"
+          progress={savedProgress?.progress || 0}
+          isCompleted={savedProgress?.completed || false}
+        />
 
-        {/* Action Buttons */}
-        <View style={styles.actions}>
-          <Button
-            title="Save & Continue"
-            onPress={() => {
-              autoSave();
-              navigation.goBack();
-            }}
-            variant="primary"
-            fullWidth
-          />
+        {/* Save Status */}
+        <View style={{ alignItems: 'center', marginVertical: 16 }}>
+          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
         </View>
 
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
+        {/* Completion Button */}
+        <CompletionButton
+          isCompleted={savedProgress?.completed || false}
+          canComplete={canComplete}
+          isAutoCompleted={isAutoCompleted}
+          isSaving={isSaving}
+          onPress={markComplete}
+        />
 
         <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
       </ScrollView>

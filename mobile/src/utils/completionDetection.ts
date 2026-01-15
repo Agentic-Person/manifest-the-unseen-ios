@@ -37,8 +37,9 @@ export const detectCompletion = (
 
   // Check if all fields meet minimum character count
   if (criteria.minCharsPerField !== undefined) {
+    const minChars = criteria.minCharsPerField;
     const hasShortFields = Object.values(data).some(
-      (v) => typeof v === 'string' && v.trim().length < criteria.minCharsPerField
+      (v) => typeof v === 'string' && v.trim().length < minChars
     );
     if (hasShortFields) return false;
   }

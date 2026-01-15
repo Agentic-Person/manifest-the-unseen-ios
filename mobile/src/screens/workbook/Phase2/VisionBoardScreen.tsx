@@ -18,7 +18,7 @@
  * - Dark spiritual theme
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -33,6 +33,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import {
@@ -47,7 +48,8 @@ import {
 } from '../../../components/vision-board';
 import type { VisionBoardItem, VisionBoardData } from '../../../components/vision-board';
 import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
-import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
 import { Phase2ExerciseImages } from '../../../assets';
 
@@ -87,20 +89,29 @@ type Props = WorkbookStackScreenProps<'VisionBoard'>;
  */
 const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
   // Fetch saved progress from Supabase
-    const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
-  const { data: savedProgress, isLoading: isLoadingProgress } = useWorkbookProgress(2, WORKSHEET_IDS.VISION_BOARD);
-  const { mutate: saveWorkbook, isPending: isSaving } = useSaveWorkbook();
+  const { data: savedProgress, isLoading: isLoadingProgress, isError: isLoadError } = useWorkbookProgress(2, WORKSHEET_IDS.VISION_BOARD);
 
   const [board, setBoard] = useState<VisionBoardData>(createEmptyBoard());
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [saveError, setSaveError] = useState(false);
   const [showTextModal, setShowTextModal] = useState(false);
   const [newText, setNewText] = useState('');
 
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-save hook
+  const formData = useMemo(() => ({
+    ...board,
+    updatedAt: new Date().toISOString(),
+  }), [board]);
+
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 2,
+    worksheetId: WORKSHEET_IDS.VISION_BOARD,
+    debounceMs: 2000,
+  });
+
   const hasLoadedInitialData = useRef(false);
 
   /**
@@ -117,54 +128,7 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
       setIsLoading(false);
       hasLoadedInitialData.current = true;
     }
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
   }, [savedProgress, isLoadingProgress]);
-
-  /**
-   * Auto-save when board changes (debounced)
-   */
-  useEffect(() => {
-    if (!isLoading && board.items.length > 0) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 2000); // 2 second debounce
-    }
-  }, [board, isLoading]);
-
-  /**
-   * Auto-save board to Supabase
-   */
-  const autoSave = useCallback(async () => {
-    setSaveError(false);
-    const boardData = {
-      ...board,
-      updatedAt: new Date().toISOString(),
-    };
-
-    saveWorkbook(
-      {
-        phaseNumber: 2,
-        worksheetId: WORKSHEET_IDS.VISION_BOARD,
-        data: boardData as unknown as Record<string, unknown>,
-      },
-      {
-        onSuccess: () => {
-          setLastSaved(new Date());
-        },
-        onError: (error) => {
-          console.error('Failed to save:', error);
-          setSaveError(true);
-        },
-      }
-    );
-  }, [board, saveWorkbook]);
 
   /**
    * Add an image to the board
@@ -352,16 +316,16 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
         </View>
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={saveError} onRetry={autoSave} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
-{/* Completion Button */}
-<CompletionButton
-  isCompleted={savedProgress?.completed || false}
-  canComplete={canComplete}
-  isAutoCompleted={isAutoCompleted}
-  isSaving={isSaving}
-  onPress={markComplete}
-/>
+        {/* Completion Button */}
+        <CompletionButton
+          isCompleted={savedProgress?.completed || false}
+          canComplete={canComplete}
+          isAutoCompleted={isAutoCompleted}
+          isSaving={isSaving}
+          onPress={markComplete}
+        />
 
 {/* Bottom spacing */}
         <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />

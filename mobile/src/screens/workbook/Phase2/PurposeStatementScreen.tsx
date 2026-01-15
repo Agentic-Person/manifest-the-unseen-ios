@@ -28,7 +28,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import { GuidedQuestion, GuidedQuestionData } from '../../../components/workbook/GuidedQuestion';
@@ -38,6 +38,7 @@ import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../compon
 import { colors, spacing, borderRadius, typography, fontWeights } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
 import { Phase2ExerciseImages } from '../../../assets';
 
@@ -128,12 +129,10 @@ const generateStatement = (answers: Record<string, string>): string => {
  */
 const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-    const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
-  const { data: savedProgress } = useWorkbookProgress(2, WORKSHEET_IDS.PURPOSE_STATEMENT);
+  const { data: savedProgress, isError: isLoadError } = useWorkbookProgress(2, WORKSHEET_IDS.PURPOSE_STATEMENT);
   const { mutate: saveWorkbook, isPending: isSaving } = useSaveWorkbook();
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [saveError, setSaveError] = useState(false);
 
   // Current question index
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -145,6 +144,21 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   const [finalStatement, setFinalStatement] = useState('');
   // Whether statement is in edit mode
   const [isEditingStatement, setIsEditingStatement] = useState(false);
+
+  // Auto-save hook
+  const formData = useMemo(() => ({
+    answers,
+    generatedStatement: generateStatement(answers),
+    finalStatement,
+    updatedAt: new Date().toISOString(),
+  }), [answers, finalStatement]);
+
+  const { isSaving: isAutoSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 2,
+    worksheetId: WORKSHEET_IDS.PURPOSE_STATEMENT,
+    debounceMs: 2000,
+  });
 
   const hasLoadedInitialData = useRef(false);
 
@@ -242,49 +256,19 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    setSaveError(false);
-
-    const data: PurposeStatementData = {
-      answers,
-      generatedStatement: generateStatement(answers),
-      finalStatement,
-      updatedAt: new Date().toISOString(),
-    };
-
-    saveWorkbook(
-      {
-        phaseNumber: 2,
-        worksheetId: WORKSHEET_IDS.PURPOSE_STATEMENT,
-        data: data as unknown as Record<string, unknown>,
-        completed: true,
-      },
-      {
-        onSuccess: () => {
-          setLastSaved(new Date());
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          Alert.alert(
-            'Purpose Statement Saved!',
-            'Your purpose statement has been saved. Return to it whenever you need guidance.',
-            [
-              {
-                text: 'Continue',
-                onPress: () => navigation.goBack(),
-              },
-            ]
-          );
+    saveNow({ completed: true });
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Alert.alert(
+      'Purpose Statement Saved!',
+      'Your purpose statement has been saved. Return to it whenever you need guidance.',
+      [
+        {
+          text: 'Continue',
+          onPress: () => navigation.goBack(),
         },
-        onError: (error) => {
-          console.error('Failed to save purpose statement:', error);
-          setSaveError(true);
-          Alert.alert(
-            'Save Failed',
-            'Unable to save your purpose statement. Please try again.',
-            [{ text: 'OK' }]
-          );
-        },
-      }
+      ]
     );
-  }, [answers, finalStatement, navigation, saveWorkbook]);
+  }, [finalStatement, navigation, saveNow]);
 
   /**
    * Regenerate the statement
@@ -326,7 +310,7 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
         )}
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={saveError} onRetry={handleSave} />
+        <SaveIndicator isSaving={isAutoSaving || isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
         {/* Main Content */}
         <ScrollView

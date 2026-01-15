@@ -33,12 +33,14 @@ import {
   Platform,
   Animated,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import StepList from '../../../components/workbook/StepList';
 import type { ActionStepData } from '../../../components/workbook/StepList';
 import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
-import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
+import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
 import { Phase3ExerciseImages } from '../../../assets';
 
@@ -103,22 +105,33 @@ interface ActionPlanData {
  */
 const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-    const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
-  const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.ACTION_PLAN);
+  const { data: savedProgress, isError: isLoadError } = useWorkbookProgress(3, WORKSHEET_IDS.ACTION_PLAN);
   const { data: smartGoalsProgress, isLoading: isLoadingGoals } = useWorkbookProgress(3, WORKSHEET_IDS.SMART_GOALS);
-  const { mutate: saveWorkbook, isPending: isSavingWorkbook } = useSaveWorkbook();
 
   // State
   const [goals, setGoals] = useState<SMARTGoal[]>([]);
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [steps, setSteps] = useState<ActionStepData[]>([]);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [saveError, setSaveError] = useState(false);
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showAddStepModal, setShowAddStepModal] = useState(false);
   const [newStepText, setNewStepText] = useState('');
   const [showCelebration, setShowCelebration] = useState(false);
+
+  // Auto-save hook
+  const formData = useMemo(() => ({
+    selectedGoalId,
+    steps,
+    updatedAt: new Date().toISOString(),
+  }), [selectedGoalId, steps]);
+
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
+    data: formData as unknown as Record<string, unknown>,
+    phaseNumber: 3,
+    worksheetId: WORKSHEET_IDS.ACTION_PLAN,
+    debounceMs: 2000,
+  });
 
   // Animation refs
   const celebrationOpacity = useRef(new Animated.Value(0)).current;
@@ -184,48 +197,7 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   }, [isAllComplete, steps.length]);
 
 
-  /**
-   * Auto-save action plan to Supabase
-   */
-  const autoSave = useCallback(async () => {
-    setSaveError(false);
-    const data: ActionPlanData = {
-      selectedGoalId,
-      steps,
-      updatedAt: new Date().toISOString(),
-    };
-
-    saveWorkbook(
-      {
-        phaseNumber: 3,
-        worksheetId: WORKSHEET_IDS.ACTION_PLAN,
-        data: data as unknown as Record<string, unknown>,
-      },
-      {
-        onSuccess: () => {
-          setLastSaved(new Date());
-        },
-        onError: (error) => {
-          console.error('Failed to save:', error);
-          setSaveError(true);
-        },
-      }
-    );
-  }, [selectedGoalId, steps, saveWorkbook]);
-
-  /**
-   * Auto-save when steps change (debounced)
-   */
-  useEffect(() => {
-    if (!isLoadingGoals && selectedGoalId) {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-      saveTimeoutRef.current = setTimeout(() => {
-        autoSave();
-      }, 1500); // 1.5 second debounce
-    }
-  }, [steps, isLoadingGoals, selectedGoalId, autoSave]);
+  // Auto-save is handled by useAutoSave hook
 
   /**
    * Trigger celebration animation
@@ -516,16 +488,16 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSavingWorkbook} lastSaved={lastSaved} isError={saveError} onRetry={autoSave} />
+        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
 
-{/* Completion Button */}
-<CompletionButton
-  isCompleted={savedProgress?.completed || false}
-  canComplete={canComplete}
-  isAutoCompleted={isAutoCompleted}
-  isSaving={isSaving}
-  onPress={markComplete}
-/>
+        {/* Completion Button */}
+        <CompletionButton
+          isCompleted={savedProgress?.completed || false}
+          canComplete={canComplete}
+          isAutoCompleted={isAutoCompleted}
+          isSaving={isSaving}
+          onPress={markComplete}
+        />
 
 {/* Bottom spacing */}
         <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />

@@ -31,13 +31,14 @@ import {
   Alert,
   Share,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { CertificateView } from '../../../components/workbook/CertificateView';
 import { ConfettiCelebration, ConfettiBurst } from '../../../components/workbook/ConfettiCelebration';
 import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase10ExerciseImages } from '../../../assets';
-import { useWorkbookProgress, useMarkComplete } from '../../../hooks/useWorkbook';
+import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
 
@@ -134,15 +135,12 @@ const PHASE_NUMBER = 10;
  */
 const GraduationScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
-    const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
     WORKSHEET_IDS.GRADUATION
   );
-
-  // Mark complete mutation
-  const { mutate: markComplete } = useMarkComplete();
 
   const [showCelebration, setShowCelebration] = useState(false);
   const [showBurst, setShowBurst] = useState(false);
@@ -166,7 +164,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
     graduatedAt: hasGraduated ? new Date().toISOString() : undefined,
   }), [commitmentStatement, selectedPractices, hasGraduated]);
 
-  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
+  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete: markCompleteFromAutoSave } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.GRADUATION,
@@ -249,10 +247,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
             setHasGraduated(true);
 
             // Mark worksheet as complete
-            markComplete({
-              phaseNumber: PHASE_NUMBER,
-              worksheetId: WORKSHEET_IDS.GRADUATION,
-            });
+            markCompleteFromAutoSave();
 
             // Save graduation data
             saveNow({ completed: true });
@@ -520,7 +515,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         canComplete={canComplete}
         isAutoCompleted={isAutoCompleted}
         isSaving={isSaving}
-        onPress={markComplete}
+        onPress={markCompleteFromAutoSave}
       />
 
         <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
