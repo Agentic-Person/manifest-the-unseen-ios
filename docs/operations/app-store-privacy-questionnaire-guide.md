@@ -1,7 +1,31 @@
 # App Store Connect Privacy Questionnaire - Step-by-Step Guide
 **App**: Manifest the Unseen
-**Date**: January 14, 2026
-**Build**: 49 (preparing for submission)
+**Date**: January 15, 2026
+**Build**: 51 (preparing for submission)
+**Last Updated**: January 15, 2026 - CRITICAL corrections added
+
+---
+
+## ⚠️ CRITICAL UPDATES (January 15, 2026)
+
+**Three critical corrections have been made to this guide:**
+
+1. ✅ **Device ID** - NOW REQUIRED
+   - **Changed from**: ❌ NO
+   - **Changed to**: ✅ YES
+   - **Reason**: RevenueCat SDK uses device ID for subscription management and fraud prevention
+
+2. ✅ **Diagnostics** - NOW CLARIFIED
+   - **Current Build Answer**: ❌ NO
+   - **Reason**: Sentry is NOT currently implemented (only documented for future use)
+   - **Action**: Must update questionnaire when Sentry is added in future builds
+
+3. ✅ **Email → Analytics Purpose** - REMOVED
+   - **Changed from**: App Functionality + Analytics
+   - **Changed to**: App Functionality only
+   - **Reason**: TelemetryDeck is NOT currently implemented
+
+**Privacy Policy Updated**: TelemetryDeck reference removed from https://www.manifesttheunseen.app/privacy
 
 ---
 
@@ -56,7 +80,6 @@ Click **Next**
 - **Collected**: ✅ YES
 - **Purpose**:
   - ✅ App Functionality
-  - ✅ Analytics (optional, check if you send analytics with email)
 - **Linked to user**: ✅ YES
 - **Used for tracking**: ❌ NO
 
@@ -64,6 +87,7 @@ Click **Next**
 - Required for email/password signup
 - Optional with Apple Sign-In (user can hide email)
 - Used for account recovery, password reset
+- ⚠️ **DO NOT select "Analytics"** - TelemetryDeck is not currently implemented
 
 ---
 
@@ -252,12 +276,17 @@ Click **Next**
 ---
 
 #### 2. Device ID
-- **Collected**: ❌ NO
+- **Collected**: ✅ **YES**
+- **Purpose**:
+  - ✅ App Functionality
+- **Linked to user**: ✅ YES
+- **Used for tracking**: ❌ NO
 
 **Notes**:
-- RevenueCat may use device ID internally for subscription management
-- We don't access or store it ourselves
-- If RevenueCat requires this, mark as YES and link to RevenueCat privacy policy
+- ⚠️ **CRITICAL UPDATE**: RevenueCat SDK uses device ID for subscription fraud prevention and management
+- Required to accurately track subscription status across devices
+- Not used for advertising or cross-app tracking
+- Reference: RevenueCat privacy policy (https://www.revenuecat.com/privacy)
 
 ---
 
@@ -338,33 +367,35 @@ Click **Next**
 ## Section 13: Diagnostics
 
 ### Do you collect Diagnostic data?
-**Answer**: ✅ **YES** (if using Sentry or crash reporting)
 
-**OR**
+⚠️ **FOR CURRENT BUILD (Build 49+)**: **Answer**: ❌ **NO**
 
-**Answer**: ❌ **NO** (if NOT using crash reporting yet)
+**Reason**: Sentry is documented but NOT currently implemented in the codebase.
 
-**Check your code**: Do you have Sentry or any error tracking SDK installed?
+**Verification**:
+- Check `mobile/package.json` for `@sentry/react-native`
+- Check `mobile/.env.example` - `ENABLE_SENTRY=false`
+- Check `mobile/src/services/queryClient.ts` - Sentry calls are commented out (TODO)
 
-If YES, select:
+**IMPORTANT**: When you add Sentry in future builds, you MUST update this questionnaire:
 
-#### 1. Crash Data
+#### 1. Crash Data (FUTURE - When Sentry is added)
 - **Collected**: ✅ YES
 - **Purpose**:
   - ✅ App Functionality (bug fixes)
 - **Linked to user**: ❌ NO (anonymized)
 - **Used for tracking**: ❌ NO
 
-#### 2. Performance Data
+#### 2. Performance Data (FUTURE - When Sentry is added)
 - **Collected**: ✅ YES
 - **Purpose**:
   - ✅ App Functionality (performance optimization)
 - **Linked to user**: ❌ NO (anonymized)
 - **Used for tracking**: ❌ NO
 
-**Notes**: Crash reports sent to Sentry (if implemented)
+**Current Answer**: ❌ **NO**
 
-Click **Next**
+Click **Next** (skips this section)
 
 ---
 
@@ -495,13 +526,30 @@ After completing the questionnaire, verify in App Store Connect:
 3. You should see a summary of:
    - Contact Info (Name, Email)
    - User Content (Photos, Other)
-   - Identifiers (User ID)
+   - Identifiers (User ID, **Device ID**)
    - Purchases (Purchase History)
    - Usage Data (Product Interaction)
+   - Diagnostics: **NONE** (for current build)
 4. All items should show "Linked to user: Yes, Used for tracking: No"
 
 ---
 
+## SDK Version Requirements (Privacy Manifests)
+
+Verify your SDK versions include privacy manifests (required by Apple as of 2024-2025):
+
+**Current Versions** (from `mobile/package.json`):
+- ✅ `react-native-purchases`: ^9.6.9 (Privacy manifest included - version 7.0+ required)
+- ⚠️ `@supabase/supabase-js`: ^2.39.0 (Consider updating to 2.40.0+ for latest manifest)
+
+**To update Supabase SDK** (optional but recommended):
+```bash
+cd mobile
+npm install @supabase/supabase-js@latest
+```
+
+---
+
 **Document Owner**: Claude Code AI Assistant
-**Last Updated**: January 14, 2026
-**Status**: Ready for use with Build 49 submission
+**Last Updated**: January 15, 2026 - CRITICAL corrections applied
+**Status**: Ready for use with Build 51 submission

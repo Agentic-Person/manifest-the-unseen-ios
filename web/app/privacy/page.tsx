@@ -113,8 +113,10 @@ export default function PrivacyPolicy() {
               <li><strong>Anthropic (Claude):</strong> AI conversation processing (no personal data stored by Anthropic)</li>
               <li><strong>RevenueCat:</strong> Subscription management (connects to Apple&apos;s systems)</li>
               <li><strong>Apple App Store:</strong> Payment processing (we never see your payment details)</li>
-              <li><strong>TelemetryDeck:</strong> Privacy-focused analytics (no personal identifiers collected)</li>
             </ul>
+            <p className="text-muted-wisdom leading-relaxed mt-4 text-sm italic">
+              Note: Analytics tracking services (such as TelemetryDeck) may be added in future versions to help improve app performance. If added, this policy will be updated accordingly.
+            </p>
           </section>
 
           <section className="mb-12">
