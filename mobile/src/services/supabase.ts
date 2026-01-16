@@ -96,12 +96,19 @@ const noopLock = async <R>(
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     storage: Platform.OS === 'web' ? webStorage : AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: Platform.OS === 'web', // Enable for web to handle auth callbacks
-    flowType: 'implicit', // Better compatibility with web
+    // Web platform: disable features that cause SDK to hang
+    // iOS platform: enable for proper session management
+    autoRefreshToken: Platform.OS !== 'web',
+    persistSession: Platform.OS !== 'web',
+    detectSessionInUrl: false, // Always disable - causes SDK to hang on web
+    flowType: 'implicit', // Use implicit flow for web compatibility
     // Use no-op lock on web to prevent deadlocks that cause queries to hang
     ...(Platform.OS === 'web' && { lock: noopLock }),
+  },
+  global: {
+    headers: {
+      'x-client-info': 'manifest-the-unseen@1.0.0',
+    },
   },
 });
 
