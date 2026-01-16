@@ -74,5 +74,6 @@ module.exports = {
     '*.config.js',
     'metro.config.js',
     'babel.config.js',
+    'web/', // Web app has its own ESLint config
   ],
 };
