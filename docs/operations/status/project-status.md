@@ -1,10 +1,196 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-15 (Build 51 - SUBMITTED TO TESTFLIGHT)
+**Last Updated**: 2026-01-15 (Build 51 - CRITICAL BUGS FOUND, DO NOT SUBMIT TO APP STORE)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future)
-**Timeline**: Week 8 of 28 (App Store Submission - 4th Attempt)
-**Status**: ✅ **Build 51 submitted to TestFlight** - Fixes Supabase SDK hanging issues. Awaiting Apple processing (5-10 min).
+**Timeline**: Week 8 of 28 (App Store Submission - ON HOLD)
+**Status**: 🔴 **BUILD 51 HAS CRITICAL BUGS** - Testing on iPad and local browser revealed multiple showstopper issues. Build 52 required.
+
+---
+
+## 🚨 BUILD 51 CRITICAL ISSUES - January 15, 2026 (EVENING)
+
+### Testing Summary
+**Device Testing**: iPad (TestFlight Build 51) + Local Browser (localhost:8082)
+**Result**: ❌ **FAILED - DO NOT SUBMIT TO APP STORE**
+
+**Good News**:
+- ✅ Data loading works (Supabase SDK fix successful)
+- ✅ Old data loads correctly
+- ✅ No crashes or hangs on data fetch
+
+**Critical Issues Found**:
+1. ❌ **Save functionality broken** - Multiple save-related bugs
+2. ❌ **Completion buttons missing** - Many exercises don't have "Complete Exercise" button
+3. ❌ **Progress meters stuck at 50%** - All completion ratios showing 50% regardless of actual state
+4. ❌ **Buttons not clickable** - When buttons do appear, they're not highlighted/enabled
+
+### Issue 1: Save Functionality Broken (BLOCKER)
+**Symptoms**:
+- No save button visible in some exercises
+- Save indicator spins indefinitely (>10 seconds)
+- "⏳ Save may have failed. Tap to retry" appears after timeout
+
+**Root Cause Analysis**:
+- `useAutoSave.ts` line 89: `SAVE_TIMEOUT_MS = 10000` (10 seconds)
+- `SaveIndicator.tsx` lines 111-137: Shows timeout warning after 10 seconds
+- Supabase mutations may be taking >10 seconds OR hanging completely
+- Safety timeout fires before save completes
+
+**Files Involved**:
+- `mobile/src/hooks/useAutoSave.ts` (timeout logic)
+- `mobile/src/components/workbook/SaveIndicator.tsx` (UI display)
+- `mobile/src/hooks/useWorkbook.ts` (mutation logic)
+
+### Issue 2: Completion Buttons Missing (BLOCKER)
+**Symptoms**:
+- Many worksheet screens don't show "Complete Exercise" button at all
+- User reported: "Several of the exercises and phases still don't have the button"
+- Only some worksheets (like Timeline) have the button visible
+
+**Root Cause Analysis**:
+- CompletionButton component depends on `canComplete` prop
+- `canComplete` comes from `useAutoSave` hook (lines 151-163)
+- Auto-completion detection may be failing:
+  - Worksheet config not found (`getWorksheetConfig` returns undefined)
+  - Completion criteria detection throws error
+  - `canComplete` defaults to `false` → button stays disabled/hidden
+
+**Files Involved**:
+- `mobile/src/components/workbook/CompletionButton.tsx`
+- `mobile/src/hooks/useAutoSave.ts` (completion detection logic)
+- `mobile/src/config/worksheetConfigs.ts` (completion criteria)
+- `mobile/src/utils/completionDetection.ts` (detection algorithm)
+- All 39 worksheet screens (some missing button integration)
+
+### Issue 3: Progress Meters Stuck at 50% (BLOCKER)
+**Symptoms**:
+- User reported: "All the complete ratios all went to 50%"
+- Progress indicators show 50% even after completing exercises
+- Progress doesn't update to 100% after clicking "Complete Exercise"
+
+**Root Cause Analysis**:
+- `useWorkbookProgress` hook (lines 76-81 in `useWorkbook.ts`):
+  ```typescript
+  let progress = 0;
+  if (query.data.completed) {
+    progress = 100;  // Only shows 100% if completed=true
+  } else if (query.data.data && Object.keys(query.data.data).length > 0) {
+    progress = 50;   // Stuck here if completed flag not set
+  }
+  ```
+- Save mutation not setting `completed: true` in database
+- Cache not updating after completion
+- React Query cache may be stale
+
+**Files Involved**:
+- `mobile/src/hooks/useWorkbook.ts` (progress calculation, cache updates)
+- `mobile/src/services/workbook.ts` (database operations)
+
+### Issue 4: Buttons Not Clickable When Present (HIGH)
+**Symptoms**:
+- User reported: "It doesn't highlight it's not clickable like a complete exercise"
+- Buttons appear but are grayed out (disabled state)
+- No visual feedback when tapping
+
+**Root Cause Analysis**:
+- CompletionButton disabled when: `!canComplete || isSaving` (line 37)
+- If `canComplete` is false, button shows but is disabled
+- If save is stuck in "saving" state, button stays disabled
+- No haptic/visual feedback for disabled state
+
+**Files Involved**:
+- `mobile/src/components/workbook/CompletionButton.tsx` (disabled logic)
+
+---
+
+### Decision: DO NOT SUBMIT TO APP STORE
+
+**Reasoning**:
+1. Save functionality is core to the app - users cannot complete workbook without it
+2. Progress tracking is broken - no sense of accomplishment
+3. Multiple recurring issues that have appeared before
+4. Would result in immediate 1-star reviews and refund requests
+5. Better to delay submission than launch broken app
+
+**Next Steps**:
+1. ⏳ **Fix Issue 1**: Increase save timeout OR add retry logic OR fix Supabase mutation
+2. ⏳ **Fix Issue 2**: Ensure all 39 worksheets have CompletionButton properly integrated
+3. ⏳ **Fix Issue 3**: Fix progress calculation OR force cache invalidation after completion
+4. ⏳ **Fix Issue 4**: Add visual states for disabled buttons OR fix `canComplete` logic
+5. ⏳ **Test locally**: Verify all fixes work in browser
+6. ⏳ **Build 52**: Only after thorough local testing
+7. ⏳ **TestFlight**: Test Build 52 on physical devices
+8. ⏳ **App Store**: Only submit when ALL issues resolved
+
+**Estimated Time to Fix**: 4-6 hours (investigation + fixes + testing)
+
+---
+
+## 🔧 DEBUGGING SESSION - January 15, 2026 (Evening)
+
+### Local Testing Environment
+- **Server**: Expo dev server on port 8082 (http://localhost:8082)
+- **Platform**: Web browser (React Native Web)
+- **User Account**: Live user data from Supabase
+- **Worksheets Tested**: Wheel of Life, Timeline, various Phase 1-10 exercises
+
+### Code Files Analyzed
+1. `mobile/src/hooks/useAutoSave.ts` - Auto-save logic with 10-second timeout
+2. `mobile/src/hooks/useWorkbook.ts` - Progress calculation and mutations
+3. `mobile/src/components/workbook/SaveIndicator.tsx` - Save status display
+4. `mobile/src/components/workbook/CompletionButton.tsx` - Completion UI
+5. `mobile/src/config/worksheetConfigs.ts` - Completion criteria for all 39 worksheets
+6. `mobile/src/utils/completionDetection.ts` - Completion detection algorithm
+
+### Key Code Insights
+
+**Save Timeout Safety Mechanism**:
+```typescript
+// useAutoSave.ts line 89, 131-134
+const SAVE_TIMEOUT_MS = 10000; // 10 seconds
+
+saveTimeoutRef.current = setTimeout(() => {
+  console.warn('[useAutoSave] Save timeout reached - resetting saving state');
+  setIsSavingLocal(false);
+}, SAVE_TIMEOUT_MS);
+```
+
+**Progress Calculation Logic**:
+```typescript
+// useWorkbook.ts lines 76-81
+let progress = 0;
+if (query.data.completed) {
+  progress = 100;
+} else if (query.data.data && Object.keys(query.data.data).length > 0) {
+  progress = 50;
+}
+```
+
+**Completion Detection**:
+```typescript
+// useAutoSave.ts lines 151-163
+if (enableAutoComplete && !shouldComplete) {
+  try {
+    const config = getWorksheetConfig(worksheetId);
+    if (config && config.completionCriteria) {
+      const meetsCompletion = detectCompletion(dataRef.current, config.completionCriteria);
+      setIsAutoCompleted(meetsCompletion);
+      setCanComplete(meetsCompletion);
+      shouldComplete = meetsCompletion;
+    }
+  } catch (err) {
+    // Config not found - silently fail
+  }
+}
+```
+
+### Files That Need Fixes (Identified)
+1. `mobile/src/hooks/useAutoSave.ts` - Increase timeout OR add retry logic
+2. `mobile/src/hooks/useWorkbook.ts` - Fix progress calculation OR cache invalidation
+3. `mobile/src/components/workbook/CompletionButton.tsx` - Better disabled state visuals
+4. 39 worksheet screens - Ensure all have CompletionButton integrated
+5. `mobile/src/config/worksheetConfigs.ts` - Verify all 39 worksheets have valid configs
 
 ---
 
