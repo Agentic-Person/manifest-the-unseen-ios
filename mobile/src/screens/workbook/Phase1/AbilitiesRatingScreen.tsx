@@ -146,6 +146,7 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.ABILITIES_RATING,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

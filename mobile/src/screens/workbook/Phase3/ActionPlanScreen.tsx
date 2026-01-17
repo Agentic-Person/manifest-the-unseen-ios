@@ -130,6 +130,7 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 3,
     worksheetId: WORKSHEET_IDS.ACTION_PLAN,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

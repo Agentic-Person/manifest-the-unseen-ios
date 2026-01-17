@@ -94,6 +94,7 @@ const ValuesAssessmentScreen: React.FC<Props> = () => {
     data: { selectedValues, allValuesViewed: true, updatedAt: new Date().toISOString() },
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.VALUES_ASSESSMENT,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

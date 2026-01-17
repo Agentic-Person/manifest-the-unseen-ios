@@ -135,6 +135,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 6,
     worksheetId: WORKSHEET_IDS.THREE_SIX_NINE,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

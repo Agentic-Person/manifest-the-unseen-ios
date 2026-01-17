@@ -109,6 +109,7 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 2,
     worksheetId: WORKSHEET_IDS.VISION_BOARD,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

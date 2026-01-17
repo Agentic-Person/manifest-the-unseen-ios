@@ -96,6 +96,7 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.ABC_MODEL,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

@@ -111,6 +111,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation: _navigation }) => 
     data: { beliefs, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
     phaseNumber: 4,
     worksheetId: WORKSHEET_IDS.LIMITING_BELIEFS,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

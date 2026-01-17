@@ -1005,6 +1005,69 @@ async function queryPrayersByLifeAreas(
   return data || [];
 }
 
+/**
+ * Fallback: Query any available meditations regardless of life areas
+ */
+async function queryAllAvailableMeditations(
+  supabase: any,
+  userTier: string,
+  limit: number = 3
+): Promise<MeditationRecommendation[]> {
+  const tierHierarchy: Record<string, string[]> = {
+    'novice': ['novice'],
+    'awakening': ['novice', 'awakening'],
+    'enlightenment': ['novice', 'awakening', 'enlightenment']
+  };
+
+  const allowedTiers = tierHierarchy[userTier] || ['novice'];
+
+  const { data, error } = await supabase
+    .from('meditations')
+    .select('id, title, description, life_areas')
+    .in('tier_required', allowedTiers)
+    .eq('type', 'guided')
+    .not('audio_url', 'is', null)
+    .limit(limit);
+
+  if (error) {
+    console.error('Error querying all meditations:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+/**
+ * Fallback: Query any available prayers regardless of life areas
+ */
+async function queryAllAvailablePrayers(
+  supabase: any,
+  userTier: string,
+  limit: number = 3
+): Promise<PrayerRecommendation[]> {
+  const tierHierarchy: Record<string, string[]> = {
+    'novice': ['novice'],
+    'awakening': ['novice', 'awakening'],
+    'enlightenment': ['novice', 'awakening', 'enlightenment']
+  };
+
+  const allowedTiers = tierHierarchy[userTier] || ['novice'];
+
+  const { data, error } = await supabase
+    .from('prayers')
+    .select('id, title, description, content, life_areas')
+    .in('tier_required', allowedTiers)
+    .not('audio_url', 'is', null)
+    .limit(limit);
+
+  if (error) {
+    console.error('Error querying all prayers:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
 // =============================================================================
 // Structured Prompt Building Functions
 // =============================================================================
@@ -1082,27 +1145,53 @@ ${beliefs.unrestructuredBeliefs.length > 0 ? `- Still Need Work: ${beliefs.unres
 function buildRecommendationsPrompt(
   meditations: MeditationRecommendation[],
   prayers: PrayerRecommendation[],
-  breathingExercise: { breathing: string; reason: string }
+  breathingExercise: { breathing: string; reason: string },
+  hasMeditationFallback: boolean = false,
+  hasPrayerFallback: boolean = false
 ): string {
   const sections: string[] = [];
 
   // Meditations
   if (meditations.length > 0) {
     const meditationList = meditations.map(m =>
-      `  - "${m.title}": ${m.description} (addresses: ${m.life_areas.join(', ')})`
+      `  - "${m.title}": ${m.description || 'A guided meditation journey'} (addresses: ${m.life_areas?.join(', ') || 'general growth'})`
     ).join('\n');
-    sections.push(`**RECOMMENDED MEDITATIONS**\n${meditationList}`);
+
+    const fallbackNote = hasMeditationFallback
+      ? '\n  (Note: These are general meditations as specific recommendations are still being added)'
+      : '';
+
+    sections.push(`**RECOMMENDED MEDITATIONS**\n${meditationList}${fallbackNote}`);
+  } else {
+    // No meditations available at all
+    sections.push(`**MEDITATION RECOMMENDATIONS**
+  The app's guided meditation library is currently being expanded. In the meantime:
+  - Explore the Breathing exercises (Box Breathing, Deep Calm, Energy Boost)
+  - Use the meditation music tracks (Tibetan Bowls, 432Hz Healing)
+  - Practice silent meditation with a timer`);
   }
 
   // Prayers
   if (prayers.length > 0) {
     const prayerList = prayers.map(p =>
-      `  - "${p.title}": ${p.description} (addresses: ${p.life_areas.join(', ')})`
+      `  - "${p.title}": ${p.description || 'A spoken prayer for alignment'} (addresses: ${p.life_areas?.join(', ') || 'spiritual growth'})`
     ).join('\n');
-    sections.push(`**RECOMMENDED PRAYERS**\n${prayerList}`);
+
+    const fallbackNote = hasPrayerFallback
+      ? '\n  (Note: These are general prayers as specific recommendations are still being added)'
+      : '';
+
+    sections.push(`**RECOMMENDED PRAYERS**\n${prayerList}${fallbackNote}`);
+  } else {
+    // No prayers available at all
+    sections.push(`**PRAYER RECOMMENDATIONS**
+  Spoken prayer content is being added. For now:
+  - Write your own prayers in the Journal
+  - Practice silent prayer and affirmations
+  - Use breathing exercises for spiritual connection`);
   }
 
-  // Breathing
+  // Breathing (always available)
   sections.push(`**RECOMMENDED BREATHING EXERCISE**
   - "${breathingExercise.breathing}" - ${breathingExercise.reason}`);
 
@@ -1141,7 +1230,9 @@ async function callClaude(
   conversationHistory: Message[] = [],
   meditations: MeditationRecommendation[] = [],
   prayers: PrayerRecommendation[] = [],
-  breathingExercise: { breathing: string; reason: string }
+  breathingExercise: { breathing: string; reason: string },
+  usedMeditationFallback: boolean = false,
+  usedPrayerFallback: boolean = false
 ): Promise<string> {
   // Build knowledge context
   const ragContext = knowledgeContext
@@ -1158,7 +1249,9 @@ async function callClaude(
   const recommendationsPrompt = buildRecommendationsPrompt(
     meditations,
     prayers,
-    breathingExercise
+    breathingExercise,
+    usedMeditationFallback,
+    usedPrayerFallback
   );
 
   // Build complete system prompt with structured sections
@@ -1428,11 +1521,29 @@ serve(async (req) => {
     // Step 4.7: Query dynamic meditation and prayer recommendations
     let meditations: MeditationRecommendation[] = [];
     let prayers: PrayerRecommendation[] = [];
+    let usedMeditationFallback = false;
+    let usedPrayerFallback = false;
 
     if (lowLifeAreas.length > 0) {
+      // Try life-area-specific query first
       meditations = await queryMeditationsByLifeAreas(supabase, lowLifeAreas, userTier, 3);
       prayers = await queryPrayersByLifeAreas(supabase, lowLifeAreas, userTier, 3);
       console.log(`Found ${meditations.length} meditations and ${prayers.length} prayers for low areas`);
+
+      // FALLBACK: If no results, try querying all available content
+      if (meditations.length === 0) {
+        console.warn('⚠️  No meditations found for life areas, falling back to all available');
+        meditations = await queryAllAvailableMeditations(supabase, userTier, 3);
+        usedMeditationFallback = true;
+        console.log(`Fallback found ${meditations.length} general meditations`);
+      }
+
+      if (prayers.length === 0) {
+        console.warn('⚠️  No prayers found for life areas, falling back to all available');
+        prayers = await queryAllAvailablePrayers(supabase, userTier, 3);
+        usedPrayerFallback = true;
+        console.log(`Fallback found ${prayers.length} general prayers`);
+      }
     }
 
     // Step 4.8: Determine breathing exercise (use dynamic if available, fallback to phase default)
@@ -1490,7 +1601,9 @@ serve(async (req) => {
       conversationHistory,
       meditations,
       prayers,
-      { breathing: breathingExercise, reason: breathingReason }
+      { breathing: breathingExercise, reason: breathingReason },
+      usedMeditationFallback,
+      usedPrayerFallback
     );
 
     // Step 9: Save conversation

@@ -118,6 +118,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
     data: entries as Record<string, unknown>,
     phaseNumber: 7,
     worksheetId: WORKSHEET_IDS.GRATITUDE_JOURNAL,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

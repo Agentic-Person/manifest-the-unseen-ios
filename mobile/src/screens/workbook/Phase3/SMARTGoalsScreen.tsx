@@ -101,6 +101,7 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: { goals, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
     phaseNumber: 3,
     worksheetId: WORKSHEET_IDS.SMART_GOALS,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

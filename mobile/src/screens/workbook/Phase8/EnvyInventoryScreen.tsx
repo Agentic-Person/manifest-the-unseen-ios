@@ -84,6 +84,7 @@ const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.ENVY_INVENTORY,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

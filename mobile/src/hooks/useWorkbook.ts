@@ -165,18 +165,26 @@ export function useSaveWorkbook() {
       return upsertWorkbookProgress(user.id, phaseNumber, worksheetId, data, completed);
     },
     onSuccess: (result) => {
-      // Update cache directly instead of invalidating (prevents refetch loops)
+      // Invalidate both worksheet and progress queries to ensure fresh data
+      // This fixes the issue where progress stays at 50% after completion
+      console.log(
+        `[useSaveWorkbook] Save successful - Phase ${result.phase_number}, Worksheet: ${result.worksheet_id}, Completed: ${result.completed}`
+      );
+
       const worksheetKey = workbookKeys.worksheet(
         user!.id,
         result.phase_number,
         result.worksheet_id
       );
-      queryClient.setQueryData(worksheetKey, result);
+      queryClient.invalidateQueries({
+        queryKey: worksheetKey,
+      });
 
-      // Only invalidate the broad progress query (acceptable cost)
       queryClient.invalidateQueries({
         queryKey: workbookKeys.progress(user!.id),
       });
+
+      console.log('[useSaveWorkbook] Cache invalidated, data will be refetched');
     },
     onError: (error, variables) => {
       // Log mutation errors for debugging
@@ -214,18 +222,26 @@ export function useMarkComplete() {
       return markWorksheetComplete(user.id, phaseNumber, worksheetId);
     },
     onSuccess: (result) => {
-      // Update cache directly instead of invalidating (prevents refetch loops)
+      // Invalidate both worksheet and progress queries to ensure fresh data
+      // This fixes the issue where progress stays at 50% after completion
+      console.log(
+        `[useMarkComplete] Worksheet marked complete - Phase ${result.phase_number}, Worksheet: ${result.worksheet_id}`
+      );
+
       const worksheetKey = workbookKeys.worksheet(
         user!.id,
         result.phase_number,
         result.worksheet_id
       );
-      queryClient.setQueryData(worksheetKey, result);
+      queryClient.invalidateQueries({
+        queryKey: worksheetKey,
+      });
 
-      // Only invalidate the broad progress query (acceptable cost)
       queryClient.invalidateQueries({
         queryKey: workbookKeys.progress(user!.id),
       });
+
+      console.log('[useMarkComplete] Cache invalidated, progress will be refetched');
     },
   });
 }

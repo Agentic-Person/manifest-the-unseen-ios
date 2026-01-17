@@ -103,6 +103,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: { fears, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
     phaseNumber: 4,
     worksheetId: WORKSHEET_IDS.FEAR_INVENTORY,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

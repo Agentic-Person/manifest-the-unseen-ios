@@ -134,6 +134,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
     data: letters as unknown as Record<string, unknown>,
     phaseNumber: 7,
     worksheetId: WORKSHEET_IDS.GRATITUDE_LETTERS,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

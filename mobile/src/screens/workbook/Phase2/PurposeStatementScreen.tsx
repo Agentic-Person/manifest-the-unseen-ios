@@ -157,6 +157,7 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 2,
     worksheetId: WORKSHEET_IDS.PURPOSE_STATEMENT,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

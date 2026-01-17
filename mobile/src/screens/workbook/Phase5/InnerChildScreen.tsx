@@ -164,6 +164,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 5,
     worksheetId: WORKSHEET_IDS.INNER_CHILD,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

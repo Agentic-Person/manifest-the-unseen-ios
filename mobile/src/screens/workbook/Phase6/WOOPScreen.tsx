@@ -114,6 +114,7 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 6,
     worksheetId: WORKSHEET_IDS.WOOP,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

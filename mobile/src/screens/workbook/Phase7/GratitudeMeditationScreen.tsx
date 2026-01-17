@@ -144,6 +144,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
     data: { sessions, stats } as Record<string, unknown>,
     phaseNumber: 7,
     worksheetId: WORKSHEET_IDS.GRATITUDE_MEDITATION,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

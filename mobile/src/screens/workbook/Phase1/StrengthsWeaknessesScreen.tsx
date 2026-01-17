@@ -137,6 +137,7 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.STRENGTHS_WEAKNESSES,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

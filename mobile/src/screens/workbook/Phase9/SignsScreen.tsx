@@ -99,6 +99,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.SIGNS_TRACKING,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

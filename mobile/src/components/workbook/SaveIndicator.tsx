@@ -15,8 +15,9 @@ import {
 } from 'react-native';
 import { colors } from '../../theme/colors';
 
-// Maximum time to show "Saving..." before considering it stuck (10 seconds)
-const MAX_SAVING_DISPLAY_MS = 10000;
+// Maximum time to show "Saving..." before considering it stuck (15 seconds)
+// With retry logic (3 retries with exponential backoff), saves should complete within 15s
+const MAX_SAVING_DISPLAY_MS = 15000;
 // If lastSaved is within this time, consider it "just saved" even if isSaving is stuck
 const RECENT_SAVE_THRESHOLD_MS = 5000;
 

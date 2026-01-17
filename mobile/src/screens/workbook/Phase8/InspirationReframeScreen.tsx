@@ -104,6 +104,7 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.INSPIRATION_REFRAME,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

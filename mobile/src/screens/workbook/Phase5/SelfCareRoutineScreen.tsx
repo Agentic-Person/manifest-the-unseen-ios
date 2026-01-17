@@ -142,6 +142,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 5,
     worksheetId: WORKSHEET_IDS.SELF_CARE_ROUTINE,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

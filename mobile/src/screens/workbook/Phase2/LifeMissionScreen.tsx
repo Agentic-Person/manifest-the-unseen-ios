@@ -134,6 +134,7 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: missionData as unknown as Record<string, unknown>,
     phaseNumber: 2,
     worksheetId: WORKSHEET_IDS.LIFE_MISSION,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
     enableAutoComplete: true,
   });

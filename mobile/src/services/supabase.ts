@@ -109,6 +109,24 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
     headers: {
       'x-client-info': 'manifest-the-unseen@1.0.0',
     },
+    // Add timeout to fetch requests to prevent hanging
+    fetch: (url, options = {}) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      return fetch(url, {
+        ...options,
+        signal: controller.signal,
+      })
+        .finally(() => clearTimeout(timeoutId))
+        .catch((err) => {
+          if (err.name === 'AbortError') {
+            console.error('[Supabase] Fetch request timed out after 30s:', url);
+            throw new Error('Network request timed out');
+          }
+          throw err;
+        });
+    },
   },
 });
 

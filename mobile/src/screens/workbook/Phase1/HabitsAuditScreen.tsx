@@ -77,6 +77,7 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: habitsData as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.HABITS_AUDIT,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

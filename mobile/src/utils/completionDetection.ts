@@ -32,12 +32,47 @@ export const detectCompletion = (
 
   // Check if minimum number of fields are filled
   if (criteria.requiredFields !== undefined && filledFields.length < criteria.requiredFields) {
+    if (__DEV__) {
+      console.log('[detectCompletion] Failed: not enough filled fields', {
+        filled: filledFields.length,
+        required: criteria.requiredFields,
+      });
+    }
     return false;
   }
 
-  // Check if all STRING fields meet minimum character count
+  // Check if all mandatory fields are filled and meet minimum character count
+  if (criteria.mandatoryFields && criteria.mandatoryFields.length > 0) {
+    const minChars = criteria.minCharsPerField ?? 0;
+    const fieldResults: Record<string, { exists: boolean; length: number; passes: boolean }> = {};
+
+    const allFilled = criteria.mandatoryFields.every((key) => {
+      const value = data[key];
+      // Field must exist and be a non-empty string
+      if (!value || typeof value !== 'string') {
+        fieldResults[key] = { exists: false, length: 0, passes: false };
+        return false;
+      }
+      const trimmed = value.trim();
+      const passes = trimmed.length > 0 && trimmed.length >= minChars;
+      fieldResults[key] = { exists: true, length: trimmed.length, passes };
+      // Field must meet minimum character count if specified
+      return passes;
+    });
+
+    if (!allFilled && __DEV__) {
+      console.log('[detectCompletion] Failed: mandatory fields not satisfied', {
+        minChars,
+        fieldResults,
+      });
+    }
+
+    if (!allFilled) return false;
+  }
+
+  // Check if all OTHER non-mandatory STRING fields also meet minimum character count
   // Only check non-empty string fields (ignore empty fields, non-strings, timestamps, etc.)
-  if (criteria.minCharsPerField !== undefined) {
+  if (criteria.minCharsPerField !== undefined && !criteria.mandatoryFields) {
     const minChars = criteria.minCharsPerField;
     const stringFields = Object.values(data).filter(
       (v) => typeof v === 'string' && v.trim().length > 0
@@ -46,14 +81,6 @@ export const detectCompletion = (
       (v) => typeof v === 'string' && v.trim().length < minChars
     );
     if (hasShortFields) return false;
-  }
-
-  // Check if all mandatory fields are filled
-  if (criteria.mandatoryFields && criteria.mandatoryFields.length > 0) {
-    const allFilled = criteria.mandatoryFields.every(
-      (key) => data[key] && String(data[key]).trim().length > 0
-    );
-    if (!allFilled) return false;
   }
 
   // Run custom validation if provided

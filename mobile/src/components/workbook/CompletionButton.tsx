@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
 
@@ -19,6 +20,20 @@ export const CompletionButton: React.FC<CompletionButtonProps> = ({
   isSaving,
   onPress,
 }) => {
+  const handlePress = () => {
+    if (canComplete && !isSaving) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
+        // Haptic feedback is optional, ignore errors
+      });
+      onPress();
+    } else {
+      // Provide haptic feedback when user tries to tap disabled button
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {
+        // Haptic feedback is optional, ignore errors
+      });
+    }
+  };
+
   if (isCompleted) {
     return (
       <View style={styles.container}>
@@ -29,13 +44,15 @@ export const CompletionButton: React.FC<CompletionButtonProps> = ({
     );
   }
 
+  const isDisabled = !canComplete || isSaving;
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.button, !canComplete && styles.buttonDisabled]}
-        onPress={onPress}
-        disabled={!canComplete || isSaving}
-        activeOpacity={0.8}
+        style={[styles.button, isDisabled && styles.buttonDisabled]}
+        onPress={handlePress}
+        disabled={false} // Allow TouchableOpacity to always fire onPress for haptic feedback
+        activeOpacity={isDisabled ? 1 : 0.8}
       >
         <LinearGradient
           colors={canComplete ? ['#c9a227', '#8b6914'] : ['#3a3a5a', '#2a2a4a']}
@@ -46,14 +63,24 @@ export const CompletionButton: React.FC<CompletionButtonProps> = ({
           ) : (
             <View style={styles.content}>
               {isAutoCompleted && <Text style={styles.icon}>✨</Text>}
-              <Text style={styles.text}>
+              <Text style={[styles.text, isDisabled && styles.textDisabled]}>
                 {isAutoCompleted ? 'Mark as Complete' : 'Complete Exercise'}
               </Text>
             </View>
           )}
         </LinearGradient>
       </TouchableOpacity>
-      {isAutoCompleted && <Text style={styles.hint}>All required fields filled!</Text>}
+
+      {/* Show helpful hint based on state */}
+      {isAutoCompleted && !isDisabled && (
+        <Text style={styles.hint}>All required fields filled!</Text>
+      )}
+      {!canComplete && !isSaving && (
+        <Text style={styles.hintDisabled}>
+          📝 Fill in all required fields to complete this exercise
+        </Text>
+      )}
+      {isSaving && <Text style={styles.hint}>Saving your progress...</Text>}
     </View>
   );
 };
@@ -69,7 +96,8 @@ const styles = StyleSheet.create({
     ...shadows.md,
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
+    transform: [{ scale: 0.98 }],
   },
   gradient: {
     paddingVertical: spacing.md,
@@ -92,6 +120,9 @@ const styles = StyleSheet.create({
     color: colors.white,
     letterSpacing: 0.5,
   },
+  textDisabled: {
+    opacity: 0.7,
+  },
   completedButton: {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
@@ -110,5 +141,12 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
     textAlign: 'center',
     marginTop: spacing.xs,
+  },
+  hintDisabled: {
+    fontSize: 13,
+    color: '#ef4444', // Red color for warning
+    textAlign: 'center',
+    marginTop: spacing.xs,
+    fontWeight: '500',
   },
 });

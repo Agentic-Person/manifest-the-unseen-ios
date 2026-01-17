@@ -126,6 +126,7 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
     data: swotData as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.SWOT_ANALYSIS,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

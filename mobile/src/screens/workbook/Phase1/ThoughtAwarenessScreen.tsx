@@ -118,6 +118,7 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
     data: data as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.THOUGHT_AWARENESS,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 2000,
   });
 

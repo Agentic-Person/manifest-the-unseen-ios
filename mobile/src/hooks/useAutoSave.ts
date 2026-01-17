@@ -17,6 +17,8 @@ interface UseAutoSaveOptions<T> {
   phaseNumber: number;
   /** The worksheet identifier */
   worksheetId: string;
+  /** Whether the worksheet is already marked as complete in the database (prevents downgrading from complete to incomplete) */
+  isCompleted?: boolean;
   /** Debounce delay in milliseconds (default: 1500ms) */
   debounceMs?: number;
   /** Whether auto-save is enabled (default: true) */
@@ -85,13 +87,16 @@ interface UseAutoSaveReturn {
  * );
  * ```
  */
-// Maximum time to show "saving" state before resetting (10 seconds)
-const SAVE_TIMEOUT_MS = 10000;
+// Maximum time to show "saving" state before considering it failed (15 seconds)
+// With retry logic (3 retries with exponential backoff), saves should complete within 15s
+// If it takes longer than 15s, something is wrong and we should show an error
+const SAVE_TIMEOUT_MS = 15000;
 
 export function useAutoSave<T extends Record<string, unknown>>({
   data,
   phaseNumber,
   worksheetId,
+  isCompleted = false,
   debounceMs = 1500,
   enabled = true,
   enableAutoComplete = true,
@@ -114,6 +119,43 @@ export function useAutoSave<T extends Record<string, unknown>>({
   // Keep data ref updated for use in callbacks
   dataRef.current = data;
 
+  // Check completion status continuously (not just on save)
+  useEffect(() => {
+    if (!enableAutoComplete) return;
+
+    try {
+      const config = getWorksheetConfig(worksheetId);
+      if (config && config.completionCriteria) {
+        const meetsCompletion = detectCompletion(data, config.completionCriteria);
+        setCanComplete(meetsCompletion);
+        setIsAutoCompleted(meetsCompletion);
+
+        // Debug logging to help diagnose completion issues
+        if (__DEV__) {
+          console.log(`[useAutoSave] Completion check for ${worksheetId}:`, {
+            meetsCompletion,
+            criteria: config.completionCriteria,
+            dataKeys: Object.keys(data),
+          });
+        }
+      } else {
+        // Config not found - log warning in dev mode
+        if (__DEV__) {
+          console.warn(`[useAutoSave] No completion config found for worksheet: ${worksheetId}`);
+        }
+        setCanComplete(false);
+        setIsAutoCompleted(false);
+      }
+    } catch (err) {
+      // Config not found for this worksheet - proceed with manual completion only
+      if (__DEV__) {
+        console.error(`[useAutoSave] Error checking completion for ${worksheetId}:`, err);
+      }
+      setCanComplete(false);
+      setIsAutoCompleted(false);
+    }
+  }, [data, worksheetId, enableAutoComplete]);
+
   // Clear the save timeout
   const clearSaveTimeout = useCallback(() => {
     if (saveTimeoutRef.current) {
@@ -127,9 +169,13 @@ export function useAutoSave<T extends Record<string, unknown>>({
     setIsSavingLocal(true);
     clearSaveTimeout();
 
-    // Safety timeout: reset saving state after 10 seconds max
+    // Safety timeout: reset saving state if it takes too long
     saveTimeoutRef.current = setTimeout(() => {
-      console.warn('[useAutoSave] Save timeout reached - resetting saving state');
+      console.warn(
+        '[useAutoSave] Save timeout reached after',
+        SAVE_TIMEOUT_MS,
+        'ms - resetting saving state'
+      );
       setIsSavingLocal(false);
     }, SAVE_TIMEOUT_MS);
   }, [clearSaveTimeout]);
@@ -141,45 +187,61 @@ export function useAutoSave<T extends Record<string, unknown>>({
   }, [clearSaveTimeout]);
 
   // Perform the save operation
-  const performSave = useCallback((options?: { completed?: boolean }) => {
-    startSaving();
-    onSaveStart?.();
+  const performSave = useCallback(
+    (options?: { completed?: boolean }) => {
+      startSaving();
+      onSaveStart?.();
 
-    // Auto-detect completion if enabled
-    let shouldComplete = options?.completed ?? false;
+      // Use explicitly provided completion status, or fall back to auto-detected completion
+      // If the user manually marks complete (options.completed = true), honor that
+      // Otherwise, use the continuously-tracked canComplete state from auto-detection
+      let shouldComplete = options?.completed ?? false;
 
-    if (enableAutoComplete && !shouldComplete) {
-      try {
-        const config = getWorksheetConfig(worksheetId);
-        if (config && config.completionCriteria) {
-          const meetsCompletion = detectCompletion(dataRef.current, config.completionCriteria);
-          setIsAutoCompleted(meetsCompletion);
-          setCanComplete(meetsCompletion);
-          shouldComplete = meetsCompletion;
+      // CRITICAL: If worksheet is already completed in the database, preserve that status
+      // This prevents auto-save from downgrading completed=true → completed=false
+      // Only allow progression from incomplete → complete, never complete → incomplete
+      if (isCompleted) {
+        shouldComplete = true;
+      } else if (enableAutoComplete && !shouldComplete) {
+        // Use the already-computed canComplete state (from the continuous useEffect)
+        shouldComplete = canComplete;
+      }
+
+      save(
+        { phaseNumber, worksheetId, data: dataRef.current, completed: shouldComplete },
+        {
+          onSuccess: () => {
+            endSaving();
+            const now = new Date();
+            setLastSaved(now);
+            onSaveSuccess?.(now, shouldComplete);
+          },
+          onError: (err) => {
+            endSaving();
+            // Always log errors to console for debugging
+            console.error(
+              `[useAutoSave] Failed to save phase ${phaseNumber}, worksheet ${worksheetId}:`,
+              err
+            );
+            onSaveError?.(err as Error);
+          },
         }
-      } catch (err) {
-        // Config not found for this worksheet - proceed with manual completion only
-      }
-    }
-
-    save(
-      { phaseNumber, worksheetId, data: dataRef.current, completed: shouldComplete },
-      {
-        onSuccess: () => {
-          endSaving();
-          const now = new Date();
-          setLastSaved(now);
-          onSaveSuccess?.(now, shouldComplete);
-        },
-        onError: (err) => {
-          endSaving();
-          // Always log errors to console for debugging
-          console.error(`[useAutoSave] Failed to save phase ${phaseNumber}, worksheet ${worksheetId}:`, err);
-          onSaveError?.(err as Error);
-        },
-      }
-    );
-  }, [phaseNumber, worksheetId, save, startSaving, endSaving, onSaveStart, onSaveSuccess, onSaveError, enableAutoComplete]);
+      );
+    },
+    [
+      phaseNumber,
+      worksheetId,
+      save,
+      startSaving,
+      endSaving,
+      onSaveStart,
+      onSaveSuccess,
+      onSaveError,
+      enableAutoComplete,
+      canComplete,
+      isCompleted,
+    ]
+  );
 
   // Debounced save function
   const debouncedSave = useCallback(() => {
@@ -210,12 +272,15 @@ export function useAutoSave<T extends Record<string, unknown>>({
   }, [data, enabled, debouncedSave]);
 
   // Manual save function (saves immediately)
-  const saveNow = useCallback((options?: { completed?: boolean }) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    performSave(options);
-  }, [performSave]);
+  const saveNow = useCallback(
+    (options?: { completed?: boolean }) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      performSave(options);
+    },
+    [performSave]
+  );
 
   // Convenience method to manually mark worksheet as complete
   const markComplete = useCallback(() => {

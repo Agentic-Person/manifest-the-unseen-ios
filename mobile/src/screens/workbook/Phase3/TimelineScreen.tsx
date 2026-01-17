@@ -184,6 +184,7 @@ const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: { goals, selectedView, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
     phaseNumber: 3,
     worksheetId: WORKSHEET_IDS.TIMELINE,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

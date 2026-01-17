@@ -134,9 +134,37 @@ async function uploadFile(filePath, storagePath) {
 }
 
 /**
+ * Check if meditation already exists in database
+ */
+async function entryExists(table, title, type) {
+  const { data, error } = await supabase
+    .from(table)
+    .select('id, title')
+    .eq('title', title)
+    .eq('type', type)
+    .maybeSingle();
+
+  if (error) {
+    console.warn(`  Warning: Could not check for existing entry: ${error.message}`);
+    return null;
+  }
+
+  return data;
+}
+
+/**
  * Create database entry for meditation
  */
 async function createDbEntry(meditation) {
+  // Check for existing entry first
+  const existing = await entryExists('meditations', meditation.title, meditation.type);
+
+  if (existing) {
+    console.log(`  ⚠️  Entry already exists: "${existing.title}" (id: ${existing.id})`);
+    console.log(`  Skipping duplicate insertion.`);
+    return existing;
+  }
+
   const { data, error } = await supabase
     .from('meditations')
     .insert(meditation)

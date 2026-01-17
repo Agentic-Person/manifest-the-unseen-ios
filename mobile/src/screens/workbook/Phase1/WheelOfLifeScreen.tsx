@@ -116,6 +116,7 @@ const WheelOfLifeScreen: React.FC<Props> = () => {
     data: values as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.WHEEL_OF_LIFE,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

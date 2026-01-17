@@ -10,5 +10,8 @@
     "@supabase/supabase-js": "^2.38.0",
     "dotenv": "^16.3.1",
     "music-metadata": "^7.14.0"
+  },
+  "devDependencies": {
+    "pg": "^8.17.1"
   }
 }

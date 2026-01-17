@@ -101,6 +101,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.SURRENDER_PRACTICE,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

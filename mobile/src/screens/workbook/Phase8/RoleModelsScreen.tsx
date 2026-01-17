@@ -85,6 +85,7 @@ const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.ROLE_MODELS,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

@@ -103,6 +103,7 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
     data: values as unknown as Record<string, unknown>,
     phaseNumber: 1,
     worksheetId: WORKSHEET_IDS.FEEL_WHEEL,
+    isCompleted: savedProgress?.completed || false,
     debounceMs: 1500,
   });
 

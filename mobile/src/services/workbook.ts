@@ -13,16 +13,58 @@ import type {
 } from '../types/workbook';
 
 /**
- * Timeout helper for web platform where Supabase queries can hang
+ * Check if the Supabase client session is valid
+ * This helps catch auth issues before they cause hanging mutations
  */
-const withTimeout = <T>(promise: PromiseLike<T>, ms: number, fallback: T): Promise<T> => {
-  const timeout = new Promise<T>((resolve) => {
-    setTimeout(() => {
-      console.log('[workbook.service] Query timed out after', ms, 'ms');
-      resolve(fallback);
+const ensureValidSession = async (): Promise<void> => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error('[workbook.service] Session check failed:', error);
+      throw new Error('Authentication session invalid');
+    }
+
+    if (!session) {
+      console.error('[workbook.service] No active session found');
+      throw new Error('No active authentication session');
+    }
+
+    // Session is valid
+    if (__DEV__) {
+      console.log('[workbook.service] Session is valid');
+    }
+  } catch (err) {
+    console.error('[workbook.service] Session validation error:', err);
+    throw err;
+  }
+};
+
+/**
+ * Timeout helper that rejects instead of resolving with fallback
+ * This ensures mutations actually fail instead of returning fake data
+ */
+const withTimeout = <T>(
+  promise: PromiseLike<T>,
+  ms: number,
+  operationName: string = 'Query'
+): Promise<T> => {
+  let timeoutId: NodeJS.Timeout;
+
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      console.error(`[workbook.service] ${operationName} timed out after ${ms}ms`);
+      reject(new Error(`${operationName} timed out after ${ms}ms`));
     }, ms);
   });
-  return Promise.race([promise, timeout]);
+
+  return Promise.race([
+    promise.then((result) => {
+      clearTimeout(timeoutId);
+      return result;
+    }),
+    timeoutPromise
+  ]);
 };
 
 /**
@@ -45,22 +87,22 @@ export const getWorkbookProgress = async (
       .eq('user_id', userId)
       .eq('phase_number', phaseNumber)
       .eq('worksheet_id', worksheetId)
-      .single().then(r => r);
+      .single();
 
-    // On web, add a timeout to prevent infinite loading if Supabase SDK hangs
+    // Add timeout to prevent hanging
     const { data, error } = await withTimeout(
       queryPromise,
-      5000, // 5 second timeout
-      { data: null, error: { code: 'TIMEOUT', message: 'Query timed out' } } as any
+      5000,
+      'getWorkbookProgress'
     );
 
     if (__DEV__) {
       console.log('[workbook.service] Query completed:', { hasData: !!data, error });
     }
 
-    // PGRST116 = no rows returned, TIMEOUT = our timeout, both are fine for new worksheets
-    if (error && error.code !== 'PGRST116' && error.code !== 'TIMEOUT') {
-      console.error('[workbook.service] Query error (not PGRST116/TIMEOUT):', error);
+    // PGRST116 = no rows returned, which is fine for new worksheets
+    if (error && error.code !== 'PGRST116') {
+      console.error('[workbook.service] Query error:', error);
       throw error;
     }
 
@@ -89,23 +131,17 @@ export const getAllWorkbookProgress = async (
       .from('workbook_progress')
       .select('*')
       .eq('user_id', userId)
-      .order('phase_number', { ascending: true }).then(r => r);
+      .order('phase_number', { ascending: true });
 
-    // Add timeout to prevent infinite loading if Supabase SDK hangs
+    // Add timeout to prevent hanging
     const { data, error } = await withTimeout(
       queryPromise,
-      5000, // 5 second timeout
-      { data: [], error: { code: 'TIMEOUT', message: 'Query timed out' } } as any
+      5000,
+      'getAllWorkbookProgress'
     );
 
     if (__DEV__) {
       console.log('[workbook.service] getAllWorkbookProgress completed:', { hasData: !!data, count: data?.length, error });
-    }
-
-    // TIMEOUT is acceptable - return empty array
-    if (error && error.code === 'TIMEOUT') {
-      console.warn('[workbook.service] getAllWorkbookProgress timed out - returning empty array');
-      return [];
     }
 
     if (error) throw error;
@@ -146,27 +182,17 @@ export const getPhaseProgress = async (
       .from('workbook_progress')
       .select('*')
       .eq('user_id', userId)
-      .eq('phase_number', phaseNumber).then(r => r);
+      .eq('phase_number', phaseNumber);
 
-    // Add timeout to prevent infinite loading if Supabase SDK hangs
+    // Add timeout to prevent hanging
     const { data, error } = await withTimeout(
       queryPromise,
-      5000, // 5 second timeout
-      { data: [], error: { code: 'TIMEOUT', message: 'Query timed out' } } as any
+      5000,
+      'getPhaseProgress'
     );
 
     if (__DEV__) {
       console.log('[workbook.service] getPhaseProgress completed:', { phaseNumber, hasData: !!data, count: data?.length, error });
-    }
-
-    // TIMEOUT is acceptable - return empty progress
-    if (error && error.code === 'TIMEOUT') {
-      console.warn('[workbook.service] getPhaseProgress timed out - returning empty worksheets');
-      return {
-        completed: 0,
-        total: totalPerPhase[phaseNumber] || 3,
-        worksheets: [],
-      };
     }
 
     if (error) throw error;
@@ -183,6 +209,48 @@ export const getPhaseProgress = async (
     console.error('[workbook.service] Exception in getPhaseProgress:', err);
     throw err;
   }
+};
+
+/**
+ * Retry helper with exponential backoff
+ */
+const retryWithBackoff = async <T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  initialDelayMs: number = 1000
+): Promise<T> => {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
+
+      // Don't retry on certain errors
+      if (error && typeof error === 'object' && 'code' in error) {
+        const code = (error as any).code;
+        // Don't retry on auth errors or validation errors
+        if (code === 'PGRST301' || code === '23505' || code?.startsWith('42')) {
+          throw error;
+        }
+      }
+
+      // Last attempt - throw the error
+      if (attempt === maxRetries - 1) {
+        break;
+      }
+
+      // Calculate delay with exponential backoff
+      const delayMs = initialDelayMs * Math.pow(2, attempt);
+      console.log(`[workbook.service] Retry attempt ${attempt + 1}/${maxRetries} after ${delayMs}ms`);
+
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw lastError || new Error('Operation failed after retries');
 };
 
 /**
@@ -210,46 +278,45 @@ export const upsertWorkbookProgress = async (
   }
 
   try {
-    // @ts-ignore - Supabase types not yet generated, but table exists
-    const upsertPromise = supabase
-      .from('workbook_progress')
-      .upsert(payload as any, {
-        onConflict: 'user_id,phase_number,worksheet_id',
-      })
-      .select()
-      .single().then(r => r);
+    // Verify session is valid before attempting save
+    // This catches auth issues early instead of letting the mutation hang
+    await ensureValidSession();
 
-    // On web, add a timeout to prevent UI hanging if Supabase SDK freezes
-    const { data: result, error } = await withTimeout(
-      upsertPromise,
-      8000, // 8 second timeout for writes
-      { data: payload, error: { code: 'TIMEOUT', message: 'Upsert timed out' } } as any
-    );
+    // Wrap the upsert in retry logic
+    const result = await retryWithBackoff(async () => {
+      // @ts-ignore - Supabase types not yet generated, but table exists
+      const upsertPromise = supabase
+        .from('workbook_progress')
+        .upsert(payload as any, {
+          onConflict: 'user_id,phase_number,worksheet_id',
+        })
+        .select()
+        .single();
 
-    if (__DEV__) {
-      console.log('[workbook.service] Upsert completed:', { result: result ? 'success' : 'null', error });
-    }
+      // Add timeout to prevent hanging (10 seconds for write operations)
+      const { data: result, error } = await withTimeout(
+        upsertPromise,
+        10000,
+        'upsertWorkbookProgress'
+      );
 
-    // If timeout occurred, return the payload as if it succeeded (optimistic)
-    if (error && error.code === 'TIMEOUT') {
-      console.warn('[workbook.service] Upsert timed out - returning optimistic result');
-      return {
-        ...payload,
-        id: `temp-${Date.now()}`,
-        created_at: new Date().toISOString(),
-      } as WorkbookProgress;
-    }
-
-    if (error) {
-      // H3 Security Fix: Don't log userId in production
       if (__DEV__) {
-        console.error(
-          `[workbook.service] Upsert failed for phase ${phaseNumber}, worksheet ${worksheetId}:`,
-          { error }
-        );
+        console.log('[workbook.service] Upsert completed:', { result: result ? 'success' : 'null', error });
       }
-      throw error;
-    }
+
+      if (error) {
+        // H3 Security Fix: Don't log userId in production
+        if (__DEV__) {
+          console.error(
+            `[workbook.service] Upsert failed for phase ${phaseNumber}, worksheet ${worksheetId}:`,
+            { error }
+          );
+        }
+        throw error;
+      }
+
+      return result as WorkbookProgress;
+    }, 3); // Retry up to 3 times
 
     // Invalidate Guru queries so it fetches fresh workbook data for re-assessment
     // This ensures the Guru AI sees the latest workbook responses
@@ -258,9 +325,9 @@ export const upsertWorkbookProgress = async (
       console.log('[workbook.service] Invalidated Guru queries');
     }
 
-    return result as WorkbookProgress;
+    return result;
   } catch (err) {
-    console.error('[workbook.service] Exception in upsertWorkbookProgress:', err);
+    console.error('[workbook.service] Exception in upsertWorkbookProgress after retries:', err);
     throw err;
   }
 };
@@ -273,23 +340,34 @@ export const markWorksheetComplete = async (
   phaseNumber: number,
   worksheetId: string
 ): Promise<WorkbookProgress> => {
-  // @ts-ignore - Supabase types not yet generated, but table exists
-  const { data, error } = await supabase
-    .from('workbook_progress')
-    // @ts-ignore
-    .update({
-      completed: true,
-      completed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    } as any)
-    .eq('user_id', userId)
-    .eq('phase_number', phaseNumber)
-    .eq('worksheet_id', worksheetId)
-    .select()
-    .single().then(r => r);
+  try {
+    // @ts-ignore - Supabase types not yet generated, but table exists
+    const updatePromise = supabase
+      .from('workbook_progress')
+      // @ts-ignore
+      .update({
+        completed: true,
+        completed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      } as any)
+      .eq('user_id', userId)
+      .eq('phase_number', phaseNumber)
+      .eq('worksheet_id', worksheetId)
+      .select()
+      .single();
 
-  if (error) throw error;
-  return data as WorkbookProgress;
+    const { data, error } = await withTimeout(
+      updatePromise,
+      10000,
+      'markWorksheetComplete'
+    );
+
+    if (error) throw error;
+    return data as WorkbookProgress;
+  } catch (err) {
+    console.error('[workbook.service] Exception in markWorksheetComplete:', err);
+    throw err;
+  }
 };
 
 /**
