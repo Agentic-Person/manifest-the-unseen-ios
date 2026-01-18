@@ -7,6 +7,7 @@ import { ActionPlanEditor, ActionPlanData } from '@/components/workbook/Phase3/A
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: ActionPlanData = {
   steps: [],
@@ -84,6 +85,7 @@ export default function ActionPlanPage() {
     <WorksheetLayout
       title="Action Plan"
       description="Break down your goals into concrete action steps with deadlines. Track your progress as you complete each step."
+      headerImage={getWorksheetImage('action-plan')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/4')}

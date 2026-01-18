@@ -6,6 +6,7 @@ import { LimitingBeliefsEditor, LimitingBeliefsData } from '@/components/workboo
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: LimitingBeliefsData = { beliefs: [] }
 
@@ -44,5 +45,6 @@ export default function LimitingBeliefsPage() {
 
   if (loading) return (<div className="min-h-screen flex items-center justify-center"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div><p className="text-gray-600">Loading worksheet...</p></div></div>)
 
-  return (<WorksheetLayout title="Limiting Beliefs" description="Identify limiting beliefs and reframe them into empowering truths." saveStatus={status} lastSaved={lastSaved} onNext={() => router.push('/workbook/phase/4/fear-facing-plan')} onPrevious={() => router.push('/workbook/phase/4/fear-inventory')}><LimitingBeliefsEditor data={data} onChange={setData} /></WorksheetLayout>)
+  return (<WorksheetLayout title="Limiting Beliefs" description="Identify limiting beliefs and reframe them into empowering truths."
+      headerImage={getWorksheetImage('limiting-beliefs')} saveStatus={status} lastSaved={lastSaved} onNext={() => router.push('/workbook/phase/4/fear-facing-plan')} onPrevious={() => router.push('/workbook/phase/4/fear-inventory')}><LimitingBeliefsEditor data={data} onChange={setData} /></WorksheetLayout>)
 }

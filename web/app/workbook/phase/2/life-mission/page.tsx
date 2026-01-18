@@ -7,6 +7,7 @@ import { LifeMissionEditor, LifeMissionData } from '@/components/workbook/Phase2
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: LifeMissionData = {
   mission: '',
@@ -86,6 +87,7 @@ export default function LifeMissionPage() {
     <WorksheetLayout
       title="Life Mission Statement"
       description="Craft a clear, inspiring statement that captures your core purpose and values. This will serve as your compass for major life decisions."
+      headerImage={getWorksheetImage('life-mission')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/2/purpose-statement')}

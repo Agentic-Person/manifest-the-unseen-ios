@@ -7,6 +7,7 @@ import { TimelineEditor, TimelineData } from '@/components/workbook/Phase3/Timel
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: TimelineData = {
   milestones: [],
@@ -84,6 +85,7 @@ export default function TimelinePage() {
     <WorksheetLayout
       title="Goal Timeline"
       description="Map out the milestones on your journey to achieving your goals. Visualize your progress over time."
+      headerImage={getWorksheetImage('timeline')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/3/action-plan')}

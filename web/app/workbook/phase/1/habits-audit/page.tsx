@@ -7,6 +7,7 @@ import { HabitsAuditEditor, HabitsAuditData } from '@/components/workbook/Phase1
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: HabitsAuditData = {
   habits: [],
@@ -87,6 +88,7 @@ export default function HabitsAuditPage() {
     <WorksheetLayout
       title="Habits Audit"
       description="Identify and track your daily habits - both positive patterns to reinforce and negative ones to address. Understanding your habits is the first step to transforming them."
+      headerImage={getWorksheetImage('habits-audit')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/values-assessment')}

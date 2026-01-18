@@ -7,6 +7,7 @@ import { KnowYourselfEditor, KnowYourselfData } from '@/components/workbook/Phas
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: KnowYourselfData = {
   questions: [],
@@ -87,6 +88,7 @@ export default function KnowYourselfPage() {
     <WorksheetLayout
       title="Know Yourself Q&A"
       description="Explore your identity, values, fears, and aspirations through 10 powerful self-reflection questions. This deep self-awareness is the foundation of authentic manifestation."
+      headerImage={getWorksheetImage('know-yourself')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/abilities-rating')}

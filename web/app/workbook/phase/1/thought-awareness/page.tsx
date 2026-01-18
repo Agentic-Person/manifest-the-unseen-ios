@@ -7,6 +7,7 @@ import { ThoughtAwarenessEditor, ThoughtAwarenessData } from '@/components/workb
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: ThoughtAwarenessData = {
   entries: [],
@@ -87,6 +88,7 @@ export default function ThoughtAwarenessPage() {
     <WorksheetLayout
       title="Thought Awareness Journal"
       description="Build mindfulness by logging your thoughts, emotions, and thought patterns. Awareness is the first step to transforming limiting beliefs into empowering ones."
+      headerImage={getWorksheetImage('thought-awareness')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/feel-wheel')}

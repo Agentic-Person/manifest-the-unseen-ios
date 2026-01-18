@@ -7,6 +7,7 @@ import { AbilitiesRatingEditor, AbilitiesRatingData } from '@/components/workboo
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: AbilitiesRatingData = {
   abilities: [
@@ -100,6 +101,7 @@ export default function AbilitiesRatingPage() {
     <WorksheetLayout
       title="Abilities Rating"
       description="Assess your current abilities across key areas that impact personal and professional success. Rate yourself honestly from 1-10 to identify strengths and growth opportunities."
+      headerImage={getWorksheetImage('abilities-rating')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/thought-awareness')}

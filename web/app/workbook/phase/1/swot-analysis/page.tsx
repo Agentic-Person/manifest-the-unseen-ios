@@ -7,6 +7,7 @@ import { SWOTEditor, SWOTData } from '@/components/workbook/Phase1/SWOTEditor'
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: SWOTData = {
   strengths: [],
@@ -90,6 +91,7 @@ export default function SWOTAnalysisPage() {
     <WorksheetLayout
       title="SWOT Analysis"
       description="Identify your Strengths, Weaknesses, Opportunities, and Threats. This strategic self-assessment helps you understand your current position and plan for personal growth."
+      headerImage={getWorksheetImage('swot-analysis')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/habits-audit')}

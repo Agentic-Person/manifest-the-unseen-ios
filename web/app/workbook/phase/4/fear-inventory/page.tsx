@@ -7,6 +7,7 @@ import { FearInventoryEditor, FearInventoryData } from '@/components/workbook/Ph
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: FearInventoryData = { fears: [] }
 
@@ -78,6 +79,7 @@ export default function FearInventoryPage() {
     <WorksheetLayout
       title="Fear Inventory"
       description="Identify and rate your fears. Naming your fears is the first step to overcoming them."
+      headerImage={getWorksheetImage('fear-inventory')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/4/limiting-beliefs')}

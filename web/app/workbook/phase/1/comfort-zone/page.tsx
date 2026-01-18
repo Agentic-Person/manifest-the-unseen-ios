@@ -7,6 +7,7 @@ import { ComfortZoneEditor, ComfortZoneData } from '@/components/workbook/Phase1
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: ComfortZoneData = {
   comfortZone: [],
@@ -89,6 +90,7 @@ export default function ComfortZonePage() {
     <WorksheetLayout
       title="Comfort Zone Map"
       description="Identify activities in your comfort, stretch, and panic zones. Understanding these zones helps you find opportunities for growth without overwhelming yourself."
+      headerImage={getWorksheetImage('comfort-zone')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/know-yourself')}

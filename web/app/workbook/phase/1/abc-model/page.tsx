@@ -7,6 +7,7 @@ import { ABCModelEditor, ABCModelData } from '@/components/workbook/Phase1/ABCMo
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: ABCModelData = {
   activatingEvent: '',
@@ -89,6 +90,7 @@ export default function ABCModelPage() {
     <WorksheetLayout
       title="ABC Model"
       description="Understand how your thoughts shape your emotions and behaviors. Use this cognitive behavioral tool to analyze your patterns and create positive change."
+      headerImage={getWorksheetImage('abc-model')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/strengths-weaknesses')}

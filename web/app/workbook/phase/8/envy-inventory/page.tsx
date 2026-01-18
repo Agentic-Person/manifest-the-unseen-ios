@@ -7,6 +7,7 @@ import { EnvyInventoryEditor, EnvyInventoryData } from '@/components/workbook/Ph
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: EnvyInventoryData = {
   envyItems: [],
@@ -84,6 +85,7 @@ export default function EnvyInventoryPage() {
     <WorksheetLayout
       title="Envy Inventory"
       description="Explore feelings of envy to uncover your true desires. Envy is valuable feedback about what you value."
+      headerImage={getWorksheetImage('envy-inventory')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/8/inspiration-reframe')}

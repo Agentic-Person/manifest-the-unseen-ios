@@ -7,6 +7,7 @@ import { InspirationReframeEditor, InspirationReframeData } from '@/components/w
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: InspirationReframeData = {
   reframes: [],
@@ -84,6 +85,7 @@ export default function InspirationReframePage() {
     <WorksheetLayout
       title="Inspiration Reframe"
       description="Transform envy into inspired action. Reframe each envy statement into empowering inspiration with actionable steps."
+      headerImage={getWorksheetImage('inspiration-reframe')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/8/role-models')}

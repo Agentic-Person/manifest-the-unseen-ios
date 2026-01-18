@@ -7,6 +7,7 @@ import { RoleModelsEditor, RoleModelsData } from '@/components/workbook/Phase8/R
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: RoleModelsData = {
   models: [],
@@ -84,6 +85,7 @@ export default function RoleModelsPage() {
     <WorksheetLayout
       title="Role Models"
       description="Identify inspiring role models and extract actionable lessons. Study the qualities you admire and how to apply them."
+      headerImage={getWorksheetImage('role-models')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/9')}

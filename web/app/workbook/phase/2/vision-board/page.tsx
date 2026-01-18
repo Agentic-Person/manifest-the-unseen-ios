@@ -7,6 +7,7 @@ import { VisionBoardEditor, VisionBoardData } from '@/components/workbook/Phase2
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: VisionBoardData = {
   images: [],
@@ -87,6 +88,7 @@ export default function VisionBoardPage() {
     <WorksheetLayout
       title="Vision Board"
       description="Create a visual representation of your dreams and goals. Upload images that inspire you and align with your vision."
+      headerImage={getWorksheetImage('vision-board')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/3')}

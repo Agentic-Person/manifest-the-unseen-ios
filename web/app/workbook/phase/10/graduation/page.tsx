@@ -7,6 +7,7 @@ import { GraduationEditor, GraduationData } from '@/components/workbook/Phase10/
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: GraduationData = {
   commitments: [''],
@@ -88,6 +89,7 @@ export default function GraduationPage() {
     <WorksheetLayout
       title="Graduation Ceremony"
       description="Congratulations! You've completed all 10 phases. Mark this milestone and commit to continuing your journey."
+      headerImage={getWorksheetImage('graduation')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook')}

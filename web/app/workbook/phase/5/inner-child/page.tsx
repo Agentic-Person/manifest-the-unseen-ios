@@ -6,6 +6,7 @@ import { InnerChildEditor, InnerChildData } from '@/components/workbook/Phase5/I
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: InnerChildData = { memories: '', needs: '', message: '', healing: '' }
 
@@ -40,5 +41,16 @@ export default function Page() {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div></div>
 
-  return <WorksheetLayout title="Inner Child" saveStatus={status} lastSaved={lastSaved} onNext={() => router.push('/workbook/phase/5/../6')} onPrevious={() => router.push('/workbook/phase/5')}><InnerChildEditor data={data} onChange={setData} /></WorksheetLayout>
+  return (
+    <WorksheetLayout
+      title="Inner Child"
+      headerImage={getWorksheetImage('inner-child')}
+      saveStatus={status}
+      lastSaved={lastSaved}
+      onNext={() => router.push('/workbook/phase/5/../6')}
+      onPrevious={() => router.push('/workbook/phase/5')}
+    >
+      <InnerChildEditor data={data} onChange={setData} />
+    </WorksheetLayout>
+  )
 }

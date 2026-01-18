@@ -7,6 +7,7 @@ import { FeelWheelEditor, FeelWheelData } from '@/components/workbook/Phase1/Fee
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: FeelWheelData = {
   selectedEmotions: [],
@@ -87,6 +88,7 @@ export default function FeelWheelPage() {
     <WorksheetLayout
       title="Feel Wheel - Emotion Tracking"
       description="Develop emotional awareness by identifying and tracking your feelings. The Feel Wheel helps you move beyond simple 'good' or 'bad' to understand the rich spectrum of your emotional experience."
+      headerImage={getWorksheetImage('feel-wheel')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/2')}

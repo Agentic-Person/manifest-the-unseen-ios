@@ -7,6 +7,7 @@ import { SMARTGoalEditor, SMARTGoalData } from '@/components/workbook/Phase3/SMA
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: SMARTGoalData = {
   goals: [],
@@ -84,6 +85,7 @@ export default function SMARTGoalsPage() {
     <WorksheetLayout
       title="SMART Goals"
       description="Create specific, measurable, achievable, relevant, and time-bound goals that transform your vision into reality."
+      headerImage={getWorksheetImage('smart-goals')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/3/timeline')}

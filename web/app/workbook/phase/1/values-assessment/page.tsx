@@ -7,6 +7,7 @@ import { ValuesEditor, ValuesData } from '@/components/workbook/Phase1/ValuesEdi
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: ValuesData = {
   values: [], // Will be populated with defaults in the editor
@@ -87,6 +88,7 @@ export default function ValuesAssessmentPage() {
     <WorksheetLayout
       title="Values Assessment"
       description="Identify and rank your core personal values. Understanding what matters most to you is essential for setting aligned goals and making authentic decisions."
+      headerImage={getWorksheetImage('values-assessment')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/abc-model')}

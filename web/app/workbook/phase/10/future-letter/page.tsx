@@ -7,6 +7,7 @@ import { FutureLetterEditor, FutureLetterData } from '@/components/workbook/Phas
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: FutureLetterData = {
   letter: {
@@ -89,6 +90,7 @@ export default function FutureLetterPage() {
     <WorksheetLayout
       title="Letter to Your Future Self"
       description="Write a heartfelt letter to your past or future self. Make promises and set intentions for what's to come."
+      headerImage={getWorksheetImage('future-letter')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/10/graduation')}

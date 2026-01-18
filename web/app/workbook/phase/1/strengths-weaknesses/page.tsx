@@ -7,6 +7,7 @@ import { StrengthsWeaknessesEditor, StrengthsWeaknessesData } from '@/components
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: StrengthsWeaknessesData = {
   strengths: [],
@@ -88,6 +89,7 @@ export default function StrengthsWeaknessesPage() {
     <WorksheetLayout
       title="Strengths & Weaknesses"
       description="Identify your personal strengths (skills, talents, positive traits) and weaknesses (areas for improvement). This honest self-assessment is crucial for personal growth."
+      headerImage={getWorksheetImage('strengths-weaknesses')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/comfort-zone')}
