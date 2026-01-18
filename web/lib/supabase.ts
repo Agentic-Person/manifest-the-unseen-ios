@@ -1,8 +1,8 @@
-import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
 
 // Validate required environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
@@ -11,9 +11,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 /**
- * Supabase client for browser-side operations.
+ * Supabase client for browser-side operations using SSR cookies.
  * Uses the publishable anon key which is safe to expose in the browser.
  * Row Level Security (RLS) policies protect data access.
+ *
+ * This client stores sessions in cookies instead of localStorage,
+ * allowing server-side middleware to access the session.
  *
  * @example
  * ```ts
@@ -25,13 +28,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
  *   .eq('user_id', userId)
  * ```
  */
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-})
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 
 /**
  * Type-safe helper for workbook progress queries

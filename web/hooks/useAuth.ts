@@ -64,19 +64,62 @@ export function useAuth(): UseAuthReturn {
    */
   const signIn = async (email: string, password: string) => {
     try {
+      console.log('[DEBUG] Attempting sign in with:', JSON.stringify({
+        email,
+        supabaseUrl: supabase.supabaseUrl
+      }, null, 2))
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
-      if (error) throw error
+      console.log('[DEBUG] Supabase response:', JSON.stringify({
+        hasSession: !!data.session,
+        hasUser: !!data.user,
+        userId: data.user?.id,
+        userEmail: data.user?.email,
+        emailConfirmed: data.user?.email_confirmed_at,
+        error: error ? {
+          name: error.name,
+          message: error.message,
+          status: error.status,
+          code: error.code,
+          // Log full error object for debugging
+          fullError: JSON.stringify(error, null, 2)
+        } : null
+      }, null, 2))
+
+      if (error) {
+        // Handle specific error codes with user-friendly messages
+        let userMessage = error.message
+
+        // Check for email confirmation errors
+        if (error.code === 'email_not_confirmed') {
+          userMessage = 'Please confirm your email address before signing in. Check your inbox for a confirmation link.'
+        } else if (error.status === 400 && error.message.toLowerCase().includes('email')) {
+          userMessage = 'Please verify your email address. Check your inbox for a confirmation link.'
+        } else if (error.message === 'Invalid login credentials') {
+          userMessage = 'Invalid email or password. Please try again.'
+        } else if (error.message.toLowerCase().includes('confirm') ||
+                   error.message.toLowerCase().includes('verify')) {
+          userMessage = 'Please confirm your email address. Check your inbox for a verification link.'
+        }
+
+        throw new Error(userMessage)
+      }
 
       setSession(data.session)
       setUser(data.user)
 
       return { error: null }
     } catch (error) {
-      console.error('Sign in error:', error)
+      console.error('[SIGN IN ERROR] Full details:', JSON.stringify({
+        message: error instanceof Error ? error.message : 'Unknown error',
+        name: error instanceof Error ? error.name : 'Error',
+        stack: error instanceof Error ? error.stack : undefined,
+        fullError: error
+      }, null, 2))
       return {
         error: error instanceof Error ? error : new Error('Failed to sign in'),
       }

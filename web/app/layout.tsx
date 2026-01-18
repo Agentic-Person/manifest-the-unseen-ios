@@ -24,16 +24,6 @@ export const metadata: Metadata = {
   description: 'Transform a 202-page manifestation workbook into your daily practice. AI-guided wisdom, voice journaling, guided meditations, and a complete 10-phase transformation journey.',
   keywords: ['manifestation', 'meditation', 'journaling', 'personal development', 'wellness', 'mindfulness', 'iOS app'],
   authors: [{ name: 'Manifest the Unseen' }],
-  icons: {
-    icon: [
-      { url: '/icon.png' },
-      { url: '/icon.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-  },
   openGraph: {
     title: 'Manifest the Unseen | Your Personal Manifestation Companion',
     description: 'Transform a 202-page manifestation workbook into your daily practice. AI-guided wisdom, voice journaling, and guided meditations.',
@@ -41,20 +31,22 @@ export const metadata: Metadata = {
     siteName: 'Manifest the Unseen',
     type: 'website',
     locale: 'en_US',
-    images: [
-      {
-        url: '/icon.png',
-        width: 1024,
-        height: 1024,
-        alt: 'Manifest the Unseen',
-      },
-    ],
+    // TODO: Add icon.png to public folder (temporarily removed to fix 500 errors)
+    // images: [
+    //   {
+    //     url: '/icon.png',
+    //     width: 1024,
+    //     height: 1024,
+    //     alt: 'Manifest the Unseen',
+    //   },
+    // ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Manifest the Unseen | Your Personal Manifestation Companion',
     description: 'Transform a 202-page manifestation workbook into your daily practice.',
-    images: ['/icon.png'],
+    // TODO: Add icon.png to public folder (temporarily removed to fix 500 errors)
+    // images: ['/icon.png'],
   },
   robots: {
     index: true,

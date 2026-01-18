@@ -35,15 +35,35 @@ export default function LoginPage() {
       const { error: signInError } = await signIn(email, password)
 
       if (signInError) {
-        setError(signInError.message)
-        setLoading(false)
+        // Log full error details for debugging
+        console.error('[LOGIN ERROR] Full details:', JSON.stringify({
+          message: signInError.message,
+          name: signInError.name,
+          stack: signInError.stack,
+          // Log all enumerable properties
+          allProps: Object.keys(signInError),
+          // Check for common Supabase error properties
+          status: (signInError as any).status,
+          code: (signInError as any).code,
+        }, null, 2))
+
+        setError(signInError.message || 'Failed to sign in. Please try again.')
         return
       }
 
       // Redirect to workbook on successful login
       router.push('/workbook')
     } catch (err) {
+      console.error('[LOGIN EXCEPTION] Unexpected error:', JSON.stringify({
+        message: err instanceof Error ? err.message : 'Unknown error',
+        name: err instanceof Error ? err.name : 'Error',
+        stack: err instanceof Error ? err.stack : undefined,
+        type: typeof err,
+        fullError: err
+      }, null, 2))
       setError('An unexpected error occurred. Please try again.')
+    } finally {
+      // Always reset loading state, even if error occurs
       setLoading(false)
     }
   }
@@ -90,7 +110,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors text-gray-900"
                 placeholder="you@example.com"
               />
             </div>
@@ -111,7 +131,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors text-gray-900"
                 placeholder="••••••••"
               />
             </div>
@@ -142,11 +162,14 @@ export default function LoginPage() {
         </div>
 
         {/* Footer note */}
-        <p className="text-center text-sm text-gray-600 mt-8">
-          This account is linked to your mobile app subscription.
-          <br />
-          Download the app to subscribe and unlock all features.
-        </p>
+        <div className="mt-8 space-y-3">
+          <p className="text-center text-sm text-gray-600">
+            <strong className="text-gray-700">Existing mobile app users:</strong> Use the same email and password from your mobile app.
+          </p>
+          <p className="text-center text-sm text-gray-600">
+            <strong className="text-gray-700">New users:</strong> Create an account to access the web workbook. Download the mobile app to unlock all features and subscribe.
+          </p>
+        </div>
       </div>
     </div>
   )
