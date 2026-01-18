@@ -109,12 +109,21 @@ export function getWorksheetImage(worksheetId: string): string | undefined {
  * @returns Phase header image path
  */
 export function getPhaseHeaderImage(phaseNumber: number, phaseTitle: string): string {
-  // Convert title to kebab-case for filename
-  const slug = phaseTitle
-    .toLowerCase()
-    .replace(/ & /g, '-')
-    .replace(/ /g, '-');
+  // Manual mapping because mobile filenames are shortened
+  const phaseImageMap: Record<number, string> = {
+    1: 'self-evaluation',
+    2: 'values-vision',
+    3: 'goal-setting',
+    4: 'fears-beliefs',
+    5: 'self-love',
+    6: 'manifestation',
+    7: 'gratitude',
+    8: 'envy-inspiration',
+    9: 'trust-surrender',
+    10: 'letting-go'
+  };
 
+  const slug = phaseImageMap[phaseNumber] || 'unknown';
   return `/images/workbook/phases/phase-${phaseNumber}-${slug}.webp`;
 }
 

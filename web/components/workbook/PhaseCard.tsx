@@ -39,13 +39,13 @@ export function PhaseCard({
           className="w-full h-full object-cover"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent" />
         <div className="absolute bottom-2 left-3 right-3">
           <div className="flex items-center gap-2 mb-1">
-            <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-lg flex items-center justify-center font-bold text-sm">
+            <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-lg flex items-center justify-center font-bold text-sm shadow-lg">
               {phase.id}
             </div>
-            <h3 className="text-base font-bold text-white drop-shadow-lg flex-1 line-clamp-1">
+            <h3 className="text-base font-bold text-white flex-1 line-clamp-1" style={{ textShadow: '1px 1px 4px rgba(0, 0, 0, 0.9)' }}>
               {phase.title}
             </h3>
           </div>

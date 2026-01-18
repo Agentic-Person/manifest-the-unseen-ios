@@ -60,11 +60,11 @@ export function WorksheetLayout({
             className="w-full h-full object-cover"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-purple-900/70 via-purple-900/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">{title}</h1>
+            <h1 className="text-3xl font-bold text-white mb-2" style={{ textShadow: '2px 2px 8px rgba(0, 0, 0, 0.9)' }}>{title}</h1>
             {description && (
-              <p className="text-purple-100 text-lg drop-shadow-md">{description}</p>
+              <p className="text-white text-lg" style={{ textShadow: '1px 1px 6px rgba(0, 0, 0, 0.9)' }}>{description}</p>
             )}
           </div>
         </div>
