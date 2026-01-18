@@ -7,6 +7,7 @@ import { WheelOfLifeEditor, WheelOfLifeData } from '@/components/workbook/Phase1
 import { useAuth } from '@/hooks/useAuth'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import { supabase } from '@/lib/supabase'
+import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: WheelOfLifeData = {
   career: 5,
@@ -94,6 +95,7 @@ export default function WheelOfLifePage() {
     <WorksheetLayout
       title="Wheel of Life"
       description="Rate your current satisfaction in each life area from 1-10. This assessment helps you visualize balance and identify areas for growth."
+      headerImage={getWorksheetImage('wheel-of-life')}
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/1/swot-analysis')}

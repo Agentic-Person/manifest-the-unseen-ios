@@ -6,6 +6,7 @@ import { AutoSaveIndicator } from '@/components/ui/AutoSaveIndicator'
 export interface WorksheetLayoutProps {
   title: string
   description?: string
+  headerImage?: string
   children: ReactNode
   saveStatus?: 'idle' | 'saving' | 'saved' | 'error'
   lastSaved?: Date | null
@@ -37,6 +38,7 @@ export interface WorksheetLayoutProps {
 export function WorksheetLayout({
   title,
   description,
+  headerImage,
   children,
   saveStatus = 'idle',
   lastSaved,
@@ -49,19 +51,47 @@ export function WorksheetLayout({
 }: WorksheetLayoutProps) {
   return (
     <div className={`max-w-4xl mx-auto px-4 py-8 ${className}`}>
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
+      {/* Header Image Banner */}
+      {headerImage && (
+        <div className="relative w-full h-64 -mx-4 mb-8 rounded-b-2xl overflow-hidden shadow-lg">
+          <img
+            src={headerImage}
+            alt={title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-purple-900/70 via-purple-900/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">{title}</h1>
             {description && (
-              <p className="text-gray-600 text-lg">{description}</p>
+              <p className="text-purple-100 text-lg drop-shadow-md">{description}</p>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Header (without image) */}
+      {!headerImage && (
+        <div className="mb-8">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
+              {description && (
+                <p className="text-gray-600 text-lg">{description}</p>
+              )}
+            </div>
+            <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved || undefined} />
+          </div>
+          <div className="h-1 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full" />
+        </div>
+      )}
+
+      {/* Auto-save indicator (when header image is shown) */}
+      {headerImage && (
+        <div className="flex justify-end mb-4">
           <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved || undefined} />
         </div>
-        <div className="h-1 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full" />
-      </div>
+      )}
 
       {/* Content */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">

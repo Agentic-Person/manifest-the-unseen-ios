@@ -2,12 +2,39 @@
 
 import { useAuth } from '@/hooks/useAuth'
 import { useSubscription } from '@/hooks/useSubscription'
+import { useWorkbookProgress } from '@/hooks/useWorkbookProgress'
 import { useRouter } from 'next/navigation'
+import { WORKBOOK_PHASES, getFirstWorksheetSlug, WorkbookPhase } from '@manifest/shared'
+import { OverallProgress } from '@/components/workbook/OverallProgress'
+import { PhaseGrid } from '@/components/workbook/PhaseGrid'
 
 export default function WorkbookPage() {
   const { user, loading: authLoading, signOut } = useAuth()
-  const { tier, status, expiresAt, loading: subLoading } = useSubscription()
+  const { tier, status, loading: subLoading } = useSubscription()
+  const {
+    phases,
+    overallCompleted,
+    overallTotal,
+    loading: progressLoading
+  } = useWorkbookProgress()
   const router = useRouter()
+
+  // All authenticated users have access to all phases
+  const isSubscribed = user !== null
+
+  const handlePhaseClick = (phaseNumber: number) => {
+    // Free users: redirect to pricing
+    if (!isSubscribed) {
+      router.push('/#pricing')
+      return
+    }
+
+    // Paid users: navigate to first worksheet
+    const firstWorksheet = getFirstWorksheetSlug(phaseNumber)
+    if (firstWorksheet) {
+      router.push(`/workbook/phase/${phaseNumber}/${firstWorksheet}`)
+    }
+  }
 
   const handleSignOut = async () => {
     await signOut()
@@ -52,68 +79,38 @@ export default function WorkbookPage() {
 
       {/* Main content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Welcome to Your Workbook! 🎉
-          </h2>
-          <p className="text-gray-600 mb-6">
-            You've successfully authenticated and your subscription is active.
-          </p>
-
-          {/* Subscription details */}
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-6">
-            <h3 className="font-semibold text-purple-900 mb-3">
-              Subscription Details
-            </h3>
-            <dl className="space-y-2">
-              <div className="flex justify-between">
-                <dt className="text-gray-600">Status:</dt>
-                <dd className="font-medium text-gray-900 capitalize">
-                  {status || 'Unknown'}
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-gray-600">Tier:</dt>
-                <dd className="font-medium text-gray-900 capitalize">
-                  {tier || 'None'}
-                </dd>
-              </div>
-              {expiresAt && (
-                <div className="flex justify-between">
-                  <dt className="text-gray-600">Expires:</dt>
-                  <dd className="font-medium text-gray-900">
-                    {new Date(expiresAt).toLocaleDateString()}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </div>
-
-          {/* Next steps */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Next Steps:</h3>
-            <ul className="space-y-2 text-gray-600">
-              <li className="flex items-start gap-2">
-                <span className="text-purple-600 font-bold">1.</span>
-                <span>
-                  Workbook phases will be built next using the shared components
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-purple-600 font-bold">2.</span>
-                <span>
-                  Each phase will have worksheets with auto-save functionality
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-purple-600 font-bold">3.</span>
-                <span>
-                  Progress will sync automatically with your mobile app
-                </span>
-              </li>
-            </ul>
-          </div>
+        {/* Overall Progress */}
+        <div className="mb-8">
+          <OverallProgress
+            totalCompleted={overallCompleted}
+            totalWorksheets={overallTotal}
+          />
         </div>
+
+        {/* Phase Grid */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">
+            Workbook Phases
+          </h2>
+          {progressLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading phases...</p>
+            </div>
+          ) : (
+            <PhaseGrid
+              phases={phases.map(p => ({
+                phase: WORKBOOK_PHASES.find((wp: WorkbookPhase) => wp.id === p.phaseNumber)!,
+                completedWorksheets: p.completedWorksheets,
+                totalWorksheets: p.totalWorksheets
+              }))}
+              isSubscribed={isSubscribed}
+              onPhaseClick={handlePhaseClick}
+            />
+          )}
+        </div>
+
+        {/* All authenticated users have full access */}
       </main>
     </div>
   )

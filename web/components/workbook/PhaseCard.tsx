@@ -1,0 +1,82 @@
+'use client'
+
+import { WorkbookPhase } from '@manifest/shared'
+import { ProgressBar } from '@/components/ui/ProgressBar'
+import { getPhaseHeaderImage } from '@/lib/worksheetImages'
+
+interface PhaseCardProps {
+  phase: WorkbookPhase
+  completedWorksheets: number
+  totalWorksheets: number
+  isLocked: boolean
+  onClick: () => void
+}
+
+export function PhaseCard({
+  phase,
+  completedWorksheets,
+  totalWorksheets,
+  isLocked,
+  onClick
+}: PhaseCardProps) {
+  const percent = totalWorksheets > 0
+    ? Math.round((completedWorksheets / totalWorksheets) * 100)
+    : 0
+
+  const headerImage = getPhaseHeaderImage(phase.id, phase.title)
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={isLocked}
+      className="w-full text-left rounded-xl border-2 transition-all overflow-hidden bg-white border-purple-200 hover:border-purple-400 hover:shadow-lg cursor-pointer"
+    >
+      {/* Phase Header Image */}
+      <div className="relative w-full h-40 overflow-hidden">
+        <img
+          src={headerImage}
+          alt={`Phase ${phase.id}: ${phase.title}`}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute bottom-2 left-3 right-3">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-lg flex items-center justify-center font-bold text-sm">
+              {phase.id}
+            </div>
+            <h3 className="text-base font-bold text-white drop-shadow-lg flex-1 line-clamp-1">
+              {phase.title}
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-6">
+        {/* Description */}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+          {phase.description}
+        </p>
+
+        {/* Progress Bar */}
+        <div className="mb-3">
+          <ProgressBar
+            current={completedWorksheets}
+            total={totalWorksheets}
+            label=""
+            showCount={true}
+          />
+        </div>
+
+        {/* Footer Info */}
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-gray-500">
+            ⏱️ Est. {phase.estimatedMinutes} minutes
+          </span>
+          {/* All phases unlocked for authenticated users */}
+        </div>
+      </div>
+    </button>
+  )
+}
