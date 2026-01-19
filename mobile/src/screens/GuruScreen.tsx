@@ -37,6 +37,7 @@ import { useEffectiveAccess } from '../hooks/useSubscription';
 import { colors, spacing, shadows } from '../theme';
 import type { GuruMessage } from '../types/guru';
 import type { MainTabScreenProps } from '../types/navigation';
+import { ClickableHeaderLogo } from '../components';
 
 export function GuruScreen() {
   const route = useRoute<MainTabScreenProps<'Guru'>['route']>();
@@ -138,7 +139,9 @@ export function GuruScreen() {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
+          <ClickableHeaderLogo />
           <Text style={styles.headerTitle}>Guru</Text>
+          <View style={styles.headerSpacer} />
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.brand.gold} />
@@ -153,7 +156,9 @@ export function GuruScreen() {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
+          <ClickableHeaderLogo />
           <Text style={styles.headerTitle}>Guru</Text>
+          <View style={styles.headerSpacer} />
         </View>
 
         {completedPhases.length === 0 ? (
@@ -230,16 +235,19 @@ export function GuruScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Header with Back Button */}
+      {/* Header with Back Button and Home Logo */}
       <View style={styles.conversationHeader}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={handleBack}
-          accessibilityRole="button"
-          accessibilityLabel="Back to phase selection"
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
-        </TouchableOpacity>
+        <View style={styles.headerLeft}>
+          <ClickableHeaderLogo />
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={handleBack}
+            accessibilityRole="button"
+            accessibilityLabel="Back to phase selection"
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
+          </TouchableOpacity>
+        </View>
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>Phase {selectedPhase} Guru</Text>
           <Text style={styles.headerSubtitle}>Personalized Analysis</Text>
@@ -336,6 +344,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.primary,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
@@ -347,6 +358,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text.primary,
     textAlign: 'center',
+    flex: 1,
   },
   conversationHeader: {
     flexDirection: 'row',
@@ -357,6 +369,11 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   backButton: {
     width: 40,

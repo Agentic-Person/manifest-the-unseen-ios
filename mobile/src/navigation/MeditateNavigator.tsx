@@ -9,6 +9,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { MeditateStackParamList } from '../types/navigation';
 import { colors } from '../theme';
+import { ClickableHeaderLogo } from '../components';
 
 // Import screens
 import MeditateScreen from '../screens/MeditateScreen';
@@ -39,6 +40,8 @@ export const MeditateNavigator = () => {
         contentStyle: {
           backgroundColor: colors.background.primary,
         },
+        headerLeft: () => <ClickableHeaderLogo />,
+        headerBackVisible: false,
       }}
     >
       <Stack.Screen

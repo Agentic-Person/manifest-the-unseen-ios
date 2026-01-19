@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { MainTabParamList } from '../types/navigation';
 import { colors } from '../theme';
 import { BackgroundImages } from '../assets';
+import { ClickableHeaderLogo } from '../components';
 
 // Import screen components
 import HomeScreen from '../screens/HomeScreen';
@@ -147,6 +148,8 @@ export const MainTabNavigator = () => {
         options={{
           title: 'Guru',
           tabBarLabel: 'Guru',
+          headerLeft: () => <ClickableHeaderLogo />,
+          headerBackVisible: false,
           tabBarIcon: ({ focused }) => (
             <Image
               source={BackgroundImages.guru}

@@ -9,6 +9,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { WorkbookStackParamList } from '../types/navigation';
 import { colors } from '../theme';
+import { ClickableHeaderLogo } from '../components';
 
 // Import screens
 import WorkbookScreen from '../screens/WorkbookScreen';
@@ -67,6 +68,8 @@ const screenOptions = {
   headerTintColor: colors.primary[600],
   headerShadowVisible: false,
   headerBackTitleVisible: false,
+  headerLeft: () => <ClickableHeaderLogo />,
+  headerBackVisible: false,
 };
 
 /**

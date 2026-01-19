@@ -9,6 +9,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../types/navigation';
 import { colors } from '../theme';
+import { ClickableHeaderLogo } from '../components';
 
 // Import screens
 import ProfileScreen from '../screens/ProfileScreen';
@@ -51,6 +52,8 @@ export const ProfileNavigator = () => {
         contentStyle: {
           backgroundColor: colors.background.primary,
         },
+        headerLeft: () => <ClickableHeaderLogo />,
+        headerBackVisible: false, // Hide default back button since we're using custom headerLeft
       }}
     >
       <Stack.Screen

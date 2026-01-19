@@ -25,3 +25,7 @@ export * from './UpgradePrompt';
 export * from './guru/PhaseCard';
 export * from './guru/PhaseSelector';
 export * from './guru/GuruEmptyState';
+
+// Navigation components
+export * from './navigation/ClickableHeaderTitle';
+export * from './navigation/ClickableHeaderLogo';
