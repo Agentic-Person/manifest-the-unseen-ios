@@ -93,12 +93,65 @@ export function WorksheetLayout({
         </div>
       )}
 
+      {/* Top Navigation */}
+      {showNavigation && (onNext || onPrevious) && (
+        <div className="flex items-center justify-between gap-4 mb-6">
+          {onPrevious ? (
+            <button
+              type="button"
+              onClick={onPrevious}
+              className="flex items-center gap-2 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              {previousLabel}
+            </button>
+          ) : (
+            <div />
+          )}
+
+          {onNext && (
+            <button
+              type="button"
+              onClick={onNext}
+              className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ml-auto"
+            >
+              {nextLabel}
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Content */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
         {children}
       </div>
 
-      {/* Navigation */}
+      {/* Bottom Navigation */}
       {showNavigation && (onNext || onPrevious) && (
         <div className="flex items-center justify-between gap-4">
           {onPrevious ? (

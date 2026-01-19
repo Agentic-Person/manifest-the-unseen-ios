@@ -91,8 +91,9 @@ export default function VisionBoardPage() {
       headerImage={getWorksheetImage('vision-board')}
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/3')}
+      onNext={() => router.push('/workbook')}
       onPrevious={() => router.push('/workbook/phase/2/purpose-statement')}
+      nextLabel="Complete Phase 2"
     >
       <VisionBoardEditor data={data} onChange={setData} />
     </WorksheetLayout>

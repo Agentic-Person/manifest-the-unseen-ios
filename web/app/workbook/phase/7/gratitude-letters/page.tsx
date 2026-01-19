@@ -88,8 +88,9 @@ export default function GratitudeLettersPage() {
       description="Express appreciation to people who have made a positive impact on your life. Strengthen relationships through heartfelt gratitude."
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/7/gratitude-meditation')}
-      onPrevious={() => router.push('/workbook/phase/7/gratitude-journal')}
+      onNext={() => router.push('/workbook')}
+      onPrevious={() => router.push('/workbook/phase/7/gratitude-meditation')}
+      nextLabel="Complete Phase 7"
     >
       <GratitudeLettersEditor data={data} onChange={setData} />
     </WorksheetLayout>

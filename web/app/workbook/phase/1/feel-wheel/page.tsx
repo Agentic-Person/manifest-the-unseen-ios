@@ -91,9 +91,9 @@ export default function FeelWheelPage() {
       headerImage={getWorksheetImage('feel-wheel')}
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/2')}
-      onPrevious={() => router.push('/workbook/phase/1/thought-awareness')}
-      previousLabel="Back to Thought Awareness"
+      onNext={() => router.push('/workbook')}
+      onPrevious={() => router.push('/workbook/phase/1/abc-model')}
+      previousLabel="Back to ABC Model"
       nextLabel="Complete Phase 1"
     >
       <FeelWheelEditor data={data} onChange={setData} />

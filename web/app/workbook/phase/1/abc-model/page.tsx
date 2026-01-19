@@ -93,9 +93,10 @@ export default function ABCModelPage() {
       headerImage={getWorksheetImage('abc-model')}
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/1/strengths-weaknesses')}
-      onPrevious={() => router.push('/workbook/phase/1/values-assessment')}
-      previousLabel="Previous Worksheet"
+      onNext={() => router.push('/workbook/phase/1/feel-wheel')}
+      onPrevious={() => router.push('/workbook/phase/1/thought-awareness')}
+      previousLabel="Back to Thought Awareness"
+      nextLabel="Next Worksheet"
     >
       <ABCModelEditor data={data} onChange={setData} />
     </WorksheetLayout>

@@ -47,8 +47,9 @@ export default function Page() {
       headerImage={getWorksheetImage('inner-child')}
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/5/../6')}
-      onPrevious={() => router.push('/workbook/phase/5')}
+      onNext={() => router.push('/workbook')}
+      onPrevious={() => router.push('/workbook/phase/5/self-care-routine')}
+      nextLabel="Complete Phase 5"
     >
       <InnerChildEditor data={data} onChange={setData} />
     </WorksheetLayout>

@@ -86,8 +86,9 @@ export default function SignsPage() {
       description="Record synchronicities and meaningful signs. Strengthen your awareness and trust in universal guidance."
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/10')}
+      onNext={() => router.push('/workbook')}
       onPrevious={() => router.push('/workbook/phase/9/surrender-practice')}
+      nextLabel="Complete Phase 9"
     >
       <SignsEditor data={data} onChange={setData} />
     </WorksheetLayout>

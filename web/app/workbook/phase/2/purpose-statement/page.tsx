@@ -88,8 +88,9 @@ export default function PurposeStatementPage() {
       description="Distill your life mission into a concise, actionable purpose statement that you can reference daily."
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/3')}
+      onNext={() => router.push('/workbook/phase/2/vision-board')}
       onPrevious={() => router.push('/workbook/phase/2/life-mission')}
+      nextLabel="Next Worksheet"
     >
       <PurposeStatementEditor data={data} onChange={setData} />
     </WorksheetLayout>

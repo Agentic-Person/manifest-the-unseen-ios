@@ -9,7 +9,6 @@ import { supabase } from '@/lib/supabase'
 import { getWorksheetImage } from '@/lib/worksheetImages'
 
 const DEFAULT_DATA: SelfLoveAffirmationsData = { affirmations: [] }
-{ activities: [] }
 
 export default function Page() {
   const router = useRouter()

@@ -88,8 +88,9 @@ export default function ActionPlanPage() {
       headerImage={getWorksheetImage('action-plan')}
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/4')}
+      onNext={() => router.push('/workbook')}
       onPrevious={() => router.push('/workbook/phase/3/timeline')}
+      nextLabel="Complete Phase 3"
     >
       <ActionPlanEditor data={data} onChange={setData} />
     </WorksheetLayout>

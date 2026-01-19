@@ -88,8 +88,9 @@ export default function RoleModelsPage() {
       headerImage={getWorksheetImage('role-models')}
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/9')}
+      onNext={() => router.push('/workbook')}
       onPrevious={() => router.push('/workbook/phase/8/inspiration-reframe')}
+      nextLabel="Complete Phase 8"
     >
       <RoleModelsEditor data={data} onChange={setData} />
     </WorksheetLayout>

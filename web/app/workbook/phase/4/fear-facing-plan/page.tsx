@@ -46,5 +46,5 @@ export default function FearFacingPlanPage() {
   if (loading) return (<div className="min-h-screen flex items-center justify-center"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div><p className="text-gray-600">Loading worksheet...</p></div></div>)
 
   return (<WorksheetLayout title="Fear-Facing Action Plan" description="Create concrete action plans to face your fears with courage."
-      headerImage={getWorksheetImage('fear-facing-plan')} saveStatus={status} lastSaved={lastSaved} onNext={() => router.push('/workbook/phase/5')} onPrevious={() => router.push('/workbook/phase/4/limiting-beliefs')}><FearFacingPlanEditor data={data} onChange={setData} /></WorksheetLayout>)
+      headerImage={getWorksheetImage('fear-facing-plan')} saveStatus={status} lastSaved={lastSaved} onNext={() => router.push('/workbook')} onPrevious={() => router.push('/workbook/phase/4/limiting-beliefs')} nextLabel="Complete Phase 4"><FearFacingPlanEditor data={data} onChange={setData} /></WorksheetLayout>)
 }

@@ -88,8 +88,9 @@ export default function ScriptingPage() {
       description="Write your manifestation as if it has already happened. Use present tense and vivid, emotional details."
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/7')}
+      onNext={() => router.push('/workbook')}
       onPrevious={() => router.push('/workbook/phase/6/woop')}
+      nextLabel="Complete Phase 6"
     >
       <ScriptingEditor data={data} onChange={setData} />
     </WorksheetLayout>
