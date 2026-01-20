@@ -189,10 +189,9 @@ export const useAuthStore = create<AuthState>()(
       name: 'manifest-auth-storage',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({
-        user: state.user,
+        // DO NOT persist session - Supabase handles this
+        // Persisting it causes sync issues with Supabase's auto-refresh
         profile: state.profile,
-        session: state.session,
-        isAuthenticated: state.isAuthenticated,
       }),
     }
   )

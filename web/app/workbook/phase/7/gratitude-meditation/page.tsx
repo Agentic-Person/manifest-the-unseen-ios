@@ -88,8 +88,8 @@ export default function GratitudeMeditationPage() {
       description="Combine meditation with gratitude practice. Log your sessions and reflect on what you're thankful for."
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/8')}
-      onPrevious={() => router.push('/workbook/phase/7/gratitude-letters')}
+      onNext={() => router.push('/workbook/phase/8/envy-inventory')}
+      onPrevious={() => router.push('/workbook/phase/7/gratitude-journal')}
     >
       <GratitudeMeditationEditor data={data} onChange={setData} />
     </WorksheetLayout>

@@ -125,9 +125,23 @@ export function usePhaseProgress(phaseNumber: number) {
 
   return useQuery({
     queryKey: workbookKeys.phase(user?.id || '', phaseNumber),
-    queryFn: () => getPhaseProgress(user!.id, phaseNumber),
+    queryFn: async () => {
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+      if (__DEV__) {
+        console.log('[usePhaseProgress] Fetching phase progress for phase:', phaseNumber);
+      }
+      const result = await getPhaseProgress(user.id, phaseNumber);
+      if (__DEV__) {
+        console.log('[usePhaseProgress] Phase progress fetched:', result.completed, '/', result.total);
+      }
+      return result;
+    },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5,
+    retry: 2, // Retry twice on failure
+    retryDelay: 1000, // Wait 1 second between retries
   });
 }
 

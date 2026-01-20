@@ -89,7 +89,7 @@ export default function EnvyInventoryPage() {
       saveStatus={status}
       lastSaved={lastSaved}
       onNext={() => router.push('/workbook/phase/8/inspiration-reframe')}
-      onPrevious={() => router.push('/workbook/phase/7')}
+      onPrevious={() => router.push('/workbook/phase/7/gratitude-letters')}
     >
       <EnvyInventoryEditor data={data} onChange={setData} />
     </WorksheetLayout>

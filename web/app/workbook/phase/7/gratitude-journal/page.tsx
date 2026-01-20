@@ -88,8 +88,8 @@ export default function GratitudeJournalPage() {
       description="Practice daily gratitude by recording 3-5 things you're grateful for each day. Build a powerful habit for increased happiness and well-being."
       saveStatus={status}
       lastSaved={lastSaved}
-      onNext={() => router.push('/workbook/phase/7/gratitude-letters')}
-      onPrevious={() => router.push('/workbook/phase/6')}
+      onNext={() => router.push('/workbook/phase/7/gratitude-meditation')}
+      onPrevious={() => router.push('/workbook/phase/6/scripting')}
     >
       <GratitudeJournalEditor data={data} onChange={setData} />
     </WorksheetLayout>

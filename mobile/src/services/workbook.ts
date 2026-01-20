@@ -18,7 +18,13 @@ import type {
  */
 const ensureValidSession = async (): Promise<void> => {
   try {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    // Use a shorter timeout for session check (5 seconds)
+    const sessionPromise = supabase.auth.getSession();
+    const { data: { session }, error } = await withTimeout(
+      sessionPromise,
+      5000,
+      'Session validation'
+    );
 
     if (error) {
       console.error('[workbook.service] Session check failed:', error);
@@ -30,9 +36,20 @@ const ensureValidSession = async (): Promise<void> => {
       throw new Error('No active authentication session');
     }
 
+    // Check if session is expired
+    if (session.expires_at) {
+      const expiresAt = session.expires_at * 1000; // Convert to milliseconds
+      const now = Date.now();
+      if (expiresAt < now) {
+        console.error('[workbook.service] Session expired');
+        throw new Error('Session expired - please sign in again');
+      }
+    }
+
     // Session is valid
     if (__DEV__) {
-      console.log('[workbook.service] Session is valid');
+      console.log('[workbook.service] Session is valid, expires in',
+        session.expires_at ? Math.round((session.expires_at * 1000 - Date.now()) / 1000 / 60) : '?', 'minutes');
     }
   } catch (err) {
     console.error('[workbook.service] Session validation error:', err);

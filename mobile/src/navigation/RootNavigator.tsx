@@ -46,25 +46,34 @@ export const RootNavigator = () => {
     // Initialize auth on app launch
     initialize();
 
-    // Listen for auth changes
+    // Listen for auth changes (including token refresh)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (__DEV__) {
+        console.log('[RootNavigator] Auth event:', event, 'Has session:', !!session);
+      }
+
+      // Always update session and user from Supabase (source of truth)
       setSession(session);
       setUser(session?.user ?? null);
 
-      // Fetch profile when user signs in
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+      // Fetch profile when user signs in or token refreshes
+      if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
+        try {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-        if (profile) {
-          setProfile(profile);
+          if (profile) {
+            setProfile(profile);
+          }
+        } catch (err) {
+          console.error('[RootNavigator] Failed to fetch profile:', err);
         }
-      } else {
+      } else if (event === 'SIGNED_OUT') {
         setProfile(null);
       }
     });
