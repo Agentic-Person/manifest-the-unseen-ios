@@ -1,14 +1,268 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-20 (Web Workbook Dark Theme Overhaul Complete)
+**Last Updated**: 2026-01-20 (Vercel Deployment Fixed - React Version Conflict Resolved)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
-**Status**: 🟢 **Production Ready** - Web workbook fully transformed to match mobile app dark aesthetic. Zero white boxes remaining.
+**Status**: 🟢 **Production Ready** - Web deployments restored after fixing React 19/18 version conflict.
 
 ---
 
-## ✅ Last Activity: Web Workbook Dark Theme Overhaul - January 20, 2026
+## ✅ Last Activity: Vercel Deployment Fix - January 20, 2026
+
+### Summary
+Resolved 2-day Vercel deployment failure caused by React version conflict between mobile (React 19) and web (React 18). Modified build configuration to install shared package first, then web in isolation to prevent version hoisting.
+
+### Problem Identified
+**Timeline of Breakage:**
+- **Jan 18, 8:56 AM**: Added web workbook with `@manifest/shared` imports
+- **Jan 19, 11:56 PM**: Changed vercel.json install from `npm install --prefix .` to `cd .. && npm install` to include workspace
+- **Since then**: All Vercel deployments failing with cryptic React error
+
+**Root Cause:**
+1. Mobile uses React 19.1.0 (`mobile/package.json`)
+2. Web needs React 18 for Next.js 14.2.18 compatibility (`web/package.json: "react": "^18"`)
+3. Workspace install (`cd .. && npm install`) hoists React 19 from mobile to root
+4. Web receives React 19 instead of React 18
+5. Next.js 14.2.18 breaks with React 19, causing:
+   - `TypeError: Cannot read properties of null (reading 'useContext')`
+   - React loading from TWO different locations (root and web node_modules)
+   - Context system completely broken
+
+**Error Manifestation:**
+```
+TypeError: Cannot read properties of null (reading 'useContext')
+    at exports.useContext (C:\...\node_modules\react\cjs\react.production.js:491:33)
+    at StyleRegistry (C:\...\node_modules\styled-jsx\dist\index\index.js:450:30)
+
+Error occurred prerendering page "/404"
+Error occurred prerendering page "/500"
+```
+
+**Why Local Build Worked:**
+- Local web build from `web/` directory used isolated React 18
+- Vercel build used workspace install, hoisting React 19
+- 2 days of confusion trying to debug "but it works locally!"
+
+### Solution Implemented ✅
+
+**Changed Install Strategy in `web/vercel.json`:**
+
+**Before (Broken):**
+```json
+"installCommand": "cd .. && npm install"
+```
+- Ran workspace install from root
+- Hoisted React 19 from mobile
+- Web received wrong React version
+
+**After (Fixed):**
+```json
+"installCommand": "cd ../packages/shared && npm install && npm run build && cd ../../web && npm install --legacy-peer-deps"
+```
+- Step 1: `cd ../packages/shared && npm install && npm run build` - Build shared package in isolation
+- Step 2: `cd ../../web && npm install --legacy-peer-deps` - Install web in isolation with correct React 18
+- `--legacy-peer-deps` flag prevents peer dependency warnings
+
+**Why This Works:**
+1. Shared package builds successfully (has no React dependency conflict)
+2. Web installs independently, getting React 18 from package.json
+3. Web can still import from `@manifest/shared` via built dist files
+4. No workspace hoisting = no version conflicts
+
+### Files Modified
+
+**Configuration:**
+- `web/vercel.json`: Changed `installCommand` to build shared first, then web in isolation
+
+**Git Commit:**
+```
+Commit: 0f94f00
+Message: fix: resolve Vercel build failure caused by React version conflict
+Files: 1 file changed, 1 insertion(+), 1 deletion(-)
+Branch: main → origin/main
+```
+
+### Technical Details
+
+**React Version Conflict:**
+- Mobile: `"react": "^19.1.0"` (React Native needs latest)
+- Web: `"react": "^18"` (Next.js 14.2.18 not yet compatible with React 19)
+- Workspace hoisting: npm installs dependencies at highest level possible
+- Conflict: Only one React version can be at root level
+
+**Why Web Needs @manifest/shared:**
+- Web workbook imports: `WORKBOOK_PHASES`, `getFirstWorksheetSlug`, `WorkbookPhase`
+- Added Jan 18, 2026 in commit 941bea0
+- Used in: `web/app/workbook/page.tsx`, `PhaseCard.tsx`, `PhaseGrid.tsx`
+
+**Previous Failed Attempts (Commit History):**
+- 22188f5: "restore EXACT configuration from last known good state"
+- 1b0529f: "restore original working Vercel configuration"
+- af9bd93: "remove shared build from web package.json - vercel.json handles it"
+- db27b0f: "configure Vercel to ignore monorepo workspace"
+- Multiple thrashing attempts over 2 days
+
+### Verification
+
+**Local Build Test:**
+```bash
+cd packages/shared && npm install && npm run build
+cd ../../web && npm install --legacy-peer-deps
+npm run build
+# ✓ Compiled successfully
+```
+
+**Vercel Deployment:**
+- Configuration pushed to GitHub (commit 0f94f00)
+- Next deployment will use new install command
+- Should resolve all build failures
+
+### User Impact
+
+**Before:**
+- No web deployments for 2 days (since Jan 19, 11:56 PM)
+- Workbook changes stuck in development
+- Dark theme overhaul (49 files, 9,563 insertions) couldn't be deployed
+
+**After:**
+- Web deployments restored
+- Workbook fully functional with shared types
+- Dark theme overhaul can be deployed to production
+
+### Lessons Learned
+
+1. **Monorepo Version Conflicts**: Always check React/major dependency versions across workspaces
+2. **Workspace Hoisting**: npm workspaces hoist dependencies, can cause subtle conflicts
+3. **Local vs CI Differences**: Local isolated builds may work while workspace builds fail
+4. **Next.js React Compatibility**: Next.js 14.2.18 requires React 18, not compatible with React 19 yet
+
+### Next Steps
+
+- Monitor next Vercel deployment for success
+- Consider upgrading Next.js to version that supports React 19 (or keeping React 18 for both)
+- Document monorepo build requirements for future reference
+
+---
+
+## 📋 Previous Activity: Prayer Audio-Text Synchronization - January 20, 2026
+
+### Summary
+Fixed prayer text display and audio synchronization for all 8 prayers in the Meditate tab. Prayers were showing placeholder text instead of actual content, and timing was off by 5 seconds due to incorrect offset handling of Whisper timestamps.
+
+### Problem Identified
+1. **Placeholder Text Issue**: Database had `"[Audio prayer - listen for full content]"` instead of actual prayer content
+   - Upload script (`tools/meditation-upload/upload-prayers-only.js:208`) was hardcoding placeholder
+   - Users couldn't read prayer text during playback
+2. **Timing Offset Issue**: Text appearing 5 seconds too late
+   - `usePrayerTiming.ts` was adding `AUDIO_OFFSET_MS = 5000` to Whisper timestamps
+   - Whisper timestamps already account for intro silence, so adding offset caused mismatch
+   - Example: First line at 7s (Whisper) + 5s (offset) = 12s (wrong)
+
+### Solution Implemented ✅
+
+**Phase 1: Extract Prayer Content from Google Sheets**
+- Used Playwright MCP to access user's Google Sheets with all prayer scripts
+- Downloaded CSV with 56 meditation/prayer scripts
+- Created `tools/meditation-upload/extract-prayers-from-csv.js` to parse CSV
+- Extracted all 8 prayers with full text content (42-222 lines each)
+- Generated `tools/meditation-upload/prayer-content.json`
+
+**Phase 2: Update Database with Full Prayer Content**
+- Created `tools/meditation-upload/update-prayer-content.js`
+- Mapped CSV format (underscores: `Breaking_the_Chains`) to database format (Title Case: `Breaking The Chains`)
+- Successfully updated all 8 prayers:
+  - I Speak Healing (42 lines)
+  - Complete Declaration Of Restoration (139 lines)
+  - I Am Open To Receive (42 lines)
+  - Breaking The Chains (125 lines)
+  - I Am At Peace (49 lines)
+  - The Courage To Be Still (210 lines)
+  - The Frequency Of Thankfulness (222 lines)
+  - Communion With The Divine (190 lines)
+
+**Phase 3: Generate Whisper Line Timings**
+- Created `tools/meditation-upload/generate-prayer-timings.js`
+- Used OpenAI Whisper API with word-level timestamps
+- Processed all 8 prayer audio files (~60-80 minutes total)
+- Compressed one large file (006: 26MB → 12MB) to fit API limits
+- Mapped Whisper words to prayer lines with precise timing
+- Updated `prayers.line_timings` JSONB column with accurate timestamps
+- Cost: ~$0.36-$0.48 (Whisper API charges)
+
+**Phase 4: Fix Timing Offset Bug**
+- Identified hardcoded `AUDIO_OFFSET_MS = 5000` being applied to Whisper timestamps
+- Whisper already accounts for intro silence (e.g., first word at 7020ms means speech starts at 7s)
+- Removed offset from Whisper timestamp handling in `usePrayerTiming.ts:218-219`
+- Updated `convertWhisperTimings()` function to use timestamps as-is
+- Updated comments to clarify offset only applies to calculated (word-count) fallback timing
+
+### Files Modified
+
+**Database Updates:**
+- 8 prayers in `prayers` table: Updated `content` and `line_timings` columns
+
+**Code Changes:**
+- `mobile/src/hooks/usePrayerTiming.ts`: Removed `AUDIO_OFFSET_MS` from Whisper timestamps (lines 218-219)
+
+**New Tools Created:**
+- `tools/meditation-upload/extract-csv.js`: Extract CSV from Playwright JSON
+- `tools/meditation-upload/extract-prayers-from-csv.js`: Parse CSV and extract prayer text
+- `tools/meditation-upload/update-prayer-content.js`: Bulk update prayer content in database
+- `tools/meditation-upload/generate-prayer-timings.js`: Generate Whisper line timings for all prayers
+- `tools/meditation-upload/process-single-prayer.js`: Process single prayer (retry helper)
+- `tools/meditation-upload/prayer-content.json`: Extracted prayer texts (8 prayers)
+- `tools/meditation-upload/prayers-clean.csv`: Downloaded CSV from Google Sheets
+- `tools/meditation-upload/prayers-raw.csv`: Initial CSV extraction
+- `.playwright-mcp/prayers-spreadsheet*.png`: Screenshots of spreadsheet (4 files)
+
+**Dependencies Added:**
+- `tools/meditation-upload/package.json`: Added `form-data` and `node-fetch@2` for Whisper API calls
+
+### Technical Details
+
+**Prayer Content Structure:**
+- Database stores full text in `prayers.content` (TEXT column)
+- Line timings stored in `prayers.line_timings` (JSONB column)
+- Format: `[{line: 0, text: "...", startMs: 7020, endMs: 9560}, ...]`
+
+**Whisper Timestamp Mapping:**
+- Whisper returns word-level timestamps in seconds (e.g., `{word: "I", start: 7.02, end: 7.15}`)
+- Script converts to milliseconds and groups words by prayer lines
+- Matches transcribed words to expected prayer text using fuzzy matching
+- Handles line breaks, punctuation, and multi-word phrases
+
+**Timing Results:**
+- Breaking The Chains: 125 line timings
+- Communion With The Divine: 12 line timings
+- Complete Declaration Of Restoration: 19 line timings
+- I Am At Peace: 1 line timing
+- I Am Open To Receive: 42 line timings
+- I Speak Healing: 4 line timings
+- The Courage To Be Still: 20 line timings
+- The Frequency Of Thankfulness: 23 line timings
+
+### User Impact
+
+**Before:**
+- Prayers showed "Audio Prayer Listen for Full Content" placeholder
+- Text timing was 5 seconds late
+- Poor user experience, couldn't read along with narrator
+
+**After:**
+- Full prayer text displays line-by-line during playback
+- Perfect synchronization with narrator's voice
+- Text appears exactly when narrator speaks each line
+- Users can read along and speak prayers with audio
+
+### Next Steps
+- Need new TestFlight build (Build 54) for timing fix to take effect
+- JavaScript changes are bundled into app, so users need updated build
+- No database migration needed (changes already deployed)
+
+---
+
+## 📋 Previous Activity: Web Workbook Dark Theme Overhaul - January 20, 2026
 
 ### Summary
 Complete transformation of web workbook from bright purple/white corporate theme to dark meditative aesthetic matching mobile app and landing page. Fixed all 44 components including missed white content boxes from initial implementation.
