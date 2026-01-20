@@ -1,18 +1,25 @@
+import Link from 'next/link'
+
 export default function NotFound() {
   return (
-    <html>
-      <body>
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', backgroundColor: '#0a0a0a', color: '#f4f4f4' }}>
-          <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '16px' }}>404</h1>
-            <h2 style={{ fontSize: '24px', marginBottom: '24px', color: '#d4af37' }}>Page Not Found</h2>
-            <p style={{ marginBottom: '32px' }}>The page you&apos;re looking for doesn&apos;t exist.</p>
-            <a href="/" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: '#d4af37', color: '#0a0a0a', fontWeight: '600', borderRadius: '8px', textDecoration: 'none' }}>
-              Go Home
-            </a>
-          </div>
-        </div>
-      </body>
-    </html>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="text-center max-w-md">
+        <h1 className="font-serif text-6xl font-bold text-enlightened mb-4">
+          404
+        </h1>
+        <h2 className="font-serif text-2xl font-semibold text-aged-gold mb-6">
+          Page Not Found
+        </h2>
+        <p className="text-muted-wisdom mb-8">
+          The page you&apos;re looking for doesn&apos;t exist.
+        </p>
+        <Link
+          href="/"
+          className="inline-block px-6 py-3 bg-aged-gold text-deep-void font-semibold rounded-lg hover:opacity-90 transition-opacity"
+        >
+          Go Home
+        </Link>
+      </div>
+    </div>
   )
 }
