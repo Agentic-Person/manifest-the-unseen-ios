@@ -20,11 +20,13 @@
       "Bash(mobile/src/components/UPGRADE_PROMPTS_SHOWCASE.md )",
       "Bash(mobile/src/components/subscription/ )",
       "Bash(mobile/src/screens/subscription/)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git show:*)"
     ],
     "deny": [],
     "ask": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "supabase",
     "github",
@@ -32,6 +34,5 @@
     "desktop-commander",
     "playwright",
     "n8n-mcp"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }
