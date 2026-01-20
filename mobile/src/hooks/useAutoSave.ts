@@ -9,6 +9,7 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import { useSaveWorkbook } from './useWorkbook';
 import { getWorksheetConfig } from '../config/worksheetConfigs';
 import { detectCompletion } from '../utils/completionDetection';
+import { logger } from '../utils/logger';
 
 interface UseAutoSaveOptions<T> {
   /** The data to save */
@@ -131,26 +132,20 @@ export function useAutoSave<T extends Record<string, unknown>>({
         setIsAutoCompleted(meetsCompletion);
 
         // Debug logging to help diagnose completion issues
-        if (__DEV__) {
-          console.log(`[useAutoSave] Completion check for ${worksheetId}:`, {
-            meetsCompletion,
-            criteria: config.completionCriteria,
-            dataKeys: Object.keys(data),
-          });
-        }
+        logger.debug(`[useAutoSave] Completion check for ${worksheetId}:`, {
+          meetsCompletion,
+          criteria: config.completionCriteria,
+          dataKeys: Object.keys(data),
+        });
       } else {
         // Config not found - log warning in dev mode
-        if (__DEV__) {
-          console.warn(`[useAutoSave] No completion config found for worksheet: ${worksheetId}`);
-        }
+        logger.warn(`[useAutoSave] No completion config found for worksheet: ${worksheetId}`);
         setCanComplete(false);
         setIsAutoCompleted(false);
       }
     } catch (err) {
       // Config not found for this worksheet - proceed with manual completion only
-      if (__DEV__) {
-        console.error(`[useAutoSave] Error checking completion for ${worksheetId}:`, err);
-      }
+      logger.error(`[useAutoSave] Error checking completion for ${worksheetId}:`, err);
       setCanComplete(false);
       setIsAutoCompleted(false);
     }
@@ -171,7 +166,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
 
     // Safety timeout: reset saving state if it takes too long
     saveTimeoutRef.current = setTimeout(() => {
-      console.warn(
+      logger.warn(
         '[useAutoSave] Save timeout reached after',
         SAVE_TIMEOUT_MS,
         'ms - resetting saving state'
@@ -219,7 +214,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
           onError: (err) => {
             endSaving();
             // Always log errors to console for debugging
-            console.error(
+            logger.error(
               `[useAutoSave] Failed to save phase ${phaseNumber}, worksheet ${worksheetId}:`,
               err
             );

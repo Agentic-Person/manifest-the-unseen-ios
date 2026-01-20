@@ -6,6 +6,7 @@
  */
 
 import { supabase } from './supabase';
+import { logger } from '../utils/logger';
 
 // =============================================================================
 // Types
@@ -55,7 +56,7 @@ export async function validatePromoCode(
   checkOnly = true
 ): Promise<PromoValidationResult> {
   try {
-    console.log('[promoService] Validating promo code:', code);
+    logger.debug('[promoService] Validating promo code:', code);
 
     const { data, error } = await supabase.functions.invoke('validate-promo', {
       body: {
@@ -66,7 +67,7 @@ export async function validatePromoCode(
     });
 
     if (error) {
-      console.error('[promoService] Edge function error:', error);
+      logger.error('[promoService] Edge function error:', error);
       return {
         valid: false,
         error: error.message || 'Failed to validate promo code',
@@ -80,10 +81,10 @@ export async function validatePromoCode(
       };
     }
 
-    console.log('[promoService] Validation result:', data);
+    logger.debug('[promoService] Validation result:', data);
     return data as PromoValidationResult;
   } catch (error: any) {
-    console.error('[promoService] Validation error:', error);
+    logger.error('[promoService] Validation error:', error);
     return {
       valid: false,
       error: error.message || 'Failed to validate promo code',
@@ -111,7 +112,7 @@ export async function recordPromoRedemption(
   code: string,
   tier: string
 ): Promise<PromoValidationResult> {
-  console.log('[promoService] Recording promo redemption:', code, tier);
+  logger.debug('[promoService] Recording promo redemption:', code, tier);
 
   // Call validate with checkOnly = false to record the redemption
   return validatePromoCode(code, tier, false);

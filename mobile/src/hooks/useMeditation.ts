@@ -24,6 +24,7 @@ import type {
   NarratorGender,
   CreateMeditationSession,
 } from '../types/meditation';
+import { logger } from '../utils/logger';
 
 /**
  * Query keys for cache management
@@ -101,13 +102,13 @@ export function useGuidedMeditations(narrator?: NarratorGender) {
   return useQuery({
     queryKey: meditationKeys.list('guided', narrator),
     queryFn: async () => {
-      console.log('[useGuidedMeditations] Fetching guided meditations...', { narrator });
+      logger.debug('[useGuidedMeditations] Fetching guided meditations...', { narrator });
       try {
         const result = await getGuidedMeditations(narrator);
-        console.log('[useGuidedMeditations] Fetched:', result?.length, 'meditations');
+        logger.debug('[useGuidedMeditations] Fetched:', result?.length, 'meditations');
         return result;
       } catch (error) {
-        console.error('[useGuidedMeditations] Error:', error);
+        logger.error('[useGuidedMeditations] Error:', error);
         throw error;
       }
     },

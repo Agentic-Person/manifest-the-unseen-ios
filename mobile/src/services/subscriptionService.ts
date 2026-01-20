@@ -23,6 +23,7 @@ import type {
   SubscriptionPeriod,
 } from '../types/subscription';
 import { ENTITLEMENT_IDS, PACKAGE_IDS } from '../types/subscription';
+import { logger } from '../utils/logger';
 
 /**
  * RevenueCat Configuration
@@ -85,10 +86,10 @@ export function getRevenueCatDebugState(): RevenueCatDebugState {
  * @param userId - Optional user ID to sync with your backend
  */
 export async function configurePurchases(userId?: string): Promise<void> {
-  console.log('[RC Debug] 🚀 configurePurchases() called');
-  console.log('[RC Debug] Platform:', Platform.OS);
-  console.log('[RC Debug] __DEV__:', __DEV__);
-  console.log('[RC Debug] TESTFLIGHT_FULL_ACCESS:', process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS);
+  logger.debug('[RC Debug] configurePurchases() called');
+  logger.debug('[RC Debug] Platform:', { platform: Platform.OS });
+  logger.debug('[RC Debug] __DEV__:', { isDev: __DEV__ });
+  logger.debug('[RC Debug] TESTFLIGHT_FULL_ACCESS:', { testFlightAccess: process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS });
 
   // Mark that configuration was attempted
   debugState.configureAttempted = true;
@@ -97,7 +98,7 @@ export async function configurePurchases(userId?: string): Promise<void> {
 
   // Skip RevenueCat in web browser - it doesn't work and causes errors
   if (Platform.OS === 'web') {
-    console.log('[RC Debug] ⏭️ Web platform - skipping RevenueCat');
+    logger.debug('[RC Debug] Web platform - skipping RevenueCat');
     debugState.configureError = 'Web platform - SDK not supported';
     return;
   }
@@ -108,7 +109,7 @@ export async function configurePurchases(userId?: string): Promise<void> {
   debugState.isTestFlightBypass = isTestFlight;
 
   if (isTestFlight) {
-    console.log('[RC Debug] ⏭️ TestFlight bypass mode - skipping RevenueCat');
+    logger.debug('[RC Debug] TestFlight bypass mode - skipping RevenueCat');
     debugState.configureError = 'TestFlight bypass mode - SDK skipped';
     return;
   }
@@ -120,10 +121,10 @@ export async function configurePurchases(userId?: string): Promise<void> {
     debugState.apiKeyPresent = !!apiKey;
     debugState.apiKeyPrefix = apiKey ? apiKey.substring(0, 15) + '...' : 'MISSING';
 
-    console.log('[RC Debug] API Key prefix:', apiKey ? apiKey.substring(0, 10) + '...' : 'MISSING');
+    logger.debug('[RC Debug] API Key prefix:', { prefix: apiKey ? apiKey.substring(0, 10) + '...' : 'MISSING' });
 
     if (!apiKey) {
-      console.error('[RC Debug] ❌ No API key found!');
+      logger.error('[RC Debug] No API key found!');
       debugState.configureError = 'No API key found in environment';
       return;
     }
@@ -139,10 +140,10 @@ export async function configurePurchases(userId?: string): Promise<void> {
 
     debugState.sdkConfigured = true;
     debugState.configureError = null;
-    console.log('[RC Debug] ✅ RevenueCat SDK configured successfully');
+    logger.debug('[RC Debug] RevenueCat SDK configured successfully');
   } catch (error: any) {
     debugState.configureError = error.message || 'Unknown configuration error';
-    console.error('[RC Debug] ❌ configurePurchases() failed:', {
+    logger.error('[RC Debug] configurePurchases() failed:', {
       message: error.message,
       code: error.code,
       stack: error.stack,
@@ -158,18 +159,16 @@ export async function configurePurchases(userId?: string): Promise<void> {
 export async function setUserId(userId: string): Promise<void> {
   // Skip on web - RevenueCat not supported
   if (Platform.OS === 'web') {
-    console.log('[Subscription] Web platform - skipping setUserId');
+    logger.debug('[Subscription] Web platform - skipping setUserId');
     return;
   }
 
   try {
     await Purchases.logIn(userId);
-    // H3 Security Fix: Don't log userId in production
-    if (__DEV__) {
-      console.log('RevenueCat user ID set');
-    }
+    // H3 Security Fix: Don't log userId in production (logger handles __DEV__ check)
+    logger.debug('RevenueCat user ID set');
   } catch (error) {
-    console.error('Failed to set RevenueCat user ID:', error);
+    logger.error('Failed to set RevenueCat user ID:', { error });
     throw error;
   }
 }
@@ -181,15 +180,15 @@ export async function setUserId(userId: string): Promise<void> {
 export async function logoutUser(): Promise<void> {
   // Skip on web - RevenueCat not supported
   if (Platform.OS === 'web') {
-    console.log('[Subscription] Web platform - skipping logoutUser');
+    logger.debug('[Subscription] Web platform - skipping logoutUser');
     return;
   }
 
   try {
     await Purchases.logOut();
-    console.log('RevenueCat user logged out');
+    logger.debug('RevenueCat user logged out');
   } catch (error) {
-    console.error('Failed to logout RevenueCat user:', error);
+    logger.error('Failed to logout RevenueCat user:', { error });
     throw error;
   }
 }
@@ -211,7 +210,7 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
 
   // Return mock offerings for web mode or TestFlight (RevenueCat SDK is skipped in these modes)
   if (Platform.OS === 'web' || isTestFlight) {
-    console.log(`[Subscription] ${Platform.OS === 'web' ? 'Web' : 'TestFlight'} mode - returning mock offerings for UI testing`);
+    logger.debug(`[Subscription] ${Platform.OS === 'web' ? 'Web' : 'TestFlight'} mode - returning mock offerings for UI testing`);
     return {
       novice_monthly: {
         id: 'mock_novice_monthly',
@@ -283,20 +282,20 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
   }
 
   try {
-    console.log('[RC Debug] 🔍 Calling Purchases.getOfferings()...');
-    console.log('[RC Debug] SDK configured:', debugState.sdkConfigured);
+    logger.debug('[RC Debug] Calling Purchases.getOfferings()...');
+    logger.debug('[RC Debug] SDK configured:', { sdkConfigured: debugState.sdkConfigured });
 
     // Check if SDK was configured before calling
     if (!debugState.sdkConfigured) {
       const errorMsg = `SDK not configured. Config attempted: ${debugState.configureAttempted}, Error: ${debugState.configureError}`;
-      console.error('[RC Debug] ❌ ' + errorMsg);
+      logger.error('[RC Debug] ' + errorMsg);
       debugState.lastOfferingsError = errorMsg;
       return null;
     }
 
     const offerings: PurchasesOfferings = await Purchases.getOfferings();
 
-    console.log('[RC Debug] Raw offerings response:', {
+    logger.debug('[RC Debug] Raw offerings response:', {
       hasOfferings: !!offerings,
       allOfferingsCount: Object.keys(offerings.all || {}).length,
       allOfferingsKeys: Object.keys(offerings.all || {}),
@@ -315,7 +314,7 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
 
     if (!offerings.current) {
       const errorMsg = 'No current offering! Check RevenueCat dashboard - must set one offering as "current"';
-      console.error('[RC Debug] ❌ ' + errorMsg);
+      logger.error('[RC Debug] ' + errorMsg);
       debugState.lastOfferingsError = errorMsg;
       return null;
     }
@@ -323,7 +322,7 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
     const currentOffering = offerings.current;
     const packages = currentOffering.availablePackages;
 
-    console.log('[RC Debug] Current offering details:', {
+    logger.debug('[RC Debug] Current offering details:', {
       identifier: currentOffering.identifier,
       packageCount: packages.length,
       packages: packages.map(p => ({
@@ -334,8 +333,8 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
     });
 
     // Log what we're looking for vs what we have
-    console.log('[RC Debug] 🎯 Looking for package IDs:', PACKAGE_IDS);
-    console.log('[RC Debug] 📦 Available package IDs:', packages.map(p => p.identifier));
+    logger.debug('[RC Debug] Looking for package IDs:', { packageIds: PACKAGE_IDS });
+    logger.debug('[RC Debug] Available package IDs:', { availableIds: packages.map(p => p.identifier) });
 
     // Production: Three-tier model with monthly/annual options
     // Packages are found by their RevenueCat package identifier
@@ -351,13 +350,13 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
       enlightenment_annual: findPackageById(packages, PACKAGE_IDS.ENLIGHTENMENT_ANNUAL, 'enlightenment', 'yearly'),
     };
 
-    console.log('[RC Debug] ✅ Parsed offerings result:', {
-      novice_monthly: offering.novice_monthly ? '✓ ' + offering.novice_monthly.price : '✗ NOT FOUND',
-      novice_annual: offering.novice_annual ? '✓ ' + offering.novice_annual.price : '✗ NOT FOUND',
-      awakening_monthly: offering.awakening_monthly ? '✓ ' + offering.awakening_monthly.price : '✗ NOT FOUND',
-      awakening_annual: offering.awakening_annual ? '✓ ' + offering.awakening_annual.price : '✗ NOT FOUND',
-      enlightenment_monthly: offering.enlightenment_monthly ? '✓ ' + offering.enlightenment_monthly.price : '✗ NOT FOUND',
-      enlightenment_annual: offering.enlightenment_annual ? '✓ ' + offering.enlightenment_annual.price : '✗ NOT FOUND',
+    logger.debug('[RC Debug] Parsed offerings result:', {
+      novice_monthly: offering.novice_monthly ? 'found ' + offering.novice_monthly.price : 'NOT FOUND',
+      novice_annual: offering.novice_annual ? 'found ' + offering.novice_annual.price : 'NOT FOUND',
+      awakening_monthly: offering.awakening_monthly ? 'found ' + offering.awakening_monthly.price : 'NOT FOUND',
+      awakening_annual: offering.awakening_annual ? 'found ' + offering.awakening_annual.price : 'NOT FOUND',
+      enlightenment_monthly: offering.enlightenment_monthly ? 'found ' + offering.enlightenment_monthly.price : 'NOT FOUND',
+      enlightenment_annual: offering.enlightenment_annual ? 'found ' + offering.enlightenment_annual.price : 'NOT FOUND',
     });
 
     debugState.lastOfferingsError = null;
@@ -365,7 +364,7 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
   } catch (error: any) {
     const errorMsg = `${error.code || 'ERROR'}: ${error.message || 'Unknown error'}`;
     debugState.lastOfferingsError = errorMsg;
-    console.error('[RC Debug] ❌ getOfferings() FAILED:', {
+    logger.error('[RC Debug] getOfferings() FAILED:', {
       message: error.message,
       code: error.code,
       userInfo: error.userInfo,
@@ -389,7 +388,7 @@ function findPackageById(
   const rcPackage = packages.find((pkg) => pkg.identifier === packageId);
 
   if (!rcPackage) {
-    console.warn(`[Subscription] Package not found: ${packageId}`);
+    logger.warn(`[Subscription] Package not found: ${packageId}`);
     return null;
   }
 
@@ -432,7 +431,7 @@ export async function purchasePackage(
 ): Promise<PurchaseResult> {
   // Skip on web - RevenueCat not supported
   if (Platform.OS === 'web') {
-    console.log('[Subscription] Web platform - purchases not supported');
+    logger.debug('[Subscription] Web platform - purchases not supported');
     return {
       success: false,
       error: new Error('Purchases not available on web') as any,
@@ -443,7 +442,7 @@ export async function purchasePackage(
   // In TestFlight mode, RevenueCat SDK is not configured, so real purchases won't work
   const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
   if (isTestFlight || __DEV__) {
-    console.log('[Subscription] TestFlight/DEV mode - simulating purchase success for:', subscriptionPackage.id);
+    logger.debug('[Subscription] TestFlight/DEV mode - simulating purchase success for:', { packageId: subscriptionPackage.id });
     // Return success with the purchased tier info (no customerInfo since SDK not configured)
     // Using Object.assign to add extra properties while maintaining PurchaseResult type
     const result: PurchaseResult = {
@@ -460,14 +459,14 @@ export async function purchasePackage(
     const { customerInfo, productIdentifier } =
       await Purchases.purchasePackage(subscriptionPackage.rcPackage);
 
-    console.log('Purchase successful:', productIdentifier);
+    logger.info('Purchase successful:', { productIdentifier });
 
     return {
       success: true,
       customerInfo,
     };
   } catch (error: any) {
-    console.error('Purchase failed:', error);
+    logger.error('Purchase failed:', { error });
 
     // Check if user cancelled
     if (error.userCancelled) {
@@ -491,7 +490,7 @@ export async function purchasePackage(
 export async function restorePurchases(): Promise<RestoreResult> {
   // Skip on web - RevenueCat not supported
   if (Platform.OS === 'web') {
-    console.log('[Subscription] Web platform - restore not supported');
+    logger.debug('[Subscription] Web platform - restore not supported');
     return {
       success: false,
       error: new Error('Restore not available on web') as any,
@@ -501,14 +500,14 @@ export async function restorePurchases(): Promise<RestoreResult> {
   try {
     const customerInfo: CustomerInfo = await Purchases.restorePurchases();
 
-    console.log('Purchases restored successfully');
+    logger.info('Purchases restored successfully');
 
     return {
       success: true,
       customerInfo,
     };
   } catch (error: any) {
-    console.error('Restore failed:', error);
+    logger.error('Restore failed:', { error });
 
     return {
       success: false,
@@ -524,7 +523,7 @@ export async function restorePurchases(): Promise<RestoreResult> {
 export async function getCustomerInfo(): Promise<CustomerInfo | null> {
   // Skip on web - RevenueCat not supported
   if (Platform.OS === 'web') {
-    console.log('[Subscription] Web platform - returning null for getCustomerInfo');
+    logger.debug('[Subscription] Web platform - returning null for getCustomerInfo');
     return null;
   }
 
@@ -532,7 +531,7 @@ export async function getCustomerInfo(): Promise<CustomerInfo | null> {
     const customerInfo: CustomerInfo = await Purchases.getCustomerInfo();
     return customerInfo;
   } catch (error) {
-    console.error('Failed to get customer info:', error);
+    logger.error('Failed to get customer info:', { error });
     return null;
   }
 }
@@ -556,7 +555,7 @@ export async function checkEntitlement(
     const entitlement = customerInfo.entitlements.active[entitlementId];
     return !!entitlement;
   } catch (error) {
-    console.error('Failed to check entitlement:', error);
+    logger.error('Failed to check entitlement:', { error });
     return false;
   }
 }
@@ -689,7 +688,7 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
   // DEV/TestFlight/Web mode: return enlightenment tier without calling RevenueCat
   const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
   if (__DEV__ || isTestFlight || Platform.OS === 'web') {
-    console.log('[Subscription] DEV/TestFlight/Web mode - returning mock enlightenment subscription');
+    logger.debug('[Subscription] DEV/TestFlight/Web mode - returning mock enlightenment subscription');
     return {
       tier: 'enlightenment',
       status: 'active',
@@ -744,7 +743,7 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
       customerInfo,
     };
   } catch (error) {
-    console.error('Failed to get subscription info:', error);
+    logger.error('Failed to get subscription info:', { error });
 
     // Return default free state on error
     return {

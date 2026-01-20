@@ -15,6 +15,7 @@
  */
 
 import { useCallback, useState } from 'react';
+import { logger } from '../utils/logger';
 // TODO: Uncomment when provisioning profile supports Push Notifications
 // import * as Notifications from 'expo-notifications';
 
@@ -63,8 +64,8 @@ export function useNotifications(): UseNotificationsReturn {
   const [isLoading] = useState(false);
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
-    console.log('[Notifications] MOCK: requestPermission called - notifications disabled');
-    console.log('[Notifications] To enable: regenerate provisioning profile with Push Notification capability');
+    logger.debug('[Notifications] MOCK: requestPermission called - notifications disabled');
+    logger.debug('[Notifications] To enable: regenerate provisioning profile with Push Notification capability');
     // Return false - notifications not available
     return false;
   }, []);
@@ -75,23 +76,23 @@ export function useNotifications(): UseNotificationsReturn {
       _hour: number,
       _minute: number
     ): Promise<string | null> => {
-      console.log(`[Notifications] MOCK: scheduleReminder(${type}) - notifications disabled`);
+      logger.debug(`[Notifications] MOCK: scheduleReminder(${type}) - notifications disabled`);
       return null;
     },
     []
   );
 
   const cancelNotification = useCallback(async (_identifier: string) => {
-    console.log('[Notifications] MOCK: cancelNotification - notifications disabled');
+    logger.debug('[Notifications] MOCK: cancelNotification - notifications disabled');
   }, []);
 
   const cancelAllReminders = useCallback(async (_type: 'meditation' | 'journal') => {
-    console.log('[Notifications] MOCK: cancelAllReminders - notifications disabled');
+    logger.debug('[Notifications] MOCK: cancelAllReminders - notifications disabled');
   }, []);
 
   const scheduleDailyInspiration = useCallback(
     async (_hour: number, _minute: number): Promise<string | null> => {
-      console.log('[Notifications] MOCK: scheduleDailyInspiration - notifications disabled');
+      logger.debug('[Notifications] MOCK: scheduleDailyInspiration - notifications disabled');
       return null;
     },
     []

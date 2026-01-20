@@ -26,6 +26,7 @@
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import { logger } from './logger';
 
 /**
  * Storage keys for sensitive data (stored in SecureStore)
@@ -92,10 +93,10 @@ class SecureStorageManager {
       // SecureStore is available on iOS and Android, but not on web
       if (Platform.OS === 'web') {
         this.isAvailable = false;
-        console.warn('[SecureStorage] SecureStore not available on web, falling back to AsyncStorage');
+        logger.warn('[SecureStorage] SecureStore not available on web, falling back to AsyncStorage');
       }
     } catch (error) {
-      console.error('[SecureStorage] Error checking availability:', error);
+      logger.error('[SecureStorage] Error checking availability:', { error });
       this.isAvailable = false;
     }
   }
@@ -115,7 +116,7 @@ class SecureStorageManager {
     try {
       if (!this.isAvailable) {
         // Fallback to AsyncStorage if SecureStore not available
-        console.warn(`[SecureStorage] Using AsyncStorage fallback for key: ${key}`);
+        logger.warn(`[SecureStorage] Using AsyncStorage fallback for key: ${key}`);
         await AsyncStorage.setItem(key, value);
         return;
       }
@@ -130,9 +131,9 @@ class SecureStorageManager {
       }
 
       await SecureStore.setItemAsync(key, value, secureStoreOptions);
-      console.log(`[SecureStorage] Successfully stored encrypted value for key: ${key}`);
+      logger.debug(`[SecureStorage] Successfully stored encrypted value for key: ${key}`);
     } catch (error) {
-      console.error(`[SecureStorage] Failed to store value for key: ${key}`, error);
+      logger.error(`[SecureStorage] Failed to store value for key: ${key}`, { error });
       throw new Error(`Failed to securely store ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -151,7 +152,7 @@ class SecureStorageManager {
     try {
       if (!this.isAvailable) {
         // Fallback to AsyncStorage if SecureStore not available
-        console.warn(`[SecureStorage] Using AsyncStorage fallback for key: ${key}`);
+        logger.warn(`[SecureStorage] Using AsyncStorage fallback for key: ${key}`);
         return await AsyncStorage.getItem(key);
       }
 
@@ -167,18 +168,18 @@ class SecureStorageManager {
       const value = await SecureStore.getItemAsync(key, secureStoreOptions);
 
       if (value) {
-        console.log(`[SecureStorage] Successfully retrieved encrypted value for key: ${key}`);
+        logger.debug(`[SecureStorage] Successfully retrieved encrypted value for key: ${key}`);
       } else {
-        console.log(`[SecureStorage] No value found for key: ${key}`);
+        logger.debug(`[SecureStorage] No value found for key: ${key}`);
       }
 
       return value;
     } catch (error) {
-      console.error(`[SecureStorage] Failed to retrieve value for key: ${key}`, error);
+      logger.error(`[SecureStorage] Failed to retrieve value for key: ${key}`, { error });
 
       // If the error is due to authentication failure, return null
       if (error instanceof Error && error.message.includes('authentication')) {
-        console.warn(`[SecureStorage] Authentication failed for key: ${key}`);
+        logger.warn(`[SecureStorage] Authentication failed for key: ${key}`);
         return null;
       }
 
@@ -194,15 +195,15 @@ class SecureStorageManager {
   async removeItem(key: string): Promise<void> {
     try {
       if (!this.isAvailable) {
-        console.warn(`[SecureStorage] Using AsyncStorage fallback for key: ${key}`);
+        logger.warn(`[SecureStorage] Using AsyncStorage fallback for key: ${key}`);
         await AsyncStorage.removeItem(key);
         return;
       }
 
       await SecureStore.deleteItemAsync(key);
-      console.log(`[SecureStorage] Successfully removed encrypted value for key: ${key}`);
+      logger.debug(`[SecureStorage] Successfully removed encrypted value for key: ${key}`);
     } catch (error) {
-      console.error(`[SecureStorage] Failed to remove value for key: ${key}`, error);
+      logger.error(`[SecureStorage] Failed to remove value for key: ${key}`, { error });
       throw new Error(`Failed to remove ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -217,13 +218,13 @@ class SecureStorageManager {
 
       await Promise.all(
         allKeys.map(key => this.removeItem(key).catch(err => {
-          console.warn(`[SecureStorage] Failed to remove ${key}:`, err);
+          logger.warn(`[SecureStorage] Failed to remove ${key}:`, { error: err });
         }))
       );
 
-      console.log('[SecureStorage] Successfully cleared all secure storage');
+      logger.debug('[SecureStorage] Successfully cleared all secure storage');
     } catch (error) {
-      console.error('[SecureStorage] Failed to clear secure storage:', error);
+      logger.error('[SecureStorage] Failed to clear secure storage:', { error });
       throw error;
     }
   }
@@ -247,14 +248,14 @@ class SecureStorageManager {
         // Remove from old location
         await AsyncStorage.removeItem(oldKey);
 
-        console.log(`[SecureStorage] Successfully migrated ${oldKey} -> ${newKey}`);
+        logger.debug(`[SecureStorage] Successfully migrated ${oldKey} -> ${newKey}`);
         return true;
       }
 
-      console.log(`[SecureStorage] No migration needed for ${oldKey} (value not found)`);
+      logger.debug(`[SecureStorage] No migration needed for ${oldKey} (value not found)`);
       return false;
     } catch (error) {
-      console.error(`[SecureStorage] Failed to migrate ${oldKey} -> ${newKey}:`, error);
+      logger.error(`[SecureStorage] Failed to migrate ${oldKey} -> ${newKey}:`, { error });
       return false;
     }
   }
@@ -295,7 +296,7 @@ class SecureStorageManager {
     try {
       return JSON.parse(jsonString) as T;
     } catch (error) {
-      console.error(`[SecureStorage] Failed to parse JSON for key: ${key}`, error);
+      logger.error(`[SecureStorage] Failed to parse JSON for key: ${key}`, { error });
       return null;
     }
   }
@@ -385,7 +386,7 @@ export const JournalEncryption = {
       // Generate a new encryption key (in production, use crypto.randomBytes or similar)
       key = this.generateEncryptionKey();
       await SecureStorage.setItem(SecureStorageKeys.JOURNAL_ENCRYPTION_KEY, key);
-      console.log('[JournalEncryption] Generated new encryption key');
+      logger.debug('[JournalEncryption] Generated new encryption key');
     }
 
     return key;
@@ -449,7 +450,7 @@ export const JournalEncryption = {
 
       return decrypted;
     } catch (error) {
-      console.error('[JournalEncryption] Decryption failed:', error);
+      logger.error('[JournalEncryption] Decryption failed:', { error });
       throw new Error('Failed to decrypt journal entry');
     }
   },

@@ -6,6 +6,7 @@
  */
 
 import { supabase, getPublicUrl } from './supabase';
+import { logger } from '../utils/logger';
 import type { Prayer } from '../types/guru';
 
 // =============================================================================
@@ -30,7 +31,7 @@ export async function getPrayers(): Promise<Prayer[]> {
  * Only returns prayers with audio_url set
  */
 export async function getPrayersWithAudio(): Promise<Prayer[]> {
-  console.log('[getPrayersWithAudio] Starting query...');
+  logger.debug('[getPrayersWithAudio] Starting query...');
 
   // Use direct fetch to bypass Supabase client hanging issue on web
   const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
@@ -38,7 +39,7 @@ export async function getPrayersWithAudio(): Promise<Prayer[]> {
 
   const url = `${SUPABASE_URL}/rest/v1/prayers?select=*&audio_url=not.is.null&order=order_index.asc`;
 
-  console.log('[getPrayersWithAudio] Fetching via direct fetch...');
+  logger.debug('[getPrayersWithAudio] Fetching via direct fetch...');
   const startTime = Date.now();
 
   try {
@@ -50,18 +51,18 @@ export async function getPrayersWithAudio(): Promise<Prayer[]> {
       },
     });
 
-    console.log('[getPrayersWithAudio] Fetch response status:', response.status);
+    logger.debug('[getPrayersWithAudio] Fetch response status:', response.status);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('[getPrayersWithAudio] Query complete in', Date.now() - startTime, 'ms', { dataCount: data?.length });
+    logger.debug('[getPrayersWithAudio] Query complete in', Date.now() - startTime, 'ms', { dataCount: data?.length });
 
     return (data as Prayer[]) || [];
   } catch (err) {
-    console.error('[getPrayersWithAudio] Query failed after', Date.now() - startTime, 'ms', err);
+    logger.error('[getPrayersWithAudio] Query failed after', Date.now() - startTime, 'ms', err);
     throw err;
   }
 }
@@ -72,7 +73,7 @@ export async function getPrayersWithAudio(): Promise<Prayer[]> {
 export async function getPrayerById(id: string): Promise<Prayer | null> {
   if (!id) return null;
 
-  console.log('[getPrayerById] Fetching prayer:', id);
+  logger.debug('[getPrayerById] Fetching prayer:', id);
 
   // Use direct fetch to bypass Supabase client hanging issue on web
   const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
@@ -90,7 +91,7 @@ export async function getPrayerById(id: string): Promise<Prayer | null> {
       },
     });
 
-    console.log('[getPrayerById] Fetch response status:', response.status);
+    logger.debug('[getPrayerById] Fetch response status:', response.status);
 
     // 406 means no rows found with Accept: application/vnd.pgrst.object+json
     if (response.status === 406) {
@@ -102,7 +103,7 @@ export async function getPrayerById(id: string): Promise<Prayer | null> {
     }
 
     const data = await response.json();
-    console.log('[getPrayerById] Found prayer:', data?.title);
+    logger.debug('[getPrayerById] Found prayer:', data?.title);
 
     return data as Prayer | null;
   } catch (err) {

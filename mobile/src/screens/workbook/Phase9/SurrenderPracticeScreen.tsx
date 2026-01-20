@@ -82,7 +82,7 @@ const PHASE_NUMBER = 9;
 /**
  * SurrenderPracticeScreen Component
  */
-const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
+const SurrenderPracticeScreen: React.FC<Props> = () => {
   // Supabase data fetching
     const insets = useSafeAreaInsets();
 
@@ -232,15 +232,6 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
   const handleRefreshAffirmation = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setDailyAffirmation(getRandomAffirmation());
-  };
-
-  /**
-   * Save and continue
-   */
-  const handleSaveAndContinue = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
   };
 
   // Count active and released entries

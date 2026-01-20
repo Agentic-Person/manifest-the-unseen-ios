@@ -173,7 +173,7 @@ const ZoneSection: React.FC<{
 /**
  * Comfort Zone Screen Component
  */
-const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
+const ComfortZoneScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const insets = useSafeAreaInsets();
   const [data, setData] = useState<ComfortZoneData>(DEFAULT_DATA);
   const hasLoadedInitialData = useRef(false);

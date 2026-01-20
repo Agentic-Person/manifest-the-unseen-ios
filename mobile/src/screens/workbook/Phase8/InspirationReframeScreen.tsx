@@ -22,7 +22,6 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
@@ -85,7 +84,6 @@ const PHASE_NUMBER = 8;
  */
 const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
-    const insets = useSafeAreaInsets();
 
   const { data: savedProgress } = useWorkbookProgress(
     PHASE_NUMBER,

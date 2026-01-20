@@ -149,7 +149,6 @@ export const MainTabNavigator = () => {
           title: 'Guru',
           tabBarLabel: 'Guru',
           headerLeft: () => <ClickableHeaderLogo />,
-          headerBackVisible: false,
           tabBarIcon: ({ focused }) => (
             <Image
               source={BackgroundImages.guru}

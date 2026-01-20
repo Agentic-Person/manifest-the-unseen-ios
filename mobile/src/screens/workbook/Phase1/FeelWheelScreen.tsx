@@ -21,7 +21,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
 import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
@@ -89,7 +88,7 @@ type Props = WorkbookStackScreenProps<'FeelWheel'>;
 /**
  * Feel Wheel Screen Component
  */
-const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
+const FeelWheelScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const insets = useSafeAreaInsets();
   const [values, setValues] = useState<FeelWheelValues>(DEFAULT_VALUES);
   const [selectedEmotion, setSelectedEmotion] = useState<EmotionKey | null>(null);

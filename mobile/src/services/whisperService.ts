@@ -7,6 +7,7 @@
 
 import { Paths, File } from 'expo-file-system';
 import { initWhisper, WhisperContext } from 'whisper.rn';
+import { logger } from '../utils/logger';
 
 /**
  * Whisper Model Configuration
@@ -52,7 +53,7 @@ export async function isModelDownloaded(): Promise<boolean> {
     const modelFile = getModelFile();
     return modelFile.exists;
   } catch (error) {
-    console.error('Error checking model download status:', error);
+    logger.error('Error checking model download status:', error);
     return false;
   }
 }
@@ -148,7 +149,7 @@ export async function downloadModel(
         modelFile.delete();
       }
     } catch (cleanupError) {
-      console.error('Error cleaning up partial download:', cleanupError);
+      logger.error('Error cleaning up partial download:', cleanupError);
     }
 
     throw new Error(
@@ -243,7 +244,7 @@ export async function deleteAudioFile(uri: string): Promise<void> {
       audioFile.delete();
     }
   } catch (error) {
-    console.error('Error deleting audio file:', error);
+    logger.error('Error deleting audio file:', error);
     // Don't throw - deletion failure shouldn't block the flow
   }
 }
@@ -263,7 +264,7 @@ export async function getModelSize(): Promise<number | null> {
 
     return null;
   } catch (error) {
-    console.error('Error getting model size:', error);
+    logger.error('Error getting model size:', error);
     return null;
   }
 }
@@ -285,7 +286,7 @@ export async function deleteModel(): Promise<void> {
       whisperContext = null;
     }
   } catch (error) {
-    console.error('Error deleting model:', error);
+    logger.error('Error deleting model:', error);
     throw new Error(
       `Failed to delete model: ${
         error instanceof Error ? error.message : 'Unknown error'

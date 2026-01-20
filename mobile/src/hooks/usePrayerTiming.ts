@@ -9,6 +9,7 @@
 import { useMemo } from 'react';
 
 import type { PrayerLineTiming } from '../types/guru';
+import { logger } from '../utils/logger';
 
 /**
  * Represents a single line of prayer text with timing information
@@ -52,24 +53,6 @@ const LINE_PAUSE_MS = 300;
  * Positive value = delay the text display to account for intro music/silence.
  */
 const AUDIO_OFFSET_MS = 5000; // 5 seconds - only used for calculated timing fallback
-
-/**
- * Convert pre-generated Whisper line timings to PrayerLine format
- * Note: Whisper timestamps already account for intro silence, so no offset needed
- *
- * @param lineTimings - Pre-generated timings from database (Whisper output)
- * @returns Array of PrayerLine objects with timing data
- */
-function convertWhisperTimings(lineTimings: PrayerLineTiming[]): PrayerLine[] {
-  return lineTimings.map((timing) => ({
-    index: timing.line,
-    text: timing.text,
-    wordCount: timing.text.split(/\s+/).filter((w) => w.length > 0).length,
-    // Whisper timestamps already account for intro, use as-is
-    startTimeMs: timing.startMs,
-    endTimeMs: timing.endMs,
-  }));
-}
 
 /**
  * Calculate timing for each line of prayer text based on word count distribution
@@ -200,14 +183,14 @@ export function useCurrentPrayerLine(
   // Use Whisper timings for timing only, but use content for display text
   const lines = useMemo(() => {
     if (lineTimings && lineTimings.length > 0) {
-      console.log('[usePrayerTiming] Using Whisper timings for timing, content for text');
-      console.log('[usePrayerTiming] Timings:', lineTimings.length, 'lines, Content:', contentLines.length, 'lines');
+      logger.debug('[usePrayerTiming] Using Whisper timings for timing, content for text');
+      logger.debug('[usePrayerTiming] Timings:', lineTimings.length, 'lines, Content:', contentLines.length, 'lines');
 
       // Use content lines for text, line_timings for timing
       // If counts don't match, fall back to calculated timing
       if (contentLines.length !== lineTimings.length) {
-        console.warn('[usePrayerTiming] Line count mismatch! Content:', contentLines.length, 'Timings:', lineTimings.length);
-        console.log('[usePrayerTiming] Falling back to calculated timing');
+        logger.warn('[usePrayerTiming] Line count mismatch! Content:', contentLines.length, 'Timings:', lineTimings.length);
+        logger.debug('[usePrayerTiming] Falling back to calculated timing');
         return calculateLineTiming(prayerContent, audioDurationMs);
       }
 
@@ -220,7 +203,7 @@ export function useCurrentPrayerLine(
         endTimeMs: timing.endMs, // Use Whisper timestamp as-is
       }));
     } else {
-      console.log('[usePrayerTiming] Using calculated timing (no Whisper data)');
+      logger.debug('[usePrayerTiming] Using calculated timing (no Whisper data)');
       return calculateLineTiming(prayerContent, audioDurationMs);
     }
   }, [prayerContent, audioDurationMs, lineTimings, contentLines]);

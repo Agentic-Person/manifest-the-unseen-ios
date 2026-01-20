@@ -6,6 +6,7 @@
  */
 
 import { supabase, getPublicUrl } from './supabase';
+import { logger } from '../utils/logger';
 import type {
   Meditation,
   MeditationType,
@@ -26,7 +27,7 @@ export async function getMeditations(
   type?: MeditationType,
   narrator?: NarratorGender
 ): Promise<Meditation[]> {
-  console.log('[getMeditations] Starting query...', { type, narrator });
+  logger.debug('[getMeditations] Starting query...', { type, narrator });
 
   // Build URL for direct fetch (bypassing Supabase client to diagnose hanging issue)
   const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
@@ -40,7 +41,7 @@ export async function getMeditations(
     url += `&narrator_gender=eq.${narrator}`;
   }
 
-  console.log('[getMeditations] Fetching via direct fetch...', url);
+  logger.debug('[getMeditations] Fetching via direct fetch...', url);
   const startTime = Date.now();
 
   try {
@@ -52,18 +53,18 @@ export async function getMeditations(
       },
     });
 
-    console.log('[getMeditations] Fetch response status:', response.status);
+    logger.debug('[getMeditations] Fetch response status:', response.status);
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('[getMeditations] Query complete in', Date.now() - startTime, 'ms', { dataCount: data?.length });
+    logger.debug('[getMeditations] Query complete in', Date.now() - startTime, 'ms', { dataCount: data?.length });
 
     return (data as Meditation[]) || [];
   } catch (err) {
-    console.error('[getMeditations] Query failed after', Date.now() - startTime, 'ms', err);
+    logger.error('[getMeditations] Query failed after', Date.now() - startTime, 'ms', err);
     throw err;
   }
 }
@@ -74,7 +75,7 @@ export async function getMeditations(
 export async function getMeditationById(id: string): Promise<Meditation | null> {
   if (!id) return null;
 
-  console.log('[getMeditationById] Fetching meditation:', id);
+  logger.debug('[getMeditationById] Fetching meditation:', id);
 
   // Use direct fetch to bypass Supabase client hanging issue on web
   const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
@@ -92,7 +93,7 @@ export async function getMeditationById(id: string): Promise<Meditation | null> 
       },
     });
 
-    console.log('[getMeditationById] Fetch response status:', response.status);
+    logger.debug('[getMeditationById] Fetch response status:', response.status);
 
     // 406 means no rows found with Accept: application/vnd.pgrst.object+json
     if (response.status === 406) {
@@ -104,7 +105,7 @@ export async function getMeditationById(id: string): Promise<Meditation | null> 
     }
 
     const data = await response.json();
-    console.log('[getMeditationById] Found meditation:', data?.title);
+    logger.debug('[getMeditationById] Found meditation:', data?.title);
 
     return data as Meditation | null;
   } catch (err) {

@@ -132,7 +132,7 @@ const getRatingLevel = (value: number): { text: string; color: string } => {
 /**
  * Abilities Rating Screen Component
  */
-const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
+const AbilitiesRatingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const [data, setData] = useState<AbilitiesData>(DEFAULT_DATA);
   const [expandedCategory, setExpandedCategory] = useState<string | null>('Communication');
   const hasLoadedInitialData = useRef(false);

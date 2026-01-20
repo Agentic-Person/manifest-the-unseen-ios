@@ -103,7 +103,7 @@ type Props = WorkbookStackScreenProps<'ThoughtAwareness'>;
 /**
  * Thought Awareness Screen Component
  */
-const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
+const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const insets = useSafeAreaInsets();
   const [data, setData] = useState<ThoughtAwarenessData>(DEFAULT_DATA);
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);

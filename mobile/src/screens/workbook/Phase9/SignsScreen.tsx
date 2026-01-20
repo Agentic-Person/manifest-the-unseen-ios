@@ -80,7 +80,7 @@ const PHASE_NUMBER = 9;
 /**
  * SignsScreen Component
  */
-const SignsScreen: React.FC<Props> = ({ navigation }) => {
+const SignsScreen: React.FC<Props> = () => {
   // Supabase data fetching
     const insets = useSafeAreaInsets();
 
@@ -271,15 +271,6 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
       stats[e.category]++;
     });
     return stats;
-  };
-
-  /**
-   * Save and continue
-   */
-  const handleSaveAndContinue = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
   };
 
   const categoryStats = getCategoryStats();

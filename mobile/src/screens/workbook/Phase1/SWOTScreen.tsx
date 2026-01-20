@@ -6,7 +6,7 @@
  * Users can add multiple items per quadrant with auto-save functionality.
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -126,10 +126,10 @@ const PHASE_NUMBER = 1;
 /**
  * SWOT Analysis Screen Component
  */
-const SWOTScreen: React.FC<Props> = ({ navigation }) => {
+const SWOTScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const insets = useSafeAreaInsets();
 
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
+  const { data: savedProgress, isLoading: _isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
     WORKSHEET_IDS.SWOT_ANALYSIS
   );

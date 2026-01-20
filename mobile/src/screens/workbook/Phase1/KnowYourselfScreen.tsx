@@ -134,7 +134,7 @@ type Props = WorkbookStackScreenProps<'KnowYourself'>;
 /**
  * Know Yourself Screen Component
  */
-const KnowYourselfScreen: React.FC<Props> = ({ navigation }) => {
+const KnowYourselfScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const insets = useSafeAreaInsets();
   const [data, setData] = useState<KnowYourselfData>(DEFAULT_DATA);
   const [currentQuestion, setCurrentQuestion] = useState(0);

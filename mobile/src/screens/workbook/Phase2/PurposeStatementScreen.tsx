@@ -28,7 +28,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import { GuidedQuestion, GuidedQuestionData } from '../../../components/workbook/GuidedQuestion';
@@ -129,10 +129,8 @@ const generateStatement = (answers: Record<string, string>): string => {
  */
 const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-  const insets = useSafeAreaInsets();
-
   const { data: savedProgress, isError: isLoadError } = useWorkbookProgress(2, WORKSHEET_IDS.PURPOSE_STATEMENT);
-  const { mutate: saveWorkbook, isPending: isSaving } = useSaveWorkbook();
+  const { isPending: isSaving } = useSaveWorkbook();
 
   // Current question index
   const [currentIndex, setCurrentIndex] = useState(0);

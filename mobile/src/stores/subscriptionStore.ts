@@ -29,6 +29,7 @@ import {
   type PromoValidationResult,
 } from '../services/promoService';
 import type { CustomerInfo } from 'react-native-purchases';
+import { logger } from '../utils/logger';
 
 /**
  * Subscription Store State
@@ -129,7 +130,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     // BUT: If testModeEnabled is true, skip the bypass to allow testing purchase flow
     const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
     if ((__DEV__ || isTestFlight) && !testModeEnabled) {
-      console.log('[Subscription] DEV/TestFlight mode - granting enlightenment tier access (test mode disabled)');
+      logger.debug('[Subscription] DEV/TestFlight mode - granting enlightenment tier access (test mode disabled)');
       set({
         tier: 'enlightenment',
         status: 'active',
@@ -147,7 +148,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
 
     // Test mode is enabled - show as free user to test purchase flow
     if (testModeEnabled) {
-      console.log('[Subscription] Test mode enabled - showing as free user for purchase testing');
+      logger.debug('[Subscription] Test mode enabled - showing as free user for purchase testing');
       set({
         tier: 'free',
         status: 'none',
@@ -191,9 +192,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         error: null,
       });
 
-      console.log('[Subscription] Loaded successfully:', info.tier, info.status);
+      logger.debug('[Subscription] Loaded successfully:', info.tier, info.status);
     } catch (error: any) {
-      console.error('[Subscription] Load failed:', error);
+      logger.error('[Subscription] Load failed:', error);
       // On error, set to free tier - trial access will be determined by trialStore
       set({
         tier: 'free',
@@ -235,9 +236,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         error: null,
       });
 
-      console.log('[Subscription] Offerings loaded successfully');
+      logger.debug('[Subscription] Offerings loaded successfully');
     } catch (error: any) {
-      console.error('[Subscription] Failed to load offerings:', error);
+      logger.error('[Subscription] Failed to load offerings:', error);
       set({
         offerings: null,
         isLoadingOfferings: false,
@@ -265,7 +266,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
 
         if ((isTestFlight || __DEV__) && simulatedResult.purchasedTier) {
           // TestFlight/DEV mode: directly update state with purchased tier
-          console.log('[Subscription] Updating state with simulated purchase:', simulatedResult.purchasedTier);
+          logger.debug('[Subscription] Updating state with simulated purchase:', simulatedResult.purchasedTier);
           set({
             tier: simulatedResult.purchasedTier,
             status: 'trial', // Simulated purchases start as trial
@@ -298,7 +299,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           try {
             await get().loadSubscription();
           } catch (loadError) {
-            console.error('[Subscription] Failed to reload subscription after purchase:', loadError);
+            logger.error('[Subscription] Failed to reload subscription after purchase:', loadError);
           }
         }
       }
@@ -465,7 +466,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
 
       return result;
     } catch (error: any) {
-      console.error('[Subscription] Promo validation error:', error);
+      logger.error('[Subscription] Promo validation error:', error);
       set({ isValidatingPromo: false });
 
       return {

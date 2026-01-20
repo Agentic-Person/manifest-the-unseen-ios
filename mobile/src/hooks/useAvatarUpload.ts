@@ -13,6 +13,7 @@ import * as FileSystem from 'expo-file-system';
 import { supabase, getPublicUrl } from '../services/supabase';
 import { useUser } from '../stores/authStore';
 import { useUpdateUserProfile } from './useUser';
+import { logger } from '../utils/logger';
 
 /**
  * Convert base64 string to ArrayBuffer
@@ -148,7 +149,7 @@ export const useAvatarUpload = (): UseAvatarUploadResult => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to upload avatar';
       setError(errorMessage);
-      console.error('[useAvatarUpload] Error:', err);
+      logger.error('[useAvatarUpload] Error:', err);
 
       Alert.alert(
         'Upload Failed',

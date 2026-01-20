@@ -7,6 +7,7 @@
 
 import { supabase } from './supabase';
 import { invalidateGuruQueries } from './queryClient';
+import { logger } from '../utils/logger';
 import type {
   WorkbookProgress,
   WorkbookProgressInsert,
@@ -36,7 +37,7 @@ const ensureValidSession = async (): Promise<void> => {
 
       if (error) {
         lastError = new Error('Authentication session invalid');
-        console.error(`[workbook.service] Session check failed (attempt ${attempt + 1}/${MAX_RETRIES}):`, error);
+        logger.error(`[workbook.service] Session check failed (attempt ${attempt + 1}/${MAX_RETRIES}):`, error);
 
         // If this is not the last attempt, wait before retrying
         if (attempt < MAX_RETRIES - 1) {
@@ -48,7 +49,7 @@ const ensureValidSession = async (): Promise<void> => {
 
       if (!session) {
         lastError = new Error('No active authentication session');
-        console.error(`[workbook.service] No active session found (attempt ${attempt + 1}/${MAX_RETRIES})`);
+        logger.error(`[workbook.service] No active session found (attempt ${attempt + 1}/${MAX_RETRIES})`);
 
         // If this is not the last attempt, wait before retrying
         if (attempt < MAX_RETRIES - 1) {
@@ -64,7 +65,7 @@ const ensureValidSession = async (): Promise<void> => {
         const now = Date.now();
         if (expiresAt < now) {
           lastError = new Error('Session expired - please sign in again');
-          console.error(`[workbook.service] Session expired (attempt ${attempt + 1}/${MAX_RETRIES})`);
+          logger.error(`[workbook.service] Session expired (attempt ${attempt + 1}/${MAX_RETRIES})`);
 
           // If this is not the last attempt, wait before retrying
           if (attempt < MAX_RETRIES - 1) {
@@ -76,17 +77,15 @@ const ensureValidSession = async (): Promise<void> => {
       }
 
       // Session is valid - success!
-      if (__DEV__) {
-        if (attempt > 0) {
-          console.log(`[workbook.service] Session valid on attempt ${attempt + 1}/${MAX_RETRIES}`);
-        }
-        console.log('[workbook.service] Session is valid, expires in',
-          session.expires_at ? Math.round((session.expires_at * 1000 - Date.now()) / 1000 / 60) : '?', 'minutes');
+      if (attempt > 0) {
+        logger.debug(`[workbook.service] Session valid on attempt ${attempt + 1}/${MAX_RETRIES}`);
       }
+      logger.debug('[workbook.service] Session is valid, expires in',
+        session.expires_at ? Math.round((session.expires_at * 1000 - Date.now()) / 1000 / 60) : '?', 'minutes');
       return; // Success - exit the function
     } catch (err) {
       lastError = err as Error;
-      console.error(`[workbook.service] Session validation error (attempt ${attempt + 1}/${MAX_RETRIES}):`, err);
+      logger.error(`[workbook.service] Session validation error (attempt ${attempt + 1}/${MAX_RETRIES}):`, err);
 
       // If this is not the last attempt, wait before retrying
       if (attempt < MAX_RETRIES - 1) {
@@ -114,7 +113,7 @@ const withTimeout = <T>(
 
   const timeoutPromise = new Promise<T>((_, reject) => {
     timeoutId = setTimeout(() => {
-      console.error(`[workbook.service] ${operationName} timed out after ${ms}ms`);
+      logger.error(`[workbook.service] ${operationName} timed out after ${ms}ms`);
       reject(new Error(`${operationName} timed out after ${ms}ms`));
     }, ms);
   });
@@ -137,9 +136,7 @@ export const getWorkbookProgress = async (
   worksheetId: string
 ): Promise<WorkbookProgress | null> => {
   // H3 Security Fix: Only log in development, exclude userId
-  if (__DEV__) {
-    console.log('[workbook.service] Starting query:', { phaseNumber, worksheetId });
-  }
+  logger.debug('[workbook.service] Starting query:', { phaseNumber, worksheetId });
 
   try {
     const queryPromise = supabase
@@ -157,22 +154,18 @@ export const getWorkbookProgress = async (
       'getWorkbookProgress'
     );
 
-    if (__DEV__) {
-      console.log('[workbook.service] Query completed:', { hasData: !!data, error });
-    }
+    logger.debug('[workbook.service] Query completed:', { hasData: !!data, error });
 
     // PGRST116 = no rows returned, which is fine for new worksheets
     if (error && error.code !== 'PGRST116') {
-      console.error('[workbook.service] Query error:', error);
+      logger.error('[workbook.service] Query error:', error);
       throw error;
     }
 
-    if (__DEV__) {
-      console.log('[workbook.service] Returning data:', !!data);
-    }
+    logger.debug('[workbook.service] Returning data:', !!data);
     return data as WorkbookProgress | null;
   } catch (err) {
-    console.error('[workbook.service] Exception in getWorkbookProgress:', err);
+    logger.error('[workbook.service] Exception in getWorkbookProgress:', err);
     throw err;
   }
 };
@@ -183,9 +176,7 @@ export const getWorkbookProgress = async (
 export const getAllWorkbookProgress = async (
   userId: string
 ): Promise<WorkbookProgress[]> => {
-  if (__DEV__) {
-    console.log('[workbook.service] Starting getAllWorkbookProgress query');
-  }
+  logger.debug('[workbook.service] Starting getAllWorkbookProgress query');
 
   try {
     const queryPromise = supabase
@@ -201,14 +192,12 @@ export const getAllWorkbookProgress = async (
       'getAllWorkbookProgress'
     );
 
-    if (__DEV__) {
-      console.log('[workbook.service] getAllWorkbookProgress completed:', { hasData: !!data, count: data?.length, error });
-    }
+    logger.debug('[workbook.service] getAllWorkbookProgress completed:', { hasData: !!data, count: data?.length, error });
 
     if (error) throw error;
     return (data as WorkbookProgress[]) || [];
   } catch (err) {
-    console.error('[workbook.service] Exception in getAllWorkbookProgress:', err);
+    logger.error('[workbook.service] Exception in getAllWorkbookProgress:', err);
     throw err;
   }
 };
@@ -220,9 +209,7 @@ export const getPhaseProgress = async (
   userId: string,
   phaseNumber: number
 ): Promise<{ completed: number; total: number; worksheets: WorkbookProgress[] }> => {
-  if (__DEV__) {
-    console.log('[workbook.service] Starting getPhaseProgress query:', { phaseNumber });
-  }
+  logger.debug('[workbook.service] Starting getPhaseProgress query:', { phaseNumber });
 
   // Total worksheets per phase (from PRD)
   const totalPerPhase: Record<number, number> = {
@@ -252,9 +239,7 @@ export const getPhaseProgress = async (
       'getPhaseProgress'
     );
 
-    if (__DEV__) {
-      console.log('[workbook.service] getPhaseProgress completed:', { phaseNumber, hasData: !!data, count: data?.length, error });
-    }
+    logger.debug('[workbook.service] getPhaseProgress completed:', { phaseNumber, hasData: !!data, count: data?.length, error });
 
     if (error) throw error;
 
@@ -267,7 +252,7 @@ export const getPhaseProgress = async (
       worksheets,
     };
   } catch (err) {
-    console.error('[workbook.service] Exception in getPhaseProgress:', err);
+    logger.error('[workbook.service] Exception in getPhaseProgress:', err);
     throw err;
   }
 };
@@ -304,7 +289,7 @@ const retryWithBackoff = async <T>(
 
       // Calculate delay with exponential backoff
       const delayMs = initialDelayMs * Math.pow(2, attempt);
-      console.log(`[workbook.service] Retry attempt ${attempt + 1}/${maxRetries} after ${delayMs}ms`);
+      logger.debug(`[workbook.service] Retry attempt ${attempt + 1}/${maxRetries} after ${delayMs}ms`);
 
       // Wait before retrying
       await new Promise(resolve => setTimeout(resolve, delayMs));
@@ -334,9 +319,7 @@ export const upsertWorkbookProgress = async (
     updated_at: new Date().toISOString(),
   };
 
-  if (__DEV__) {
-    console.log('[workbook.service] Starting upsert:', { phaseNumber, worksheetId, completed });
-  }
+  logger.debug('[workbook.service] Starting upsert:', { phaseNumber, worksheetId, completed });
 
   try {
     // Verify session is valid before attempting save
@@ -361,18 +344,14 @@ export const upsertWorkbookProgress = async (
         'upsertWorkbookProgress'
       );
 
-      if (__DEV__) {
-        console.log('[workbook.service] Upsert completed:', { result: result ? 'success' : 'null', error });
-      }
+      logger.debug('[workbook.service] Upsert completed:', { result: result ? 'success' : 'null', error });
 
       if (error) {
         // H3 Security Fix: Don't log userId in production
-        if (__DEV__) {
-          console.error(
-            `[workbook.service] Upsert failed for phase ${phaseNumber}, worksheet ${worksheetId}:`,
-            { error }
-          );
-        }
+        logger.error(
+          `[workbook.service] Upsert failed for phase ${phaseNumber}, worksheet ${worksheetId}:`,
+          { error }
+        );
         throw error;
       }
 
@@ -382,13 +361,11 @@ export const upsertWorkbookProgress = async (
     // Invalidate Guru queries so it fetches fresh workbook data for re-assessment
     // This ensures the Guru AI sees the latest workbook responses
     invalidateGuruQueries(userId);
-    if (__DEV__) {
-      console.log('[workbook.service] Invalidated Guru queries');
-    }
+    logger.debug('[workbook.service] Invalidated Guru queries');
 
     return result;
   } catch (err) {
-    console.error('[workbook.service] Exception in upsertWorkbookProgress after retries:', err);
+    logger.error('[workbook.service] Exception in upsertWorkbookProgress after retries:', err);
     throw err;
   }
 };
@@ -426,7 +403,7 @@ export const markWorksheetComplete = async (
     if (error) throw error;
     return data as WorkbookProgress;
   } catch (err) {
-    console.error('[workbook.service] Exception in markWorksheetComplete:', err);
+    logger.error('[workbook.service] Exception in markWorksheetComplete:', err);
     throw err;
   }
 };

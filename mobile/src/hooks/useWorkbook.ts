@@ -17,6 +17,7 @@ import {
   markWorksheetComplete,
   deleteWorkbookProgress,
 } from '../services/workbook';
+import { logger } from '../utils/logger';
 
 /**
  * Query keys for cache management
@@ -45,7 +46,7 @@ export const workbookKeys = {
 export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
   const user = useAuthStore((state) => state.user);
 
-  console.log('[useWorkbookProgress] Hook called:', {
+  logger.debug('[useWorkbookProgress] Hook called:', {
     phaseNumber,
     worksheetId,
     userId: user?.id,
@@ -56,13 +57,9 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
     queryKey: workbookKeys.worksheet(user?.id || '', phaseNumber, worksheetId),
     queryFn: async () => {
       // H3 Security Fix: Only log in development, exclude userId
-      if (__DEV__) {
-        console.log('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId });
-      }
+      logger.debug('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId });
       const result = await getWorkbookProgress(user!.id, phaseNumber, worksheetId);
-      if (__DEV__) {
-        console.log('[useWorkbookProgress] Query result:', !!result);
-      }
+      logger.debug('[useWorkbookProgress] Query result:', !!result);
       return result;
     },
     enabled: !!user?.id,
@@ -129,13 +126,9 @@ export function usePhaseProgress(phaseNumber: number) {
       if (!user?.id) {
         throw new Error('User not authenticated');
       }
-      if (__DEV__) {
-        console.log('[usePhaseProgress] Fetching phase progress for phase:', phaseNumber);
-      }
+      logger.debug('[usePhaseProgress] Fetching phase progress for phase:', phaseNumber);
       const result = await getPhaseProgress(user.id, phaseNumber);
-      if (__DEV__) {
-        console.log('[usePhaseProgress] Phase progress fetched:', result.completed, '/', result.total);
-      }
+      logger.debug('[usePhaseProgress] Phase progress fetched:', result.completed, '/', result.total);
       return result;
     },
     enabled: !!user?.id,
@@ -181,7 +174,7 @@ export function useSaveWorkbook() {
     onSuccess: (result) => {
       // Invalidate both worksheet and progress queries to ensure fresh data
       // This fixes the issue where progress stays at 50% after completion
-      console.log(
+      logger.debug(
         `[useSaveWorkbook] Save successful - Phase ${result.phase_number}, Worksheet: ${result.worksheet_id}, Completed: ${result.completed}`
       );
 
@@ -198,11 +191,11 @@ export function useSaveWorkbook() {
         queryKey: workbookKeys.progress(user!.id),
       });
 
-      console.log('[useSaveWorkbook] Cache invalidated, data will be refetched');
+      logger.debug('[useSaveWorkbook] Cache invalidated, data will be refetched');
     },
     onError: (error, variables) => {
       // Log mutation errors for debugging
-      console.error(
+      logger.error(
         `[useSaveWorkbook] Mutation failed for phase ${variables.phaseNumber}, worksheet ${variables.worksheetId}:`,
         error
       );
@@ -238,7 +231,7 @@ export function useMarkComplete() {
     onSuccess: (result) => {
       // Invalidate both worksheet and progress queries to ensure fresh data
       // This fixes the issue where progress stays at 50% after completion
-      console.log(
+      logger.debug(
         `[useMarkComplete] Worksheet marked complete - Phase ${result.phase_number}, Worksheet: ${result.worksheet_id}`
       );
 
@@ -255,7 +248,7 @@ export function useMarkComplete() {
         queryKey: workbookKeys.progress(user!.id),
       });
 
-      console.log('[useMarkComplete] Cache invalidated, progress will be refetched');
+      logger.debug('[useMarkComplete] Cache invalidated, progress will be refetched');
     },
   });
 }

@@ -318,15 +318,6 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   };
 
   /**
-   * Save and close editing
-   */
-  const handleSaveAndClose = () => {
-    saveCurrentLetter();
-    setIsEditing(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  };
-
-  /**
    * Format date for display
    */
   const formatDate = (dateString: string): string => {

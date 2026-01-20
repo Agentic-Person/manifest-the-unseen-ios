@@ -9,6 +9,7 @@ import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import type { Database } from '../types/database';
+import { logger } from '../utils/logger';
 
 /**
  * Environment Variables
@@ -17,13 +18,11 @@ import type { Database } from '../types/database';
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
-// H3 Security Fix: Debug logs only in development
-if (__DEV__) {
-  console.log('[Supabase] URL:', SUPABASE_URL);
-  console.log('[Supabase] Using remote:', SUPABASE_URL.includes('supabase.co'));
-  // Don't log any part of the anon key, even in dev
-  console.log('[Supabase] Key configured:', !!SUPABASE_ANON_KEY);
-}
+// H3 Security Fix: Debug logs only in development (logger handles __DEV__ check)
+logger.debug('[Supabase] URL:', { url: SUPABASE_URL });
+logger.debug('[Supabase] Using remote:', { remote: SUPABASE_URL.includes('supabase.co') });
+// Don't log any part of the anon key, even in dev
+logger.debug('[Supabase] Key configured:', { configured: !!SUPABASE_ANON_KEY });
 
 /**
  * Web-compatible storage adapter using localStorage
@@ -121,7 +120,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
         .finally(() => clearTimeout(timeoutId))
         .catch((err) => {
           if (err.name === 'AbortError') {
-            console.error('[Supabase] Fetch request timed out after 30s:', url);
+            logger.error('[Supabase] Fetch request timed out after 30s:', { url });
             throw new Error('Network request timed out');
           }
           throw err;

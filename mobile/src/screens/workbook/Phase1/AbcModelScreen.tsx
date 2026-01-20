@@ -82,7 +82,7 @@ type Props = WorkbookStackScreenProps<'AbcModel'>;
 /**
  * ABC Model Screen Component
  */
-const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
+const AbcModelScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const [data, setData] = useState<ABCModelData>(DEFAULT_DATA);
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const hasLoadedInitialData = useRef(false);

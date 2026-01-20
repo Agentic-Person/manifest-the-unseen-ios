@@ -87,7 +87,7 @@ type Props = WorkbookStackScreenProps<'VisionBoard'>;
 /**
  * VisionBoardScreen Component
  */
-const VisionBoardScreen: React.FC<Props> = ({ navigation, route: _route }) => {
+const VisionBoardScreen: React.FC<Props> = ({ navigation: _navigation, route: _route }) => {
   // Fetch saved progress from Supabase
   const insets = useSafeAreaInsets();
 

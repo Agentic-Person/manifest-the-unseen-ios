@@ -10,6 +10,7 @@ import type { User, Session, AuthError } from '@supabase/supabase-js';
 import type { UserProfile } from '../types/store';
 import type { Database } from '../types/database';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { logger } from '../utils/logger';
 
 type UserRow = Database['public']['Tables']['users']['Row'];
 
@@ -399,7 +400,7 @@ export const authService = {
         .single();
 
       if (error) {
-        console.error('Failed to fetch user profile:', error);
+        logger.error('Failed to fetch user profile:', error);
         return null;
       }
 
@@ -418,7 +419,7 @@ export const authService = {
         updatedAt: row.updated_at,
       };
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      logger.error('Error fetching user profile:', error);
       return null;
     }
   },

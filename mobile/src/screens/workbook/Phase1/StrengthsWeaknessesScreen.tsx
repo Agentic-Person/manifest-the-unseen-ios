@@ -19,7 +19,6 @@ import {
   Text,
   TextInput,
   Pressable,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -124,7 +123,7 @@ const ItemCard: React.FC<{
 /**
  * Strengths & Weaknesses Screen Component
  */
-const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
+const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const insets = useSafeAreaInsets();
   const [data, setData] = useState<StrengthsWeaknessesData>(DEFAULT_DATA);
   const hasLoadedInitialData = useRef(false);

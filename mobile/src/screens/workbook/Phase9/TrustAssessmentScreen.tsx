@@ -133,7 +133,7 @@ const PHASE_NUMBER = 9;
 /**
  * TrustAssessmentScreen Component
  */
-const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
+const TrustAssessmentScreen: React.FC<Props> = () => {
   // Supabase data fetching
     const insets = useSafeAreaInsets();
 
@@ -219,15 +219,6 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
       .slice(0, 2)
       .map(([key]) => key as TrustDimension);
     return sorted;
-  };
-
-  /**
-   * Save and continue
-   */
-  const handleSaveAndContinue = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    saveNow({ completed: true });
-    navigation.goBack();
   };
 
   /**

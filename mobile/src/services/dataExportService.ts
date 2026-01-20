@@ -9,6 +9,7 @@ import { Paths, File } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { supabase } from './supabase';
 import { JournalEncryptionService } from './journalEncryptionService';
+import { logger } from '../utils/logger';
 
 /**
  * User data structure for export
@@ -71,15 +72,12 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
     // Get current user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      console.error('[DataExport] No authenticated user');
+      logger.error('[DataExport] No authenticated user');
       return null;
     }
 
     const userId = user.id;
-    // H3 Security Fix: Don't log userId in production
-    if (__DEV__) {
-      console.log('[DataExport] Fetching user data');
-    }
+    logger.debug('[DataExport] Fetching user data');
 
     // Fetch user profile
     const { data: profileData } = await supabase
@@ -167,7 +165,7 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
               item.encryption_tag
             );
           } catch (error) {
-            console.error('[DataExport] Failed to decrypt journal entry:', error);
+            logger.error('[DataExport] Failed to decrypt journal entry:', error);
             content = '[Unable to decrypt - encryption key may have changed]';
           }
         }
@@ -238,11 +236,11 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
       })),
     };
 
-    console.log('[DataExport] Data fetched successfully');
+    logger.debug('[DataExport] Data fetched successfully');
     return exportData;
 
   } catch (error) {
-    console.error('[DataExport] Error fetching data:', error);
+    logger.error('[DataExport] Error fetching data:', error);
     return null;
   }
 }
@@ -252,7 +250,7 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
  */
 export async function exportUserData(): Promise<ExportResult> {
   try {
-    console.log('[DataExport] Starting export...');
+    logger.debug('[DataExport] Starting export...');
 
     // Fetch all user data
     const userData = await fetchUserData();
@@ -274,7 +272,7 @@ export async function exportUserData(): Promise<ExportResult> {
     await exportFile.write(jsonString);
 
     const filePath = exportFile.uri;
-    console.log('[DataExport] File written to:', filePath);
+    logger.debug('[DataExport] File written to:', filePath);
 
     // Check if sharing is available
     const isSharingAvailable = await Sharing.isAvailableAsync();
@@ -292,7 +290,7 @@ export async function exportUserData(): Promise<ExportResult> {
       UTI: 'public.json',
     });
 
-    console.log('[DataExport] Export completed successfully');
+    logger.debug('[DataExport] Export completed successfully');
 
     return {
       success: true,
@@ -300,7 +298,7 @@ export async function exportUserData(): Promise<ExportResult> {
     };
 
   } catch (error) {
-    console.error('[DataExport] Export error:', error);
+    logger.error('[DataExport] Export error:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'An unexpected error occurred.',
@@ -337,7 +335,7 @@ export async function getDataSummary(): Promise<{
       guruSessions: guru.count || 0,
     };
   } catch (error) {
-    console.error('[DataExport] Error getting data summary:', error);
+    logger.error('[DataExport] Error getting data summary:', error);
     return null;
   }
 }

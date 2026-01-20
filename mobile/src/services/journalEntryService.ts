@@ -23,6 +23,7 @@
 
 import { supabase } from './supabase';
 import { JournalEncryptionService } from './journalEncryptionService';
+import { logger } from '../utils/logger';
 
 /**
  * Journal entry input for creating/updating
@@ -101,7 +102,7 @@ export const JournalEntryService = {
         encryptionVersion = encrypted.version;
         storedContent = '[encrypted]'; // Placeholder for search/debugging
       } catch (error) {
-        console.error('[JournalEntry] Encryption failed, storing plaintext:', error);
+        logger.error('[JournalEntry] Encryption failed, storing plaintext:', error);
         // Fall back to plaintext if encryption fails
       }
     }
@@ -123,7 +124,7 @@ export const JournalEntryService = {
       .single();
 
     if (error) {
-      console.error('[JournalEntry] Save failed:', error);
+      logger.error('[JournalEntry] Save failed:', error);
       throw error;
     }
 
@@ -208,7 +209,7 @@ export const JournalEntryService = {
           updateData.encryption_version = encrypted.version;
           updateData.content = '[encrypted]';
         } catch (error) {
-          console.error('[JournalEntry] Encryption failed on update:', error);
+          logger.error('[JournalEntry] Encryption failed on update:', error);
           updateData.content = entry.content;
         }
       } else {
@@ -305,7 +306,7 @@ export const JournalEntryService = {
         );
         isEncrypted = true;
       } catch (error) {
-        console.error('[JournalEntry] Decryption failed, using placeholder:', error);
+        logger.error('[JournalEntry] Decryption failed, using placeholder:', error);
         content = '[Unable to decrypt - key may have changed]';
       }
     } else {
@@ -356,7 +357,7 @@ export const JournalEntryService = {
       .neq('content', '[encrypted]');
 
     if (error) {
-      console.error('[JournalEntry] Failed to count unencrypted:', error);
+      logger.error('[JournalEntry] Failed to count unencrypted:', error);
       return 0;
     }
 

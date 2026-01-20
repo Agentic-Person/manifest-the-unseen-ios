@@ -18,10 +18,9 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Card, Text, Button } from '../../../components';
+import { Card, Text } from '../../../components';
 import HabitSection, { TimeOfDay, Habit } from '../../../components/workbook/HabitSection';
 import { HabitCategory } from '../../../components/workbook/HabitEntry';
 import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
@@ -182,35 +181,6 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       updatedAt: new Date().toISOString(),
     }));
   }, []);
-
-  /**
-   * Save habits manually
-   */
-  const handleSave = useCallback(async () => {
-    // Validate: ensure all habits have text
-    const allHabits = [
-      ...habitsData.morning,
-      ...habitsData.afternoon,
-      ...habitsData.evening,
-    ];
-
-    const emptyHabits = allHabits.filter(h => !h.habit.trim());
-    if (emptyHabits.length > 0) {
-      Alert.alert(
-        'Incomplete Habits',
-        'Please fill in all habit descriptions or delete empty habits before saving.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
-    saveNow({ completed: true });
-    Alert.alert(
-      'Saved!',
-      'Your habits audit has been saved successfully.',
-      [{ text: 'OK' }]
-    );
-  }, [habitsData, saveNow]);
 
   /**
    * Get balance status text and color

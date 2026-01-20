@@ -6,6 +6,7 @@
  */
 
 import { supabase } from './supabase';
+import { logger } from '../utils/logger';
 import type {
   GuruConversation,
   GuruMessage,
@@ -101,7 +102,7 @@ export const sendGuruMessage = async (
     isInitialAnalysis: !request.conversationId,
   };
 
-  console.log('[Guru] Calling Edge Function with:', {
+  logger.debug('[Guru] Calling Edge Function with:', {
     phaseNumber: request.phaseNumber,
     hasConversationId: !!request.conversationId,
     messageLength: request.userMessage?.length,
@@ -110,14 +111,14 @@ export const sendGuruMessage = async (
   // Check auth state before calling (H3 Security Fix: Only log in development)
   const { data: { session } } = await supabase.auth.getSession();
   if (__DEV__) {
-    console.log('[Guru] Auth session exists:', !!session);
+    logger.debug('[Guru] Auth session exists:', !!session);
     if (session) {
       // Don't log user ID or token details even in dev - just confirm they exist
-      console.log('[Guru] Session valid, user authenticated');
+      logger.debug('[Guru] Session valid, user authenticated');
     }
   }
   if (!session) {
-    console.error('[Guru] NO SESSION - Edge Function will fail with 401');
+    logger.error('[Guru] NO SESSION - Edge Function will fail with 401');
   }
 
   const { data, error } = await supabase.functions.invoke('guru-analysis', {
@@ -125,12 +126,12 @@ export const sendGuruMessage = async (
   });
 
   if (error) {
-    console.error('[Guru] Edge Function error:', error);
-    console.error('[Guru] Error details:', JSON.stringify(error, null, 2));
+    logger.error('[Guru] Edge Function error:', error);
+    logger.error('[Guru] Error details:', JSON.stringify(error, null, 2));
     throw error;
   }
 
-  console.log('[Guru] Edge Function success, conversationId:', data?.conversationId);
+  logger.debug('[Guru] Edge Function success, conversationId:', data?.conversationId);
 
   // Transform response to match expected format
   return {

@@ -29,7 +29,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
@@ -62,9 +61,8 @@ interface EnvyInventoryData {
 
 const PHASE_NUMBER = 8;
 
-const EnvyInventoryScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const EnvyInventoryScreen: React.FC<Props> = () => {
   // Supabase data fetching
-    const insets = useSafeAreaInsets();
 
   const { data: savedProgress } = useWorkbookProgress(
     PHASE_NUMBER,

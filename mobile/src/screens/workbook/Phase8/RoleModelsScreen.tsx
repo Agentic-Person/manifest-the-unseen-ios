@@ -30,7 +30,6 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
@@ -63,9 +62,8 @@ const PHASE_NUMBER = 8;
 /**
  * RoleModelsScreen Component
  */
-const RoleModelsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const RoleModelsScreen: React.FC<Props> = () => {
   // Supabase data fetching
-    const insets = useSafeAreaInsets();
 
   const { data: savedProgress } = useWorkbookProgress(
     PHASE_NUMBER,

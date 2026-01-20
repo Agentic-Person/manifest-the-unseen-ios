@@ -24,6 +24,7 @@ import AesGcmCrypto, { EncryptedData } from 'react-native-aes-gcm-crypto';
 import { SecureStorageKeys } from '../utils/secureStorage';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import { logger } from '../utils/logger';
 
 // Encryption constants
 const ENCRYPTION_VERSION = 1; // AES-256-GCM
@@ -72,14 +73,14 @@ export const JournalEncryptionService = {
 
       if (existingKey) {
         if (__DEV__) {
-          console.log('[JournalEncryption] Using existing encryption key');
+          logger.debug('[JournalEncryption] Using existing encryption key');
         }
         return existingKey;
       }
 
       // Generate new key
       if (__DEV__) {
-        console.log('[JournalEncryption] Generating new encryption key');
+        logger.debug('[JournalEncryption] Generating new encryption key');
       }
 
       const newKey = generateRandomKey();
@@ -94,12 +95,12 @@ export const JournalEncryptionService = {
       );
 
       if (__DEV__) {
-        console.log('[JournalEncryption] New key generated and stored');
+        logger.debug('[JournalEncryption] New key generated and stored');
       }
 
       return newKey;
     } catch (error) {
-      console.error('[JournalEncryption] Failed to get/create key:', error);
+      logger.error('[JournalEncryption] Failed to get/create key:', error);
       throw new Error('Failed to initialize journal encryption');
     }
   },
@@ -126,7 +127,7 @@ export const JournalEncryptionService = {
       );
 
       if (__DEV__) {
-        console.log('[JournalEncryption] Encrypted content:', {
+        logger.debug('[JournalEncryption] Encrypted content:', {
           plaintextLength: plaintext.length,
           ciphertextLength: encrypted.content.length,
         });
@@ -139,7 +140,7 @@ export const JournalEncryptionService = {
         version: ENCRYPTION_VERSION,
       };
     } catch (error) {
-      console.error('[JournalEncryption] Encryption failed:', error);
+      logger.error('[JournalEncryption] Encryption failed:', error);
       throw new Error('Failed to encrypt journal entry');
     }
   },
@@ -169,7 +170,7 @@ export const JournalEncryptionService = {
       );
 
       if (__DEV__) {
-        console.log('[JournalEncryption] Decrypted content:', {
+        logger.debug('[JournalEncryption] Decrypted content:', {
           ciphertextLength: ciphertext.length,
           plaintextLength: plaintext.length,
         });
@@ -177,7 +178,7 @@ export const JournalEncryptionService = {
 
       return plaintext;
     } catch (error) {
-      console.error('[JournalEncryption] Decryption failed:', error);
+      logger.error('[JournalEncryption] Decryption failed:', error);
       throw new Error('Failed to decrypt journal entry');
     }
   },
