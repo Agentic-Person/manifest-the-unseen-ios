@@ -252,7 +252,7 @@ export function GratitudeLettersEditor({ data, onChange, className = '' }: Grati
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-bold">•</span>
-            <span>Don't worry about perfect grammar - focus on authenticity</span>
+            <span>Don&apos;t worry about perfect grammar - focus on authenticity</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-bold">•</span>
@@ -260,7 +260,7 @@ export function GratitudeLettersEditor({ data, onChange, className = '' }: Grati
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-bold">•</span>
-            <span>Even if you don't send it, the act of writing brings benefits</span>
+            <span>Even if you don&apos;t send it, the act of writing brings benefits</span>
           </li>
         </ul>
       </div>

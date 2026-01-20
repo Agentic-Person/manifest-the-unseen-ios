@@ -167,7 +167,7 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
                   <textarea
                     value={reframe.envy_statement}
                     onChange={(e) => handleUpdateReframe(reframe.id, 'envy_statement', e.target.value)}
-                    placeholder="e.g., I'm jealous that Sarah has such a successful online business while I'm stuck in my 9-5..."
+                    placeholder="e.g., I&apos;m jealous that Sarah has such a successful online business while I&apos;m stuck in my 9-5..."
                     rows={3}
                     className="w-full p-3 border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y bg-white"
                   />
@@ -188,12 +188,12 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
                   <textarea
                     value={reframe.reframed_inspiration}
                     onChange={(e) => handleUpdateReframe(reframe.id, 'reframed_inspiration', e.target.value)}
-                    placeholder="e.g., I'm inspired to build my own online business. Sarah's success shows me it's possible and motivates me to start."
+                    placeholder="e.g., I&apos;m inspired to build my own online business. Sarah's success shows me it&apos;s possible and motivates me to start."
                     rows={3}
                     className="w-full p-3 border-2 border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y bg-white"
                   />
                   <p className="text-xs text-green-700 mt-2">
-                    Start with "I'm inspired to..." or "This shows me that I can..."
+                    Start with &quot;I&apos;m inspired to...&quot; or &quot;This shows me that I can...&quot;
                   </p>
                 </div>
 
@@ -262,12 +262,12 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
         <div className="space-y-4">
           <div className="bg-white rounded-lg p-4 border border-purple-100">
             <p className="font-semibold text-purple-900 mb-2">Before (Envy):</p>
-            <p className="text-sm text-gray-700 italic">"I'm jealous that they have X while I don't."</p>
+            <p className="text-sm text-gray-700 italic">&quot;I&apos;m jealous that they have X while I don&apos;t.&quot;</p>
           </div>
           <div className="text-center text-purple-600 text-2xl font-bold">↓</div>
           <div className="bg-white rounded-lg p-4 border border-purple-100">
             <p className="font-semibold text-purple-900 mb-2">After (Inspiration):</p>
-            <p className="text-sm text-gray-700 italic">"I'm inspired to create X for myself. Their success shows it's possible."</p>
+            <p className="text-sm text-gray-700 italic">&quot;I&apos;m inspired to create X for myself. Their success shows it&apos;s possible.&quot;</p>
           </div>
         </div>
       </div>

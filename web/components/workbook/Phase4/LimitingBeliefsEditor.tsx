@@ -79,7 +79,7 @@ export function LimitingBeliefsEditor({ data, onChange, className = '' }: Limiti
                   <textarea
                     value={pair.belief}
                     onChange={(e) => updateBelief(pair.id, { belief: e.target.value })}
-                    placeholder="e.g., I'm not smart enough to succeed"
+                    placeholder="e.g., I&apos;m not smart enough to succeed"
                     rows={2}
                     className="w-full p-3 border border-red-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   />

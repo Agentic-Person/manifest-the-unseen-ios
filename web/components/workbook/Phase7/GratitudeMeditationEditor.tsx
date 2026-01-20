@@ -132,7 +132,7 @@ export function GratitudeMeditationEditor({ data, onChange, className = '' }: Gr
               Gratitude Meditation Practice
             </h4>
             <p className="text-sm text-purple-800">
-              Combine meditation with gratitude by spending quiet time reflecting on what you're thankful for.
+              Combine meditation with gratitude by spending quiet time reflecting on what you&apos;re thankful for.
               Log your sessions and insights to deepen your practice.
             </p>
           </div>
@@ -240,7 +240,7 @@ export function GratitudeMeditationEditor({ data, onChange, className = '' }: Gr
                 {/* Gratitude List */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
-                    What I'm Grateful For
+                    What I&apos;m Grateful For
                   </label>
                   <div className="space-y-3">
                     {session.grateful_for.map((item, index) => (
@@ -252,7 +252,7 @@ export function GratitudeMeditationEditor({ data, onChange, className = '' }: Gr
                           type="text"
                           value={item}
                           onChange={(e) => handleUpdateGratitudeItem(session.id, index, e.target.value)}
-                          placeholder="Something you're grateful for..."
+                          placeholder="Something you&apos;re grateful for..."
                           className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
                         />
                         {session.grateful_for.length > 1 && (
@@ -305,7 +305,7 @@ export function GratitudeMeditationEditor({ data, onChange, className = '' }: Gr
             <ol className="space-y-2 ml-4">
               <li>1. Find a quiet space and get comfortable</li>
               <li>2. Close your eyes and take 5 deep breaths</li>
-              <li>3. Bring to mind someone or something you're grateful for</li>
+              <li>3. Bring to mind someone or something you&apos;re grateful for</li>
               <li>4. Visualize it vividly - engage all your senses</li>
               <li>5. Feel the warmth of gratitude in your heart</li>
               <li>6. Repeat with 3-5 different things</li>
@@ -316,10 +316,10 @@ export function GratitudeMeditationEditor({ data, onChange, className = '' }: Gr
           <div className="bg-white rounded-lg p-4 border border-blue-100">
             <p className="font-semibold text-blue-900 mb-2">💡 Tips for Deeper Practice</p>
             <ul className="space-y-1 ml-4">
-              <li>• Use a guided meditation if you're new to this</li>
+              <li>• Use a guided meditation if you&apos;re new to this</li>
               <li>• Practice at the same time daily for consistency</li>
               <li>• Focus on feeling, not just thinking</li>
-              <li>• Don't rush - quality over quantity</li>
+              <li>• Don&apos;t rush - quality over quantity</li>
             </ul>
           </div>
         </div>

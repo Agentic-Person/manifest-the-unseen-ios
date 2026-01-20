@@ -70,7 +70,7 @@ export function SurrenderPracticeEditor({ data, onChange, className = '' }: Surr
           <div>
             <h4 className="text-sm font-semibold text-purple-900 mb-1">Practice Surrender</h4>
             <p className="text-sm text-purple-800">
-              Surrender is not giving up - it's letting go of the need to control. Practice releasing what you cannot control and affirming trust in the process.
+              Surrender is not giving up - it&apos;s letting go of the need to control. Practice releasing what you cannot control and affirming trust in the process.
             </p>
           </div>
         </div>

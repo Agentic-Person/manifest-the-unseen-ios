@@ -201,7 +201,7 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
           <textarea
             value={data.reflections.what_I_fear_letting_go}
             onChange={(e) => handleReflectionChange('what_I_fear_letting_go', e.target.value)}
-            placeholder="What's the worst-case scenario I'm trying to prevent?"
+            placeholder="What's the worst-case scenario I&apos;m trying to prevent?"
             rows={4}
             className="w-full p-3 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
           />

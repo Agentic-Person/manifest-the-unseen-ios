@@ -52,7 +52,7 @@ export function InnerChildEditor({ data, onChange, className = '' }: InnerChildE
       <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6">
         <h4 className="font-semibold text-purple-900 mb-2">Healing Tip</h4>
         <p className="text-sm text-purple-800">
-          Be gentle with yourself. Inner child work can bring up difficult emotions. It's okay to take breaks and return when you're ready.
+          Be gentle with yourself. Inner child work can bring up difficult emotions. It&apos;s okay to take breaks and return when you&apos;re ready.
         </p>
       </div>
     </div>

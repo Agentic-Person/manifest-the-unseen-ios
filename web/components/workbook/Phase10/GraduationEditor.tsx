@@ -195,7 +195,7 @@ export function GraduationEditor({ data, onChange, className = '' }: GraduationE
           "The journey doesn't end here - it begins."
         </p>
         <p className="text-gray-700 max-w-2xl mx-auto">
-          You've built the foundation. Now it's time to live what you've learned,
+          You've built the foundation. Now it&apos;s time to live what you've learned,
           continue manifesting your dreams, and trust the unfolding of your unique path.
         </p>
         <div className="text-4xl mt-6">🌟 ✨ 🎊</div>

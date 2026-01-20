@@ -84,7 +84,7 @@ export function EnvyInventoryEditor({ data, onChange, className = '' }: EnvyInve
               Envy as a Compass
             </h4>
             <p className="text-sm text-orange-800">
-              Envy gets a bad rap, but it's actually valuable feedback. When you envy someone, you're receiving
+              Envy gets a bad rap, but it&apos;s actually valuable feedback. When you envy someone, you&apos;re receiving
               information about unfulfilled desires. This exercise helps you decode that message and transform
               envy into inspired action.
             </p>
@@ -213,7 +213,7 @@ export function EnvyInventoryEditor({ data, onChange, className = '' }: EnvyInve
           </div>
           <div className="flex items-start gap-2">
             <span className="text-blue-600 font-bold flex-shrink-0">✓</span>
-            <span><strong>It's not about them:</strong> The person you envy is just a mirror</span>
+            <span><strong>It&apos;s not about them:</strong> The person you envy is just a mirror</span>
           </div>
           <div className="flex items-start gap-2">
             <span className="text-blue-600 font-bold flex-shrink-0">✓</span>

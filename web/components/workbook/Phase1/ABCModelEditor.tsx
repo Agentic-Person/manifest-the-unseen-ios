@@ -47,7 +47,7 @@ export function ABCModelEditor({ data, onChange, className = '' }: ABCModelEdito
             </h3>
             <p className="text-sm text-blue-800 mb-3">
               The ABC Model reveals how your thoughts shape your emotions and behaviors.
-              It's not the events themselves that upset us, but our beliefs about those events.
+              It&apos;s not the events themselves that upset us, but our beliefs about those events.
             </p>
             <div className="space-y-1 text-sm text-blue-800">
               <p><strong className="font-semibold">A - Activating Event:</strong> What happened? (the trigger)</p>
@@ -114,7 +114,7 @@ export function ABCModelEditor({ data, onChange, className = '' }: ABCModelEdito
               id="belief"
               value={data.belief}
               onChange={(e) => handleChange('belief', e.target.value)}
-              placeholder="Example: They must be ignoring me. They don't value our friendship. I must have done something wrong..."
+              placeholder="Example: They must be ignoring me. They don&apos;t value our friendship. I must have done something wrong..."
               rows={4}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 resize-none text-gray-900 placeholder-gray-400"
             />
@@ -175,7 +175,7 @@ export function ABCModelEditor({ data, onChange, className = '' }: ABCModelEdito
             </h4>
             <p className="text-sm text-purple-800">
               Once you identify the pattern (A → B → C), you can challenge and change your beliefs (B) to create better consequences (C).
-              The power is in recognizing that it's your interpretation, not the event itself, that drives your emotional response.
+              The power is in recognizing that it&apos;s your interpretation, not the event itself, that drives your emotional response.
             </p>
           </div>
         </div>

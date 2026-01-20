@@ -82,7 +82,7 @@ export function PurposeStatementEditor({ data, onChange, className = '' }: Purpo
               Craft Your Purpose Statement
             </h4>
             <p className="text-sm text-purple-800">
-              Your purpose statement is a clear, concise declaration of why you exist and what you're here to do.
+              Your purpose statement is a clear, concise declaration of why you exist and what you&apos;re here to do.
               Unlike your broader life mission, this should be specific and actionable - a statement you can
               reference daily to stay aligned with your calling.
             </p>

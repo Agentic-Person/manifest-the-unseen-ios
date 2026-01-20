@@ -294,7 +294,7 @@ export function RoleModelsEditor({ data, onChange, className = '' }: RoleModelsE
           </li>
           <li className="flex items-start gap-2">
             <span className="text-yellow-600 font-bold">•</span>
-            <span>It's okay to admire someone despite their flaws</span>
+            <span>It&apos;s okay to admire someone despite their flaws</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-yellow-600 font-bold">•</span>

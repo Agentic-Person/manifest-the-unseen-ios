@@ -188,7 +188,7 @@ export function GratitudeJournalEditor({ data, onChange, className = '' }: Grati
               Daily Gratitude Practice
             </h4>
             <p className="text-sm text-purple-800">
-              List 3-5 things you're grateful for each day. Regular gratitude practice has been scientifically proven
+              List 3-5 things you&apos;re grateful for each day. Regular gratitude practice has been scientifically proven
               to increase happiness, reduce stress, and improve overall well-being.
             </p>
           </div>

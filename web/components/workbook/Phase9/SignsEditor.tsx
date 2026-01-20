@@ -68,7 +68,7 @@ export function SignsEditor({ data, onChange, className = '' }: SignsEditorProps
           <div>
             <h4 className="text-sm font-semibold text-yellow-900 mb-1">Signs from the Universe</h4>
             <p className="text-sm text-yellow-800">
-              When you're in alignment, the universe sends signs - synchronicities, patterns, messages. Record them here to strengthen your awareness and trust.
+              When you&apos;re in alignment, the universe sends signs - synchronicities, patterns, messages. Record them here to strengthen your awareness and trust.
             </p>
           </div>
         </div>

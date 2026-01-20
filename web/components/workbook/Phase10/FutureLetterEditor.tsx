@@ -93,7 +93,7 @@ export function FutureLetterEditor({ data, onChange, className = '' }: FutureLet
           >
             <div className="text-2xl mb-2">⏩</div>
             <div className="font-semibold">Future Self</div>
-            <div className="text-xs text-gray-600 mt-1">Set intentions for who you're becoming</div>
+            <div className="text-xs text-gray-600 mt-1">Set intentions for who you&apos;re becoming</div>
           </button>
         </div>
       </div>
