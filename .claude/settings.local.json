@@ -24,5 +24,14 @@
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "supabase",
+    "github",
+    "Canva",
+    "desktop-commander",
+    "playwright",
+    "n8n-mcp"
+  ],
+  "enableAllProjectMcpServers": true
 }
