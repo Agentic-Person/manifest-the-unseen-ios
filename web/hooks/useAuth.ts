@@ -66,7 +66,7 @@ export function useAuth(): UseAuthReturn {
     try {
       console.log('[DEBUG] Attempting sign in with:', JSON.stringify({
         email,
-        supabaseUrl: supabase.supabaseUrl
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
       }, null, 2))
 
       const { data, error } = await supabase.auth.signInWithPassword({
