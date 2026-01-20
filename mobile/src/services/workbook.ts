@@ -89,10 +89,10 @@ export const getWorkbookProgress = async (
       .eq('worksheet_id', worksheetId)
       .single();
 
-    // Add timeout to prevent hanging
+    // Add timeout to prevent hanging (15 seconds for mobile networks)
     const { data, error } = await withTimeout(
       queryPromise,
-      5000,
+      15000,
       'getWorkbookProgress'
     );
 
@@ -133,10 +133,10 @@ export const getAllWorkbookProgress = async (
       .eq('user_id', userId)
       .order('phase_number', { ascending: true });
 
-    // Add timeout to prevent hanging
+    // Add timeout to prevent hanging (15 seconds for mobile networks)
     const { data, error } = await withTimeout(
       queryPromise,
-      5000,
+      15000,
       'getAllWorkbookProgress'
     );
 
@@ -184,10 +184,10 @@ export const getPhaseProgress = async (
       .eq('user_id', userId)
       .eq('phase_number', phaseNumber);
 
-    // Add timeout to prevent hanging
+    // Add timeout to prevent hanging (15 seconds for mobile networks)
     const { data, error } = await withTimeout(
       queryPromise,
-      5000,
+      15000,
       'getPhaseProgress'
     );
 
@@ -293,10 +293,10 @@ export const upsertWorkbookProgress = async (
         .select()
         .single();
 
-      // Add timeout to prevent hanging (10 seconds for write operations)
+      // Add timeout to prevent hanging (20 seconds for write operations on mobile)
       const { data: result, error } = await withTimeout(
         upsertPromise,
-        10000,
+        20000,
         'upsertWorkbookProgress'
       );
 
@@ -358,7 +358,7 @@ export const markWorksheetComplete = async (
 
     const { data, error } = await withTimeout(
       updatePromise,
-      10000,
+      20000,
       'markWorksheetComplete'
     );
 
