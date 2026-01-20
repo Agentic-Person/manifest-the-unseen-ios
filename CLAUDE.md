@@ -193,6 +193,42 @@ manifest-the-unseen-ios/
 └── meditation-audio/         # Audio assets for meditations
 ```
 
+## 🚨 CRITICAL: NEVER BUILD WITHOUT EXPLICIT APPROVAL
+
+**BUILDS COST MONEY. DO NOT INITIATE BUILDS WITHOUT THE USER'S DIRECT INSTRUCTION.**
+
+### Rules for EAS Builds:
+
+1. **NEVER run `eas build` without the user explicitly saying:**
+   - "Build it now"
+   - "Create a build"
+   - "Push to TestFlight"
+   - Or similar clear, direct instruction
+
+2. **ALWAYS ask first if unsure:**
+   - "Are you ready for me to build this now?"
+   - "Should I create build [X] with these changes?"
+   - "Do you want to test locally first, or build for TestFlight?"
+
+3. **Code changes ≠ Build approval:**
+   - Just because you fixed bugs or added features does NOT mean build immediately
+   - The user may want to make additional changes
+   - The user may want to test locally first
+   - The user may want to review the changes before spending money on a build
+
+4. **When in doubt, DON'T BUILD:**
+   - Commit and push code changes
+   - Tell the user what's ready
+   - Let THEM decide when to build
+
+### Why This Matters:
+- Each build costs money (EAS build credits)
+- The user needs to coordinate TestFlight releases
+- There may be multiple changes to batch together
+- Building prematurely wastes money and creates unnecessary versions
+
+**Remember: Your job is to prepare code for builds, not to decide when to build.**
+
 ## TestFlight Build Checklist
 
 **IMPORTANT: Before creating a TestFlight build, ALWAYS complete these steps:**
@@ -202,7 +238,9 @@ manifest-the-unseen-ios/
 3. ✅ **Increment build number** - Update `mobile/app.json` → `expo.ios.buildNumber`
 4. ✅ **Commit the build number** - `git commit -am "build: increment iOS build number to X"`
 5. ✅ **Push again** - `git push origin main`
-6. ✅ **Run EAS build** - `cd mobile && eas build --platform ios --profile production`
+6. ✅ **ASK USER FOR APPROVAL** - "Ready to build? All changes are committed."
+7. ✅ **Run EAS build** (only after user approves) - `cd mobile && eas build --platform ios --profile production --non-interactive`
+8. ✅ **Submit to App Store Connect** (after build completes) - `cd mobile && eas submit --platform ios --latest`
 
 **Why this matters**: EAS Build pulls from the GitHub repository. If you don't commit and push, your build won't include your latest changes!
 
