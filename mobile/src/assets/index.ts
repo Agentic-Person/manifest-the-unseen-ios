@@ -26,14 +26,57 @@ export const PhaseImages = {
 export type PhaseImageKey = keyof typeof PhaseImages;
 
 // =============================================================================
+// SUBSCRIPTION IMAGES - Promotional images for subscription tiers
+// =============================================================================
+export const SubscriptionImages = {
+  noviceMonthly: require('./images-compressed/subscription/subscription-novice-monthly.png'),
+  noviceAnnual: require('./images-compressed/subscription/subscription-novice-annual.png'),
+  awakeningMonthly: require('./images-compressed/subscription/subscription-awakening-monthly.png'),
+  awakeningAnnual: require('./images-compressed/subscription/subscription-awakening-annual.png'),
+  enlightenmentMonthly: require('./images-compressed/subscription/subscription-enlightenment-monthly.png'),
+  enlightenmentAnnual: require('./images-compressed/subscription/subscription-enlightenment-annual.png'),
+} as const;
+
+export type SubscriptionImageKey = keyof typeof SubscriptionImages;
+
+/**
+ * Get subscription image by tier and billing period
+ * @param tier - 'novice' | 'awakening' | 'enlightenment'
+ * @param period - 'monthly' | 'yearly'
+ * @returns The corresponding subscription promotional image
+ */
+export function getSubscriptionImage(
+  tier: 'novice' | 'awakening' | 'enlightenment',
+  period: 'monthly' | 'yearly'
+) {
+  const periodKey = period === 'yearly' ? 'Annual' : 'Monthly';
+  const key = `${tier}${periodKey}` as SubscriptionImageKey;
+  return SubscriptionImages[key];
+}
+
+// =============================================================================
 // MEDITATION IMAGES - Backgrounds for meditation screens
 // =============================================================================
 
-// Guided Meditation Images
+// Guided Meditation Images - Matched to meditation names
 export const GuidedMeditationImages = {
+  // Original 3 guided images
   morningAwakening: require('./images-compressed/meditation/Guided/guided-morning-awakening.png'),
   mindBody: require('./images-compressed/meditation/Guided/guided-mind-body.png'),
   innerPeace: require('./images-compressed/meditation/Guided/guided-inner-peace.png'),
+
+  // Phase images for thematic matches
+  healingLight: require('./images-compressed/meditation/Guided/phase-9-trust-surrender.png'), // Trust & light
+  riversOfLivingWater: require('./images-compressed/meditation/Guided/phase-7-gratitude.png'), // Water = flow
+  riverOfAbundance: require('./images-compressed/meditation/Guided/phase-8-envy-inspiration.png'), // Abundance
+  eveningHealing: require('./images-compressed/meditation/Guided/phase-4-fears-beliefs.png'), // Healing
+  comingHomeToYourself: require('./images-compressed/meditation/Guided/phase-2-values-vision.png'), // Self-discovery
+  mirrorOfTruth: require('./images-compressed/meditation/Guided/phase-1-self-evaluation.png'), // Truth = self-knowledge
+  mirrorOfManifestation: require('./images-compressed/meditation/Guided/phase-6-manifestation.png'), // Direct match
+  templeOfRelease: require('./images-compressed/meditation/Guided/phase-10-letting-go.png'), // Release = letting go
+  templeOfTheHeart: require('./images-compressed/meditation/Guided/phase-5-self-love.png'), // Heart = love
+  kingdomWithin: require('./images-compressed/meditation/Guided/phase-3-goal-setting.png'), // Inner kingdom
+  infiniteWithin: require('./images-compressed/meditation/Guided/eval_thought_awareness.png'), // Infinite consciousness
 } as const;
 
 export type GuidedMeditationImageKey = keyof typeof GuidedMeditationImages;
@@ -43,6 +86,7 @@ export const BreathingImages = {
   boxBreathing: require('./images-compressed/meditation/Breathing/breathing-box.png'),
   deepCalm: require('./images-compressed/meditation/Breathing/breathing-deep-calm.png'),
   energyBoost: require('./images-compressed/meditation/Breathing/breathing-energy-boost.png'),
+  hemisphereBalance: require('./images-compressed/meditation/Breathing/breathing-hemisphere-balance.png'),
 } as const;
 
 export type BreathingImageKey = keyof typeof BreathingImages;

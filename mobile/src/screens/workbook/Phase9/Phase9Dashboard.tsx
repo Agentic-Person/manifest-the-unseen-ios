@@ -20,6 +20,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase9ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
 import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
+import { PhaseErrorState } from '../../../components/workbook/PhaseErrorState';
 
 /**
  * Phase 9 exercises configuration
@@ -125,6 +126,9 @@ const Phase9Dashboard: React.FC<Props> = ({ navigation }) => {
     totalCount,
     overallProgress,
     isLoading,
+    isError,
+    error,
+    refetch,
   } = usePhaseExercises(9, PHASE9_EXERCISES);
 
   /**
@@ -153,6 +157,11 @@ const Phase9Dashboard: React.FC<Props> = ({ navigation }) => {
         <ActivityIndicator size="large" color={colors.primary[600]} />
       </View>
     );
+  }
+
+  // Show error state with retry option
+  if (isError) {
+    return <PhaseErrorState error={error} onRetry={refetch} />;
   }
 
   return (

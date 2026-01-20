@@ -6,6 +6,7 @@
  */
 
 import type { PurchasesPackage, CustomerInfo, PurchasesError } from 'react-native-purchases';
+import type { ImageSourcePropType } from 'react-native';
 
 /**
  * Subscription Tier Levels
@@ -48,6 +49,7 @@ export interface SubscriptionPackage {
   title: string;
   description: string;
   rcPackage: PurchasesPackage;
+  image?: ImageSourcePropType; // Optional promotional image for subscription card
 }
 
 /**

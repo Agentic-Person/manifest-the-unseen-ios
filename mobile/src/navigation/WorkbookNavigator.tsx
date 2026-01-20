@@ -9,7 +9,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { WorkbookStackParamList } from '../types/navigation';
 import { colors } from '../theme';
-import { ClickableHeaderLogo } from '../components';
+import { childScreenHeaderOptions, darkChildScreenHeaderOptions } from './utils/headerConfig';
 
 // Import screens
 import WorkbookScreen from '../screens/WorkbookScreen';
@@ -54,32 +54,13 @@ import { Phase10Dashboard, JourneyReviewScreen, FutureLetterScreen, GraduationSc
 const Stack = createNativeStackNavigator<WorkbookStackParamList>();
 
 /**
- * Default screen options for workbook screens
- */
-const screenOptions = {
-  headerStyle: {
-    backgroundColor: colors.background.primary,
-  },
-  headerTitleStyle: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: colors.text.primary,
-  },
-  headerTintColor: colors.primary[600],
-  headerShadowVisible: false,
-  headerBackTitleVisible: false,
-  headerLeft: () => <ClickableHeaderLogo />,
-  headerBackVisible: false,
-};
-
-/**
  * Workbook Navigator Component
  *
  * Contains all workbook-related screens organized by phase.
  */
 export const WorkbookNavigator = () => {
   return (
-    <Stack.Navigator screenOptions={screenOptions}>
+    <Stack.Navigator screenOptions={childScreenHeaderOptions}>
       {/* Main Workbook Home - List of Phases */}
       <Stack.Screen
         name="WorkbookHome"
@@ -190,17 +171,8 @@ export const WorkbookNavigator = () => {
         name="SWOT"
         component={SWOTAnalysisScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'SWOT Analysis',
-          // Dark theme header for SWOT screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
@@ -221,112 +193,56 @@ export const WorkbookNavigator = () => {
         name="FeelWheel"
         component={FeelWheelScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Feel Wheel',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="AbcModel"
         component={AbcModelScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'ABC Model',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="StrengthsWeaknesses"
         component={StrengthsWeaknessesScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Strengths & Weaknesses',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="ComfortZone"
         component={ComfortZoneScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Comfort Zone',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="KnowYourself"
         component={KnowYourselfScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Know Yourself',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="AbilitiesRating"
         component={AbilitiesRatingScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Abilities Rating',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="ThoughtAwareness"
         component={ThoughtAwarenessScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Thought Awareness',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
 
@@ -335,34 +251,16 @@ export const WorkbookNavigator = () => {
         name="LifeMission"
         component={LifeMissionScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Life Mission',
-          // Dark theme header for Life Mission screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="VisionBoard"
         component={VisionBoardScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Vision Board',
-          // Dark theme header for Vision Board screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
 
@@ -371,51 +269,24 @@ export const WorkbookNavigator = () => {
         name="SMARTGoals"
         component={SMARTGoalsScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'SMART Goals',
-          // Dark theme header for SMART Goals screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="Timeline"
         component={TimelineScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Goal Timeline',
-          // Dark theme header for Timeline screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="ActionPlan"
         component={ActionPlanScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Action Plan',
-          // Dark theme header for Action Plan screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
 
@@ -424,51 +295,24 @@ export const WorkbookNavigator = () => {
         name="FearInventory"
         component={FearInventoryScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Fear Inventory',
-          // Dark theme header for Fear Inventory screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="LimitingBeliefs"
         component={LimitingBeliefsScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Limiting Beliefs',
-          // Dark theme header for Limiting Beliefs screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="FearFacingPlan"
         component={FearFacingPlanScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Fear Facing Plan',
-          // Dark theme header for Fear Facing Plan screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
 
@@ -477,50 +321,24 @@ export const WorkbookNavigator = () => {
         name="SelfLoveAffirmations"
         component={SelfLoveAffirmationsScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Self-Love Affirmations',
-          // Dark theme header for Self-Love Affirmations screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="SelfCareRoutine"
         component={SelfCareRoutineScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Self-Care Routines',
-          // Dark theme header for Self-Care Routine screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="InnerChild"
         component={InnerChildScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Inner Child Healing',
-          // Dark theme header with softer accent for nurturing feel
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
           headerTintColor: '#6b5b8a', // Softer lavender for inner child work
         }}
       />
@@ -530,51 +348,24 @@ export const WorkbookNavigator = () => {
         name="ThreeSixNine"
         component={ThreeSixNineScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: '3-6-9 Method',
-          // Dark theme header for ThreeSixNine screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="Scripting"
         component={ScriptingScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Scripting',
-          // Dark theme header for Scripting screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="WOOP"
         component={WOOPScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'WOOP Method',
-          // Dark theme header for WOOP screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
 
@@ -583,51 +374,24 @@ export const WorkbookNavigator = () => {
         name="GratitudeJournal"
         component={GratitudeJournalScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Gratitude Journal',
-          // Dark theme header for Gratitude Journal screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="GratitudeLetters"
         component={GratitudeLettersScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Gratitude Letters',
-          // Dark theme header for Gratitude Letters screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="GratitudeMeditation"
         component={GratitudeMeditationScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Gratitude Meditation',
-          // Dark theme header for Gratitude Meditation screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
 
@@ -636,101 +400,50 @@ export const WorkbookNavigator = () => {
         name="EnvyInventory"
         component={EnvyInventoryScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Envy Inventory',
-          // Dark theme header for Envy Inventory screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="InspirationReframe"
         component={InspirationReframeScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Inspiration Reframe',
-          // Dark theme header for Inspiration Reframe screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="RoleModels"
         component={RoleModelsScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Role Models',
-          // Dark theme header for Role Models screen
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
 
-      {/* Phase 9: Trust & Surrender - screens already registered above */}
+      {/* Phase 9: Trust & Surrender */}
       <Stack.Screen
         name="TrustAssessment"
         component={TrustAssessmentScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Trust Assessment',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="SurrenderPractice"
         component={SurrenderPracticeScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Surrender Practice',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="Signs"
         component={SignsScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Signs & Synchronicities',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
-          headerTitleStyle: {
-            fontSize: 18,
-            fontWeight: '700',
-            color: colors.dark?.textPrimary || '#e8e8e8',
-          },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
 
@@ -739,50 +452,39 @@ export const WorkbookNavigator = () => {
         name="JourneyReview"
         component={JourneyReviewScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Journey Review',
-          // Celebratory gold theme for Phase 10
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
           headerTitleStyle: {
             fontSize: 18,
             fontWeight: '700',
             color: colors.dark?.accentGold || '#c9a227',
           },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="FutureLetter"
         component={FutureLetterScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Letter to Future Self',
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
           headerTitleStyle: {
             fontSize: 18,
             fontWeight: '700',
             color: colors.dark?.accentGold || '#c9a227',
           },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
       <Stack.Screen
         name="Graduation"
         component={GraduationScreen}
         options={{
+          ...darkChildScreenHeaderOptions,
           title: 'Graduation',
-          // Special celebratory header for graduation
-          headerStyle: {
-            backgroundColor: colors.dark?.bgPrimary || '#1a1a2e',
-          },
           headerTitleStyle: {
             fontSize: 20,
             fontWeight: '700',
             color: colors.dark?.accentGold || '#c9a227',
           },
-          headerTintColor: colors.dark?.accentGold || '#c9a227',
         }}
       />
     </Stack.Navigator>

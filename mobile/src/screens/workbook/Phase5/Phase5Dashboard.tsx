@@ -19,6 +19,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase5ExerciseImages } from '../../../assets';
 import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
 import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
+import { PhaseErrorState } from '../../../components/workbook/PhaseErrorState';
 
 /**
  * Phase 5 exercises configuration
@@ -123,6 +124,9 @@ const Phase5Dashboard: React.FC<Props> = ({ navigation }) => {
     totalCount,
     overallProgress,
     isLoading,
+    isError,
+    error,
+    refetch,
   } = usePhaseExercises(5, PHASE5_EXERCISES);
   /**
    * Handle exercise card press - navigate to appropriate screen
@@ -150,6 +154,12 @@ const Phase5Dashboard: React.FC<Props> = ({ navigation }) => {
       </View>
     );
   }
+
+  // Show error state with retry option
+  if (isError) {
+    return <PhaseErrorState error={error} onRetry={refetch} />;
+  }
+
   return (
     <ScrollView
       style={styles.container}

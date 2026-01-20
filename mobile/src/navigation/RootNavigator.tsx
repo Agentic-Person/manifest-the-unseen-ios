@@ -5,7 +5,7 @@
  * Shows auth screens or main app based on authentication state.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types/navigation';
@@ -38,6 +38,9 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const RootNavigator = () => {
   const { isAuthenticated, isLoading: _isLoading, initialize, setUser, setSession, setProfile } = useAuthStore();
 
+  // Debounce timer for TOKEN_REFRESHED events
+  const tokenRefreshDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
   /**
    * Initialize Auth State
    * Restore session and listen for auth state changes
@@ -60,25 +63,65 @@ export const RootNavigator = () => {
 
       // Fetch profile when user signs in or token refreshes
       if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
-        try {
-          const { data: profile } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profile) {
-            setProfile(profile);
+        // Debounce TOKEN_REFRESHED events to prevent rapid auth state flips during navigation
+        if (event === 'TOKEN_REFRESHED') {
+          // Clear any existing debounce timer
+          if (tokenRefreshDebounceRef.current) {
+            clearTimeout(tokenRefreshDebounceRef.current);
           }
-        } catch (err) {
-          console.error('[RootNavigator] Failed to fetch profile:', err);
+
+          // Set new debounce timer (500ms delay)
+          tokenRefreshDebounceRef.current = setTimeout(async () => {
+            try {
+              if (__DEV__) {
+                console.log('[RootNavigator] Debounced profile fetch for TOKEN_REFRESHED');
+              }
+              const { data: profile } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+              if (profile) {
+                setProfile(profile);
+              }
+            } catch (err) {
+              console.error('[RootNavigator] Failed to fetch profile (debounced):', err);
+            }
+          }, 500);
+        } else {
+          // For SIGNED_IN and INITIAL_SESSION, fetch immediately (no debounce)
+          try {
+            const { data: profile } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', session.user.id)
+              .single();
+
+            if (profile) {
+              setProfile(profile);
+            }
+          } catch (err) {
+            console.error('[RootNavigator] Failed to fetch profile:', err);
+          }
         }
       } else if (event === 'SIGNED_OUT') {
+        // Clear any pending debounce timers on sign out
+        if (tokenRefreshDebounceRef.current) {
+          clearTimeout(tokenRefreshDebounceRef.current);
+          tokenRefreshDebounceRef.current = null;
+        }
         setProfile(null);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      // Clean up debounce timer on unmount
+      if (tokenRefreshDebounceRef.current) {
+        clearTimeout(tokenRefreshDebounceRef.current);
+      }
+    };
   }, [initialize, setUser, setSession, setProfile]);
 
   return (

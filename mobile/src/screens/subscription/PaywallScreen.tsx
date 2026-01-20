@@ -20,10 +20,12 @@ import {
   Alert,
   ActivityIndicator,
   Linking,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing } from '../../theme';
+import { getSubscriptionImage } from '../../assets';
 import type { SubscriptionPackage, PackageId } from '../../types/subscription';
 import { TIER_PRICING, getSaleConfig, PACKAGE_IDS } from '../../types/subscription';
 import { SaleBanner } from '../../components/subscription/SaleBanner';
@@ -60,6 +62,8 @@ interface TestPackageCardProps {
   isSaleActive?: boolean;
   originalPrice?: string;
   discountPercentage?: number;
+  // Image
+  image?: any; // ImageSourcePropType from react-native
 }
 
 /**
@@ -297,6 +301,7 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
   isSaleActive = false,
   originalPrice,
   discountPercentage = 50,
+  image,
 }) => (
   <View style={[styles.packageCard, isPopular && styles.packageCardPopular]}>
     {/* Sale Badge */}
@@ -307,6 +312,18 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
         <Text style={styles.popularBadgeText}>BEST VALUE</Text>
       </View>
     )}
+
+    {/* Image Header Section */}
+    {image && (
+      <View style={styles.packageImageSection}>
+        <Image source={image} style={styles.packageImage} resizeMode="cover" />
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.7)']}
+          style={styles.packageImageGradient}
+        />
+      </View>
+    )}
+
     <View style={styles.packageContent}>
       <View style={styles.packageHeader}>
         <Text style={styles.packageLabel}>{label}</Text>
@@ -778,6 +795,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.novice_annual.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
+                image={getSubscriptionImage('novice', 'yearly')}
               />
             )}
             {selectedTier === 'novice' && offerings.novice_monthly && (
@@ -791,6 +809,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.novice_monthly.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
+                image={getSubscriptionImage('novice', 'monthly')}
               />
             )}
 
@@ -806,6 +825,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.awakening_annual.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
+                image={getSubscriptionImage('awakening', 'yearly')}
               />
             )}
             {selectedTier === 'awakening' && offerings.awakening_monthly && (
@@ -819,6 +839,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.awakening_monthly.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
+                image={getSubscriptionImage('awakening', 'monthly')}
               />
             )}
 
@@ -834,6 +855,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.enlightenment_annual.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
+                image={getSubscriptionImage('enlightenment', 'yearly')}
               />
             )}
             {selectedTier === 'enlightenment' && offerings.enlightenment_monthly && (
@@ -847,6 +869,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.enlightenment_monthly.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
+                image={getSubscriptionImage('enlightenment', 'monthly')}
               />
             )}
           </View>
@@ -1239,6 +1262,23 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: colors.background.primary,
     letterSpacing: 1,
+  },
+  packageImageSection: {
+    height: 160,
+    width: '100%',
+    position: 'relative',
+    backgroundColor: colors.background.tertiary,
+  },
+  packageImage: {
+    width: '100%',
+    height: '100%',
+  },
+  packageImageGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 80,
   },
   packageContent: {
     padding: spacing.lg,

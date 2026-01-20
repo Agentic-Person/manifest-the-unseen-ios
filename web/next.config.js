@@ -8,6 +8,8 @@ const nextConfig = {
     // Enable type checking during build
     ignoreBuildErrors: false,
   },
+  // Skip static export to avoid monorepo React version conflicts
+  output: undefined,
 }
 
 module.exports = nextConfig

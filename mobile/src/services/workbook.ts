@@ -15,46 +15,90 @@ import type {
 /**
  * Check if the Supabase client session is valid
  * This helps catch auth issues before they cause hanging mutations
+ *
+ * Uses retry logic with exponential backoff to handle token refresh timing issues
  */
 const ensureValidSession = async (): Promise<void> => {
-  try {
-    // Use a shorter timeout for session check (5 seconds)
-    const sessionPromise = supabase.auth.getSession();
-    const { data: { session }, error } = await withTimeout(
-      sessionPromise,
-      5000,
-      'Session validation'
-    );
+  const MAX_RETRIES = 3;
+  const RETRY_DELAYS = [200, 400, 800]; // Exponential backoff in milliseconds
 
-    if (error) {
-      console.error('[workbook.service] Session check failed:', error);
-      throw new Error('Authentication session invalid');
-    }
+  let lastError: Error | null = null;
 
-    if (!session) {
-      console.error('[workbook.service] No active session found');
-      throw new Error('No active authentication session');
-    }
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      // Use a shorter timeout for session check (5 seconds)
+      const sessionPromise = supabase.auth.getSession();
+      const { data: { session }, error } = await withTimeout(
+        sessionPromise,
+        5000,
+        'Session validation'
+      );
 
-    // Check if session is expired
-    if (session.expires_at) {
-      const expiresAt = session.expires_at * 1000; // Convert to milliseconds
-      const now = Date.now();
-      if (expiresAt < now) {
-        console.error('[workbook.service] Session expired');
-        throw new Error('Session expired - please sign in again');
+      if (error) {
+        lastError = new Error('Authentication session invalid');
+        console.error(`[workbook.service] Session check failed (attempt ${attempt + 1}/${MAX_RETRIES}):`, error);
+
+        // If this is not the last attempt, wait before retrying
+        if (attempt < MAX_RETRIES - 1) {
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+          continue; // Retry
+        }
+        throw lastError;
       }
-    }
 
-    // Session is valid
-    if (__DEV__) {
-      console.log('[workbook.service] Session is valid, expires in',
-        session.expires_at ? Math.round((session.expires_at * 1000 - Date.now()) / 1000 / 60) : '?', 'minutes');
+      if (!session) {
+        lastError = new Error('No active authentication session');
+        console.error(`[workbook.service] No active session found (attempt ${attempt + 1}/${MAX_RETRIES})`);
+
+        // If this is not the last attempt, wait before retrying
+        if (attempt < MAX_RETRIES - 1) {
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+          continue; // Retry
+        }
+        throw lastError;
+      }
+
+      // Check if session is expired
+      if (session.expires_at) {
+        const expiresAt = session.expires_at * 1000; // Convert to milliseconds
+        const now = Date.now();
+        if (expiresAt < now) {
+          lastError = new Error('Session expired - please sign in again');
+          console.error(`[workbook.service] Session expired (attempt ${attempt + 1}/${MAX_RETRIES})`);
+
+          // If this is not the last attempt, wait before retrying
+          if (attempt < MAX_RETRIES - 1) {
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+            continue; // Retry
+          }
+          throw lastError;
+        }
+      }
+
+      // Session is valid - success!
+      if (__DEV__) {
+        if (attempt > 0) {
+          console.log(`[workbook.service] Session valid on attempt ${attempt + 1}/${MAX_RETRIES}`);
+        }
+        console.log('[workbook.service] Session is valid, expires in',
+          session.expires_at ? Math.round((session.expires_at * 1000 - Date.now()) / 1000 / 60) : '?', 'minutes');
+      }
+      return; // Success - exit the function
+    } catch (err) {
+      lastError = err as Error;
+      console.error(`[workbook.service] Session validation error (attempt ${attempt + 1}/${MAX_RETRIES}):`, err);
+
+      // If this is not the last attempt, wait before retrying
+      if (attempt < MAX_RETRIES - 1) {
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+        continue; // Retry
+      }
+      throw err; // Last attempt failed - throw the error
     }
-  } catch (err) {
-    console.error('[workbook.service] Session validation error:', err);
-    throw err;
   }
+
+  // If we get here, all retries failed
+  throw lastError || new Error('Session validation failed after retries');
 };
 
 /**

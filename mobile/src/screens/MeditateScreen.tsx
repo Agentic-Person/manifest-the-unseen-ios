@@ -60,17 +60,29 @@ const TABS: TabConfig[] = [
   { key: 'prayers', label: 'Prayers', icon: 'sparkles-outline' },
 ];
 
-// Image arrays for each category (ordered to match content)
-const GUIDED_IMAGES = [
-  GuidedMeditationImages.morningAwakening,
-  GuidedMeditationImages.mindBody,
-  GuidedMeditationImages.innerPeace,
-];
+// Meditation title to image mapping for guided meditations
+const GUIDED_IMAGE_MAP: Record<string, any> = {
+  'Healing Light': GuidedMeditationImages.healingLight,
+  'Rivers Of Living Water': GuidedMeditationImages.riversOfLivingWater,
+  'The River Of Abundance Malevoice': GuidedMeditationImages.riverOfAbundance,
+  'The River Of Abundance Femalevoice': GuidedMeditationImages.riverOfAbundance,
+  'Evening Healing Meditationwith The Temple Gardens 24 Min': GuidedMeditationImages.eveningHealing,
+  'Coming Home To Yourself': GuidedMeditationImages.comingHomeToYourself,
+  'Mind-body Connection Meditation- Enlighten Me 30min': GuidedMeditationImages.mindBody,
+  'The Mirror Of Truth': GuidedMeditationImages.mirrorOfTruth,
+  'Mirror Of Manifestation-9-36min': GuidedMeditationImages.mirrorOfManifestation,
+  'The Temple Of Release': GuidedMeditationImages.templeOfRelease,
+  'The Temple Of The Heart': GuidedMeditationImages.templeOfTheHeart,
+  'The Kingdom Within': GuidedMeditationImages.kingdomWithin,
+  'The Infinite Within': GuidedMeditationImages.infiniteWithin,
+};
 
+// Breathing exercise images (ordered to match database order_index 1-4)
 const BREATHING_IMAGES = [
-  BreathingImages.boxBreathing,
-  BreathingImages.deepCalm,
-  BreathingImages.energyBoost,
+  BreathingImages.boxBreathing,        // 1: Box Breathing - Basic
+  BreathingImages.deepCalm,            // 2: Deep Calm and Relax
+  BreathingImages.energyBoost,         // 3: The Currents of Heaven and Earth
+  BreathingImages.hemisphereBalance,   // 4: Hemisphere Balance
 ];
 
 const INSTRUMENTAL_IMAGES = [
@@ -90,15 +102,21 @@ const INSTRUMENTAL_IMAGES = [
 ];
 
 /**
- * Get image for a meditation based on type and index
+ * Get image for a meditation based on type, title, and index
  */
 const getMeditationImage = (
   type: TabType,
-  index: number
+  title?: string,
+  index: number = 0
 ): ImageSourcePropType | undefined => {
   switch (type) {
     case 'guided':
-      return GUIDED_IMAGES[index % GUIDED_IMAGES.length];
+      // Use title-based mapping for guided meditations
+      if (title && GUIDED_IMAGE_MAP[title]) {
+        return GUIDED_IMAGE_MAP[title];
+      }
+      // Fallback to inner peace image if no match
+      return GuidedMeditationImages.innerPeace;
     case 'breathing':
       return BREATHING_IMAGES[index % BREATHING_IMAGES.length];
     case 'music':
@@ -434,7 +452,7 @@ const MeditateScreen = () => {
             <MeditationCard
               meditation={item}
               onPress={(meditation) => handleMeditationPress(meditation, index)}
-              image={getMeditationImage(activeTab, index)}
+              image={getMeditationImage(activeTab, item.title, index)}
               index={index}
             />
           )}
