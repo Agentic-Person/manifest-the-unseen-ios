@@ -35,14 +35,14 @@ export function ThreeSixNineEditor({ data, onChange, className = '' }: ThreeSixN
 
   return (
     <div className={`space-y-8 ${className}`}>
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-        <h4 className="font-semibold text-purple-900 mb-1">The 3-6-9 Method</h4>
-        <p className="text-sm text-purple-800">Write your manifestation affirmation 3 times in the morning, 6 times in the afternoon, and 9 times in the evening.</p>
+      <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-lg p-4">
+        <h4 className="font-semibold text-enlightened mb-1">The 3-6-9 Method</h4>
+        <p className="text-sm text-muted-wisdom">Write your manifestation affirmation 3 times in the morning, 6 times in the afternoon, and 9 times in the evening.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-yellow-50 to-white rounded-xl border-2 border-yellow-200 p-6">
-          <h3 className="text-lg font-semibold text-yellow-900 mb-4">Morning (3x)</h3>
+        <div className="bg-elevated rounded-xl border-2 border-aged-gold p-6">
+          <h3 className="text-lg font-semibold text-enlightened mb-4">Morning (3x)</h3>
           {[0, 1, 2].map((i) => (
             <textarea
               key={i}
@@ -55,8 +55,8 @@ export function ThreeSixNineEditor({ data, onChange, className = '' }: ThreeSixN
           ))}
         </div>
 
-        <div className="bg-gradient-to-br from-orange-50 to-white rounded-xl border-2 border-orange-200 p-6">
-          <h3 className="text-lg font-semibold text-orange-900 mb-4">Afternoon (6x)</h3>
+        <div className="bg-elevated rounded-xl border-2 border-sacral-orange p-6">
+          <h3 className="text-lg font-semibold text-enlightened mb-4">Afternoon (6x)</h3>
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <textarea
               key={i}
@@ -69,8 +69,8 @@ export function ThreeSixNineEditor({ data, onChange, className = '' }: ThreeSixN
           ))}
         </div>
 
-        <div className="bg-gradient-to-br from-purple-50 to-white rounded-xl border-2 border-purple-200 p-6">
-          <h3 className="text-lg font-semibold text-purple-900 mb-4">Evening (9x)</h3>
+        <div className="bg-elevated rounded-xl border-2 border-crown-purple p-6">
+          <h3 className="text-lg font-semibold text-enlightened mb-4">Evening (9x)</h3>
           {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <textarea
               key={i}

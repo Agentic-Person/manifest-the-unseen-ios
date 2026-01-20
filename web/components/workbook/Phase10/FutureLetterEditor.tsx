@@ -50,7 +50,7 @@ export function FutureLetterEditor({ data, onChange, className = '' }: FutureLet
 
   return (
     <div className={`space-y-8 ${className}`}>
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4">
+      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-[rgba(196,160,82,0.2)] rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
             <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,7 +58,7 @@ export function FutureLetterEditor({ data, onChange, className = '' }: FutureLet
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-indigo-900 mb-1">Letter to Your Future Self</h4>
+            <h4 className="text-sm font-semibold text-enlightened mb-1">Letter to Your Future Self</h4>
             <p className="text-sm text-indigo-800">
               Write a letter to your future self or past self. Acknowledge your journey, make promises, and set intentions for what's to come.
             </p>
@@ -67,40 +67,40 @@ export function FutureLetterEditor({ data, onChange, className = '' }: FutureLet
       </div>
 
       {/* Recipient Selection */}
-      <div className="bg-white rounded-xl border-2 border-indigo-200 p-6">
-        <label className="block text-sm font-semibold text-gray-700 mb-3">Writing to:</label>
+      <div className="bg-elevated rounded-xl border-2 border-[rgba(196,160,82,0.2)] p-6">
+        <label className="block text-sm font-semibold text-muted-wisdom mb-3">Writing to:</label>
         <div className="flex gap-4">
           <button
             onClick={() => handleUpdateLetter('recipient', 'past_self')}
             className={`flex-1 p-4 rounded-lg border-2 transition-all ${
               data.letter.recipient === 'past_self'
-                ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                : 'border-gray-300 hover:border-indigo-300'
+                ? 'border-indigo-600 bg-elevated text-enlightened'
+                : 'border-aged-gold hover:border-indigo-300'
             }`}
           >
             <div className="text-2xl mb-2">⏪</div>
             <div className="font-semibold">Past Self</div>
-            <div className="text-xs text-gray-600 mt-1">Acknowledge how far you've come</div>
+            <div className="text-xs text-muted-wisdom mt-1">Acknowledge how far you've come</div>
           </button>
 
           <button
             onClick={() => handleUpdateLetter('recipient', 'future_self')}
             className={`flex-1 p-4 rounded-lg border-2 transition-all ${
               data.letter.recipient === 'future_self'
-                ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                : 'border-gray-300 hover:border-indigo-300'
+                ? 'border-indigo-600 bg-elevated text-enlightened'
+                : 'border-aged-gold hover:border-indigo-300'
             }`}
           >
             <div className="text-2xl mb-2">⏩</div>
             <div className="font-semibold">Future Self</div>
-            <div className="text-xs text-gray-600 mt-1">Set intentions for who you&apos;re becoming</div>
+            <div className="text-xs text-muted-wisdom mt-1">Set intentions for who you&apos;re becoming</div>
           </button>
         </div>
       </div>
 
       {/* Timeline */}
-      <div className="bg-white rounded-xl border-2 border-purple-200 p-6">
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Timeline</label>
+      <div className="bg-elevated rounded-xl border-2 border-[rgba(196,160,82,0.2)] p-6">
+        <label className="block text-sm font-semibold text-muted-wisdom mb-2">Timeline</label>
         <input
           type="text"
           value={data.letter.timeline}
@@ -111,8 +111,8 @@ export function FutureLetterEditor({ data, onChange, className = '' }: FutureLet
       </div>
 
       {/* Letter Content */}
-      <div className="bg-white rounded-xl border-2 border-indigo-200 p-6 shadow-md">
-        <label className="block text-lg font-semibold text-gray-900 mb-4">Your Letter</label>
+      <div className="bg-elevated rounded-xl border-2 border-[rgba(196,160,82,0.2)] p-6 shadow-md">
+        <label className="block text-lg font-semibold text-enlightened mb-4">Your Letter</label>
         <textarea
           value={data.letter.content}
           onChange={(e) => handleUpdateLetter('content', e.target.value)}
@@ -122,15 +122,15 @@ export function FutureLetterEditor({ data, onChange, className = '' }: FutureLet
               : "Dear Future Me,\n\nBy the time you read this...\n\nI hope you remember...\n\nKeep going because...\n\nWith love,\nPresent You"
           }
           rows={15}
-          className="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-y"
+          className="w-full p-4 border-2 border-aged-gold rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-y"
           style={{ fontFamily: 'Georgia, serif', lineHeight: '1.8' }}
         />
-        <p className="text-sm text-gray-500 mt-2">{data.letter.content.length} characters</p>
+        <p className="text-sm text-tertiary-text mt-2">{data.letter.content.length} characters</p>
       </div>
 
       {/* Promises */}
-      <div className="bg-gradient-to-br from-pink-50 to-white border-2 border-pink-300 rounded-xl p-6">
-        <label className="block text-lg font-semibold text-pink-900 mb-3">Promises to Myself</label>
+      <div className="bg-elevated border-2 border-pink-300 rounded-xl p-6">
+        <label className="block text-lg font-semibold text-enlightened mb-3">Promises to Myself</label>
         <div className="space-y-3">
           {data.letter.promises.map((promise, idx) => (
             <div key={idx} className="flex items-start gap-3">
@@ -140,7 +140,7 @@ export function FutureLetterEditor({ data, onChange, className = '' }: FutureLet
                 value={promise}
                 onChange={(e) => handleUpdatePromise(idx, e.target.value)}
                 placeholder="I promise to..."
-                className="flex-1 p-3 border-2 border-pink-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:outline-none bg-white"
+                className="flex-1 p-3 border-2 border-[rgba(196,160,82,0.2)] rounded-lg focus:ring-2 focus:ring-pink-500 focus:outline-none bg-elevated"
               />
               {data.letter.promises.length > 1 && (
                 <button
@@ -156,7 +156,7 @@ export function FutureLetterEditor({ data, onChange, className = '' }: FutureLet
           ))}
           <button
             onClick={handleAddPromise}
-            className="w-full py-3 border-2 border-dashed border-pink-300 rounded-lg hover:border-pink-500 hover:bg-pink-50 transition-all flex items-center justify-center gap-2 text-pink-600 font-semibold text-sm"
+            className="w-full py-3 border-2 border-dashed border-pink-300 rounded-lg hover:border-pink-500 hover:bg-elevated transition-all flex items-center justify-center gap-2 text-pink-600 font-semibold text-sm"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

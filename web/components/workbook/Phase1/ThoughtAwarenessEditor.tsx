@@ -134,24 +134,24 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
     switch (category) {
       case 'positive':
         return {
-          border: 'border-green-500',
-          bg: 'bg-green-50',
-          text: 'text-green-700',
-          badge: 'bg-green-100 text-green-800',
+          border: 'border-heart-emerald',
+          bg: 'bg-[rgba(45,90,74,0.1)]',
+          text: 'text-enlightened',
+          badge: 'bg-[rgba(45,90,74,0.2)] text-enlightened',
         }
       case 'negative':
         return {
-          border: 'border-red-500',
-          bg: 'bg-red-50',
-          text: 'text-red-700',
-          badge: 'bg-red-100 text-red-800',
+          border: 'border-burgundy',
+          bg: 'bg-[rgba(107,45,61,0.1)]',
+          text: 'text-enlightened',
+          badge: 'bg-[rgba(107,45,61,0.2)] text-enlightened',
         }
       default:
         return {
-          border: 'border-gray-400',
-          bg: 'bg-gray-50',
-          text: 'text-gray-700',
-          badge: 'bg-gray-100 text-gray-800',
+          border: 'border-[rgba(196,160,82,0.4)]',
+          bg: 'bg-elevated',
+          text: 'text-enlightened',
+          badge: 'bg-temple-stone text-muted-wisdom',
         }
     }
   }
@@ -159,34 +159,34 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Summary Statistics */}
-      <div className="bg-gradient-to-br from-purple-50 to-white rounded-xl p-6 border border-purple-100">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+      <div className="bg-elevated rounded-xl p-6 border border-[rgba(196,160,82,0.2)]">
+        <h3 className="text-xl font-semibold text-enlightened mb-4">
           Thought Journal Overview
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-            <p className="text-3xl font-bold text-purple-600">
+          <div className="text-center p-4 bg-temple-stone rounded-lg border border-[rgba(196,160,82,0.15)]">
+            <p className="text-3xl font-bold text-crown-purple">
               {data.entries.length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Total Entries</p>
+            <p className="text-sm text-muted-wisdom mt-1">Total Entries</p>
           </div>
-          <div className="text-center p-4 bg-white rounded-lg border border-green-200">
-            <p className="text-3xl font-bold text-green-600">
+          <div className="text-center p-4 bg-temple-stone rounded-lg border border-heart-emerald">
+            <p className="text-3xl font-bold text-heart-emerald">
               {positiveCount}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Positive</p>
+            <p className="text-sm text-muted-wisdom mt-1">Positive</p>
           </div>
-          <div className="text-center p-4 bg-white rounded-lg border border-red-200">
-            <p className="text-3xl font-bold text-red-600">
+          <div className="text-center p-4 bg-temple-stone rounded-lg border border-burgundy">
+            <p className="text-3xl font-bold text-burgundy">
               {negativeCount}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Negative</p>
+            <p className="text-sm text-muted-wisdom mt-1">Negative</p>
           </div>
-          <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-            <p className="text-3xl font-bold text-gray-600">
+          <div className="text-center p-4 bg-temple-stone rounded-lg border border-[rgba(196,160,82,0.15)]">
+            <p className="text-3xl font-bold text-muted-wisdom">
               {neutralCount}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Neutral</p>
+            <p className="text-sm text-muted-wisdom mt-1">Neutral</p>
           </div>
         </div>
       </div>
@@ -216,14 +216,14 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
           </span>
         </button>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-enlightened mb-4">
             Log New Thought
           </h3>
           <div className="space-y-4">
             {/* Thought */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-wisdom mb-2">
                 What are you thinking? *
               </label>
               <textarea
@@ -245,7 +245,7 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
 
             {/* Emotion */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-wisdom mb-2">
                 How do you feel? *
               </label>
               <select
@@ -263,7 +263,7 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-wisdom mb-2">
                 Is this thought helpful or harmful? *
               </label>
               <div className="flex gap-4">
@@ -279,13 +279,13 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
                   <div
                     className={`p-4 border-2 rounded-lg text-center transition-all ${
                       newEntry.category === 'positive'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-green-300'
+                        ? 'border-heart-emerald bg-[rgba(45,90,74,0.1)]'
+                        : 'border-[rgba(196,160,82,0.15)] hover:border-heart-emerald'
                     }`}
                   >
                     <div className="text-2xl mb-1">😊</div>
-                    <div className="font-medium text-gray-900">Positive</div>
-                    <div className="text-xs text-gray-600 mt-1">Helpful, empowering</div>
+                    <div className="font-medium text-enlightened">Positive</div>
+                    <div className="text-xs text-muted-wisdom mt-1">Helpful, empowering</div>
                   </div>
                 </label>
 
@@ -301,13 +301,13 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
                   <div
                     className={`p-4 border-2 rounded-lg text-center transition-all ${
                       newEntry.category === 'neutral'
-                        ? 'border-gray-400 bg-gray-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-[rgba(196,160,82,0.4)] bg-elevated'
+                        : 'border-[rgba(196,160,82,0.15)] hover:border-[rgba(196,160,82,0.3)]'
                     }`}
                   >
                     <div className="text-2xl mb-1">😐</div>
-                    <div className="font-medium text-gray-900">Neutral</div>
-                    <div className="text-xs text-gray-600 mt-1">Observational</div>
+                    <div className="font-medium text-enlightened">Neutral</div>
+                    <div className="text-xs text-muted-wisdom mt-1">Observational</div>
                   </div>
                 </label>
 
@@ -323,13 +323,13 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
                   <div
                     className={`p-4 border-2 rounded-lg text-center transition-all ${
                       newEntry.category === 'negative'
-                        ? 'border-red-500 bg-red-50'
-                        : 'border-gray-200 hover:border-red-300'
+                        ? 'border-burgundy bg-[rgba(107,45,61,0.1)]'
+                        : 'border-[rgba(196,160,82,0.15)] hover:border-burgundy'
                     }`}
                   >
                     <div className="text-2xl mb-1">😟</div>
-                    <div className="font-medium text-gray-900">Negative</div>
-                    <div className="text-xs text-gray-600 mt-1">Limiting, harmful</div>
+                    <div className="font-medium text-enlightened">Negative</div>
+                    <div className="text-xs text-muted-wisdom mt-1">Limiting, harmful</div>
                   </div>
                 </label>
               </div>
@@ -351,7 +351,7 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
                   setNewEntry({ thought: '', emotion: 'Neutral', category: 'neutral' })
                   setFormErrors({})
                 }}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                className="flex-1 px-4 py-2 bg-temple-stone text-muted-wisdom rounded-lg hover:bg-elevated transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -363,7 +363,7 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
       {/* Entries List */}
       {data.entries.length > 0 ? (
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-enlightened mb-4 flex items-center gap-2">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -391,15 +391,15 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${colors.badge}`}>
                         {entry.category.charAt(0).toUpperCase() + entry.category.slice(1)}
                       </span>
-                      <span className="text-xs px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800">
+                      <span className="text-xs px-2 py-1 rounded-full font-medium bg-[rgba(28,85,104,0.2)] text-deep-teal">
                         {entry.emotion}
                       </span>
                     </div>
-                    <span className="text-xs text-gray-500 whitespace-nowrap">
+                    <span className="text-xs text-tertiary-text whitespace-nowrap">
                       {formatTimestamp(entry.timestamp)}
                     </span>
                   </div>
-                  <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-enlightened leading-relaxed whitespace-pre-wrap">
                     {entry.thought}
                   </p>
                 </div>
@@ -408,7 +408,7 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
           />
         </div>
       ) : (
-        <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+        <div className="text-center py-12 text-tertiary-text bg-elevated rounded-lg border-2 border-dashed border-aged-gold">
           <svg
             className="w-12 h-12 mx-auto mb-3 text-gray-400"
             fill="none"
@@ -431,11 +431,11 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
 
       {/* Insights */}
       {data.entries.length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-lg p-4">
           <div className="flex gap-3">
             <div className="flex-shrink-0">
               <svg
-                className="w-6 h-6 text-blue-600"
+                className="w-6 h-6 text-deep-teal"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -449,10 +449,10 @@ export function ThoughtAwarenessEditor({ data, onChange, className = '' }: Thoug
               </svg>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-blue-900 mb-1">
+              <h4 className="text-sm font-semibold text-enlightened mb-1">
                 Insight
               </h4>
-              <p className="text-sm text-blue-800">
+              <p className="text-sm text-muted-wisdom">
                 {getInsight(positiveCount, negativeCount, neutralCount, data.entries.length)}
               </p>
             </div>

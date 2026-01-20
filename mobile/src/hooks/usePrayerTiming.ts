@@ -46,28 +46,28 @@ export interface CurrentPrayerLineResult {
 const LINE_PAUSE_MS = 300;
 
 /**
- * Audio offset in milliseconds to compensate for intro/silence in audio files
- * that wasn't present when Whisper timestamps were generated.
- * Positive value = text was ahead, so delay the text display.
- * Adjust this value based on testing with actual audio files.
+ * Audio offset in milliseconds for CALCULATED timings (word-count based).
+ * This offset is only used when Whisper timestamps are NOT available.
+ * Whisper timestamps already account for intro/silence, so they don't need offset.
+ * Positive value = delay the text display to account for intro music/silence.
  */
-const AUDIO_OFFSET_MS = 5000; // 5 seconds - adjust based on testing
+const AUDIO_OFFSET_MS = 5000; // 5 seconds - only used for calculated timing fallback
 
 /**
  * Convert pre-generated Whisper line timings to PrayerLine format
- * Applies AUDIO_OFFSET_MS to compensate for audio intro/silence
+ * Note: Whisper timestamps already account for intro silence, so no offset needed
  *
  * @param lineTimings - Pre-generated timings from database (Whisper output)
- * @returns Array of PrayerLine objects with timing data (offset applied)
+ * @returns Array of PrayerLine objects with timing data
  */
 function convertWhisperTimings(lineTimings: PrayerLineTiming[]): PrayerLine[] {
   return lineTimings.map((timing) => ({
     index: timing.line,
     text: timing.text,
     wordCount: timing.text.split(/\s+/).filter((w) => w.length > 0).length,
-    // Apply offset to delay text display (compensate for audio intro)
-    startTimeMs: timing.startMs + AUDIO_OFFSET_MS,
-    endTimeMs: timing.endMs + AUDIO_OFFSET_MS,
+    // Whisper timestamps already account for intro, use as-is
+    startTimeMs: timing.startMs,
+    endTimeMs: timing.endMs,
   }));
 }
 
@@ -211,12 +211,13 @@ export function useCurrentPrayerLine(
         return calculateLineTiming(prayerContent, audioDurationMs);
       }
 
+      // Whisper timestamps already account for intro silence, so don't add offset
       return lineTimings.map((timing, idx) => ({
         index: timing.line,
         text: contentLines[idx] || timing.text, // Prefer content, fallback to timing text
         wordCount: (contentLines[idx] || timing.text).split(/\s+/).filter((w) => w.length > 0).length,
-        startTimeMs: timing.startMs + AUDIO_OFFSET_MS,
-        endTimeMs: timing.endMs + AUDIO_OFFSET_MS,
+        startTimeMs: timing.startMs, // Use Whisper timestamp as-is
+        endTimeMs: timing.endMs, // Use Whisper timestamp as-is
       }));
     } else {
       console.log('[usePrayerTiming] Using calculated timing (no Whisper data)');

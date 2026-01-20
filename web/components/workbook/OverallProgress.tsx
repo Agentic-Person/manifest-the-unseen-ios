@@ -23,11 +23,11 @@ export function OverallProgress({ totalCompleted, totalWorksheets }: OverallProg
     : 0
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">
+    <div className="bg-temple-stone rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] border border-[rgba(196,160,82,0.15)] p-6 sm:p-8">
+      <h2 className="text-2xl font-bold text-aged-gold mb-2">
         Your Manifestation Journey
       </h2>
-      <p className="text-gray-600 mb-6">
+      <p className="text-muted-wisdom mb-6">
         You've completed {totalCompleted} of {totalWorksheets} worksheets ({percent}%)
       </p>
 
@@ -37,7 +37,7 @@ export function OverallProgress({ totalCompleted, totalWorksheets }: OverallProg
         showCount={false}
       />
 
-      <p className="text-purple-600 font-medium mt-4">
+      <p className="text-aged-gold font-medium mt-4">
         {getMotivationalMessage(percent)}
       </p>
     </div>

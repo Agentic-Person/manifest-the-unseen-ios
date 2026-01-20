@@ -27,31 +27,31 @@ export function InnerChildEditor({ data, onChange, className = '' }: InnerChildE
 
   return (
     <div className={`space-y-8 ${className}`}>
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm text-blue-800">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-lg p-4">
+        <p className="text-sm text-muted-wisdom">
           Connect with and heal your inner child through guided reflection and compassionate self-dialogue.
         </p>
       </div>
 
       <div className="space-y-6">
         {PROMPTS.map((prompt) => (
-          <div key={prompt.key} className="bg-white rounded-xl border-2 border-blue-200 p-6">
-            <h4 className="text-lg font-semibold text-blue-900 mb-2">{prompt.label}</h4>
-            <p className="text-sm text-gray-600 mb-4">{prompt.prompt}</p>
+          <div key={prompt.key} className="bg-elevated rounded-xl border-2 border-[rgba(196,160,82,0.2)] p-6">
+            <h4 className="text-lg font-semibold text-enlightened mb-2">{prompt.label}</h4>
+            <p className="text-sm text-muted-wisdom mb-4">{prompt.prompt}</p>
             <textarea
               value={data[prompt.key]}
               onChange={(e) => updateField(prompt.key, e.target.value)}
               rows={6}
-              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 border border-[rgba(196,160,82,0.15)] rounded-lg focus:outline-none focus:ring-2 focus:ring-aged-gold"
               placeholder="Take your time to reflect..."
             />
           </div>
         ))}
       </div>
 
-      <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6">
-        <h4 className="font-semibold text-purple-900 mb-2">Healing Tip</h4>
-        <p className="text-sm text-purple-800">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-lg p-6">
+        <h4 className="font-semibold text-enlightened mb-2">Healing Tip</h4>
+        <p className="text-sm text-muted-wisdom">
           Be gentle with yourself. Inner child work can bring up difficult emotions. It&apos;s okay to take breaks and return when you&apos;re ready.
         </p>
       </div>

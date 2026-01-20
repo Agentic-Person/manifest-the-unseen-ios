@@ -75,14 +75,14 @@ export function WorksheetLayout({
         <div className="mb-8">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
+              <h1 className="text-3xl font-bold text-aged-gold mb-2">{title}</h1>
               {description && (
-                <p className="text-gray-600 text-lg">{description}</p>
+                <p className="text-muted-wisdom text-lg">{description}</p>
               )}
             </div>
             <AutoSaveIndicator status={saveStatus} lastSaved={lastSaved || undefined} />
           </div>
-          <div className="h-1 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full" />
+          <div className="h-1 bg-gradient-to-r from-aged-gold to-burnished-bronze rounded-full" />
         </div>
       )}
 
@@ -100,7 +100,7 @@ export function WorksheetLayout({
             <button
               type="button"
               onClick={onPrevious}
-              className="flex items-center gap-2 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              className="flex items-center gap-2 px-6 py-3 text-muted-wisdom bg-elevated border border-[rgba(196,160,82,0.2)] rounded-lg hover:bg-temple-stone hover:border-aged-gold transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-aged-gold focus:ring-offset-2 focus:ring-offset-deep-void"
             >
               <svg
                 className="w-5 h-5"
@@ -125,7 +125,7 @@ export function WorksheetLayout({
           <button
             type="button"
             onClick={() => window.location.href = '/workbook'}
-            className="flex items-center gap-2 px-6 py-3 text-purple-600 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            className="flex items-center gap-2 px-6 py-3 text-aged-gold bg-[rgba(196,160,82,0.1)] border border-aged-gold rounded-lg hover:bg-[rgba(196,160,82,0.2)] transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-aged-gold focus:ring-offset-2 focus:ring-offset-deep-void"
           >
             <svg
               className="w-5 h-5"
@@ -147,7 +147,7 @@ export function WorksheetLayout({
             <button
               type="button"
               onClick={onNext}
-              className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-primary text-enlightened rounded-lg hover:brightness-110 transition-all duration-200 font-medium shadow-[0_4px_16px_rgba(107,76,154,0.3)] hover:shadow-[0_6px_20px_rgba(107,76,154,0.4)] focus:outline-none focus:ring-2 focus:ring-crown-purple focus:ring-offset-2 focus:ring-offset-deep-void"
             >
               {nextLabel}
               <svg
@@ -169,7 +169,7 @@ export function WorksheetLayout({
       )}
 
       {/* Content */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-8">
+      <div className="bg-temple-stone rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.4)] border border-[rgba(196,160,82,0.15)] p-8 mb-8 hover:border-[rgba(196,160,82,0.25)] transition-all duration-200">
         {children}
       </div>
 
@@ -180,7 +180,7 @@ export function WorksheetLayout({
             <button
               type="button"
               onClick={onPrevious}
-              className="flex items-center gap-2 px-6 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              className="flex items-center gap-2 px-6 py-3 text-muted-wisdom bg-elevated border border-[rgba(196,160,82,0.2)] rounded-lg hover:bg-temple-stone hover:border-aged-gold transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-aged-gold focus:ring-offset-2 focus:ring-offset-deep-void"
             >
               <svg
                 className="w-5 h-5"
@@ -205,7 +205,7 @@ export function WorksheetLayout({
           <button
             type="button"
             onClick={() => window.location.href = '/workbook'}
-            className="flex items-center gap-2 px-6 py-3 text-purple-600 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            className="flex items-center gap-2 px-6 py-3 text-aged-gold bg-[rgba(196,160,82,0.1)] border border-aged-gold rounded-lg hover:bg-[rgba(196,160,82,0.2)] transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-aged-gold focus:ring-offset-2 focus:ring-offset-deep-void"
           >
             <svg
               className="w-5 h-5"
@@ -227,7 +227,7 @@ export function WorksheetLayout({
             <button
               type="button"
               onClick={onNext}
-              className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-primary text-enlightened rounded-lg hover:brightness-110 transition-all duration-200 font-medium shadow-[0_4px_16px_rgba(107,76,154,0.3)] hover:shadow-[0_6px_20px_rgba(107,76,154,0.4)] focus:outline-none focus:ring-2 focus:ring-crown-purple focus:ring-offset-2 focus:ring-offset-deep-void"
             >
               {nextLabel}
               <svg

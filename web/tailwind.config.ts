@@ -22,13 +22,19 @@ const config: Config = {
         // Text colors
         'enlightened': '#F5F0E6',
         'muted-wisdom': '#A09080',
+        'tertiary-text': '#6B6B80',
         'subtle': '#6B6B6B',
 
-        // Chakra accents
-        'deep-teal': '#1a5f5f',
+        // Muted accent colors (jewel tones)
+        'deep-teal': '#1A5F5F',
         'heart-emerald': '#2D5A4A',
-        'sacral-orange': '#C4702C',
+        'forest-green': '#2D5A4A',
+        'deep-amber': '#8B6914',
+        'burgundy': '#6B2D3D',
         'root-crimson': '#7A3333',
+        'deep-purple': '#4A1A6B',
+        'indigo-deep': '#2D1B4E',
+        'sacral-orange': '#C4702C',
       },
       fontFamily: {
         heading: ['var(--font-heading)', 'Georgia', 'Cambria', 'serif'],
@@ -38,8 +44,10 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-gold': 'linear-gradient(135deg, #C4A052 0%, #8B6914 100%)',
+        'gradient-gold': 'linear-gradient(135deg, #8B6914, #C4A052)',
         'gradient-purple': 'linear-gradient(135deg, #6B4C9A 0%, #4A3570 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #4A1A6B, #2D1B4E)',
+        'gradient-ethereal': 'linear-gradient(135deg, #1A5F5F, #2D5A4A)',
       },
     },
   },

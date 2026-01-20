@@ -69,9 +69,9 @@ export function AbilitiesRatingEditor({ data, onChange, className = '' }: Abilit
   }
 
   const getRatingColor = (rating: number): string => {
-    if (rating < 4) return 'text-red-600'
-    if (rating <= 7) return 'text-yellow-600'
-    return 'text-green-600'
+    if (rating < 4) return 'text-burgundy'
+    if (rating <= 7) return 'text-sacral-orange'
+    return 'text-heart-emerald'
   }
 
   const getRatingLabel = (rating: number): string => {
@@ -146,11 +146,11 @@ export function AbilitiesRatingEditor({ data, onChange, className = '' }: Abilit
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Introduction */}
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-purple-900 mb-2">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-enlightened mb-2">
           Rate Your Abilities
         </h3>
-        <p className="text-purple-800 text-sm">
+        <p className="text-muted-wisdom text-sm">
           Assess your current proficiency in each ability from 1 (needs significant development) to 10 (mastery level).
           Be honest with yourself - this assessment helps identify both your strengths and growth opportunities.
         </p>
@@ -158,13 +158,13 @@ export function AbilitiesRatingEditor({ data, onChange, className = '' }: Abilit
 
       {/* Ability Sliders */}
       <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+        <h3 className="text-xl font-semibold text-enlightened mb-4">
           Your Abilities Assessment
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {currentData.abilities.map(ability => (
             <div key={ability.name} className="space-y-2">
-              <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-temple-stone p-4 rounded-lg border border-[rgba(196,160,82,0.15)] shadow-sm hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
                 <Slider
                   value={ability.rating}
                   onChange={(value) => handleRatingChange(ability.name, value)}
@@ -176,7 +176,7 @@ export function AbilitiesRatingEditor({ data, onChange, className = '' }: Abilit
                   <span className={`font-medium ${getRatingColor(ability.rating)}`}>
                     {getRatingLabel(ability.rating)}
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-tertiary-text">
                     {ability.rating}/10
                   </span>
                 </div>
@@ -187,28 +187,28 @@ export function AbilitiesRatingEditor({ data, onChange, className = '' }: Abilit
       </div>
 
       {/* Summary Statistics */}
-      <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-purple-900 mb-4">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-enlightened mb-4">
           Your Abilities Summary
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg p-4 text-center border border-purple-100">
-            <p className="text-3xl font-bold text-purple-600 mb-1">
+          <div className="bg-temple-stone rounded-lg p-4 text-center border border-[rgba(196,160,82,0.15)]">
+            <p className="text-3xl font-bold text-aged-gold mb-1">
               {calculateAverage()}
             </p>
-            <p className="text-sm text-gray-600">Average Rating</p>
+            <p className="text-sm text-muted-wisdom">Average Rating</p>
           </div>
-          <div className="bg-white rounded-lg p-4 text-center border border-purple-100">
-            <p className="text-lg font-bold text-green-600 mb-1 truncate">
+          <div className="bg-temple-stone rounded-lg p-4 text-center border border-[rgba(196,160,82,0.15)]">
+            <p className="text-lg font-bold text-heart-emerald mb-1 truncate">
               {getHighestAbility()}
             </p>
-            <p className="text-sm text-gray-600">Top Strength</p>
+            <p className="text-sm text-muted-wisdom">Top Strength</p>
           </div>
-          <div className="bg-white rounded-lg p-4 text-center border border-purple-100">
-            <p className="text-lg font-bold text-red-600 mb-1 truncate">
+          <div className="bg-temple-stone rounded-lg p-4 text-center border border-[rgba(196,160,82,0.15)]">
+            <p className="text-lg font-bold text-burgundy mb-1 truncate">
               {getLowestAbility()}
             </p>
-            <p className="text-sm text-gray-600">Growth Opportunity</p>
+            <p className="text-sm text-muted-wisdom">Growth Opportunity</p>
           </div>
         </div>
       </div>
@@ -216,52 +216,52 @@ export function AbilitiesRatingEditor({ data, onChange, className = '' }: Abilit
       {/* Strengths and Development Areas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Strengths */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+        <div className="bg-[rgba(45,90,74,0.1)] border border-heart-emerald rounded-lg p-6">
           <div className="flex items-center gap-2 mb-3">
-            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-heart-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <h4 className="text-lg font-semibold text-green-900">
+            <h4 className="text-lg font-semibold text-enlightened">
               Your Strengths
             </h4>
           </div>
           {getStrongAbilities().length > 0 ? (
             <ul className="space-y-2">
               {getStrongAbilities().map(ability => (
-                <li key={ability} className="text-sm text-green-800 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-600 rounded-full"></span>
+                <li key={ability} className="text-sm text-muted-wisdom flex items-center gap-2">
+                  <span className="w-2 h-2 bg-heart-emerald rounded-full"></span>
                   {ability}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-green-700">
+            <p className="text-sm text-tertiary-text">
               No abilities rated 8 or higher yet. Keep developing your skills!
             </p>
           )}
         </div>
 
         {/* Development Areas */}
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+        <div className="bg-[rgba(139,105,20,0.1)] border border-deep-amber rounded-lg p-6">
           <div className="flex items-center gap-2 mb-3">
-            <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-deep-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-            <h4 className="text-lg font-semibold text-orange-900">
+            <h4 className="text-lg font-semibold text-enlightened">
               Development Areas
             </h4>
           </div>
           {getDevelopmentAbilities().length > 0 ? (
             <ul className="space-y-2">
               {getDevelopmentAbilities().map(ability => (
-                <li key={ability} className="text-sm text-orange-800 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-orange-600 rounded-full"></span>
+                <li key={ability} className="text-sm text-muted-wisdom flex items-center gap-2">
+                  <span className="w-2 h-2 bg-deep-amber rounded-full"></span>
                   {ability}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-orange-700">
+            <p className="text-sm text-tertiary-text">
               Great! No critical development areas identified. Focus on elevating good abilities to great.
             </p>
           )}
@@ -269,18 +269,18 @@ export function AbilitiesRatingEditor({ data, onChange, className = '' }: Abilit
       </div>
 
       {/* Insight */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
-            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-deep-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-blue-900 mb-1">
+            <h4 className="text-sm font-semibold text-enlightened mb-1">
               Insight
             </h4>
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-muted-wisdom">
               {getInsight()}
             </p>
           </div>
@@ -288,21 +288,21 @@ export function AbilitiesRatingEditor({ data, onChange, className = '' }: Abilit
       </div>
 
       {/* Action Prompt */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+      <div className="bg-gradient-to-r from-elevated to-blue-50 border border-[rgba(196,160,82,0.15)] rounded-lg p-6">
+        <h4 className="text-lg font-semibold text-enlightened mb-2">
           Next Steps
         </h4>
-        <ul className="space-y-2 text-sm text-gray-700">
+        <ul className="space-y-2 text-sm text-muted-wisdom">
           <li className="flex items-start gap-2">
-            <span className="text-purple-600 font-bold mt-0.5">1.</span>
+            <span className="text-aged-gold font-bold mt-0.5">1.</span>
             <span>Choose 1-2 abilities you want to improve in the next 90 days</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-purple-600 font-bold mt-0.5">2.</span>
+            <span className="text-aged-gold font-bold mt-0.5">2.</span>
             <span>Identify specific actions you can take to develop these abilities</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-purple-600 font-bold mt-0.5">3.</span>
+            <span className="text-aged-gold font-bold mt-0.5">3.</span>
             <span>Consider how your strengths can support your development areas</span>
           </li>
         </ul>

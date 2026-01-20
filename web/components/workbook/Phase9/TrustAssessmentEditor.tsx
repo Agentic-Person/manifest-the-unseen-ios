@@ -84,7 +84,7 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Introduction */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4">
+      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-[rgba(196,160,82,0.2)] rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
             <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-indigo-900 mb-1">
+            <h4 className="text-sm font-semibold text-enlightened mb-1">
               Assess Your Trust Levels
             </h4>
             <p className="text-sm text-indigo-800">
@@ -105,16 +105,16 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
 
       {/* Overall Trust Score */}
       {averageTrust > 0 && (
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300 rounded-xl p-6 text-center">
+        <div className="bg-elevated border-2 border-purple-300 rounded-xl p-6 text-center">
           <div className="text-5xl font-bold text-purple-600 mb-2">{averageTrust}/10</div>
-          <p className="text-lg font-semibold text-purple-900">{getTrustLabel(averageTrust)}</p>
+          <p className="text-lg font-semibold text-enlightened">{getTrustLabel(averageTrust)}</p>
           <p className="text-sm text-purple-700 mt-1">Overall Trust Level</p>
         </div>
       )}
 
       {/* Trust Level Sliders */}
-      <div className="bg-white rounded-xl border-2 border-indigo-200 p-6 shadow-md">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6">Rate Your Trust Levels</h3>
+      <div className="bg-elevated rounded-xl border-2 border-[rgba(196,160,82,0.2)] p-6 shadow-md">
+        <h3 className="text-xl font-semibold text-enlightened mb-6">Rate Your Trust Levels</h3>
         <div className="space-y-8">
           {trustAreas.map((area) => {
             const level = data.trust_levels[area.key]
@@ -122,8 +122,8 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
               <div key={area.key} className="space-y-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h4 className="text-base font-semibold text-gray-800">{area.label}</h4>
-                    <p className="text-sm text-gray-600">{area.description}</p>
+                    <h4 className="text-base font-semibold text-enlightened">{area.label}</h4>
+                    <p className="text-sm text-muted-wisdom">{area.description}</p>
                   </div>
                   <div className="flex-shrink-0 ml-4">
                     <div className={`px-4 py-2 rounded-full font-bold text-white ${getTrustColor(level)}`}>
@@ -140,7 +140,7 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
                     max="10"
                     value={level}
                     onChange={(e) => handleTrustLevelChange(area.key, parseInt(e.target.value))}
-                    className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                    className="w-full h-3 bg-temple-stone rounded-lg appearance-none cursor-pointer slider"
                     style={{
                       background: `linear-gradient(to right, ${
                         level <= 3 ? '#ef4444' : level <= 6 ? '#eab308' : '#22c55e'
@@ -149,7 +149,7 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
                       } ${(level / 10) * 100}%, #e5e7eb ${(level / 10) * 100}%, #e5e7eb 100%)`,
                     }}
                   />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <div className="flex justify-between text-xs text-tertiary-text mt-1">
                     <span>Low</span>
                     <span>Medium</span>
                     <span>High</span>
@@ -163,11 +163,11 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
 
       {/* Reflective Questions */}
       <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-gray-900">Exploring Resistance</h3>
+        <h3 className="text-xl font-semibold text-enlightened">Exploring Resistance</h3>
 
         {/* Where I Resist */}
-        <div className="bg-white rounded-xl border-2 border-orange-200 p-6">
-          <label className="block text-sm font-semibold text-orange-900 mb-2">
+        <div className="bg-elevated rounded-xl border-2 border-sacral-orange p-6">
+          <label className="block text-sm font-semibold text-enlightened mb-2">
             Where do I resist trusting?
           </label>
           <textarea
@@ -175,12 +175,12 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
             onChange={(e) => handleReflectionChange('where_I_resist', e.target.value)}
             placeholder="What situations, people, or outcomes do I struggle to trust?"
             rows={4}
-            className="w-full p-3 border-2 border-orange-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
+            className="w-full p-3 border-2 border-sacral-orange rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y"
           />
         </div>
 
         {/* Where I Control */}
-        <div className="bg-white rounded-xl border-2 border-red-200 p-6">
+        <div className="bg-elevated rounded-xl border-2 border-red-200 p-6">
           <label className="block text-sm font-semibold text-red-900 mb-2">
             Where do I try to control outcomes?
           </label>
@@ -194,8 +194,8 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
         </div>
 
         {/* What I Fear Letting Go */}
-        <div className="bg-white rounded-xl border-2 border-purple-200 p-6">
-          <label className="block text-sm font-semibold text-purple-900 mb-2">
+        <div className="bg-elevated rounded-xl border-2 border-[rgba(196,160,82,0.2)] p-6">
+          <label className="block text-sm font-semibold text-enlightened mb-2">
             What am I afraid will happen if I let go?
           </label>
           <textarea
@@ -203,15 +203,15 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
             onChange={(e) => handleReflectionChange('what_I_fear_letting_go', e.target.value)}
             placeholder="What's the worst-case scenario I&apos;m trying to prevent?"
             rows={4}
-            className="w-full p-3 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
+            className="w-full p-3 border-2 border-[rgba(196,160,82,0.2)] rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-y"
           />
         </div>
       </div>
 
       {/* Trust Building Tips */}
-      <div className="bg-gradient-to-br from-teal-50 to-white border border-teal-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-teal-900 mb-4">Building Trust</h3>
-        <ul className="space-y-2 text-sm text-gray-700">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-enlightened mb-4">Building Trust</h3>
+        <ul className="space-y-2 text-sm text-muted-wisdom">
           <li className="flex items-start gap-2">
             <span className="text-teal-600 font-bold">•</span>
             <span><strong>Start small:</strong> Practice trusting in low-stakes situations</span>
@@ -236,11 +236,11 @@ export function TrustAssessmentEditor({ data, onChange, className = '' }: TrustA
       </div>
 
       {/* Quote */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 text-center">
-        <p className="text-lg italic text-gray-800 mb-2">
+      <div className="bg-elevated border-2 border-[rgba(196,160,82,0.2)] rounded-xl p-6 text-center">
+        <p className="text-lg italic text-enlightened mb-2">
           "Trust the timing of your life."
         </p>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-wisdom">
           What's meant for you will not pass you by.
         </p>
       </div>

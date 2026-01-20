@@ -21,11 +21,11 @@ export interface WheelOfLifeEditorProps {
 }
 
 const LIFE_AREAS = [
-  { key: 'career' as const, label: 'Career', color: '#8b5cf6' },
-  { key: 'health' as const, label: 'Health & Fitness', color: '#10b981' },
-  { key: 'relationships' as const, label: 'Relationships', color: '#ef4444' },
+  { key: 'career' as const, label: 'Career', color: '#6B4C9A' },
+  { key: 'health' as const, label: 'Health & Fitness', color: '#2D5A4A' },
+  { key: 'relationships' as const, label: 'Relationships', color: '#6B2D3D' },
   { key: 'finance' as const, label: 'Finance', color: '#f59e0b' },
-  { key: 'personalGrowth' as const, label: 'Personal Growth', color: '#3b82f6' },
+  { key: 'personalGrowth' as const, label: 'Personal Growth', color: '#1A5F5F' },
   { key: 'family' as const, label: 'Family & Friends', color: '#ec4899' },
   { key: 'recreation' as const, label: 'Fun & Recreation', color: '#14b8a6' },
   { key: 'spirituality' as const, label: 'Spirituality', color: '#a855f7' },
@@ -60,35 +60,35 @@ export function WheelOfLifeEditor({ data, onChange, className = '' }: WheelOfLif
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Radar Chart Visualization */}
-      <div className="bg-gradient-to-br from-purple-50 to-white rounded-xl p-6 border border-purple-100">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+      <div className="bg-gradient-to-br from-elevated to-elevated rounded-xl p-6 border border-[rgba(196,160,82,0.15)]">
+        <h3 className="text-xl font-semibold text-enlightened mb-4 text-center">
           Your Life Balance Wheel
         </h3>
         <ResponsiveContainer width="100%" height={400}>
           <RadarChart data={chartData}>
-            <PolarGrid stroke="#e5e7eb" />
+            <PolarGrid stroke="rgba(196, 160, 82, 0.2)" />
             <PolarAngleAxis
               dataKey="area"
-              tick={{ fill: '#6b7280', fontSize: 12 }}
+              tick={{ fill: 'rgba(196, 160, 82, 0.8)', fontSize: 12 }}
               tickLine={false}
             />
             <PolarRadiusAxis
               angle={90}
               domain={[0, 10]}
-              tick={{ fill: '#9ca3af', fontSize: 10 }}
+              tick={{ fill: 'rgba(196, 160, 82, 0.6)', fontSize: 10 }}
               tickCount={6}
             />
             <Radar
               name="Satisfaction"
               dataKey="value"
-              stroke="#8b5cf6"
-              fill="#8b5cf6"
+              stroke="#6B4C9A"
+              fill="#6B4C9A"
               fillOpacity={0.6}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
+                backgroundColor: 'rgba(26, 26, 36, 0.95)',
+                border: '1px solid rgba(196, 160, 82, 0.15)',
                 borderRadius: '8px',
                 padding: '8px 12px',
               }}
@@ -96,14 +96,14 @@ export function WheelOfLifeEditor({ data, onChange, className = '' }: WheelOfLif
             />
           </RadarChart>
         </ResponsiveContainer>
-        <p className="text-sm text-gray-600 text-center mt-4">
+        <p className="text-sm text-muted-wisdom text-center mt-4">
           A balanced wheel is round - aim for similar scores across all areas
         </p>
       </div>
 
       {/* Life Area Sliders */}
       <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+        <h3 className="text-xl font-semibold text-enlightened mb-4">
           Rate Your Satisfaction (1-10)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -115,7 +115,7 @@ export function WheelOfLifeEditor({ data, onChange, className = '' }: WheelOfLif
                 label={area.label}
                 min={1}
                 max={10}
-                className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                className="bg-temple-stone p-4 rounded-lg border border-[rgba(196,160,82,0.15)] shadow-sm hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
               />
             </div>
           ))}
@@ -123,51 +123,51 @@ export function WheelOfLifeEditor({ data, onChange, className = '' }: WheelOfLif
       </div>
 
       {/* Summary Statistics */}
-      <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-purple-900 mb-3">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-enlightened mb-3">
           Your Life Balance Score
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-2xl font-bold text-aged-gold">
               {calculateAverage(data)}
             </p>
-            <p className="text-sm text-gray-600">Average Score</p>
+            <p className="text-sm text-muted-wisdom">Average Score</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-2xl font-bold text-heart-emerald">
               {getHighestArea(data)}
             </p>
-            <p className="text-sm text-gray-600">Highest Area</p>
+            <p className="text-sm text-muted-wisdom">Highest Area</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-red-600">
+            <p className="text-2xl font-bold text-burgundy">
               {getLowestArea(data)}
             </p>
-            <p className="text-sm text-gray-600">Needs Attention</p>
+            <p className="text-sm text-muted-wisdom">Needs Attention</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-2xl font-bold text-deep-teal">
               {calculateBalance(data)}%
             </p>
-            <p className="text-sm text-gray-600">Balance Score</p>
+            <p className="text-sm text-muted-wisdom">Balance Score</p>
           </div>
         </div>
       </div>
 
       {/* Insights */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
-            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-deep-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-blue-900 mb-1">
+            <h4 className="text-sm font-semibold text-enlightened mb-1">
               💡 Insight
             </h4>
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-muted-wisdom">
               {getInsight(data)}
             </p>
           </div>

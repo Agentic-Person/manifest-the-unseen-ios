@@ -43,33 +43,33 @@ export default function WorkbookPage() {
 
   if (authLoading || subLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-purple-100">
+      <div className="min-h-screen flex items-center justify-center bg-deep-void">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your workbook...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-aged-gold mx-auto mb-4"></div>
+          <p className="text-muted-wisdom">Loading your workbook...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100">
+    <div className="min-h-screen bg-deep-void">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-temple-stone shadow-[0_4px_24px_rgba(0,0,0,0.4)] border-b border-[rgba(196,160,82,0.2)]">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-aged-gold">
             Manifest the Unseen - Workbook
           </h1>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-sm text-gray-600">{user?.email}</p>
-              <p className="text-xs text-purple-600 font-medium">
+              <p className="text-sm text-muted-wisdom">{user?.email}</p>
+              <p className="text-xs text-aged-gold font-medium">
                 {tier ? `${tier} tier` : 'No subscription'}
               </p>
             </div>
             <button
               onClick={handleSignOut}
-              className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-sm text-muted-wisdom bg-elevated border border-[rgba(196,160,82,0.2)] rounded-lg hover:bg-temple-stone hover:border-aged-gold transition-all duration-200"
             >
               Sign Out
             </button>
@@ -89,13 +89,13 @@ export default function WorkbookPage() {
 
         {/* Phase Grid */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">
+          <h2 className="text-xl font-bold text-aged-gold mb-4">
             Workbook Phases
           </h2>
           {progressLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading phases...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-aged-gold mx-auto mb-4"></div>
+              <p className="text-muted-wisdom">Loading phases...</p>
             </div>
           ) : (
             <PhaseGrid

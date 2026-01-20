@@ -101,7 +101,7 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Introduction */}
-      <div className="bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-lg p-4">
+      <div className="bg-gradient-to-r from-green-50 to-teal-50 border border-heart-emerald rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
             <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,10 +109,10 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-green-900 mb-1">
+            <h4 className="text-sm font-semibold text-enlightened mb-1">
               From Envy to Inspiration
             </h4>
-            <p className="text-sm text-green-800">
+            <p className="text-sm text-muted-wisdom">
               Now take your envy inventory and transform it into inspired action. Reframe each envy statement
               into an empowering "I am inspired to..." statement, then create actionable steps to move forward.
             </p>
@@ -137,14 +137,14 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
       {data.reframes.length > 0 ? (
         <div className="space-y-6">
           {data.reframes.map((reframe, index) => (
-            <div key={reframe.id} className="bg-white rounded-xl border-2 border-green-200 shadow-lg overflow-hidden">
+            <div key={reframe.id} className="bg-elevated rounded-xl border-2 border-heart-emerald shadow-lg overflow-hidden">
               {/* Header */}
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 p-4 border-b-2 border-green-200 flex items-center justify-between">
+              <div className="bg-gradient-to-r from-green-50 to-teal-50 p-4 border-b-2 border-heart-emerald flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-lg">
                     {index + 1}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">Transformation</h3>
+                  <h3 className="text-lg font-semibold text-enlightened">Transformation</h3>
                 </div>
                 <button
                   onClick={() => handleDeleteReframe(reframe.id)}
@@ -160,7 +160,7 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
               {/* Fields */}
               <div className="p-6 space-y-6">
                 {/* Envy Statement */}
-                <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                <div className="bg-elevated border-2 border-red-200 rounded-lg p-4">
                   <label className="block text-sm font-semibold text-red-900 mb-2">
                     ❌ Envy Statement (from previous exercise)
                   </label>
@@ -169,7 +169,7 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
                     onChange={(e) => handleUpdateReframe(reframe.id, 'envy_statement', e.target.value)}
                     placeholder="e.g., I&apos;m jealous that Sarah has such a successful online business while I&apos;m stuck in my 9-5..."
                     rows={3}
-                    className="w-full p-3 border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y bg-white"
+                    className="w-full p-3 border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-y bg-elevated"
                   />
                 </div>
 
@@ -181,8 +181,8 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
                 </div>
 
                 {/* Reframed Inspiration */}
-                <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
-                  <label className="block text-sm font-semibold text-green-900 mb-2">
+                <div className="bg-elevated border-2 border-green-300 rounded-lg p-4">
+                  <label className="block text-sm font-semibold text-enlightened mb-2">
                     ✨ Reframed as Inspiration
                   </label>
                   <textarea
@@ -190,7 +190,7 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
                     onChange={(e) => handleUpdateReframe(reframe.id, 'reframed_inspiration', e.target.value)}
                     placeholder="e.g., I&apos;m inspired to build my own online business. Sarah's success shows me it&apos;s possible and motivates me to start."
                     rows={3}
-                    className="w-full p-3 border-2 border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y bg-white"
+                    className="w-full p-3 border-2 border-green-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-y bg-elevated"
                   />
                   <p className="text-xs text-green-700 mt-2">
                     Start with &quot;I&apos;m inspired to...&quot; or &quot;This shows me that I can...&quot;
@@ -198,8 +198,8 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
                 </div>
 
                 {/* Action Steps */}
-                <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
-                  <label className="block text-sm font-semibold text-blue-900 mb-3">
+                <div className="bg-elevated border-2 border-blue-300 rounded-lg p-4">
+                  <label className="block text-sm font-semibold text-enlightened mb-3">
                     🎯 Action Steps I Can Take
                   </label>
                   <div className="space-y-3">
@@ -213,7 +213,7 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
                           value={step}
                           onChange={(e) => handleUpdateActionStep(reframe.id, stepIndex, e.target.value)}
                           placeholder="Specific, actionable step..."
-                          className="flex-1 p-3 border-2 border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                          className="flex-1 p-3 border-2 border-[rgba(196,160,82,0.2)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-elevated"
                         />
                         {reframe.action_steps.length > 1 && (
                           <button
@@ -247,27 +247,27 @@ export function InspirationReframeEditor({ data, onChange, className = '' }: Ins
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-          <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 bg-elevated rounded-xl border-2 border-dashed border-aged-gold">
+          <svg className="w-16 h-16 mx-auto text-tertiary-text mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          <p className="text-gray-600 font-semibold mb-2">No reframes yet</p>
-          <p className="text-sm text-gray-500">Transform your envy into inspired action</p>
+          <p className="text-muted-wisdom font-semibold mb-2">No reframes yet</p>
+          <p className="text-sm text-tertiary-text">Transform your envy into inspired action</p>
         </div>
       )}
 
       {/* Reframing Tips */}
-      <div className="bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-purple-900 mb-4">Reframing Formula</h3>
+      <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-enlightened mb-4">Reframing Formula</h3>
         <div className="space-y-4">
-          <div className="bg-white rounded-lg p-4 border border-purple-100">
-            <p className="font-semibold text-purple-900 mb-2">Before (Envy):</p>
-            <p className="text-sm text-gray-700 italic">&quot;I&apos;m jealous that they have X while I don&apos;t.&quot;</p>
+          <div className="bg-elevated rounded-lg p-4 border border-[rgba(196,160,82,0.15)]">
+            <p className="font-semibold text-enlightened mb-2">Before (Envy):</p>
+            <p className="text-sm text-muted-wisdom italic">&quot;I&apos;m jealous that they have X while I don&apos;t.&quot;</p>
           </div>
           <div className="text-center text-purple-600 text-2xl font-bold">↓</div>
-          <div className="bg-white rounded-lg p-4 border border-purple-100">
-            <p className="font-semibold text-purple-900 mb-2">After (Inspiration):</p>
-            <p className="text-sm text-gray-700 italic">&quot;I&apos;m inspired to create X for myself. Their success shows it&apos;s possible.&quot;</p>
+          <div className="bg-elevated rounded-lg p-4 border border-[rgba(196,160,82,0.15)]">
+            <p className="font-semibold text-enlightened mb-2">After (Inspiration):</p>
+            <p className="text-sm text-muted-wisdom italic">&quot;I&apos;m inspired to create X for myself. Their success shows it&apos;s possible.&quot;</p>
           </div>
         </div>
       </div>

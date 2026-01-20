@@ -58,7 +58,7 @@ export function SignsEditor({ data, onChange, className = '' }: SignsEditorProps
 
   return (
     <div className={`space-y-8 ${className}`}>
-      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4">
+      <div className="bg-elevated border border-aged-gold rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
             <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +66,7 @@ export function SignsEditor({ data, onChange, className = '' }: SignsEditorProps
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-yellow-900 mb-1">Signs from the Universe</h4>
+            <h4 className="text-sm font-semibold text-enlightened mb-1">Signs from the Universe</h4>
             <p className="text-sm text-yellow-800">
               When you&apos;re in alignment, the universe sends signs - synchronicities, patterns, messages. Record them here to strengthen your awareness and trust.
             </p>
@@ -89,8 +89,8 @@ export function SignsEditor({ data, onChange, className = '' }: SignsEditorProps
       {data.signs.length > 0 ? (
         <div className="space-y-6">
           {data.signs.map((sign, index) => (
-            <div key={sign.id} className="bg-white rounded-xl border-2 border-yellow-200 shadow-lg overflow-hidden">
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 border-b-2 border-yellow-200">
+            <div key={sign.id} className="bg-elevated rounded-xl border-2 border-aged-gold shadow-lg overflow-hidden">
+              <div className="bg-elevated p-6 border-b-2 border-aged-gold">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-yellow-600 text-white rounded-full flex items-center justify-center font-bold">
@@ -116,7 +116,7 @@ export function SignsEditor({ data, onChange, className = '' }: SignsEditorProps
 
               <div className="p-6 space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">The Sign I Observed</label>
+                  <label className="block text-sm font-semibold text-muted-wisdom mb-2">The Sign I Observed</label>
                   <textarea
                     value={sign.sign_observed}
                     onChange={(e) => handleUpdateSign(sign.id, 'sign_observed', e.target.value)}
@@ -126,25 +126,25 @@ export function SignsEditor({ data, onChange, className = '' }: SignsEditorProps
                   />
                 </div>
 
-                <div className="bg-purple-50 border-2 border-purple-300 rounded-lg p-4">
-                  <label className="block text-sm font-semibold text-purple-900 mb-2">My Interpretation</label>
+                <div className="bg-elevated border-2 border-purple-300 rounded-lg p-4">
+                  <label className="block text-sm font-semibold text-enlightened mb-2">My Interpretation</label>
                   <textarea
                     value={sign.interpretation}
                     onChange={(e) => handleUpdateSign(sign.id, 'interpretation', e.target.value)}
                     placeholder="What does this sign mean to me? What message is it sending?"
                     rows={3}
-                    className="w-full p-3 border-2 border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none resize-y bg-white"
+                    className="w-full p-3 border-2 border-[rgba(196,160,82,0.2)] rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none resize-y bg-elevated"
                   />
                 </div>
 
-                <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
-                  <label className="block text-sm font-semibold text-green-900 mb-2">Action I Took</label>
+                <div className="bg-elevated border-2 border-green-300 rounded-lg p-4">
+                  <label className="block text-sm font-semibold text-enlightened mb-2">Action I Took</label>
                   <textarea
                     value={sign.action_taken}
                     onChange={(e) => handleUpdateSign(sign.id, 'action_taken', e.target.value)}
                     placeholder="How did I respond to this sign? What did I do?"
                     rows={3}
-                    className="w-full p-3 border-2 border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none resize-y bg-white"
+                    className="w-full p-3 border-2 border-heart-emerald rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none resize-y bg-elevated"
                   />
                 </div>
               </div>
@@ -152,18 +152,18 @@ export function SignsEditor({ data, onChange, className = '' }: SignsEditorProps
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-          <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="text-center py-16 bg-elevated rounded-xl border-2 border-dashed border-aged-gold">
+          <svg className="w-16 h-16 mx-auto text-tertiary-text mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
           </svg>
-          <p className="text-gray-600 font-semibold mb-2">No signs recorded yet</p>
-          <p className="text-sm text-gray-500">Start noticing the universe's messages</p>
+          <p className="text-muted-wisdom font-semibold mb-2">No signs recorded yet</p>
+          <p className="text-sm text-tertiary-text">Start noticing the universe's messages</p>
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-blue-900 mb-4">Types of Signs</h3>
-        <ul className="space-y-2 text-sm text-gray-700">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-enlightened mb-4">Types of Signs</h3>
+        <ul className="space-y-2 text-sm text-muted-wisdom">
           <li className="flex items-start gap-2">
             <span className="text-blue-600 font-bold">•</span>
             <span><strong>Synchronicities:</strong> Meaningful coincidences that feel too perfect to be random</span>

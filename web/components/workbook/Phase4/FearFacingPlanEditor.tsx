@@ -46,17 +46,17 @@ export function FearFacingPlanEditor({ data, onChange, className = '' }: FearFac
 
   return (
     <div className={`space-y-8 ${className}`}>
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-        <p className="text-sm text-purple-800">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-lg p-4">
+        <p className="text-sm text-muted-wisdom">
           Create concrete action plans to face your fears. Courage is not the absence of fear, but action despite it.
         </p>
       </div>
 
       {data.actions.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+        <div className="text-center py-12 bg-elevated rounded-xl border-2 border-dashed border-[rgba(196,160,82,0.15)]">
           <button
             onClick={addAction}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            className="px-6 py-3 bg-gradient-primary text-white rounded-lg hover:brightness-110 shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
           >
             Create First Action Plan
           </button>
@@ -64,18 +64,18 @@ export function FearFacingPlanEditor({ data, onChange, className = '' }: FearFac
       ) : (
         <div className="space-y-6">
           {data.actions.map((action, index) => (
-            <div key={action.id} className={`bg-white rounded-xl border-2 p-6 shadow-sm ${action.completed ? 'border-green-200 bg-green-50' : 'border-purple-200'}`}>
+            <div key={action.id} className={`bg-elevated rounded-xl border-2 p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)] ${action.completed ? 'border-green-500/30 bg-green-900/10' : 'border-[rgba(196,160,82,0.15)]'}`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold">
+                  <span className="w-8 h-8 bg-aged-gold text-temple-stone rounded-full flex items-center justify-center font-bold">
                     {index + 1}
                   </span>
-                  <h4 className="font-semibold">Fear-Facing Action Plan</h4>
+                  <h4 className="font-semibold text-enlightened">Fear-Facing Action Plan</h4>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => updateAction(action.id, { completed: !action.completed })}
-                    className={`p-2 rounded ${action.completed ? 'text-green-600 hover:bg-green-100' : 'text-gray-400 hover:bg-gray-100'}`}
+                    className={`p-2 rounded ${action.completed ? 'text-green-500 hover:bg-green-900/20' : 'text-tertiary-text hover:bg-elevated'}`}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -83,7 +83,7 @@ export function FearFacingPlanEditor({ data, onChange, className = '' }: FearFac
                   </button>
                   <button
                     onClick={() => removeAction(action.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded"
+                    className="p-2 text-red-500 hover:bg-red-900/20 rounded"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -94,43 +94,43 @@ export function FearFacingPlanEditor({ data, onChange, className = '' }: FearFac
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Fear to Face</label>
+                  <label className="block text-sm font-medium mb-2 text-aged-gold">Fear to Face</label>
                   <input
                     type="text"
                     value={action.fear}
                     onChange={(e) => updateAction(action.id, { fear: e.target.value })}
                     placeholder="What fear will you face?"
-                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full p-3 bg-[rgba(26,26,36,0.8)] border border-[rgba(196,160,82,0.15)] rounded-lg focus:outline-none focus:ring-2 focus:ring-aged-gold text-enlightened"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Action Steps</label>
+                  <label className="block text-sm font-medium mb-2 text-aged-gold">Action Steps</label>
                   <textarea
                     value={action.action}
                     onChange={(e) => updateAction(action.id, { action: e.target.value })}
                     placeholder="What specific actions will you take?"
                     rows={3}
-                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full p-3 bg-[rgba(26,26,36,0.8)] border border-[rgba(196,160,82,0.15)] rounded-lg focus:outline-none focus:ring-2 focus:ring-aged-gold text-enlightened"
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Support System</label>
+                    <label className="block text-sm font-medium mb-2 text-aged-gold">Support System</label>
                     <input
                       type="text"
                       value={action.support}
                       onChange={(e) => updateAction(action.id, { support: e.target.value })}
                       placeholder="Who can support you?"
-                      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full p-3 bg-[rgba(26,26,36,0.8)] border border-[rgba(196,160,82,0.15)] rounded-lg focus:outline-none focus:ring-2 focus:ring-aged-gold text-enlightened"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Target Date</label>
+                    <label className="block text-sm font-medium mb-2 text-aged-gold">Target Date</label>
                     <input
                       type="date"
                       value={action.deadline}
                       onChange={(e) => updateAction(action.id, { deadline: e.target.value })}
-                      className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full p-3 bg-[rgba(26,26,36,0.8)] border border-[rgba(196,160,82,0.15)] rounded-lg focus:outline-none focus:ring-2 focus:ring-aged-gold text-enlightened"
                     />
                   </div>
                 </div>
@@ -140,7 +140,7 @@ export function FearFacingPlanEditor({ data, onChange, className = '' }: FearFac
 
           <button
             onClick={addAction}
-            className="w-full py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50"
+            className="w-full py-3 border-2 border-aged-gold text-aged-gold rounded-lg hover:brightness-110"
           >
             + Add Another Plan
           </button>

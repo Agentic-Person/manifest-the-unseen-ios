@@ -25,9 +25,9 @@ const ZONE_CONFIG = {
   comfortZone: {
     label: 'Comfort Zone',
     color: 'green',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-300',
-    textColor: 'text-green-900',
+    bgColor: 'bg-[rgba(45,90,74,0.1)]',
+    borderColor: 'border-heart-emerald',
+    textColor: 'text-enlightened',
     badgeColor: 'bg-green-100',
     description: 'Activities you feel completely safe and confident doing',
     placeholder: 'e.g., Daily routine, familiar tasks...',
@@ -35,9 +35,9 @@ const ZONE_CONFIG = {
   stretchZone: {
     label: 'Stretch Zone',
     color: 'yellow',
-    bgColor: 'bg-yellow-50',
-    borderColor: 'border-yellow-300',
-    textColor: 'text-yellow-900',
+    bgColor: 'bg-[rgba(196,160,82,0.1)]',
+    borderColor: 'border-aged-gold',
+    textColor: 'text-enlightened',
     badgeColor: 'bg-yellow-100',
     description: 'Activities that challenge you but are achievable with effort',
     placeholder: 'e.g., Public speaking, learning new skills...',
@@ -45,9 +45,9 @@ const ZONE_CONFIG = {
   panicZone: {
     label: 'Panic Zone',
     color: 'red',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-300',
-    textColor: 'text-red-900',
+    bgColor: 'bg-[rgba(107,45,61,0.1)]',
+    borderColor: 'border-burgundy',
+    textColor: 'text-enlightened',
     badgeColor: 'bg-red-100',
     description: 'Activities that feel overwhelming and cause significant anxiety',
     placeholder: 'e.g., Extreme risks, major life changes...',
@@ -124,7 +124,7 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
           <h3 className={`text-xl font-bold ${config.textColor} mb-2`}>
             {config.label}
           </h3>
-          <p className="text-sm text-gray-600">{config.description}</p>
+          <p className="text-sm text-muted-wisdom">{config.description}</p>
         </div>
 
         {/* Items List */}
@@ -137,11 +137,11 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
             items.map((item, index) => (
               <div
                 key={`${zone}-${index}`}
-                className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 group hover:shadow-md transition-shadow"
+                className="bg-temple-stone rounded-lg p-3 shadow-[0_4px_24px_rgba(0,0,0,0.4)] border border-[rgba(196,160,82,0.15)] group hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] transition-shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
               >
                 <div className="flex items-start gap-2">
                   <div className="flex-1">
-                    <p className="text-gray-800">{item}</p>
+                    <p className="text-enlightened">{item}</p>
                   </div>
 
                   {/* Action Buttons */}
@@ -151,7 +151,7 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
                       <button
                         type="button"
                         onClick={() => handleMoveItem(zone, zone === 'stretchZone' ? 'comfortZone' : 'stretchZone', index)}
-                        className="p-1 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
+                        className="p-1 text-tertiary-text hover:text-green-600 hover:bg-[rgba(45,90,74,0.1)] rounded transition-colors"
                         title={`Move to ${zone === 'stretchZone' ? 'Comfort' : 'Stretch'} Zone`}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +163,7 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
                       <button
                         type="button"
                         onClick={() => handleMoveItem(zone, zone === 'comfortZone' ? 'stretchZone' : 'panicZone', index)}
-                        className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                        className="p-1 text-tertiary-text hover:text-red-600 hover:bg-[rgba(107,45,61,0.2)] rounded transition-colors"
                         title={`Move to ${zone === 'comfortZone' ? 'Stretch' : 'Panic'} Zone`}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +176,7 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(zone, index)}
-                      className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                      className="p-1 text-tertiary-text hover:text-red-600 hover:bg-[rgba(107,45,61,0.2)] rounded transition-colors"
                       title="Remove item"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,7 +191,7 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
         </div>
 
         {/* Add Item Input */}
-        <div className="pt-2 border-t border-gray-300">
+        <div className="pt-2 border-t border-[rgba(196,160,82,0.15)]">
           <div className="flex gap-2">
             <input
               type="text"
@@ -199,13 +199,13 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
               onChange={(e) => setNewItems({ ...newItems, [zone]: e.target.value })}
               onKeyDown={(e) => handleKeyDown(zone, e)}
               placeholder={config.placeholder}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="flex-1 px-3 py-2 border border-[rgba(196,160,82,0.15)] rounded-lg focus:outline-none focus:ring-2 focus:ring-aged-gold focus:border-aged-gold"
             />
             <button
               type="button"
               onClick={() => handleAddItem(zone)}
               disabled={!newItems[zone].trim()}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              className="px-4 py-2 bg-gradient-primary text-white rounded-lg hover:brightness-110 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-aged-gold focus:ring-offset-0"
             >
               Add
             </button>
@@ -225,46 +225,46 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Introduction */}
-      <div className="bg-gradient-to-br from-purple-50 to-white rounded-xl p-6 border border-purple-100">
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">
+      <div className="bg-gradient-to-br from-elevated to-elevated rounded-xl p-6 border border-[rgba(196,160,82,0.15)]">
+        <h3 className="text-xl font-semibold text-enlightened mb-3">
           Understanding Your Zones
         </h3>
-        <div className="space-y-2 text-gray-700">
+        <div className="space-y-2 text-muted-wisdom">
           <p>
-            <strong className="text-green-700">Comfort Zone:</strong> Where you feel safe and confident.
+            <strong className="text-tertiary-text">Comfort Zone:</strong> Where you feel safe and confident.
             This is your baseline - familiar and easy activities.
           </p>
           <p>
-            <strong className="text-yellow-700">Stretch Zone:</strong> Where growth happens! These activities
+            <strong className="text-tertiary-text">Stretch Zone:</strong> Where growth happens! These activities
             challenge you but are achievable with effort. This is your sweet spot for personal development.
           </p>
           <p>
-            <strong className="text-red-700">Panic Zone:</strong> Activities that feel overwhelming.
+            <strong className="text-tertiary-text">Panic Zone:</strong> Activities that feel overwhelming.
             These may be too far outside your current capabilities and can cause excessive stress.
           </p>
         </div>
       </div>
 
       {/* Visual Representation */}
-      <div className="bg-white rounded-xl p-8 border border-gray-200">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">
+      <div className="bg-elevated rounded-xl p-8 border border-[rgba(196,160,82,0.15)]">
+        <h3 className="text-xl font-semibold text-enlightened mb-6 text-center">
           Concentric Zones Visualization
         </h3>
         <div className="relative max-w-2xl mx-auto aspect-square">
           {/* Panic Zone (outer) */}
-          <div className="absolute inset-0 bg-red-100 rounded-full border-4 border-red-300 flex items-center justify-center">
-            <span className="text-red-700 font-bold text-lg absolute top-8">Panic Zone</span>
+          <div className="absolute inset-0 bg-[rgba(107,45,61,0.2)] rounded-full border-4 border-burgundy flex items-center justify-center">
+            <span className="text-enlightened font-bold text-lg absolute top-8">Panic Zone</span>
           </div>
           {/* Stretch Zone (middle) */}
-          <div className="absolute inset-[15%] bg-yellow-100 rounded-full border-4 border-yellow-300 flex items-center justify-center">
-            <span className="text-yellow-700 font-bold text-lg absolute top-6">Stretch Zone</span>
+          <div className="absolute inset-[15%] bg-[rgba(196,160,82,0.2)] rounded-full border-4 border-aged-gold flex items-center justify-center">
+            <span className="text-enlightened font-bold text-lg absolute top-6">Stretch Zone</span>
           </div>
           {/* Comfort Zone (inner) */}
-          <div className="absolute inset-[35%] bg-green-100 rounded-full border-4 border-green-300 flex items-center justify-center">
-            <span className="text-green-700 font-bold text-base">Comfort Zone</span>
+          <div className="absolute inset-[35%] bg-[rgba(45,90,74,0.2)] rounded-full border-4 border-heart-emerald flex items-center justify-center">
+            <span className="text-enlightened font-bold text-base">Comfort Zone</span>
           </div>
         </div>
-        <p className="text-center text-gray-600 mt-6 text-sm">
+        <p className="text-center text-muted-wisdom mt-6 text-sm">
           Growth happens when you regularly step into your stretch zone
         </p>
       </div>
@@ -277,18 +277,18 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
       </div>
 
       {/* Insights */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
-            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-deep-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-blue-900 mb-1">
+            <h4 className="text-sm font-semibold text-enlightened mb-1">
               Growth Insight
             </h4>
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-muted-wisdom">
               {getInsight(data)}
             </p>
           </div>
@@ -296,25 +296,25 @@ export function ComfortZoneEditor({ data, onChange, className = '' }: ComfortZon
       </div>
 
       {/* Action Tips */}
-      <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-purple-900 mb-3">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-enlightened mb-3">
           Tips for Using Your Zones
         </h3>
-        <ul className="space-y-2 text-sm text-gray-700">
+        <ul className="space-y-2 text-sm text-muted-wisdom">
           <li className="flex items-start gap-2">
-            <span className="text-purple-600 font-bold">1.</span>
+            <span className="text-aged-gold font-bold">1.</span>
             <span>Identify activities in each zone to understand where you currently are</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-purple-600 font-bold">2.</span>
+            <span className="text-aged-gold font-bold">2.</span>
             <span>Set goals to gradually move items from stretch zone to comfort zone</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-purple-600 font-bold">3.</span>
+            <span className="text-aged-gold font-bold">3.</span>
             <span>Avoid spending too much time in panic zone - break those items into smaller stretch zone steps</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-purple-600 font-bold">4.</span>
+            <span className="text-aged-gold font-bold">4.</span>
             <span>Regularly challenge yourself with stretch zone activities for continuous growth</span>
           </li>
         </ul>

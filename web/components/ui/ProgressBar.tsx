@@ -36,14 +36,14 @@ export function ProgressBar({
       {/* Header with label and percentage */}
       {label && (
         <div className="flex justify-between items-center">
-          <span className="text-sm font-medium text-gray-700">{label}</span>
+          <span className="text-sm font-medium text-muted-wisdom">{label}</span>
           <div className="flex items-center gap-2">
             {showCount && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-tertiary-text">
                 {current} / {total}
               </span>
             )}
-            <span className="text-sm font-semibold text-purple-600">
+            <span className="text-sm font-semibold text-aged-gold">
               {percentage}%
             </span>
           </div>
@@ -51,25 +51,25 @@ export function ProgressBar({
       )}
 
       {/* Progress bar */}
-      <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+      <div className="relative w-full h-3 bg-[rgba(196,160,82,0.15)] rounded-full overflow-hidden">
         <div
           role="progressbar"
           aria-valuenow={percentage}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label={label || 'Progress'}
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-300 ease-out"
+          className="absolute top-0 left-0 h-full bg-gradient-gold rounded-full transition-all duration-300 ease-out shadow-[0_0_8px_rgba(196,160,82,0.3)]"
           style={{ width: `${clampedPercentage}%` }}
         />
       </div>
 
       {/* Show count below if no label */}
       {!label && showCount && (
-        <div className="flex justify-between items-center text-xs text-gray-500">
+        <div className="flex justify-between items-center text-xs text-tertiary-text">
           <span>
             {current} / {total}
           </span>
-          <span className="font-semibold text-purple-600">{percentage}%</span>
+          <span className="font-semibold text-aged-gold">{percentage}%</span>
         </div>
       )}
     </div>

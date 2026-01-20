@@ -101,7 +101,7 @@ export function JourneyReviewEditor({ data, onChange, className = '' }: JourneyR
 
   return (
     <div className={`space-y-8 ${className}`}>
-      <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.2)] rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
             <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,8 +109,8 @@ export function JourneyReviewEditor({ data, onChange, className = '' }: JourneyR
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-purple-900 mb-1">Review Your Journey</h4>
-            <p className="text-sm text-purple-800">
+            <h4 className="text-sm font-semibold text-enlightened mb-1">Review Your Journey</h4>
+            <p className="text-sm text-muted-wisdom">
               Reflect on your entire manifestation journey. What have you learned? How have you grown? Celebrate your transformation.
             </p>
           </div>
@@ -119,21 +119,21 @@ export function JourneyReviewEditor({ data, onChange, className = '' }: JourneyR
 
       {/* Phase-by-Phase Review */}
       <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-gray-900">Phase-by-Phase Reflections</h3>
+        <h3 className="text-xl font-semibold text-enlightened">Phase-by-Phase Reflections</h3>
 
         {PHASE_NAMES.map((name, idx) => {
           const phaseNum = idx + 1
           const summary = getPhaseSummary(phaseNum)
 
           return (
-            <div key={phaseNum} className="bg-white rounded-xl border-2 border-purple-200 p-6">
-              <h4 className="text-lg font-semibold text-purple-900 mb-4">
+            <div key={phaseNum} className="bg-elevated rounded-xl border-2 border-[rgba(196,160,82,0.2)] p-6">
+              <h4 className="text-lg font-semibold text-enlightened mb-4">
                 Phase {phaseNum}: {name}
               </h4>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Key Insights</label>
+                  <label className="block text-sm font-semibold text-muted-wisdom mb-2">Key Insights</label>
                   {summary.key_insights.map((insight, insightIdx) => (
                     <input
                       key={insightIdx}
@@ -153,7 +153,7 @@ export function JourneyReviewEditor({ data, onChange, className = '' }: JourneyR
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Biggest Breakthrough</label>
+                  <label className="block text-sm font-semibold text-muted-wisdom mb-2">Biggest Breakthrough</label>
                   <textarea
                     value={summary.biggest_breakthrough}
                     onChange={(e) => handleUpdatePhaseSummary(phaseNum, 'biggest_breakthrough', e.target.value)}
@@ -169,32 +169,32 @@ export function JourneyReviewEditor({ data, onChange, className = '' }: JourneyR
       </div>
 
       {/* Overall Transformation */}
-      <div className="bg-gradient-to-br from-green-50 to-white border-2 border-green-300 rounded-xl p-6">
-        <label className="block text-lg font-semibold text-green-900 mb-3">Overall Transformation</label>
+      <div className="bg-elevated border-2 border-green-300 rounded-xl p-6">
+        <label className="block text-lg font-semibold text-enlightened mb-3">Overall Transformation</label>
         <textarea
           value={data.overall_transformation}
           onChange={(e) => onChange({ ...data, overall_transformation: e.target.value })}
           placeholder="How have you transformed through this journey?"
           rows={5}
-          className="w-full p-4 border-2 border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none resize-y bg-white"
+          className="w-full p-4 border-2 border-heart-emerald rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none resize-y bg-elevated"
         />
       </div>
 
       {/* Biggest Surprise */}
-      <div className="bg-gradient-to-br from-yellow-50 to-white border-2 border-yellow-300 rounded-xl p-6">
-        <label className="block text-lg font-semibold text-yellow-900 mb-3">Biggest Surprise</label>
+      <div className="bg-elevated border-2 border-yellow-300 rounded-xl p-6">
+        <label className="block text-lg font-semibold text-enlightened mb-3">Biggest Surprise</label>
         <textarea
           value={data.biggest_surprise}
           onChange={(e) => onChange({ ...data, biggest_surprise: e.target.value })}
           placeholder="What surprised you most about this journey?"
           rows={3}
-          className="w-full p-4 border-2 border-yellow-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:outline-none resize-y bg-white"
+          className="w-full p-4 border-2 border-aged-gold rounded-lg focus:ring-2 focus:ring-yellow-500 focus:outline-none resize-y bg-elevated"
         />
       </div>
 
       {/* Newfound Strengths */}
-      <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-300 rounded-xl p-6">
-        <label className="block text-lg font-semibold text-blue-900 mb-3">Newfound Strengths</label>
+      <div className="bg-elevated border-2 border-blue-300 rounded-xl p-6">
+        <label className="block text-lg font-semibold text-enlightened mb-3">Newfound Strengths</label>
         {data.newfound_strengths.map((strength, idx) => (
           <input
             key={idx}
@@ -202,7 +202,7 @@ export function JourneyReviewEditor({ data, onChange, className = '' }: JourneyR
             value={strength}
             onChange={(e) => handleUpdateStrength(idx, e.target.value)}
             placeholder="A strength you've discovered..."
-            className="w-full p-3 border-2 border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none mb-2 bg-white"
+            className="w-full p-3 border-2 border-[rgba(196,160,82,0.2)] rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none mb-2 bg-elevated"
           />
         ))}
         <button

@@ -92,28 +92,28 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Summary Statistics */}
-      <div className="bg-gradient-to-br from-purple-50 to-white rounded-xl p-6 border border-purple-100">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+      <div className="bg-gradient-to-br from-elevated to-elevated rounded-xl p-6 border border-[rgba(196,160,82,0.15)]">
+        <h3 className="text-xl font-semibold text-enlightened mb-4">
           Habits Overview
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-            <p className="text-3xl font-bold text-purple-600">
+          <div className="text-center p-4 bg-temple-stone rounded-lg border border-[rgba(196,160,82,0.15)]">
+            <p className="text-3xl font-bold text-aged-gold">
               {data.habits.length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Total Habits</p>
+            <p className="text-sm text-muted-wisdom mt-1">Total Habits</p>
           </div>
-          <div className="text-center p-4 bg-white rounded-lg border border-green-200">
-            <p className="text-3xl font-bold text-green-600">
+          <div className="text-center p-4 bg-temple-stone rounded-lg border border-heart-emerald">
+            <p className="text-3xl font-bold text-heart-emerald">
               {goodHabits.length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Good Habits</p>
+            <p className="text-sm text-muted-wisdom mt-1">Good Habits</p>
           </div>
-          <div className="text-center p-4 bg-white rounded-lg border border-red-200">
-            <p className="text-3xl font-bold text-red-600">
+          <div className="text-center p-4 bg-temple-stone rounded-lg border border-burgundy">
+            <p className="text-3xl font-bold text-burgundy">
               {badHabits.length}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Bad Habits</p>
+            <p className="text-sm text-muted-wisdom mt-1">Bad Habits</p>
           </div>
         </div>
       </div>
@@ -123,7 +123,7 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
         <button
           type="button"
           onClick={() => setShowForm(true)}
-          className="w-full py-3 px-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+          className="w-full py-3 px-4 bg-gradient-primary text-white rounded-lg hover:brightness-110 transition-colors font-medium shadow-sm hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] focus:outline-none focus:ring-2 focus:ring-aged-gold focus:ring-offset-0"
         >
           <span className="flex items-center justify-center gap-2">
             <svg
@@ -143,14 +143,14 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
           </span>
         </button>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-temple-stone border border-[rgba(196,160,82,0.15)] rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+          <h3 className="text-lg font-semibold text-enlightened mb-4">
             Add New Habit
           </h3>
           <div className="space-y-4">
             {/* Habit Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-wisdom mb-2">
                 Habit Name *
               </label>
               <input
@@ -161,18 +161,18 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
                   setFormErrors({ ...formErrors, name: '' })
                 }}
                 placeholder="e.g., Morning meditation, Late-night snacking"
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                  formErrors.name ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-aged-gold focus:border-aged-gold ${
+                  formErrors.name ? 'border-red-500' : 'border-[rgba(196,160,82,0.15)]'
                 }`}
               />
               {formErrors.name && (
-                <p className="text-red-600 text-sm mt-1">{formErrors.name}</p>
+                <p className="text-burgundy text-sm mt-1">{formErrors.name}</p>
               )}
             </div>
 
             {/* Habit Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-wisdom mb-2">
                 Type *
               </label>
               <select
@@ -180,7 +180,7 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
                 onChange={(e) =>
                   setNewHabit({ ...newHabit, type: e.target.value as 'good' | 'bad' })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-[rgba(196,160,82,0.15)] rounded-lg focus:ring-2 focus:ring-aged-gold focus:border-aged-gold"
               >
                 <option value="good">Good Habit</option>
                 <option value="bad">Bad Habit</option>
@@ -189,7 +189,7 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
 
             {/* Frequency */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-muted-wisdom mb-2">
                 Frequency *
               </label>
               <input
@@ -200,12 +200,12 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
                   setFormErrors({ ...formErrors, frequency: '' })
                 }}
                 placeholder="e.g., Daily, 3x per week, Occasionally"
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                  formErrors.frequency ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-aged-gold focus:border-aged-gold ${
+                  formErrors.frequency ? 'border-red-500' : 'border-[rgba(196,160,82,0.15)]'
                 }`}
               />
               {formErrors.frequency && (
-                <p className="text-red-600 text-sm mt-1">{formErrors.frequency}</p>
+                <p className="text-burgundy text-sm mt-1">{formErrors.frequency}</p>
               )}
             </div>
 
@@ -214,7 +214,7 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
               <button
                 type="button"
                 onClick={handleAddHabit}
-                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                className="flex-1 px-4 py-2 bg-gradient-primary text-white rounded-lg hover:brightness-110 transition-colors font-medium"
               >
                 Add Habit
               </button>
@@ -225,7 +225,7 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
                   setNewHabit({ name: '', type: 'good', frequency: '' })
                   setFormErrors({})
                 }}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                className="flex-1 px-4 py-2 bg-elevated text-muted-wisdom rounded-lg hover:bg-gray-300 transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -240,7 +240,7 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
           {/* Good Habits */}
           {goodHabits.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold text-green-700 mb-3 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-tertiary-text mb-3 flex items-center gap-2">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -261,8 +261,8 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
                 onRemove={handleRemoveHabit}
                 renderItem={(habit) => (
                   <div className="border-l-4 border-green-500 pl-4">
-                    <h4 className="font-semibold text-gray-900">{habit.name}</h4>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <h4 className="font-semibold text-enlightened">{habit.name}</h4>
+                    <p className="text-sm text-muted-wisdom mt-1">
                       Frequency: <span className="font-medium">{habit.frequency}</span>
                     </p>
                   </div>
@@ -274,7 +274,7 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
           {/* Bad Habits */}
           {badHabits.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold text-red-700 mb-3 flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-tertiary-text mb-3 flex items-center gap-2">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -295,8 +295,8 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
                 onRemove={handleRemoveHabit}
                 renderItem={(habit) => (
                   <div className="border-l-4 border-red-500 pl-4">
-                    <h4 className="font-semibold text-gray-900">{habit.name}</h4>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <h4 className="font-semibold text-enlightened">{habit.name}</h4>
+                    <p className="text-sm text-muted-wisdom mt-1">
                       Frequency: <span className="font-medium">{habit.frequency}</span>
                     </p>
                   </div>
@@ -306,7 +306,7 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
           )}
         </div>
       ) : (
-        <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+        <div className="text-center py-12 text-tertiary-text bg-elevated rounded-lg border-2 border-dashed border-[rgba(196,160,82,0.15)]">
           <svg
             className="w-12 h-12 mx-auto mb-3 text-gray-400"
             fill="none"
@@ -329,11 +329,11 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
 
       {/* Insights */}
       {data.habits.length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-lg p-4">
           <div className="flex gap-3">
             <div className="flex-shrink-0">
               <svg
-                className="w-6 h-6 text-blue-600"
+                className="w-6 h-6 text-deep-teal"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -347,10 +347,10 @@ export function HabitsAuditEditor({ data, onChange, className = '' }: HabitsAudi
               </svg>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-blue-900 mb-1">
+              <h4 className="text-sm font-semibold text-enlightened mb-1">
                 Insight
               </h4>
-              <p className="text-sm text-blue-800">
+              <p className="text-sm text-muted-wisdom">
                 {getInsight(goodHabits.length, badHabits.length)}
               </p>
             </div>

@@ -117,15 +117,15 @@ export function ValuesEditor({ data, onChange, className = '' }: ValuesEditorPro
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Instructions */}
-      <div className="bg-gradient-to-br from-purple-50 to-white rounded-xl p-6 border border-purple-100">
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">
+      <div className="bg-gradient-to-br from-elevated to-elevated rounded-xl p-6 border border-[rgba(196,160,82,0.15)]">
+        <h3 className="text-xl font-semibold text-enlightened mb-3">
           Rank Your Core Values
         </h3>
-        <p className="text-gray-700 mb-4">
+        <p className="text-muted-wisdom mb-4">
           Use the up/down arrows to reorder your values by importance, or type a new rank number. Your top 3 values are highlighted in gold.
         </p>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center gap-2 text-sm text-muted-wisdom">
+          <svg className="w-5 h-5 text-aged-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
           </svg>
           <span>Use arrows to reorder, or type a new rank number (1 = most important)</span>
@@ -145,8 +145,8 @@ export function ValuesEditor({ data, onChange, className = '' }: ValuesEditorPro
               className={`
                 flex items-center gap-4 p-4 rounded-lg border-2 transition-all
                 ${isTopThree
-                  ? 'bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-300 shadow-md'
-                  : 'bg-white border-gray-200 hover:border-purple-300 shadow-sm'
+                  ? 'bg-gradient-to-r from-[rgba(196,160,82,0.1)] to-amber-50 border-aged-gold shadow-[0_4px_24px_rgba(0,0,0,0.4)]'
+                  : 'bg-temple-stone border-[rgba(196,160,82,0.15)] hover:border-[rgba(196,160,82,0.15)] shadow-[0_4px_24px_rgba(0,0,0,0.4)]'
                 }
               `}
             >
@@ -159,7 +159,7 @@ export function ValuesEditor({ data, onChange, className = '' }: ValuesEditorPro
                     p-1 rounded transition-colors
                     ${isFirst
                       ? 'text-gray-300 cursor-not-allowed'
-                      : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                      : 'text-gray-600 hover:text-aged-gold hover:bg-elevated'
                     }
                   `}
                   aria-label="Move up"
@@ -175,7 +175,7 @@ export function ValuesEditor({ data, onChange, className = '' }: ValuesEditorPro
                     p-1 rounded transition-colors
                     ${isLast
                       ? 'text-gray-300 cursor-not-allowed'
-                      : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
+                      : 'text-gray-600 hover:text-aged-gold hover:bg-elevated'
                     }
                   `}
                   aria-label="Move down"
@@ -190,8 +190,8 @@ export function ValuesEditor({ data, onChange, className = '' }: ValuesEditorPro
               <div className={`
                 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg
                 ${isTopThree
-                  ? 'bg-gradient-to-br from-yellow-400 to-amber-500 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600'
+                  ? 'bg-gradient-to-br from-sacral-orange to-aged-gold text-white shadow-[0_4px_24px_rgba(0,0,0,0.4)]'
+                  : 'bg-elevated text-muted-wisdom'
                 }
               `}>
                 {value.rank}
@@ -199,11 +199,11 @@ export function ValuesEditor({ data, onChange, className = '' }: ValuesEditorPro
 
               {/* Value Name */}
               <div className="flex-grow">
-                <p className={`font-semibold ${isTopThree ? 'text-amber-900' : 'text-gray-900'}`}>
+                <p className={`font-semibold ${isTopThree ? 'text-enlightened' : 'text-enlightened'}`}>
                   {value.name}
                 </p>
                 {isTopThree && (
-                  <p className="text-xs text-amber-700 mt-1">
+                  <p className="text-xs text-tertiary-text mt-1">
                     Top Priority Value
                   </p>
                 )}
@@ -212,14 +212,14 @@ export function ValuesEditor({ data, onChange, className = '' }: ValuesEditorPro
               {/* Rank Input */}
               <div className="flex-shrink-0">
                 <label className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500">Rank:</span>
+                  <span className="text-xs text-tertiary-text">Rank:</span>
                   <input
                     type="number"
                     min={1}
                     max={values.length}
                     value={value.rank}
                     onChange={(e) => handleRankChange(value.id, parseInt(e.target.value) || 1)}
-                    className="w-16 px-2 py-1 border border-gray-300 rounded text-center focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-16 px-2 py-1 border border-[rgba(196,160,82,0.15)] rounded text-center focus:ring-2 focus:ring-aged-gold focus:border-aged-gold"
                   />
                 </label>
               </div>
@@ -229,43 +229,43 @@ export function ValuesEditor({ data, onChange, className = '' }: ValuesEditorPro
       </div>
 
       {/* Top 3 Summary */}
-      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-yellow-300 rounded-xl p-6 shadow-md">
-        <h3 className="text-lg font-semibold text-amber-900 mb-4 flex items-center gap-2">
+      <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-aged-gold rounded-xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+        <h3 className="text-lg font-semibold text-enlightened mb-4 flex items-center gap-2">
           <span>🏆</span>
           Your Top 3 Core Values
         </h3>
         <div className="space-y-3">
           {sortedValues.slice(0, 3).map((value, index) => (
             <div key={value.id} className="flex items-center gap-3">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-white font-bold flex items-center justify-center shadow">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-sacral-orange to-aged-gold text-white font-bold flex items-center justify-center shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
                 {index + 1}
               </div>
-              <p className="text-amber-900 font-semibold text-lg">
+              <p className="text-enlightened font-semibold text-lg">
                 {value.name}
               </p>
             </div>
           ))}
         </div>
-        <div className="mt-4 pt-4 border-t border-yellow-300">
-          <p className="text-sm text-amber-800">
+        <div className="mt-4 pt-4 border-t border-aged-gold">
+          <p className="text-sm text-muted-wisdom">
             <strong>Remember:</strong> These top values should guide your decisions and goals. When facing tough choices, ask yourself which option aligns best with these core values.
           </p>
         </div>
       </div>
 
       {/* Reflection Prompt */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <div className="bg-elevated border border-[rgba(196,160,82,0.15)] rounded-lg p-4">
         <div className="flex gap-3">
           <div className="flex-shrink-0">
-            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-deep-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-blue-900 mb-1">
+            <h4 className="text-sm font-semibold text-enlightened mb-1">
               Reflection Questions
             </h4>
-            <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+            <ul className="text-sm text-muted-wisdom space-y-1 list-disc list-inside">
               <li>Are your daily actions aligned with your top 3 values?</li>
               <li>When was the last time you made a decision based on these values?</li>
               <li>What would change if you lived more fully by these values?</li>

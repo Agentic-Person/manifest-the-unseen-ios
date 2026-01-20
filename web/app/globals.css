@@ -3,10 +3,36 @@
 @tailwind utilities;
 
 :root {
+  /* Backgrounds */
   --deep-void: #0A0A0F;
   --temple-stone: #1A1A24;
+  --elevated: #22222E;
+
+  /* Primary colors */
   --aged-gold: #C4A052;
+  --burnished-bronze: #8B6914;
+  --crown-purple: #6B4C9A;
+
+  /* Text colors */
   --enlightened: #F5F0E6;
+  --muted-wisdom: #A09080;
+  --tertiary-text: #6B6B80;
+
+  /* Muted accent colors */
+  --deep-teal: #1A5F5F;
+  --heart-emerald: #2D5A4A;
+  --deep-amber: #8B6914;
+  --burgundy: #6B2D3D;
+  --root-crimson: #7A3333;
+  --deep-purple: #4A1A6B;
+  --indigo-deep: #2D1B4E;
+
+  /* Gold opacity palette for borders/dividers */
+  --gold-border: rgba(196, 160, 82, 0.15);
+  --gold-border-hover: rgba(196, 160, 82, 0.4);
+  --gold-focus: rgba(196, 160, 82, 0.3);
+  --gold-divider: rgba(196, 160, 82, 0.2);
+  --gold-glow: rgba(196, 160, 82, 0.1);
 }
 
 html {
@@ -78,4 +104,56 @@ body {
 
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Dark theme card styles */
+.card-dark {
+  background-color: var(--temple-stone);
+  border: 1px solid var(--gold-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  border-radius: 0.5rem;
+}
+
+.card-dark:hover {
+  border-color: var(--gold-border-hover);
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+/* Input styles for dark theme */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  background-color: rgba(26, 26, 36, 0.8);
+  border: 1px solid var(--gold-border);
+  color: var(--enlightened);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus,
+select:focus {
+  border-color: var(--aged-gold);
+  box-shadow: 0 0 10px var(--gold-glow);
+  outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--tertiary-text);
+}
+
+/* Checkbox and radio button styles */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--aged-gold);
+}
+
+/* Decorative divider utility */
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-divider),
+    transparent
+  );
 }
