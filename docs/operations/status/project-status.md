@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-20 (Meditation & Prayer Descriptions Update)
+**Last Updated**: 2026-01-21 (YouTube Transcript Scraper Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
@@ -8,7 +8,59 @@
 
 ---
 
-## ✅ Last Activity: Add Specific Descriptions to Meditations & Prayers - January 20, 2026
+## ✅ Last Activity: Fix YouTube Transcript Scraper Tool - January 21, 2026
+
+### Summary
+Fixed the YouTube transcript scraper tool (`tools/youtube-scraper/`) which had stopped working due to YouTube API changes. Replaced broken npm libraries with `yt-dlp` which is actively maintained and handles YouTube's anti-scraping measures.
+
+### Problem
+All three transcript fetching methods were failing:
+1. **Direct page scraping**: YouTube's timedtext API returning empty responses
+2. **youtube-transcript npm**: Returning 0 items
+3. **youtubei.js npm**: Parser errors due to YouTube API changes
+
+### Solution
+Replaced all npm-based transcript fetching with `yt-dlp`:
+- Installed `yt-dlp` via pip: `pip install yt-dlp`
+- Rewrote `fetchTranscript()` function to use `python -m yt_dlp`
+- Separated subtitle download from metadata fetch (they conflict when combined)
+- Parse VTT subtitle files to extract plain text
+- Files modified: `tools/youtube-scraper/server.js`
+
+### Technical Details
+```javascript
+// Old approach (broken):
+// - youtubei.js library
+// - youtube-transcript library
+// - Direct timedtext API calls
+
+// New approach (working):
+// 1. Download subtitles: python -m yt_dlp --write-auto-sub --sub-lang en --skip-download
+// 2. Get metadata separately: python -m yt_dlp --print "%(title)s" --print "%(channel)s"
+// 3. Parse VTT file to plain text
+```
+
+### Also Fixed
+- **Stats endpoint bug**: Video count was showing 1 instead of actual count
+- Fixed query to properly count unique `video_id` values from metadata JSONB
+
+### Results
+Successfully added 4 new videos to the knowledge base:
+| Video | Channel | Chunks |
+|-------|---------|--------|
+| How to Create a Frequency so Magnetic Your Desires Chase You | Katie Clarke | 69 |
+| How to Raise Your Vibration So STRONGLY That Reality Obeys Instantly | Jung's Frequency | 25 |
+| The Scientific Way to Raise Your Vibrations Instantly! | Clarity Channel | 18 |
+| The Forbidden Technique To Activate Your Inner Vision | Shi Heng Yi Motivation | 44 |
+
+**Knowledge Base Total**: 13 videos, 865 chunks
+
+### Files Changed
+- `tools/youtube-scraper/server.js` - Complete rewrite of transcript fetching
+
+---
+
+## ✅ Previous Activity: Add Specific Descriptions to Meditations & Prayers - January 20, 2026
 
 ### Summary
 Updated generic descriptions in the database with specific, meaningful descriptions from the Google Spreadsheet (`MTU_Meditation_Content_Stages.xlsx`) for all meditations, breathing exercises, and prayers.

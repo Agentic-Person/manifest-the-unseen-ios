@@ -10,7 +10,10 @@
 
 const express = require('express');
 const cors = require('cors');
-const { Innertube } = require('youtubei.js');
+const { execSync, exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
@@ -35,18 +38,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-// Initialize YouTube client (cached)
-let youtube = null;
-async function getYouTube() {
-  if (!youtube) {
-    youtube = await Innertube.create({
-      lang: 'en',
-      location: 'US',
-      retrieve_player: false,
-    });
-  }
-  return youtube;
-}
+// Temp directory for subtitle files
+const TEMP_DIR = os.tmpdir();
 
 /**
  * Extract video ID from various YouTube URL formats
@@ -147,37 +140,138 @@ async function videoExists(videoId) {
 }
 
 /**
- * Fetch transcript using youtubei.js
+ * Parse VTT subtitle file and extract plain text
+ */
+function parseVttToText(vttContent) {
+  const lines = vttContent.split('\n');
+  const textLines = [];
+  let lastText = '';
+
+  for (const line of lines) {
+    // Skip WEBVTT header, timestamps, and metadata
+    if (line.startsWith('WEBVTT') ||
+        line.startsWith('Kind:') ||
+        line.startsWith('Language:') ||
+        line.includes('-->') ||
+        line.match(/^\d{2}:\d{2}/) ||
+        line.trim() === '') {
+      continue;
+    }
+
+    // Remove VTT formatting tags like <c>, </c>, timestamps in tags
+    let cleanLine = line
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+
+    // Skip duplicate lines (VTT often has duplicates)
+    if (cleanLine && cleanLine !== lastText) {
+      textLines.push(cleanLine);
+      lastText = cleanLine;
+    }
+  }
+
+  return textLines.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Fetch transcript using yt-dlp (most reliable method)
  */
 async function fetchTranscript(videoId) {
-  const yt = await getYouTube();
+  const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  const timestamp = Date.now();
+  const outputBase = path.join(__dirname, `temp-${videoId}-${timestamp}`);
+  const vttFile = `${outputBase}.en.vtt`;
+
+  console.log('   Using yt-dlp to fetch transcript...');
 
   try {
-    const info = await yt.getInfo(videoId);
-    const transcriptInfo = await info.getTranscript();
+    // Step 1: Download subtitles (don't use --print as it conflicts)
+    const subCmd = `python -m yt_dlp --write-auto-sub --sub-lang en --skip-download --sub-format vtt -o "${outputBase}" "${videoUrl}"`;
 
-    if (!transcriptInfo || !transcriptInfo.transcript || !transcriptInfo.transcript.content) {
+    console.log('   Downloading subtitles...');
+    execSync(subCmd, {
+      encoding: 'utf-8',
+      timeout: 120000,
+      cwd: __dirname
+    });
+
+    // Step 2: Get metadata separately
+    let title = 'Unknown Title';
+    let channel = 'Unknown Channel';
+    try {
+      const metaCmd = `python -m yt_dlp --skip-download --print "%(title)s" --print "%(channel)s" "${videoUrl}"`;
+      const metaResult = execSync(metaCmd, {
+        encoding: 'utf-8',
+        timeout: 30000,
+        cwd: __dirname
+      });
+      const metaLines = metaResult.trim().split('\n');
+      if (metaLines.length >= 2) {
+        title = metaLines[metaLines.length - 2] || title;
+        channel = metaLines[metaLines.length - 1] || channel;
+      }
+    } catch (metaErr) {
+      console.log('   Could not fetch metadata:', metaErr.message);
+    }
+
+    // Check if subtitle file was created
+    if (!fs.existsSync(vttFile)) {
+      // Try to find any vtt file with our prefix
+      const files = fs.readdirSync(__dirname);
+      const altVttFiles = files.filter(f => f.startsWith(`temp-${videoId}-${timestamp}`) && f.endsWith('.vtt'));
+
+      if (altVttFiles.length > 0) {
+        const altVttFile = path.join(__dirname, altVttFiles[0]);
+        const vttContent = fs.readFileSync(altVttFile, 'utf-8');
+        const text = parseVttToText(vttContent);
+
+        // Clean up
+        fs.unlinkSync(altVttFile);
+
+        if (text.length > 100) {
+          console.log('   ✓ Got transcript via yt-dlp (alt lang)');
+          return { text, title, channel };
+        }
+      }
+
+      console.log('   No subtitle file created by yt-dlp');
       return null;
     }
 
-    const segments = transcriptInfo.transcript.content.body.initial_segments;
-    if (!segments || segments.length === 0) {
-      return null;
+    // Read and parse the VTT file
+    const vttContent = fs.readFileSync(vttFile, 'utf-8');
+    const text = parseVttToText(vttContent);
+
+    // Clean up temp file
+    fs.unlinkSync(vttFile);
+
+    if (text.length > 100) {
+      console.log('   ✓ Got transcript via yt-dlp');
+      console.log(`   Title: ${title}`);
+      console.log(`   Channel: ${channel}`);
+      console.log(`   Transcript length: ${text.length} chars`);
+      return { text, title, channel };
     }
 
-    // Extract text from segments
-    const text = segments
-      .map(seg => seg.snippet?.text || '')
-      .filter(t => t.length > 0)
-      .join(' ');
+    console.log('   yt-dlp: transcript too short');
+    return null;
 
-    return {
-      text,
-      title: info.basic_info?.title || 'Unknown Title',
-      channel: info.basic_info?.author || 'Unknown Channel'
-    };
   } catch (err) {
-    console.error('   Transcript fetch error:', err.message);
+    console.error('   yt-dlp error:', err.message);
+
+    // Clean up any temp files on error
+    try {
+      const files = fs.readdirSync(__dirname);
+      files.filter(f => f.startsWith(`temp-${videoId}`)).forEach(f => {
+        try { fs.unlinkSync(path.join(__dirname, f)); } catch {}
+      });
+    } catch {}
+
     return null;
   }
 }
@@ -308,28 +402,38 @@ app.get('/health', (req, res) => {
  */
 app.get('/stats', async (req, res) => {
   try {
-    const { count, error } = await supabase
-      .from('knowledge_embeddings')
-      .select('*', { count: 'exact', head: true })
-      .eq('metadata->>source', 'youtube');
+    // Use raw SQL for accurate counting
+    const { data: stats, error } = await supabase.rpc('get_youtube_stats');
 
-    if (error) throw error;
+    if (error) {
+      // Fallback: manual query if RPC doesn't exist
+      const { data: allData, error: fetchError } = await supabase
+        .from('knowledge_embeddings')
+        .select('metadata')
+        .filter('metadata->>source', 'eq', 'youtube');
 
-    const { data: videos, error: videosError } = await supabase
-      .from('knowledge_embeddings')
-      .select('metadata->>video_id')
-      .eq('metadata->>source', 'youtube');
+      if (fetchError) throw fetchError;
 
-    if (videosError) throw videosError;
+      const videoIds = new Set();
+      (allData || []).forEach(row => {
+        if (row.metadata?.video_id) {
+          videoIds.add(row.metadata.video_id);
+        }
+      });
 
-    const uniqueVideos = new Set(videos?.map(v => v['metadata->>video_id']) || []);
+      return res.json({
+        totalChunks: allData?.length || 0,
+        totalVideos: videoIds.size
+      });
+    }
 
     res.json({
-      totalChunks: count || 0,
-      totalVideos: uniqueVideos.size
+      totalChunks: stats?.total_chunks || 0,
+      totalVideos: stats?.total_videos || 0
     });
   } catch (err) {
-    res.json({ error: err.message });
+    console.error('Stats error:', err.message);
+    res.json({ totalChunks: 0, totalVideos: 0, error: err.message });
   }
 });
 
