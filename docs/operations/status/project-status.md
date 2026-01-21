@@ -1,14 +1,72 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-20 (Build 54 - Pre-Submission Code Quality Fixes)
+**Last Updated**: 2026-01-20 (Meditation & Prayer Descriptions Update)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
-**Status**: 🟢 **Production Ready** - Build 54 prepared with all TypeScript errors resolved.
+**Status**: 🟢 **Production Ready** - Build 55 on TestFlight.
 
 ---
 
-## ✅ Last Activity: API Key Verification & App Testing - January 20, 2026
+## ✅ Last Activity: Add Specific Descriptions to Meditations & Prayers - January 20, 2026
+
+### Summary
+Updated generic descriptions in the database with specific, meaningful descriptions from the Google Spreadsheet (`MTU_Meditation_Content_Stages.xlsx`) for all meditations, breathing exercises, and prayers.
+
+### Changes Made
+
+**Created Migration**: `supabase/migrations/20260120000000_update_meditation_descriptions.sql`
+- Applied directly to production database via Supabase MCP
+
+**Guided Meditations Updated (10 of 13):**
+| Title | New Description |
+|-------|-----------------|
+| Healing Light | Visualization of divine healing light entering and restoring the body |
+| Rivers Of Living Water | Deep visualization of living water flowing through the body bringing restoration |
+| The River Of Abundance (M/F) | Journey to the river of abundance, releasing lack and receiving flow |
+| Coming Home To Yourself | Meeting and embracing the inner child, returning to wholeness |
+| The Mirror Of Truth | Journey through false mirrors to discover true radiant identity |
+| The Temple Of Release | Journey to sacred temple, placing burdens in transformative fire |
+| The Temple Of The Heart | Journey into heart temple, healing walls, planting seed of desired love |
+| The Kingdom Within | Entering inner sanctuary, sitting with divine presence |
+| The Infinite Within | Transcendent journey from finite self to infinite consciousness |
+
+**Breathing Exercises Updated (4 of 4):**
+| Title | New Description |
+|-------|-----------------|
+| Box Breathing - Basic | Classic 4-4-4-4 technique for calming the nervous system and focusing the mind |
+| Deep Calm and Relax | 5-2-5-2 pattern that activates the parasympathetic nervous system for deep relaxation |
+| The Currents of Heaven and Earth | Visualization breathwork: Inhale golden light from heaven, exhale grounding energy to earth |
+| Hemisphere Balance | Alternate nostril breathing (Nadi Shodhana) for brain hemisphere balance and mental clarity |
+
+**Prayers Updated (8 of 14):**
+| Title | New Description |
+|-------|-----------------|
+| I Speak Healing | Short prayer declaring healing over body, mind, and spirit using biblical authority |
+| Complete Declaration Of Restoration | Comprehensive healing prayer covering every system of the body with scripture |
+| I Am Open To Receive | Declaration of openness to divine abundance and provision |
+| Breaking The Chains | Comprehensive prayer releasing past wounds and choosing freedom |
+| I Am At Peace | Declaration of peace as birthright, releasing anxiety and control |
+| The Courage To Be Still | Prayer embracing stillness as strength, speaking to fear and mind |
+| The Frequency Of Thankfulness | Comprehensive gratitude prayer for body, mind, relationships, challenges |
+| Communion With The Divine | Comprehensive prayer for deep spiritual connection and union |
+
+**Items Not Yet in Database** (descriptions ready when content is added):
+- Guided: Opening To Receive, Cutting The Cords, The Calm Within The Storm, Opening The Heart, The Seed Of Purpose, Open Hands
+- Prayers: I Am Worthy, Reclaiming My True Identity, I Choose To Release, I Am Grateful, The Frequency Of Overflow, The Kingdom Is Within Me
+
+### Git Commit
+```
+ca30045 feat: add specific descriptions to meditations and prayers
+```
+
+### Verification
+- Queried database to confirm all updates applied correctly
+- Descriptions now display in MeditationCard component and prayer list
+
+---
+
+## ✅ Previous Activity: API Key Verification & App Testing - January 20, 2026
 
 ### Summary
 Performed comprehensive Playwright-based testing of the web version to verify app functionality after API key rotation. Tested authentication, Supabase connectivity, workbook exercises, and navigation.
