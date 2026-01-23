@@ -23,6 +23,7 @@ import {
   View,
   StyleSheet,
   Text,
+  TextInput,
   Pressable,
   ActivityIndicator,
   Alert,
@@ -331,9 +332,17 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.transformationColumn}>
             <Text style={styles.transformationLabel}>BEFORE</Text>
             <View style={styles.transformationBox}>
-              <Text style={styles.transformationText}>
-                {transformation.beforeState || 'Reflect on who you were...'}
-              </Text>
+              <TextInput
+                style={styles.transformationInput}
+                placeholder="Reflect on who you were..."
+                placeholderTextColor={DESIGN_COLORS.textTertiary}
+                value={transformation.beforeState}
+                onChangeText={(text) => setTransformation(prev => ({ ...prev, beforeState: text }))}
+                multiline
+                textAlignVertical="top"
+                accessibilityLabel="Before transformation reflection"
+                accessibilityHint="Describe who you were before this journey"
+              />
             </View>
           </View>
           <View style={styles.transformationArrow}>
@@ -342,25 +351,49 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.transformationColumn}>
             <Text style={styles.transformationLabel}>AFTER</Text>
             <View style={[styles.transformationBox, styles.transformationBoxAfter]}>
-              <Text style={styles.transformationText}>
-                {transformation.afterState || 'Who are you becoming...'}
-              </Text>
+              <TextInput
+                style={styles.transformationInput}
+                placeholder="Who are you becoming..."
+                placeholderTextColor={DESIGN_COLORS.textTertiary}
+                value={transformation.afterState}
+                onChangeText={(text) => setTransformation(prev => ({ ...prev, afterState: text }))}
+                multiline
+                textAlignVertical="top"
+                accessibilityLabel="After transformation reflection"
+                accessibilityHint="Describe who you are becoming after this journey"
+              />
             </View>
           </View>
         </View>
 
         <View style={styles.lessonContainer}>
           <Text style={styles.lessonLabel}>Biggest Lesson</Text>
-          <Text style={styles.lessonText}>
-            {transformation.biggestLesson || 'What was your greatest takeaway?'}
-          </Text>
+          <TextInput
+            style={styles.lessonInput}
+            placeholder="What was your greatest takeaway?"
+            placeholderTextColor={DESIGN_COLORS.textTertiary}
+            value={transformation.biggestLesson}
+            onChangeText={(text) => setTransformation(prev => ({ ...prev, biggestLesson: text }))}
+            multiline
+            textAlignVertical="top"
+            accessibilityLabel="Biggest lesson from your journey"
+            accessibilityHint="Enter your greatest takeaway from this journey"
+          />
         </View>
 
         <View style={styles.gratefulContainer}>
           <Text style={styles.gratefulLabel}>Grateful For</Text>
-          <Text style={styles.gratefulText}>
-            {transformation.gratefulFor || 'What are you most grateful for from this journey?'}
-          </Text>
+          <TextInput
+            style={styles.gratefulInput}
+            placeholder="What are you most grateful for from this journey?"
+            placeholderTextColor={DESIGN_COLORS.textTertiary}
+            value={transformation.gratefulFor}
+            onChangeText={(text) => setTransformation(prev => ({ ...prev, gratefulFor: text }))}
+            multiline
+            textAlignVertical="top"
+            accessibilityLabel="What you are grateful for"
+            accessibilityHint="Enter what you are most grateful for from this journey"
+          />
         </View>
       </View>
 
@@ -594,11 +627,12 @@ const styles = StyleSheet.create({
   transformationBoxAfter: {
     borderColor: DESIGN_COLORS.accentGold,
   },
-  transformationText: {
+  transformationInput: {
     fontSize: 13,
-    color: DESIGN_COLORS.textSecondary,
-    fontStyle: 'italic',
+    color: DESIGN_COLORS.textPrimary,
     lineHeight: 18,
+    minHeight: 60,
+    flex: 1,
   },
   transformationArrow: {
     width: 40,
@@ -623,10 +657,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     textTransform: 'uppercase',
   },
-  lessonText: {
+  lessonInput: {
     fontSize: 14,
     color: DESIGN_COLORS.textPrimary,
     lineHeight: 20,
+    minHeight: 60,
   },
   gratefulContainer: {
     backgroundColor: DESIGN_COLORS.bgPrimary,
@@ -641,10 +676,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     textTransform: 'uppercase',
   },
-  gratefulText: {
+  gratefulInput: {
     fontSize: 14,
     color: DESIGN_COLORS.textPrimary,
     lineHeight: 20,
+    minHeight: 60,
   },
 
   // Timeline
