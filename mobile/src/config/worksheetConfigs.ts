@@ -458,8 +458,23 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     id: WORKSHEET_IDS.WOOP,
     phaseNumber: 6,
     completionCriteria: {
-      mandatoryFields: ['wish', 'outcome', 'obstacle', 'plan', 'ifThen'],
-      minCharsPerField: 30,
+      customValidator: (data) => {
+        // Screen saves: { currentWOOP: { wish, outcome, obstacle, plan, ... }, savedWOOPs: [...] }
+        // All 4 WOOP sections must be filled with at least 30 chars
+        const woopData = data as {
+          currentWOOP?: { wish?: string; outcome?: string; obstacle?: string; plan?: string };
+        };
+        const woop = woopData.currentWOOP;
+        if (!woop) return false;
+
+        const minChars = 30;
+        return (
+          (woop.wish?.trim().length ?? 0) >= minChars &&
+          (woop.outcome?.trim().length ?? 0) >= minChars &&
+          (woop.obstacle?.trim().length ?? 0) >= minChars &&
+          (woop.plan?.trim().length ?? 0) >= minChars
+        );
+      },
     },
   },
 
@@ -590,14 +605,17 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 9,
     completionCriteria: {
       customValidator: (data) => {
-        // Should complete trust ratings for multiple life areas
+        // Screen saves: { trustValues: { self: number, others: number, universe: number, process: number, timing: number } }
+        // All 5 dimensions must have a value (any value 1-10 is valid)
         const trustData = data as {
-          assessments?: Array<{ area: string; rating: number; notes: string }>;
+          trustValues?: { self?: number; others?: number; universe?: number; process?: number; timing?: number };
         };
-        const validAssessments = trustData.assessments?.filter(
-          (a) => a.area?.trim().length > 0 && a.rating > 0
-        );
-        return (validAssessments?.length ?? 0) >= 5;
+        const values = trustData.trustValues;
+        if (!values) return false;
+
+        // Check all 5 dimensions have numeric values
+        const dimensions = ['self', 'others', 'universe', 'process', 'timing'] as const;
+        return dimensions.every((dim) => typeof values[dim] === 'number' && values[dim] >= 1 && values[dim] <= 10);
       },
     },
   },
@@ -607,17 +625,17 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 9,
     completionCriteria: {
       customValidator: (data) => {
-        // Should identify things to surrender and practice exercises
+        // Screen saves: { entries: [{ controllingText, surrenderText, affirmation, isReleased, ... }], totalReleased }
+        // Should have at least 3 surrender entries with meaningful content
         const surrenderData = data as {
-          items?: Array<{ item: string; reason: string; practice: string }>;
+          entries?: Array<{ controllingText?: string; surrenderText?: string; isReleased?: boolean }>;
         };
-        const validItems = surrenderData.items?.filter(
-          (i) =>
-            i.item?.trim().length >= 10 &&
-            i.reason?.trim().length >= 20 &&
-            i.practice?.trim().length >= 20
+        const validEntries = surrenderData.entries?.filter(
+          (e) =>
+            e.controllingText?.trim().length >= 10 &&
+            e.surrenderText?.trim().length >= 10
         );
-        return (validItems?.length ?? 0) >= 3;
+        return (validEntries?.length ?? 0) >= 3;
       },
     },
   },
@@ -627,12 +645,15 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 9,
     completionCriteria: {
       customValidator: (data) => {
+        // Screen saves: { entries: [{ whatHappened, possibleMeaning, howItFelt, category, ... }] }
         // Should log at least 5 synchronicities or signs
-        const signsData = data as { signs?: Array<{ description: string; meaning: string }> };
-        const validSigns = signsData.signs?.filter(
-          (s) => s.description?.trim().length >= 20 && s.meaning?.trim().length >= 10
+        const signsData = data as {
+          entries?: Array<{ whatHappened?: string; possibleMeaning?: string }>;
+        };
+        const validEntries = signsData.entries?.filter(
+          (e) => e.whatHappened?.trim().length >= 20 && e.possibleMeaning?.trim().length >= 10
         );
-        return (validSigns?.length ?? 0) >= 5;
+        return (validEntries?.length ?? 0) >= 5;
       },
     },
   },
@@ -646,14 +667,21 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 10,
     completionCriteria: {
       customValidator: (data) => {
-        // Should reflect on all phases and major learnings
+        // Screen saves: { transformation: { beforeState, afterState, biggestLesson, gratefulFor } }
+        // All 4 transformation fields should be filled with meaningful content
         const reviewData = data as {
-          phases?: Array<{ phaseNumber: number; learnings: string; growth: string }>;
+          transformation?: { beforeState?: string; afterState?: string; biggestLesson?: string; gratefulFor?: string };
         };
-        const validReviews = reviewData.phases?.filter(
-          (p) => p.learnings?.trim().length >= 30 && p.growth?.trim().length >= 30
+        const t = reviewData.transformation;
+        if (!t) return false;
+
+        const minChars = 30;
+        return (
+          (t.beforeState?.trim().length ?? 0) >= minChars &&
+          (t.afterState?.trim().length ?? 0) >= minChars &&
+          (t.biggestLesson?.trim().length ?? 0) >= minChars &&
+          (t.gratefulFor?.trim().length ?? 0) >= minChars
         );
-        return (validReviews?.length ?? 0) >= 10; // All 10 phases
       },
     },
   },
@@ -662,8 +690,12 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     id: WORKSHEET_IDS.FUTURE_LETTER,
     phaseNumber: 10,
     completionCriteria: {
-      mandatoryFields: ['letter'],
-      minCharsPerField: 200, // Substantial letter to future self
+      customValidator: (data) => {
+        // Screen saves: { letterContent: string, promptResponses: Record<string, string>, existingLetter: ... }
+        // Letter content must be at least 200 characters
+        const letterData = data as { letterContent?: string };
+        return (letterData.letterContent?.trim().length ?? 0) >= 200;
+      },
     },
   },
 

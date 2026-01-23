@@ -111,8 +111,12 @@ export const StickyCompletionButton: React.FC<StickyCompletionButtonProps> = ({
     outputRange: [0, 0.6],
   });
 
+  // Add extra padding to lift button above the tab bar (approx 60px on web/mobile)
+  const tabBarHeight = 60;
+  const bottomPadding = Math.max(insets.bottom, spacing.md) + tabBarHeight;
+
   return (
-    <View style={[styles.stickyContainer, { paddingBottom: Math.max(insets.bottom, spacing.md) }]}>
+    <View style={[styles.stickyContainer, { paddingBottom: bottomPadding }]}>
       {/* Gradient fade effect at the top of the sticky area */}
       <LinearGradient
         colors={['transparent', 'rgba(26, 26, 46, 0.95)', '#1a1a2e']}

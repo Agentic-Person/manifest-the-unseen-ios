@@ -60,7 +60,8 @@ interface TestPackageCardProps {
   isDisabled?: boolean;
   // Sale props
   isSaleActive?: boolean;
-  originalPrice?: string;
+  originalPrice?: string;  // The App Store price (shown with strikethrough)
+  discountedPrice?: string;  // The calculated discounted price
   discountPercentage?: number;
   // Image
   image?: any; // ImageSourcePropType from react-native
@@ -300,6 +301,7 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
   isDisabled = false,
   isSaleActive = false,
   originalPrice,
+  discountedPrice,
   discountPercentage = 50,
   image,
 }) => (
@@ -329,10 +331,10 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
         <Text style={styles.packageLabel}>{label}</Text>
 
         {/* Price display - strikethrough for sale, normal otherwise */}
-        {isSaleActive && originalPrice ? (
+        {isSaleActive && originalPrice && discountedPrice ? (
           <StrikethroughPrice
             originalPrice={originalPrice}
-            discountedPrice={packageData.price}
+            discountedPrice={discountedPrice}
           />
         ) : (
           <Text style={styles.packagePrice}>{packageData.price}</Text>
@@ -410,13 +412,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   const saleConfig = getSaleConfig();
 
   /**
-   * Calculate original price from discounted price
+   * Calculate discounted price from original price
    * Used for strikethrough display when sale is active
+   * The App Store price IS the original - we calculate the discounted price from it
    */
-  const getOriginalPrice = (discountedPrice: string, discountPercent: number): string => {
-    const priceNum = parseFloat(discountedPrice.replace(/[^0-9.]/g, ''));
-    const original = priceNum / (1 - discountPercent / 100);
-    return `$${original.toFixed(2)}`;
+  const getDiscountedPrice = (originalPrice: string, discountPercent: number): string => {
+    const priceNum = parseFloat(originalPrice.replace(/[^0-9.]/g, ''));
+    const discounted = priceNum * (1 - discountPercent / 100);
+    return `$${discounted.toFixed(2)}`;
   };
 
   // Load offerings on mount
@@ -793,7 +796,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isPurchasing={purchasingPackageId === PACKAGE_IDS.NOVICE_ANNUAL}
                 isDisabled={isSubscribed && currentTier === 'novice'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.novice_annual.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? offerings.novice_annual.price : undefined}
+                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.novice_annual.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('novice', 'yearly')}
               />
@@ -807,7 +811,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isPurchasing={purchasingPackageId === PACKAGE_IDS.NOVICE_MONTHLY}
                 isDisabled={isSubscribed && currentTier === 'novice'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.novice_monthly.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? offerings.novice_monthly.price : undefined}
+                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.novice_monthly.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('novice', 'monthly')}
               />
@@ -823,7 +828,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isPurchasing={purchasingPackageId === PACKAGE_IDS.AWAKENING_ANNUAL}
                 isDisabled={isSubscribed && currentTier === 'awakening'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.awakening_annual.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? offerings.awakening_annual.price : undefined}
+                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.awakening_annual.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('awakening', 'yearly')}
               />
@@ -837,7 +843,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isPurchasing={purchasingPackageId === PACKAGE_IDS.AWAKENING_MONTHLY}
                 isDisabled={isSubscribed && currentTier === 'awakening'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.awakening_monthly.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? offerings.awakening_monthly.price : undefined}
+                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.awakening_monthly.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('awakening', 'monthly')}
               />
@@ -853,7 +860,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isPurchasing={purchasingPackageId === PACKAGE_IDS.ENLIGHTENMENT_ANNUAL}
                 isDisabled={isSubscribed && currentTier === 'enlightenment'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.enlightenment_annual.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? offerings.enlightenment_annual.price : undefined}
+                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.enlightenment_annual.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('enlightenment', 'yearly')}
               />
@@ -867,7 +875,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isPurchasing={purchasingPackageId === PACKAGE_IDS.ENLIGHTENMENT_MONTHLY}
                 isDisabled={isSubscribed && currentTier === 'enlightenment'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? getOriginalPrice(offerings.enlightenment_monthly.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={saleConfig.isActive ? offerings.enlightenment_monthly.price : undefined}
+                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.enlightenment_monthly.price, saleConfig.discountPercentage) : undefined}
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('enlightenment', 'monthly')}
               />
