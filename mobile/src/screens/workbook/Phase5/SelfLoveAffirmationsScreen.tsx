@@ -25,7 +25,6 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import AffirmationCard, {
@@ -35,7 +34,7 @@ import AffirmationCard, {
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase5ExerciseImages } from '../../../assets';
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
@@ -126,10 +125,8 @@ interface AffirmationsFormData {
   customAffirmations: AffirmationData[];
 }
 
-const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
   // State
-    const insets = useSafeAreaInsets();
-
   const [affirmations, setAffirmations] = useState<AffirmationData[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<AffirmationCategory | 'all' | 'favorites'>('all');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -421,10 +418,17 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       testID="self-love-affirmations-screen"
     >
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <ExerciseHeader
@@ -559,18 +563,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation: _navigation }
 
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Add Affirmation Modal */}
       <Modal
@@ -872,10 +865,6 @@ const styles = StyleSheet.create({
     color: DESIGN_COLORS.textSecondary,
     marginBottom: 6,
     lineHeight: 20,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Modal styles

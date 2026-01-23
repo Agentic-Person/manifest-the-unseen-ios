@@ -24,13 +24,12 @@ import {
   Platform,
   Animated,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase5ExerciseImages } from '../../../assets';
 
 // Design system colors - softer variant for nurturing feel
@@ -134,10 +133,8 @@ interface InnerChildFormData {
   letters: InnerChildLetter[];
 }
 
-const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
   // State
-    const insets = useSafeAreaInsets();
-
   const [letters, setLetters] = useState<InnerChildLetter[]>([]);
   const [currentLetter, setCurrentLetter] = useState<InnerChildLetter | null>(null);
   const [showPromptsModal, setShowPromptsModal] = useState(false);
@@ -345,11 +342,17 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       testID="inner-child-screen"
     >
-      <Animated.ScrollView
+      <ExerciseScreenLayout
         style={[styles.scrollView, { opacity: fadeAnim }]}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <ExerciseHeader
@@ -459,29 +462,6 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
               />
               <Text style={styles.letterClosing}>With love,{'\n'}Your grown-up self</Text>
             </View>
-
-            {/* Completion Button */}
-
-
-            <CompletionButton
-
-
-              isCompleted={savedProgress?.completed || false}
-
-
-              canComplete={canComplete}
-
-
-              isAutoCompleted={isAutoCompleted}
-
-
-              isSaving={isSaving}
-
-
-              onPress={markComplete}
-
-
-            />
           </View>
         )}
 
@@ -552,9 +532,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         {isEditing && (
           <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
         )}
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </Animated.ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Guided Prompts Modal */}
       <Modal
@@ -987,10 +965,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: DESIGN_COLORS.accentLavender,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Modal styles

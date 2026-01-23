@@ -29,7 +29,6 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import ScriptTemplate, {
@@ -42,7 +41,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase6ExerciseImages } from '../../../assets';
 
 /**
@@ -84,10 +83,8 @@ interface ScriptingFormData {
   scripts: SavedScript[];
 }
 
-const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
   // State
-    const insets = useSafeAreaInsets();
-
   const [selectedTemplate, setSelectedTemplate] = useState<ScriptTemplateData | null>(null);
   const [scripts, setScripts] = useState<SavedScript[]>([]);
   const [currentScript, setCurrentScript] = useState<string>('');
@@ -259,10 +256,16 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <ExerciseHeader
@@ -270,8 +273,8 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           title="Scripting"
           subtitle="Write your future into existence"
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Saved Scripts Button */}
         {scripts.length > 0 && (
@@ -361,19 +364,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
-
-        {/* Bottom Spacer */}
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Editor Modal */}
       <Modal
@@ -686,10 +677,6 @@ const styles = StyleSheet.create({
     color: colors.dark.textTertiary,
     textAlign: 'center',
     fontStyle: 'italic',
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Editor Modal Styles

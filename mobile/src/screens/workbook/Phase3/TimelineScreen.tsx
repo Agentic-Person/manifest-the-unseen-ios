@@ -23,18 +23,16 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   Modal,
   Pressable,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { TimelineChart } from '../../../components/workbook/TimelineChart';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -169,10 +167,8 @@ interface TimelineData {
 /**
  * TimelineScreen Component
  */
-const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const TimelineScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-    const insets = useSafeAreaInsets();
-
   const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.TIMELINE);
 
   const [selectedView, setSelectedView] = useState<TimelineView>('month');
@@ -255,10 +251,17 @@ const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Exercise Header */}
         <ExerciseHeader
@@ -345,19 +348,7 @@ const TimelineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             - Switch views to see week, month, or quarter perspective
           </Text>
         </View>
-
-        {/* Bottom spacing */}
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Goal Details Modal */}
       <Modal
@@ -581,10 +572,6 @@ const styles = StyleSheet.create({
     color: DESIGN_COLORS.textSecondary,
     marginBottom: 6,
     lineHeight: 20,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Modal

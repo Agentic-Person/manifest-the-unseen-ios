@@ -22,14 +22,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   Pressable,
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import {
@@ -44,7 +42,7 @@ import type { StreakData } from '../../../components/workbook/StreakDisplay';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
@@ -97,9 +95,7 @@ type Props = WorkbookStackScreenProps<'GratitudeJournal'>;
 /**
  * GratitudeJournalScreen Component
  */
-const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-    const insets = useSafeAreaInsets();
-
+const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState<string>(getTodayKey());
   const [entries, setEntries] = useState<Record<string, DailyEntry>>({});
   const [streakData, setStreakData] = useState<StreakData>({
@@ -328,11 +324,16 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
   }
 
   return (
-    <ScrollView
+    <ExerciseScreenLayout
       style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
     >
       {/* Header */}
       <ExerciseHeader
@@ -462,32 +463,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation: _navigation }) =>
 
       {/* Save Indicator */}
       <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
-
-      {/* Completion Button */}
-
-
-      <CompletionButton
-
-
-        isCompleted={savedProgress?.completed || false}
-
-
-        canComplete={canComplete}
-
-
-        isAutoCompleted={isAutoCompleted}
-
-
-        isSaving={isSaving}
-
-
-        onPress={markComplete}
-
-
-      />
-
-      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-    </ScrollView>
+    </ExerciseScreenLayout>
   );
 };
 
@@ -687,10 +663,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: DESIGN_COLORS.textPrimary,
     letterSpacing: 0.5,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 });
 

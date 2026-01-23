@@ -22,7 +22,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -32,7 +31,6 @@ import {
   Easing,
   ActivityIndicator,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import {
@@ -42,7 +40,7 @@ import type { TimerState } from '../../../components/workbook/MeditationTimer';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
@@ -117,9 +115,7 @@ type Props = WorkbookStackScreenProps<'GratitudeMeditation'>;
 /**
  * GratitudeMeditationScreen Component
  */
-const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-    const insets = useSafeAreaInsets();
-
+const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
   const [timerState, setTimerState] = useState<TimerState>('idle');
   const [sessions, setSessions] = useState<MeditationSession[]>([]);
   const [stats, setStats] = useState<SessionStats>({
@@ -366,10 +362,16 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
         pointerEvents="none"
       />
 
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <ExerciseHeader
@@ -377,8 +379,8 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
           title="Gratitude Meditation"
           subtitle="Center yourself in gratitude through guided visualization"
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Stats Summary */}
         <View style={styles.statsRow}>
@@ -494,18 +496,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation: _navigation })
 
         {/* Save Indicator */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Reflection Modal */}
       <Modal
@@ -757,10 +748,6 @@ const styles = StyleSheet.create({
     color: DESIGN_COLORS.textSecondary,
     marginBottom: 6,
     lineHeight: 20,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Reflection Modal

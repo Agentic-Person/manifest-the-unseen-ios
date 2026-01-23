@@ -30,11 +30,10 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import { Fear, FEAR_CATEGORIES, FearCategory } from '../../../components/workbook/FearCard';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -136,10 +135,8 @@ interface FearFacingPlanData {
 /**
  * Fear Facing Plan Screen Component
  */
-const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-    const insets = useSafeAreaInsets();
-
   const { data: savedProgress } = useWorkbookProgress(4, WORKSHEET_IDS.FEAR_FACING_PLAN);
 
   // State
@@ -354,10 +351,17 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header Section */}
         <ExerciseHeader
@@ -533,18 +537,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           </Text>
           <Text style={styles.quoteAuthor}>- Ambrose Redmoon</Text>
         </View>
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Floating Action Button */}
       <Animated.View
@@ -1069,13 +1062,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
 
-  bottomSpacer: {
-    height: 100,
-  },
-
   fabContainer: {
     position: 'absolute',
-    bottom: spacing.xl,
+    bottom: spacing.xl + 100, // Account for sticky button
     right: spacing.lg,
     ...shadows.lg,
   },

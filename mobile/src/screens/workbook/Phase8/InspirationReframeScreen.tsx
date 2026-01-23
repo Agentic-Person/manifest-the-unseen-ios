@@ -27,7 +27,7 @@ import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { ReframeCard, ReframeData } from '../../../components/workbook/ReframeCard';
 import { EnvyItem } from '../../../components/workbook/EnvyCard';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, StickyCompletionButton } from '../../../components/workbook';
 import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -324,8 +324,8 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         testID="reframe-list"
       />
 
-      {/* Completion Button */}
-      <CompletionButton
+      {/* Sticky Completion Button */}
+      <StickyCompletionButton
         isCompleted={savedProgress?.completed || false}
         canComplete={canComplete}
         isAutoCompleted={isAutoCompleted}

@@ -22,14 +22,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   Pressable,
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import {
@@ -37,7 +35,7 @@ import {
   SurrenderEntryData,
   SURRENDER_AFFIRMATIONS,
 } from '../../../components/workbook/SurrenderCard';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase9ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -82,9 +80,8 @@ const PHASE_NUMBER = 9;
 /**
  * SurrenderPracticeScreen Component
  */
-const SurrenderPracticeScreen: React.FC<Props> = () => {
+const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
-    const insets = useSafeAreaInsets();
 
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
@@ -248,11 +245,17 @@ const SurrenderPracticeScreen: React.FC<Props> = () => {
   }
 
   return (
-    <ScrollView
+    <ExerciseScreenLayout
       style={styles.container}
       contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps="handled"
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
     >
       {/* Header */}
       <ExerciseHeader
@@ -397,32 +400,7 @@ const SurrenderPracticeScreen: React.FC<Props> = () => {
       <View style={styles.saveStatusContainer}>
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
       </View>
-
-      {/* Completion Button */}
-
-
-      <CompletionButton
-
-
-        isCompleted={savedProgress?.completed || false}
-
-
-        canComplete={canComplete}
-
-
-        isAutoCompleted={isAutoCompleted}
-
-
-        isSaving={isSaving}
-
-
-        onPress={markComplete}
-
-
-      />
-
-      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-    </ScrollView>
+    </ExerciseScreenLayout>
   );
 };
 
@@ -671,10 +649,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: DESIGN_COLORS.textPrimary,
     letterSpacing: 0.5,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 });
 

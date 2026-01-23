@@ -21,19 +21,17 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   Pressable,
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseProgressCard } from '../../../components/workbook/PhaseProgressCard';
 import type { PhaseProgressData } from '../../../components/workbook/PhaseProgressCard';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase10ExerciseImages } from '../../../assets';
 import { useAllWorkbookProgress, useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -100,7 +98,6 @@ const PHASE_NUMBER = 10;
  */
 const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch all workbook progress (for showing phase summary)
-    const insets = useSafeAreaInsets();
 
   const { data: allProgress, isLoading: isLoadingAll } = useAllWorkbookProgress();
 
@@ -246,10 +243,17 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <ScrollView
+    <ExerciseScreenLayout
       style={styles.container}
       contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
     >
       {/* Header */}
       <ExerciseHeader
@@ -427,18 +431,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
       >
         <Text style={styles.continueButtonText}>Continue: Letter to Future Self</Text>
       </Pressable>
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-    </ScrollView>
+    </ExerciseScreenLayout>
   );
 };
 
@@ -753,10 +746,6 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.9,
     transform: [{ scale: 0.98 }],
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 });
 

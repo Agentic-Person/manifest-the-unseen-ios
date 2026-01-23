@@ -35,7 +35,7 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../../../components/Text';
 import { RoleModelCard, ROLE_MODEL_CATEGORIES, RoleModel, RoleModelCategory } from '../../../components/workbook/RoleModelCard';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, StickyCompletionButton } from '../../../components/workbook';
 import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -362,14 +362,6 @@ const RoleModelsScreen: React.FC<Props> = () => {
         {Object.entries(ROLE_MODEL_CATEGORIES).map(([key, value]) =>
           renderCategoryChip(key as RoleModelCategory, value.label, value.color)
         )}
-            {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
       </ScrollView>
 
       {/* Items List */}
@@ -566,18 +558,19 @@ const RoleModelsScreen: React.FC<Props> = () => {
                   testID="form-quote"
                 />
               </View>
-                  {/* Completion Button */}
-      <CompletionButton
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Sticky Completion Button */}
+      <StickyCompletionButton
         isCompleted={savedProgress?.completed || false}
         canComplete={canComplete}
         isAutoCompleted={isAutoCompleted}
         isSaving={isSaving}
         onPress={markComplete}
       />
-      </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
-      </Modal>
     </SafeAreaView>
   );
 };

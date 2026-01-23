@@ -14,16 +14,14 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   Pressable,
   ActivityIndicator,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -132,11 +130,10 @@ const getRatingLevel = (value: number): { text: string; color: string } => {
 /**
  * Abilities Rating Screen Component
  */
-const AbilitiesRatingScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
   const [data, setData] = useState<AbilitiesData>(DEFAULT_DATA);
   const [expandedCategory, setExpandedCategory] = useState<string | null>('Communication');
   const hasLoadedInitialData = useRef(false);
-  const insets = useSafeAreaInsets();
 
   // Load saved data from Supabase
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.ABILITIES_RATING);
@@ -219,10 +216,16 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation: _navigation }) => 
   }
 
   return (
-    <ScrollView
+    <ExerciseScreenLayout
       style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
     >
       {/* Header Section */}
       <ExerciseHeader
@@ -360,19 +363,7 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation: _navigation }) => 
           onRetry={saveNow}
         />
       </View>
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-      {/* Bottom spacing */}
-      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-    </ScrollView>
+    </ExerciseScreenLayout>
   );
 };
 

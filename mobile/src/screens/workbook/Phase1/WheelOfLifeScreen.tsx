@@ -18,15 +18,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Dimensions,
   Text,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { WheelChart, LifeAreaSlider, LIFE_AREAS, SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { WheelChart, LifeAreaSlider, LIFE_AREAS, SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import type { WheelOfLifeValues, LifeAreaKey } from '../../../components/workbook';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -94,9 +93,7 @@ type Props = WorkbookStackScreenProps<'WheelOfLife'>;
 /**
  * Wheel of Life Screen Component
  */
-const WheelOfLifeScreen: React.FC<Props> = () => {
-  const insets = useSafeAreaInsets();
-
+const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
   const [values, setValues] = useState<WheelOfLifeValues>(DEFAULT_VALUES);
   const [selectedArea, setSelectedArea] = useState<LifeAreaKey | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -183,11 +180,17 @@ const WheelOfLifeScreen: React.FC<Props> = () => {
   }
 
   return (
-    <ScrollView
+    <ExerciseScreenLayout
       ref={scrollViewRef}
       style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
     >
       {/* Exercise Header */}
       <ExerciseHeader
@@ -251,19 +254,7 @@ const WheelOfLifeScreen: React.FC<Props> = () => {
           onRetry={saveNow}
         />
       </View>
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-      {/* Bottom spacing */}
-      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-    </ScrollView>
+    </ExerciseScreenLayout>
   );
 };
 
@@ -271,9 +262,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: DESIGN_COLORS.bgPrimary,
-  },
-  content: {
-    padding: 16,
   },
   loadingContainer: {
     flex: 1,
@@ -338,35 +326,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
     minHeight: 20,
-  },
-  saveStatus: {
-    fontSize: 12,
-    color: DESIGN_COLORS.textTertiary,
-  },
-  saveButton: {
-    backgroundColor: DESIGN_COLORS.accentPurple,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: DESIGN_COLORS.accentPurple,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  saveButtonPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.98 }],
-  },
-  saveButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: DESIGN_COLORS.textPrimary,
-    letterSpacing: 0.5,
-  },
-  bottomSpacer: {
-    height: 40,
   },
 });
 

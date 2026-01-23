@@ -34,7 +34,7 @@ import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { EnvyCard, ENVY_CATEGORIES, EnvyItem, EnvyCategory } from '../../../components/workbook/EnvyCard';
 import { IntensitySlider } from '../../../components/workbook/IntensitySlider';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, StickyCompletionButton } from '../../../components/workbook';
 import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -303,14 +303,6 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
         {Object.entries(ENVY_CATEGORIES).map(([key, value]) =>
           renderCategoryChip(key as EnvyCategory, value.label, value.color)
         )}
-            {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
       </ScrollView>
 
       {/* Items List */}
@@ -461,18 +453,19 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
                   testID="form-reflection"
                 />
               </View>
-                  {/* Completion Button */}
-      <CompletionButton
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Sticky Completion Button */}
+      <StickyCompletionButton
         isCompleted={savedProgress?.completed || false}
         canComplete={canComplete}
         isAutoCompleted={isAutoCompleted}
         isSaving={isSaving}
         onPress={markComplete}
       />
-      </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
-      </Modal>
     </SafeAreaView>
   );
 };

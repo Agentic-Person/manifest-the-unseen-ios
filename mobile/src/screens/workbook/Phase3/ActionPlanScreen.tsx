@@ -20,7 +20,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -32,13 +31,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  ScrollView,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import StepList from '../../../components/workbook/StepList';
 import type { ActionStepData } from '../../../components/workbook/StepList';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -105,8 +104,6 @@ interface ActionPlanData {
  */
 const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-  const insets = useSafeAreaInsets();
-
   const { data: savedProgress, isError: isLoadError } = useWorkbookProgress(3, WORKSHEET_IDS.ACTION_PLAN);
   const { data: smartGoalsProgress, isLoading: isLoadingGoals } = useWorkbookProgress(3, WORKSHEET_IDS.SMART_GOALS);
 
@@ -404,11 +401,17 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       testID="action-plan-screen"
     >
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Exercise Header */}
         <ExerciseHeader
@@ -490,19 +493,7 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
-
-        {/* Completion Button */}
-        <CompletionButton
-          isCompleted={savedProgress?.completed || false}
-          canComplete={canComplete}
-          isAutoCompleted={isAutoCompleted}
-          isSaving={isSaving}
-          onPress={markComplete}
-        />
-
-{/* Bottom spacing */}
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Goal Picker Modal */}
       <Modal
@@ -847,10 +838,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: DESIGN_COLORS.textPrimary,
     letterSpacing: 0.5,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Modal styles

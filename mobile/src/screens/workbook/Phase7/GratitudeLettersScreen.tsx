@@ -34,13 +34,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase7ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
@@ -112,9 +111,7 @@ type Props = WorkbookStackScreenProps<'GratitudeLetters'>;
 /**
  * GratitudeLettersScreen Component
  */
-const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-    const insets = useSafeAreaInsets();
-
+const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
   const [letters, setLetters] = useState<GratitudeLetter[]>([]);
   const [selectedLetter, setSelectedLetter] = useState<GratitudeLetter | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -351,10 +348,16 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <ExerciseHeader
@@ -362,8 +365,8 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
           title="Gratitude Letters"
           subtitle="Write heartfelt letters to express gratitude to important people"
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Stats Summary */}
         <View style={styles.statsRow}>
@@ -428,18 +431,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation: _navigation }) =>
 
         {/* Save Indicator */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Template Selection Modal */}
       <Modal
@@ -790,10 +782,6 @@ const styles = StyleSheet.create({
     color: DESIGN_COLORS.textSecondary,
     marginBottom: 6,
     lineHeight: 20,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Modal Overlay

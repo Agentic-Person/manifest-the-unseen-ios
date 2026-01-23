@@ -27,7 +27,6 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import WOOPSection, { WOOPSectionType, WOOP_CONFIG } from '../../../components/workbook/WOOPSection';
@@ -36,7 +35,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase6ExerciseImages } from '../../../assets';
 
 /**
@@ -87,10 +86,8 @@ interface WOOPFormData {
   savedWOOPs: WOOPPlan[];
 }
 
-const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const WOOPScreen: React.FC<Props> = ({ navigation }) => {
   // State
-    const insets = useSafeAreaInsets();
-
   const [currentWOOP, setCurrentWOOP] = useState<WOOPPlan>(createEmptyWOOP());
   const [savedWOOPs, setSavedWOOPs] = useState<WOOPPlan[]>([]);
   const [activeSection, setActiveSection] = useState<WOOPSectionType>('wish');
@@ -304,19 +301,23 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <ExerciseScreenLayout
         ref={scrollViewRef}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
-        {/* Header */}
-        <ExerciseHeader
-          image={Phase6ExerciseImages.woop}
-          title="WOOP Method"
-          subtitle="Turn your wishes into reality with mental contrasting"
-          progress={savedProgress?.progress || 0}
+      {/* Header */}
+      <ExerciseHeader
+        image={Phase6ExerciseImages.woop}
+        title="WOOP Method"
+        subtitle="Turn your wishes into reality with mental contrasting"
+        progress={savedProgress?.progress || 0}
         isCompleted={savedProgress?.completed || false}
       />
 
@@ -497,21 +498,9 @@ const WOOPScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           <Text style={styles.quoteAuthor}>- Marcus Aurelius</Text>
         </View>
 
-        {/* Bottom Spacer */}
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Saved WOOPs Modal */}
       <Modal
@@ -852,10 +841,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.dark.textTertiary,
     marginTop: spacing.xs,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Modal Styles

@@ -14,14 +14,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Animated,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, Button } from '../../../components';
 import { SWOTQuadrant } from '../../../components/workbook/SWOTQuadrant';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -111,8 +109,6 @@ const CentralMandala: React.FC<{ totalItems: number }> = ({ totalItems }) => {
  * SWOT Analysis Screen Component
  */
 const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
-    const insets = useSafeAreaInsets();
-
   const [swotData, setSWOTData] = useState<SWOTData>(getDefaultSWOTData());
 
   // Track if we've done the initial data load (prevents overwriting user changes on save)
@@ -164,10 +160,16 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
     swotData.threats.length;
 
   return (
-    <ScrollView
+    <ExerciseScreenLayout
       style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
     >
       {/* Header with hand-drawn style */}
       <ExerciseHeader
@@ -248,19 +250,7 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
           style={styles.saveButton}
         />
       </View>
-
-      {/* Bottom spacing */}
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-    </ScrollView>
+    </ExerciseScreenLayout>
   );
 };
 

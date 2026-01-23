@@ -21,7 +21,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -33,7 +32,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import {
@@ -47,7 +45,7 @@ import {
   DEFAULT_IMAGE_STYLE,
 } from '../../../components/vision-board';
 import type { VisionBoardItem, VisionBoardData } from '../../../components/vision-board';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -87,10 +85,8 @@ type Props = WorkbookStackScreenProps<'VisionBoard'>;
 /**
  * VisionBoardScreen Component
  */
-const VisionBoardScreen: React.FC<Props> = ({ navigation: _navigation, route: _route }) => {
+const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-  const insets = useSafeAreaInsets();
-
   const { data: savedProgress, isLoading: isLoadingProgress, isError: isLoadError } = useWorkbookProgress(2, WORKSHEET_IDS.VISION_BOARD);
 
   const [board, setBoard] = useState<VisionBoardData>(createEmptyBoard());
@@ -262,11 +258,17 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation: _navigation, route: _r
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Exercise Header */}
         <ExerciseHeader
@@ -318,19 +320,7 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation: _navigation, route: _r
 
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
-
-        {/* Completion Button */}
-        <CompletionButton
-          isCompleted={savedProgress?.completed || false}
-          canComplete={canComplete}
-          isAutoCompleted={isAutoCompleted}
-          isSaving={isSaving}
-          onPress={markComplete}
-        />
-
-{/* Bottom spacing */}
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Add Text Modal */}
       <Modal
@@ -527,10 +517,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: DESIGN_COLORS.textPrimary,
     letterSpacing: 0.5,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Modal

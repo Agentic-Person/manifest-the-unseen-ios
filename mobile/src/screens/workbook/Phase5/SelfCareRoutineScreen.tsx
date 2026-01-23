@@ -23,7 +23,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import RoutineItem, {
@@ -34,7 +33,7 @@ import StreakCounter from '../../../components/workbook/StreakCounter';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase5ExerciseImages } from '../../../assets';
 
 // Design system colors from APP-DESIGN.md
@@ -107,10 +106,8 @@ interface SelfCareFormData {
   bestEveningStreak: number;
 }
 
-const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
   // State
-    const insets = useSafeAreaInsets();
-
   const [morningActivities, setMorningActivities] = useState<RoutineActivityData[]>([]);
   const [eveningActivities, setEveningActivities] = useState<RoutineActivityData[]>([]);
   const [activeTab, setActiveTab] = useState<'morning' | 'evening'>('morning');
@@ -409,10 +406,17 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       testID="self-care-routine-screen"
     >
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <ExerciseHeader
@@ -542,18 +546,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation: _navigation }) => 
 
         {/* Save Status */}
         <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Add Activity Modal (Presets) */}
       <Modal
@@ -873,10 +866,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: DESIGN_COLORS.textPrimary,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 
   // Modal styles

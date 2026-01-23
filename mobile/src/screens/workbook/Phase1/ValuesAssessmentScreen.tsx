@@ -14,16 +14,14 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Card, Text } from '../../../components';
 import { ValueCard } from '../../../components/workbook/ValueCard';
-import { ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -78,11 +76,8 @@ type Props = WorkbookStackScreenProps<'PersonalValues'>;
 /**
  * Values Assessment Screen Component
  */
-const ValuesAssessmentScreen: React.FC<Props> = () => {
-  const insets = useSafeAreaInsets();
-
+const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
   // State for selected values (ordered list)
-
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const hasLoadedInitialData = useRef(false);
 
@@ -178,14 +173,19 @@ const ValuesAssessmentScreen: React.FC<Props> = () => {
   const progressPercentage = (selectedValues.length / MAX_SELECTIONS) * 100;
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <ExerciseHeader
+    <ExerciseScreenLayout
+      style={styles.container}
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
+    >
+      {/* Header */}
+      <ExerciseHeader
           image={Phase1ExerciseImages.personalValues}
           title="Personal Values"
           subtitle={`Select your top ${MAX_SELECTIONS} core values that define who you are and what matters most to you.`}
@@ -304,20 +304,7 @@ const ValuesAssessmentScreen: React.FC<Props> = () => {
             })}
           </View>
         </View>
-
-        {/* Bottom Spacer for button */}
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-    </View>
+    </ExerciseScreenLayout>
   );
 };
 

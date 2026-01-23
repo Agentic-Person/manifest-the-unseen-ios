@@ -9,17 +9,15 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Card, Text, TextInput } from '../../../components';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
@@ -126,9 +124,7 @@ const PHASE_NUMBER = 1;
 /**
  * SWOT Analysis Screen Component
  */
-const SWOTScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-  const insets = useSafeAreaInsets();
-
+const SWOTScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading: _isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
     WORKSHEET_IDS.SWOT_ANALYSIS
@@ -220,11 +216,17 @@ const SWOTScreen: React.FC<Props> = ({ navigation: _navigation }) => {
       style={styles.keyboardAvoid}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.container}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -289,18 +291,7 @@ const SWOTScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         <View style={{ alignItems: 'center', marginVertical: 16 }}>
           <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
         </View>
-
-        {/* Completion Button */}
-        <CompletionButton
-          isCompleted={savedProgress?.completed || false}
-          canComplete={canComplete}
-          isAutoCompleted={isAutoCompleted}
-          isSaving={isSaving}
-          onPress={markComplete}
-        />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
     </KeyboardAvoidingView>
   );
 };

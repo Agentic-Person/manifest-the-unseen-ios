@@ -21,7 +21,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -31,11 +30,10 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { SealedLetter } from '../../../components/workbook/SealedLetter';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase10ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -110,7 +108,6 @@ const PHASE_NUMBER = 10;
  */
 const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
-    const insets = useSafeAreaInsets();
 
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
@@ -308,10 +305,17 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
   // Show sealed letter view if exists
   if (existingLetter) {
     return (
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.container}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         <ExerciseHeader
           image={Phase10ExerciseImages.letterFutureSelf}
@@ -320,8 +324,8 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
             ? 'Your letter is safely sealed, waiting for the perfect moment.'
             : 'Your letter has arrived. Read the message from your past self.'}
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         <SealedLetter
           isSealed={existingLetter.isSealed}
@@ -356,18 +360,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         >
           <Text style={styles.continueButtonText}>Continue to Graduation</Text>
         </Pressable>
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
     );
   }
 
@@ -378,10 +371,16 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
-      <ScrollView
+      <ExerciseScreenLayout
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <ExerciseHeader
@@ -389,8 +388,8 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
           title="Letter to Future Self"
           subtitle="Write a letter to yourself, one year from today. Express your hopes, dreams, and the person you're becoming."
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Open Date Display */}
         <View style={styles.openDateCard}>
@@ -502,18 +501,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.sealWarning}>
           Once sealed, your letter cannot be edited until the open date.
         </Text>
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
     </KeyboardAvoidingView>
   );
 };
@@ -788,10 +776,6 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.9,
     transform: [{ scale: 0.98 }],
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 });
 

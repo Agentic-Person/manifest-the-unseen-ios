@@ -16,14 +16,12 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card, Text } from '../../../components';
 import HabitSection, { TimeOfDay, Habit } from '../../../components/workbook/HabitSection';
 import { HabitCategory } from '../../../components/workbook/HabitEntry';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -63,8 +61,7 @@ type Props = WorkbookStackScreenProps<'HabitTracking'>;
 /**
  * Habits Audit Screen Component
  */
-const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-  const insets = useSafeAreaInsets();
+const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
   const [habitsData, setHabitsData] = useState<HabitsData>(INITIAL_DATA);
   const hasLoadedInitialData = useRef(false);
 
@@ -210,11 +207,17 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   const balanceStatus = getBalanceStatus();
 
   return (
-    <ScrollView
+    <ExerciseScreenLayout
       style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
     >
       {/* Header Section */}
       <ExerciseHeader
@@ -369,19 +372,7 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation: _navigation }) => {
         isError={isError}
         onRetry={saveNow}
       />
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-      {/* Bottom Spacing */}
-      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-    </ScrollView>
+    </ExerciseScreenLayout>
   );
 };
 

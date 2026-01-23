@@ -22,7 +22,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -31,12 +30,11 @@ import {
   Alert,
   Share,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { CertificateView } from '../../../components/workbook/CertificateView';
 import { ConfettiCelebration, ConfettiBurst } from '../../../components/workbook/ConfettiCelebration';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase10ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -135,7 +133,6 @@ const PHASE_NUMBER = 10;
  */
 const GraduationScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
-  const insets = useSafeAreaInsets();
 
   const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
     PHASE_NUMBER,
@@ -328,10 +325,17 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         onComplete={handleBurstComplete}
       />
 
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.container}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markCompleteFromAutoSave,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Header */}
         <ExerciseHeader
@@ -341,8 +345,8 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
             ? "You've completed your transformation journey. Your new life awaits."
             : 'Make a commitment to yourself and celebrate your transformation.'}
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Certificate View (if graduated) */}
         {showCertificate && (
@@ -509,18 +513,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.graduateButtonText}>Complete My Journey</Text>
           </Pressable>
         )}
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markCompleteFromAutoSave}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
     </View>
   );
 };
@@ -817,10 +810,6 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.9,
     transform: [{ scale: 0.98 }],
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 });
 

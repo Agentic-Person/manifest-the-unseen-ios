@@ -21,12 +21,10 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   View,
-  ScrollView,
   TextInput,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import RepetitionTracker, { RepetitionPeriod } from '../../../components/workbook/RepetitionTracker';
@@ -35,7 +33,7 @@ import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase6ExerciseImages } from '../../../assets';
 
 /**
@@ -108,10 +106,8 @@ interface ThreeSixNineFormData {
   todayProgress: DailyProgress;
 }
 
-const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
   // State
-    const insets = useSafeAreaInsets();
-
   const [practice, setPractice] = useState<ThreeSixNineData>(createEmptyPractice());
   const [todayProgress, setTodayProgress] = useState<DailyProgress>({
     date: getTodayString(),
@@ -243,19 +239,23 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Header */}
-        <ExerciseHeader
-          image={Phase6ExerciseImages.method369}
-          title="369 Method"
-          subtitle="Nikola Tesla's sacred manifestation technique"
-          progress={savedProgress?.progress || 0}
+    <ExerciseScreenLayout
+      style={styles.container}
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
+    >
+      {/* Header */}
+      <ExerciseHeader
+        image={Phase6ExerciseImages.method369}
+        title="369 Method"
+        subtitle="Nikola Tesla's sacred manifestation technique"
+        progress={savedProgress?.progress || 0}
         isCompleted={savedProgress?.completed || false}
       />
 
@@ -422,22 +422,9 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           <Text style={styles.quoteAuthor}>- Albert Einstein</Text>
         </View>
 
-        {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
-
-        {/* Bottom Spacer */}
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
-    </View>
+      {/* Save Status */}
+      <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+    </ExerciseScreenLayout>
   );
 };
 
@@ -732,10 +719,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.dark.textTertiary,
     marginTop: spacing.xs,
-  },
-
-  bottomSpacer: {
-    height: 40,
   },
 });
 

@@ -15,21 +15,19 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import { Text } from '../../../components';
 import MissionSection, { MissionId } from '../../../components/workbook/MissionSection';
 import CombinedMissionView from '../../../components/workbook/CombinedMissionView';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
 import { WORKSHEET_IDS } from '../../../types/workbook';
 import { Phase2ExerciseImages } from '../../../assets';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
  * Life Mission Data Structure
@@ -98,10 +96,7 @@ type Props = WorkbookStackScreenProps<'LifeMission'>;
 /**
  * Life Mission Screen Component
  */
-const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-  const insets = useSafeAreaInsets();
-  const bottomSpacing = 60 + insets.bottom + 8; // tab bar + safe area + buffer
-
+const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
   const { data: savedProgress } = useWorkbookProgress(2, WORKSHEET_IDS.LIFE_MISSION);
 
@@ -181,14 +176,17 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: bottomSpacing }
-        ]}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContent}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Exercise Header */}
         <ExerciseHeader
@@ -247,19 +245,7 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation: _navigation }) => {
             "Your life mission is not something to be created, but something to be discovered."
           </Text>
         </View>
-
-        {/* Completion Button */}
-        <CompletionButton
-          isCompleted={savedProgress?.completed || false}
-          canComplete={canComplete}
-          isAutoCompleted={isAutoCompleted}
-          isSaving={isSaving}
-          onPress={markComplete}
-        />
-
-        {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Combined Mission View Modal */}
       <CombinedMissionView
@@ -433,10 +419,6 @@ const styles = StyleSheet.create({
     color: colors.dark.textTertiary,
     textAlign: 'center',
     fontStyle: 'italic',
-  },
-
-  bottomSpacer: {
-    height: spacing.xl,
   },
 });
 

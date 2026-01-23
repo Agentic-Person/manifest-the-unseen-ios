@@ -34,7 +34,7 @@ import { Text } from '../../../components';
 import { GuidedQuestion, GuidedQuestionData } from '../../../components/workbook/GuidedQuestion';
 import { StatementDisplay } from '../../../components/workbook/StatementDisplay';
 import { QuestionProgress } from '../../../components/workbook/QuestionProgress';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader } from '../../../components/workbook';
 import { colors, spacing, borderRadius, typography, fontWeights } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress, useSaveWorkbook } from '../../../hooks/useWorkbook';
@@ -151,7 +151,7 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
     updatedAt: new Date().toISOString(),
   }), [answers, finalStatement]);
 
-  const { isSaving: isAutoSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
+  const { isSaving: isAutoSaving, lastSaved, saveNow, isAutoCompleted: _isAutoCompleted, canComplete: _canComplete, markComplete: _markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 2,
     worksheetId: WORKSHEET_IDS.PURPOSE_STATEMENT,
@@ -393,15 +393,6 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           )}
-
-          {/* Completion Button */}
-          <CompletionButton
-            isCompleted={savedProgress?.completed || false}
-            canComplete={canComplete}
-            isAutoCompleted={isAutoCompleted}
-            isSaving={isSaving}
-            onPress={markComplete}
-          />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

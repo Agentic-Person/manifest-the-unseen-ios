@@ -147,3 +147,9 @@ export type { GradientProgressBarProps } from './GradientProgressBar';
 
 // Completion Button Component
 export { CompletionButton } from './CompletionButton';
+
+// Sticky Completion Button (always visible at bottom of screen)
+export { StickyCompletionButton } from './StickyCompletionButton';
+
+// Exercise Screen Layout (reusable layout with sticky completion button)
+export { ExerciseScreenLayout } from './ExerciseScreenLayout';

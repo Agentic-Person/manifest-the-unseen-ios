@@ -211,10 +211,10 @@ export const getPhaseProgress = async (
 ): Promise<{ completed: number; total: number; worksheets: WorkbookProgress[] }> => {
   logger.debug('[workbook.service] Starting getPhaseProgress query:', { phaseNumber });
 
-  // Total worksheets per phase (from PRD)
+  // Total worksheets per phase (must match exercise counts in each Phase Dashboard)
   const totalPerPhase: Record<number, number> = {
-    1: 4,
-    2: 3,
+    1: 11, // 11 exercises in Phase1Dashboard
+    2: 2,  // 2 exercises in Phase2Dashboard (life-mission, vision-board)
     3: 3,
     4: 3,
     5: 3,

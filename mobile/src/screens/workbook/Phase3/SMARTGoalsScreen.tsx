@@ -25,7 +25,6 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import GoalCard, {
@@ -36,7 +35,7 @@ import GoalCard, {
   CATEGORY_NAMES,
 } from '../../../components/workbook/GoalCard';
 import SMARTGoalForm from '../../../components/workbook/SMARTGoalForm';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -81,10 +80,8 @@ interface SMARTGoalsData {
   updatedAt: string;
 }
 
-const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
+const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-    const insets = useSafeAreaInsets();
-
   const { data: savedProgress } = useWorkbookProgress(3, WORKSHEET_IDS.SMART_GOALS);
 
   // State
@@ -219,10 +216,17 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
+      <ExerciseScreenLayout
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+        completionProps={{
+          isCompleted: savedProgress?.completed || false,
+          canComplete,
+          isAutoCompleted,
+          isSaving,
+          onPress: markComplete,
+          onComplete: () => navigation.goBack(),
+        }}
       >
         {/* Exercise Header */}
         <ExerciseHeader
@@ -374,19 +378,7 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           </Text>
           <Text style={styles.quoteAuthor}>- Antoine de Saint-Exupery</Text>
         </View>
-
-        {/* Bottom Spacer for FAB */}
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-        <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-      </ScrollView>
+      </ExerciseScreenLayout>
 
       {/* Floating Action Button */}
       <Animated.View
@@ -674,13 +666,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
 
-  bottomSpacer: {
-    height: 100,
-  },
-
   fabContainer: {
     position: 'absolute',
-    bottom: spacing.xl,
+    bottom: spacing.xl + 100, // Account for sticky completion button
     right: spacing.lg,
     ...shadows.lg,
   },

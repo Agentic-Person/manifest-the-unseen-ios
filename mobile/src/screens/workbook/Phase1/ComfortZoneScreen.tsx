@@ -14,16 +14,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   Pressable,
   ActivityIndicator,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { SaveIndicator, ExerciseHeader, CompletionButton } from '../../../components/workbook';
+import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -173,8 +171,7 @@ const ZoneSection: React.FC<{
 /**
  * Comfort Zone Screen Component
  */
-const ComfortZoneScreen: React.FC<Props> = ({ navigation: _navigation }) => {
-  const insets = useSafeAreaInsets();
+const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
   const [data, setData] = useState<ComfortZoneData>(DEFAULT_DATA);
   const hasLoadedInitialData = useRef(false);
 
@@ -309,11 +306,17 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation: _navigation }) => {
   }
 
   return (
-    <ScrollView
+    <ExerciseScreenLayout
       style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      completionProps={{
+        isCompleted: savedProgress?.completed || false,
+        canComplete,
+        isAutoCompleted,
+        isSaving,
+        onPress: markComplete,
+        onComplete: () => navigation.goBack(),
+      }}
     >
       {/* Header Section */}
       <ExerciseHeader
@@ -400,19 +403,7 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation: _navigation }) => {
           onRetry={saveNow}
         />
       </View>
-
-      {/* Completion Button */}
-      <CompletionButton
-        isCompleted={savedProgress?.completed || false}
-        canComplete={canComplete}
-        isAutoCompleted={isAutoCompleted}
-        isSaving={isSaving}
-        onPress={markComplete}
-      />
-
-      {/* Bottom spacing */}
-      <View style={[styles.bottomSpacer, { paddingBottom: insets.bottom }]} />
-    </ScrollView>
+    </ExerciseScreenLayout>
   );
 };
 
