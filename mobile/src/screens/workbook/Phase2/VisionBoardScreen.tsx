@@ -120,7 +120,10 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
     if (!isLoadingProgress && !hasLoadedInitialData.current) {
       if (savedProgress?.data) {
         const data = savedProgress.data as unknown as VisionBoardData;
-        setBoard(data);
+        setBoard({
+          ...data,
+          items: Array.isArray(data.items) ? data.items : [],
+        });
       }
       setIsLoading(false);
       hasLoadedInitialData.current = true;

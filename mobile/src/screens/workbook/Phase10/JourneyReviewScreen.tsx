@@ -138,7 +138,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as JourneyReviewData;
-      if (data.transformation) {
+      if (data.transformation && typeof data.transformation === 'object') {
         setTransformation(data.transformation);
       }
       hasLoadedInitialData.current = true;

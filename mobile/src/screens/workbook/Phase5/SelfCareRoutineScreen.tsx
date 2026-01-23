@@ -179,8 +179,8 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SelfCareFormData;
-      setMorningActivities(data.morningActivities || []);
-      setEveningActivities(data.eveningActivities || []);
+      setMorningActivities(Array.isArray(data.morningActivities) ? data.morningActivities : []);
+      setEveningActivities(Array.isArray(data.eveningActivities) ? data.eveningActivities : []);
       setMorningStreak(data.morningStreak || 0);
       setEveningStreak(data.eveningStreak || 0);
       setBestMorningStreak(data.bestMorningStreak || 0);

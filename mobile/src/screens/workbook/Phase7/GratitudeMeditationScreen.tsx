@@ -157,12 +157,12 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
     // Only initialize once when loading completes
     if (isLoading) return;
 
-    if (savedProgress?.data) {
+    if (savedProgress?.data && typeof savedProgress.data === 'object') {
       const loadedData = savedProgress.data as { sessions: MeditationSession[]; stats: SessionStats };
-      if (loadedData.sessions) {
+      if (Array.isArray(loadedData.sessions)) {
         setSessions(loadedData.sessions);
       }
-      if (loadedData.stats) {
+      if (loadedData.stats && typeof loadedData.stats === 'object') {
         setStats(loadedData.stats);
       }
     }

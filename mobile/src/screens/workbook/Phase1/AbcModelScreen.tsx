@@ -102,7 +102,10 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const savedData = savedProgress.data as unknown as ABCModelData;
-      setData(savedData);
+      setData({
+        entries: Array.isArray(savedData.entries) ? savedData.entries : [],
+        updatedAt: savedData.updatedAt || new Date().toISOString(),
+      });
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

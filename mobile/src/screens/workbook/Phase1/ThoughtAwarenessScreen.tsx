@@ -124,7 +124,11 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const savedData = savedProgress.data as unknown as ThoughtAwarenessData;
-      setData(savedData);
+      setData({
+        entries: Array.isArray(savedData.entries) ? savedData.entries : [],
+        insights: typeof savedData.insights === 'string' ? savedData.insights : '',
+        updatedAt: savedData.updatedAt || new Date().toISOString(),
+      });
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

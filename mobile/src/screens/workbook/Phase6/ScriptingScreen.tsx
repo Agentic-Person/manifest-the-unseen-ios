@@ -119,7 +119,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as ScriptingFormData;
-      if (data.scripts) setScripts(data.scripts);
+      if (Array.isArray(data.scripts)) setScripts(data.scripts);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

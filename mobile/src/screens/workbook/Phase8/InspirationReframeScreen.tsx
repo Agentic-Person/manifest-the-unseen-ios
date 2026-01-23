@@ -111,10 +111,10 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as InspirationReframeData;
-      if (data.reframes) {
+      if (Array.isArray(data.reframes)) {
         setReframes(data.reframes);
       }
-      if (data.envyItems) {
+      if (Array.isArray(data.envyItems)) {
         setEnvyItems(data.envyItems);
       }
       hasLoadedInitialData.current = true;

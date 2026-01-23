@@ -179,8 +179,8 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as ActionPlanData;
-      if (data.selectedGoalId) setSelectedGoalId(data.selectedGoalId);
-      if (data.steps) setSteps(data.steps);
+      if (typeof data.selectedGoalId === 'string') setSelectedGoalId(data.selectedGoalId);
+      if (Array.isArray(data.steps)) setSteps(data.steps);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

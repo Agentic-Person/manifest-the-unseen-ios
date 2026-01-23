@@ -167,7 +167,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as FearFacingPlanData;
-      if (data.plans) setPlans(data.plans);
+      if (Array.isArray(data.plans)) setPlans(data.plans);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

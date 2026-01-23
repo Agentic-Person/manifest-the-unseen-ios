@@ -287,10 +287,10 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
    */
   const calculateProgress = (): number => {
     let completed = 0;
-    if (currentWOOP.wish.trim().length > 10) completed++;
-    if (currentWOOP.outcome.trim().length > 10) completed++;
-    if (currentWOOP.obstacle.trim().length > 10) completed++;
-    if (currentWOOP.plan.trim().length > 10) completed++;
+    if ((currentWOOP.wish?.trim()?.length ?? 0) > 10) completed++;
+    if ((currentWOOP.outcome?.trim()?.length ?? 0) > 10) completed++;
+    if ((currentWOOP.obstacle?.trim()?.length ?? 0) > 10) completed++;
+    if ((currentWOOP.plan?.trim()?.length ?? 0) > 10) completed++;
     return completed;
   };
 
@@ -326,7 +326,7 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.progressDots}>
             {sections.map((section, _index) => {
               const config = WOOP_CONFIG[section];
-              const isFilled = currentWOOP[section].trim().length > 10;
+              const isFilled = (currentWOOP[section]?.trim()?.length ?? 0) > 10;
               const isActive = activeSection === section;
               return (
                 <TouchableOpacity

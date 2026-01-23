@@ -166,8 +166,8 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as PurposeStatementData;
-      if (data.answers) setAnswers(data.answers);
-      if (data.finalStatement) setFinalStatement(data.finalStatement);
+      if (data.answers && typeof data.answers === 'object') setAnswers(data.answers);
+      if (typeof data.finalStatement === 'string') setFinalStatement(data.finalStatement);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

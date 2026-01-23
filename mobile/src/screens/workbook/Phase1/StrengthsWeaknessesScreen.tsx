@@ -142,7 +142,12 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const savedData = savedProgress.data as unknown as StrengthsWeaknessesData;
-      setData(savedData);
+      setData({
+        strengths: Array.isArray(savedData.strengths) ? savedData.strengths : [],
+        weaknesses: Array.isArray(savedData.weaknesses) ? savedData.weaknesses : [],
+        reflections: typeof savedData.reflections === 'string' ? savedData.reflections : '',
+        updatedAt: savedData.updatedAt || new Date().toISOString(),
+      });
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

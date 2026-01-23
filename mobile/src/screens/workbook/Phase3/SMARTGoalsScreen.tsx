@@ -109,7 +109,7 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SMARTGoalsData;
-      if (data.goals) setGoals(data.goals);
+      if (Array.isArray(data.goals)) setGoals(data.goals);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

@@ -109,7 +109,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as FearInventoryData;
-      if (data.fears) setFears(data.fears);
+      if (Array.isArray(data.fears)) setFears(data.fears);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

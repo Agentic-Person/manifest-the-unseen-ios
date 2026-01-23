@@ -155,8 +155,8 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         // Data structure: { strengths: Array<{ text: string }>, weaknesses: Array<{ text: string }> }
         interface Item { text?: string }
         const strengthsData = data as { strengths?: Item[]; weaknesses?: Item[] };
-        const validStrengths = strengthsData.strengths?.filter(s => s.text?.trim().length > 0) ?? [];
-        const validWeaknesses = strengthsData.weaknesses?.filter(w => w.text?.trim().length > 0) ?? [];
+        const validStrengths = strengthsData.strengths?.filter(s => (s.text?.trim()?.length ?? 0) > 0) ?? [];
+        const validWeaknesses = strengthsData.weaknesses?.filter(w => (w.text?.trim()?.length ?? 0) > 0) ?? [];
         return validStrengths.length >= 3 && validWeaknesses.length >= 3;
       },
     },
@@ -632,8 +632,8 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         };
         const validEntries = surrenderData.entries?.filter(
           (e) =>
-            e.controllingText?.trim().length >= 10 &&
-            e.surrenderText?.trim().length >= 10
+            (e.controllingText?.trim()?.length ?? 0) >= 10 &&
+            (e.surrenderText?.trim()?.length ?? 0) >= 10
         );
         return (validEntries?.length ?? 0) >= 3;
       },
@@ -651,7 +651,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
           entries?: Array<{ whatHappened?: string; possibleMeaning?: string }>;
         };
         const validEntries = signsData.entries?.filter(
-          (e) => e.whatHappened?.trim().length >= 20 && e.possibleMeaning?.trim().length >= 10
+          (e) => (e.whatHappened?.trim()?.length ?? 0) >= 20 && (e.possibleMeaning?.trim()?.length ?? 0) >= 10
         );
         return (validEntries?.length ?? 0) >= 5;
       },

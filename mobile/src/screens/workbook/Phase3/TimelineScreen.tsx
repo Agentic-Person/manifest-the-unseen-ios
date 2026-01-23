@@ -191,8 +191,10 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as TimelineData;
-      if (data.goals) setGoals(data.goals);
-      if (data.selectedView) setSelectedView(data.selectedView);
+      if (Array.isArray(data.goals)) setGoals(data.goals);
+      if (data.selectedView && ['week', 'month', 'quarter'].includes(data.selectedView)) {
+        setSelectedView(data.selectedView);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

@@ -140,7 +140,15 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
   // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
-      setMissionData(savedProgress.data as unknown as LifeMissionData);
+      const data = savedProgress.data as unknown as LifeMissionData;
+      setMissionData({
+        personalMission: typeof data.personalMission === 'string' ? data.personalMission : '',
+        professionalMission: typeof data.professionalMission === 'string' ? data.professionalMission : '',
+        impactMission: typeof data.impactMission === 'string' ? data.impactMission : '',
+        legacyMission: typeof data.legacyMission === 'string' ? data.legacyMission : '',
+        combinedStatement: typeof data.combinedStatement === 'string' ? data.combinedStatement : '',
+        updatedAt: data.updatedAt || new Date().toISOString(),
+      });
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

@@ -182,13 +182,13 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as GraduationData;
-      if (data.commitmentStatement) {
+      if (typeof data.commitmentStatement === 'string') {
         setCommitmentStatement(data.commitmentStatement);
       }
-      if (data.selectedPractices) {
+      if (Array.isArray(data.selectedPractices)) {
         setSelectedPractices(data.selectedPractices);
       }
-      if (data.hasGraduated) {
+      if (typeof data.hasGraduated === 'boolean' && data.hasGraduated) {
         setHasGraduated(true);
       }
       hasLoadedInitialData.current = true;

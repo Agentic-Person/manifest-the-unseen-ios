@@ -228,62 +228,74 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
    * Update item text
    */
   const handleTextChange = (id: string, text: string) => {
-    setEntries((prev) => ({
-      ...prev,
-      [selectedDate]: {
-        ...prev[selectedDate],
-        items: prev[selectedDate].items.map((item) =>
-          item.id === id ? { ...item, text } : item
-        ),
-        updatedAt: new Date().toISOString(),
-      },
-    }));
+    setEntries((prev) => {
+      if (!prev[selectedDate]) return prev;
+      return {
+        ...prev,
+        [selectedDate]: {
+          ...prev[selectedDate],
+          items: prev[selectedDate].items.map((item) =>
+            item.id === id ? { ...item, text } : item
+          ),
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    });
   };
 
   /**
    * Update item category
    */
   const handleCategoryChange = (id: string, category: GratitudeCategory) => {
-    setEntries((prev) => ({
-      ...prev,
-      [selectedDate]: {
-        ...prev[selectedDate],
-        items: prev[selectedDate].items.map((item) =>
-          item.id === id ? { ...item, category } : item
-        ),
-        updatedAt: new Date().toISOString(),
-      },
-    }));
+    setEntries((prev) => {
+      if (!prev[selectedDate]) return prev;
+      return {
+        ...prev,
+        [selectedDate]: {
+          ...prev[selectedDate],
+          items: prev[selectedDate].items.map((item) =>
+            item.id === id ? { ...item, category } : item
+          ),
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    });
   };
 
   /**
    * Update item photo
    */
   const handlePhotoChange = (id: string, photoUri: string | undefined) => {
-    setEntries((prev) => ({
-      ...prev,
-      [selectedDate]: {
-        ...prev[selectedDate],
-        items: prev[selectedDate].items.map((item) =>
-          item.id === id ? { ...item, photoUri } : item
-        ),
-        updatedAt: new Date().toISOString(),
-      },
-    }));
+    setEntries((prev) => {
+      if (!prev[selectedDate]) return prev;
+      return {
+        ...prev,
+        [selectedDate]: {
+          ...prev[selectedDate],
+          items: prev[selectedDate].items.map((item) =>
+            item.id === id ? { ...item, photoUri } : item
+          ),
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    });
   };
 
   /**
    * Delete item
    */
   const handleDelete = (id: string) => {
-    setEntries((prev) => ({
-      ...prev,
-      [selectedDate]: {
-        ...prev[selectedDate],
-        items: prev[selectedDate].items.filter((item) => item.id !== id),
-        updatedAt: new Date().toISOString(),
-      },
-    }));
+    setEntries((prev) => {
+      if (!prev[selectedDate]) return prev;
+      return {
+        ...prev,
+        [selectedDate]: {
+          ...prev[selectedDate],
+          items: prev[selectedDate].items.filter((item) => item.id !== id),
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    });
   };
 
   /**

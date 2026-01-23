@@ -175,7 +175,7 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as TrustAssessmentData;
-      if (data.trustValues) {
+      if (data.trustValues && typeof data.trustValues === 'object') {
         setTrustValues(data.trustValues);
       }
       hasLoadedInitialData.current = true;

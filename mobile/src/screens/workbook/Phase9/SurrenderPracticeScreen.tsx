@@ -118,10 +118,10 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SurrenderPracticeData;
-      if (data.entries) {
+      if (Array.isArray(data.entries)) {
         setEntries(data.entries);
       }
-      if (data.totalReleased !== undefined) {
+      if (typeof data.totalReleased === 'number') {
         setTotalReleased(data.totalReleased);
       }
       hasLoadedInitialData.current = true;

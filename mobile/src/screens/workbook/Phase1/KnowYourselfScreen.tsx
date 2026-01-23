@@ -154,8 +154,12 @@ const KnowYourselfScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const savedData = savedProgress.data as unknown as KnowYourselfData;
-      setData(savedData);
-      setCurrentQuestion(savedData.lastQuestionViewed || 0);
+      setData({
+        responses: savedData.responses && typeof savedData.responses === 'object' ? savedData.responses : DEFAULT_DATA.responses,
+        lastQuestionViewed: typeof savedData.lastQuestionViewed === 'number' ? savedData.lastQuestionViewed : 0,
+        updatedAt: savedData.updatedAt || new Date().toISOString(),
+      });
+      setCurrentQuestion(typeof savedData.lastQuestionViewed === 'number' ? savedData.lastQuestionViewed : 0);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

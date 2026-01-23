@@ -170,8 +170,8 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as AffirmationsFormData;
       // Merge saved data with defaults
-      const favoriteIds = new Set(data.favorites || []);
-      const customAffs = data.customAffirmations || [];
+      const favoriteIds = new Set(Array.isArray(data.favorites) ? data.favorites : []);
+      const customAffs = Array.isArray(data.customAffirmations) ? data.customAffirmations : [];
 
       const initialized: AffirmationData[] = DEFAULT_AFFIRMATIONS.map((a) => ({
         ...a,

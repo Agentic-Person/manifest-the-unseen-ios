@@ -148,7 +148,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
     // Only initialize once when loading completes
     if (isLoading) return;
 
-    if (savedProgress?.data) {
+    if (savedProgress?.data && Array.isArray(savedProgress.data)) {
       setLetters(savedProgress.data as unknown as GratitudeLetter[]);
     }
   }, [savedProgress, isLoading]);

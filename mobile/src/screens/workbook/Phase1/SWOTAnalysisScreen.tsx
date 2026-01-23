@@ -131,7 +131,13 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const saved = savedProgress.data as unknown as SWOTData;
-      setSWOTData(saved);
+      setSWOTData({
+        strengths: Array.isArray(saved.strengths) ? saved.strengths : [],
+        weaknesses: Array.isArray(saved.weaknesses) ? saved.weaknesses : [],
+        opportunities: Array.isArray(saved.opportunities) ? saved.opportunities : [],
+        threats: Array.isArray(saved.threats) ? saved.threats : [],
+        updatedAt: saved.updatedAt || new Date().toISOString(),
+      });
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

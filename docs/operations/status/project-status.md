@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-23 (Prayer Audio-Text Synchronization Fix)
+**Last Updated**: 2026-01-23 (Workbook Crash Bug Fixes)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
@@ -8,7 +8,120 @@
 
 ---
 
-## ✅ Last Activity: Prayer Audio-Text Synchronization Fix - January 23, 2026
+## ✅ Last Activity: Workbook Crash Bug Fixes - January 23, 2026
+
+### Summary
+Comprehensive fix for potential crash-causing bugs across all 10 workbook phases. Fixed 6 TypeScript compilation errors and applied defensive programming patterns to 36 files to prevent runtime crashes when loading corrupted or malformed saved data from Supabase.
+
+### Root Cause Investigation
+User reported crashes when using the workbook. Deployed a swarm of 5 agents to:
+1. Run TypeScript compiler to find type errors
+2. Scan all 39 workbook screen files for crash-causing patterns
+3. Review hooks, stores, and services for null safety issues
+
+### Issues Found & Fixed
+
+#### TypeScript Errors (6 errors in 1 file)
+| File | Issue | Fix |
+|------|-------|-----|
+| `worksheetConfigs.ts` | Lines 158-159, 635-636, 654 - `Object is possibly 'undefined'` when calling `.length` on `.trim()` result | Added optional chaining: `(s.text?.trim()?.length ?? 0)` |
+
+#### HIGH RISK Crashes (2 files)
+| File | Lines | Issue | Fix |
+|------|-------|-------|-----|
+| `GratitudeJournalScreen.tsx` | 235, 251, 267, 283 | `entries[selectedDate].items` accessed without null check | Added guard: `if (!prev[selectedDate]) return prev;` |
+| `WOOPScreen.tsx` | 290-293, 329 | `currentWOOP[section].trim().length` crashes if undefined | Changed to `(currentWOOP[section]?.trim()?.length ?? 0)` |
+
+#### MEDIUM RISK Issues (4 files)
+| File | Issue | Fix |
+|------|-------|-----|
+| `ThreeSixNineScreen.tsx` | Invalid date causes NaN propagation | Added date validation with fallback |
+| `FutureLetterScreen.tsx` | Dates stored as strings, expected as Date objects | Added `instanceof Date` check with conversion |
+| `useWorkbook.ts` | `Object.keys(query.data.data)` without type check | Added `typeof data === 'object'` check |
+| `useWorkbook.ts` | Non-null assertion `user!.id` in callbacks | Added null guards with early returns |
+
+#### LOW RISK Pattern (30+ files)
+All workbook screens were loading saved data without validating types:
+```typescript
+// Before (unsafe):
+if (data.items) setItems(data.items);
+
+// After (safe):
+if (Array.isArray(data.items)) setItems(data.items);
+```
+
+### Files Modified (36 total)
+
+#### Config & Hooks
+- `mobile/src/config/worksheetConfigs.ts`
+- `mobile/src/hooks/useWorkbook.ts`
+
+#### Phase 1 (7 screens)
+- `AbcModelScreen.tsx`
+- `ComfortZoneScreen.tsx`
+- `HabitsAuditScreen.tsx`
+- `KnowYourselfScreen.tsx`
+- `SWOTAnalysisScreen.tsx`
+- `StrengthsWeaknessesScreen.tsx`
+- `ThoughtAwarenessScreen.tsx`
+
+#### Phase 2 (3 screens)
+- `LifeMissionScreen.tsx`
+- `PurposeStatementScreen.tsx`
+- `VisionBoardScreen.tsx`
+
+#### Phase 3 (3 screens)
+- `ActionPlanScreen.tsx`
+- `SMARTGoalsScreen.tsx`
+- `TimelineScreen.tsx`
+
+#### Phase 4 (3 screens)
+- `FearFacingPlanScreen.tsx`
+- `FearInventoryScreen.tsx`
+- `LimitingBeliefsScreen.tsx`
+
+#### Phase 5 (3 screens)
+- `InnerChildScreen.tsx`
+- `SelfCareRoutineScreen.tsx`
+- `SelfLoveAffirmationsScreen.tsx`
+
+#### Phase 6 (3 screens)
+- `ScriptingScreen.tsx`
+- `ThreeSixNineScreen.tsx`
+- `WOOPScreen.tsx`
+
+#### Phase 7 (3 screens)
+- `GratitudeJournalScreen.tsx`
+- `GratitudeLettersScreen.tsx`
+- `GratitudeMeditationScreen.tsx`
+
+#### Phase 8 (3 screens)
+- `EnvyInventoryScreen.tsx`
+- `InspirationReframeScreen.tsx`
+- `RoleModelsScreen.tsx`
+
+#### Phase 9 (3 screens)
+- `SignsScreen.tsx`
+- `SurrenderPracticeScreen.tsx`
+- `TrustAssessmentScreen.tsx`
+
+#### Phase 10 (3 screens)
+- `FutureLetterScreen.tsx`
+- `GraduationScreen.tsx`
+- `JourneyReviewScreen.tsx`
+
+### Verification
+- ✅ TypeScript compilation: 0 errors (was 6)
+- ✅ All 36 files modified successfully
+- 🔲 Test on device after next TestFlight build
+
+### Next Steps
+- Build 57 for TestFlight to verify crash fixes
+- Once Sentry is configured, monitor for any remaining crash reports
+
+---
+
+## ✅ Previous Activity: Prayer Audio-Text Synchronization Fix - January 23, 2026
 
 ### Summary
 Fixed the prayer audio-text synchronization issue where some prayers (especially "I Speak Healing" and "Complete Declaration of Restoration") had misaligned audio and text timing. Replaced the fragile word-matching algorithm with a hybrid proportional approach that guarantees 100% line timing coverage for all prayers.

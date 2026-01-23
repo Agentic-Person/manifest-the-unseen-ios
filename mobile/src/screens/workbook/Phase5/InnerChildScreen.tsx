@@ -179,7 +179,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as InnerChildFormData;
-      setLetters(data.letters || []);
+      setLetters(Array.isArray(data.letters) ? data.letters : []);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress, isLoading]);

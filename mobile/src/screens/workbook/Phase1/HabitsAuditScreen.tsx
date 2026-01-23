@@ -82,7 +82,12 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const saved = savedProgress.data as unknown as HabitsData;
-      setHabitsData(saved);
+      setHabitsData({
+        morning: Array.isArray(saved.morning) ? saved.morning : [],
+        afternoon: Array.isArray(saved.afternoon) ? saved.afternoon : [],
+        evening: Array.isArray(saved.evening) ? saved.evening : [],
+        updatedAt: saved.updatedAt || new Date().toISOString(),
+      });
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

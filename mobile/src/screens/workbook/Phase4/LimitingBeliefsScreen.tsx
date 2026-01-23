@@ -116,7 +116,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as LimitingBeliefsData;
-      if (data.beliefs) setBeliefs(data.beliefs);
+      if (Array.isArray(data.beliefs)) setBeliefs(data.beliefs);
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

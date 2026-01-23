@@ -192,7 +192,13 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const savedData = savedProgress.data as unknown as ComfortZoneData;
-      setData(savedData);
+      setData({
+        comfort: Array.isArray(savedData.comfort) ? savedData.comfort : [],
+        growth: Array.isArray(savedData.growth) ? savedData.growth : [],
+        panic: Array.isArray(savedData.panic) ? savedData.panic : [],
+        commitments: typeof savedData.commitments === 'string' ? savedData.commitments : '',
+        updatedAt: savedData.updatedAt || new Date().toISOString(),
+      });
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);

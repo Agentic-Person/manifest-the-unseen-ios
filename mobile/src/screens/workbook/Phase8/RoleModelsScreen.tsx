@@ -92,7 +92,7 @@ const RoleModelsScreen: React.FC<Props> = () => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as RoleModelsData;
-      if (data.roleModels) {
+      if (Array.isArray(data.roleModels)) {
         setRoleModels(data.roleModels);
       }
       hasLoadedInitialData.current = true;

@@ -117,7 +117,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SignsData;
-      if (data.entries) {
+      if (Array.isArray(data.entries)) {
         setEntries(data.entries);
       }
       hasLoadedInitialData.current = true;

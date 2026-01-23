@@ -91,7 +91,7 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as EnvyInventoryData;
-      if (data.envyItems) {
+      if (Array.isArray(data.envyItems)) {
         setEnvyItems(data.envyItems);
       }
       hasLoadedInitialData.current = true;

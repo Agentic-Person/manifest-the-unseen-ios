@@ -56,9 +56,12 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
   const query = useQuery({
     queryKey: workbookKeys.worksheet(user?.id || '', phaseNumber, worksheetId),
     queryFn: async () => {
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
       // H3 Security Fix: Only log in development, exclude userId
       logger.debug('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId });
-      const result = await getWorkbookProgress(user!.id, phaseNumber, worksheetId);
+      const result = await getWorkbookProgress(user.id, phaseNumber, worksheetId);
       logger.debug('[useWorkbookProgress] Query result:', !!result);
       return result;
     },
@@ -73,7 +76,7 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
     let progress = 0;
     if (query.data.completed) {
       progress = 100;
-    } else if (query.data.data && Object.keys(query.data.data).length > 0) {
+    } else if (query.data.data && typeof query.data.data === 'object' && Object.keys(query.data.data).length > 0) {
       progress = 50;
     }
 
@@ -100,7 +103,12 @@ export function useAllWorkbookProgress() {
 
   return useQuery({
     queryKey: workbookKeys.progress(user?.id || ''),
-    queryFn: () => getAllWorkbookProgress(user!.id),
+    queryFn: () => {
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+      return getAllWorkbookProgress(user.id);
+    },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5,
   });
@@ -178,8 +186,14 @@ export function useSaveWorkbook() {
         `[useSaveWorkbook] Save successful - Phase ${result.phase_number}, Worksheet: ${result.worksheet_id}, Completed: ${result.completed}`
       );
 
+      // Guard against user being null (defensive - should not happen in practice)
+      if (!user?.id) {
+        logger.warn('[useSaveWorkbook] User not available in onSuccess callback');
+        return;
+      }
+
       const worksheetKey = workbookKeys.worksheet(
-        user!.id,
+        user.id,
         result.phase_number,
         result.worksheet_id
       );
@@ -188,7 +202,7 @@ export function useSaveWorkbook() {
       });
 
       queryClient.invalidateQueries({
-        queryKey: workbookKeys.progress(user!.id),
+        queryKey: workbookKeys.progress(user.id),
       });
 
       logger.debug('[useSaveWorkbook] Cache invalidated, data will be refetched');
@@ -235,8 +249,14 @@ export function useMarkComplete() {
         `[useMarkComplete] Worksheet marked complete - Phase ${result.phase_number}, Worksheet: ${result.worksheet_id}`
       );
 
+      // Guard against user being null (defensive - should not happen in practice)
+      if (!user?.id) {
+        logger.warn('[useMarkComplete] User not available in onSuccess callback');
+        return;
+      }
+
       const worksheetKey = workbookKeys.worksheet(
-        user!.id,
+        user.id,
         result.phase_number,
         result.worksheet_id
       );
@@ -245,7 +265,7 @@ export function useMarkComplete() {
       });
 
       queryClient.invalidateQueries({
-        queryKey: workbookKeys.progress(user!.id),
+        queryKey: workbookKeys.progress(user.id),
       });
 
       logger.debug('[useMarkComplete] Cache invalidated, progress will be refetched');
@@ -279,9 +299,15 @@ export function useDeleteWorkbookProgress() {
       return deleteWorkbookProgress(user.id, phaseNumber, worksheetId);
     },
     onSuccess: (_, variables) => {
+      // Guard against user being null (defensive - should not happen in practice)
+      if (!user?.id) {
+        logger.warn('[useDeleteWorkbookProgress] User not available in onSuccess callback');
+        return;
+      }
+
       // Clear cache directly for deleted worksheet (prevents refetch loops)
       const worksheetKey = workbookKeys.worksheet(
-        user!.id,
+        user.id,
         variables.phaseNumber,
         variables.worksheetId
       );
@@ -289,7 +315,7 @@ export function useDeleteWorkbookProgress() {
 
       // Only invalidate the broad progress query (acceptable cost)
       queryClient.invalidateQueries({
-        queryKey: workbookKeys.progress(user!.id),
+        queryKey: workbookKeys.progress(user.id),
       });
     },
   });

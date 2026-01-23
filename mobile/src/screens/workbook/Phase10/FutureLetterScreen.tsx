@@ -158,7 +158,21 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         setPromptResponses(data.promptResponses);
       }
       if (data.existingLetter) {
-        setExistingLetter(data.existingLetter);
+        // When loading saved data, convert date strings back to Date objects
+        // Supabase serializes dates as ISO strings, but SealedLetter expects Date objects
+        const letter = data.existingLetter as unknown as {
+          id: string;
+          content: string;
+          createdAt: string | Date;
+          openDate: string | Date;
+          isSealed: boolean;
+          reminderEmail?: string;
+        };
+        setExistingLetter({
+          ...letter,
+          openDate: letter.openDate instanceof Date ? letter.openDate : new Date(letter.openDate),
+          createdAt: letter.createdAt instanceof Date ? letter.createdAt : new Date(letter.createdAt),
+        });
       }
       hasLoadedInitialData.current = true;
     }

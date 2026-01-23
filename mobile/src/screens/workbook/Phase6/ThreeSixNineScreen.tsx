@@ -140,11 +140,35 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as ThreeSixNineFormData;
-      if (data.practice) setPractice(data.practice);
-      if (data.todayProgress) {
+
+      // Validate practice data shape before using
+      if (data.practice && typeof data.practice === 'object') {
+        // Ensure required fields exist with valid types, merge with defaults for any missing fields
+        const validatedPractice: ThreeSixNineData = {
+          ...createEmptyPractice(),
+          ...data.practice,
+          // Ensure specific fields have correct types
+          id: typeof data.practice.id === 'string' ? data.practice.id : generateId(),
+          manifestation: typeof data.practice.manifestation === 'string' ? data.practice.manifestation : '',
+          cycleDuration: (data.practice.cycleDuration === 21 || data.practice.cycleDuration === 33) ? data.practice.cycleDuration : 21,
+          startDate: typeof data.practice.startDate === 'string' ? data.practice.startDate : getTodayString(),
+          dailyProgress: Array.isArray(data.practice.dailyProgress) ? data.practice.dailyProgress : [],
+          isActive: typeof data.practice.isActive === 'boolean' ? data.practice.isActive : true,
+        };
+        setPractice(validatedPractice);
+      }
+
+      // Validate todayProgress data shape before using
+      if (data.todayProgress && typeof data.todayProgress === 'object') {
         // Check if it's still today, otherwise reset today's progress
-        if (data.todayProgress.date === getTodayString()) {
-          setTodayProgress(data.todayProgress);
+        if (typeof data.todayProgress.date === 'string' && data.todayProgress.date === getTodayString()) {
+          const validatedProgress: DailyProgress = {
+            date: data.todayProgress.date,
+            morning: typeof data.todayProgress.morning === 'number' ? Math.max(0, Math.min(3, data.todayProgress.morning)) : 0,
+            afternoon: typeof data.todayProgress.afternoon === 'number' ? Math.max(0, Math.min(6, data.todayProgress.afternoon)) : 0,
+            evening: typeof data.todayProgress.evening === 'number' ? Math.max(0, Math.min(9, data.todayProgress.evening)) : 0,
+          };
+          setTodayProgress(validatedProgress);
         }
       }
       hasLoadedInitialData.current = true;
@@ -219,10 +243,15 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
    * Calculate overall progress
    */
   const calculateProgress = (): { day: number; percentage: number } => {
-    const startDate = new Date(practice.startDate);
+    // Validate startDate exists and is valid before using it
+    const startDate = practice.startDate ? new Date(practice.startDate) : new Date();
+    // Check for Invalid Date - if invalid, fall back to today (day 1)
+    if (isNaN(startDate.getTime())) {
+      return { day: 1, percentage: Math.round((1 / practice.cycleDuration) * 100) };
+    }
     const today = new Date(getTodayString());
     const daysDiff = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-    const day = Math.min(daysDiff + 1, practice.cycleDuration);
+    const day = Math.max(1, Math.min(daysDiff + 1, practice.cycleDuration));
     const percentage = Math.round((day / practice.cycleDuration) * 100);
     return { day, percentage };
   };
