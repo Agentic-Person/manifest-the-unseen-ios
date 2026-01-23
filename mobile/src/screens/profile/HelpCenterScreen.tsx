@@ -13,16 +13,16 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  Platform,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as MailComposer from 'expo-mail-composer';
-import Constants from 'expo-constants';
 import type { ProfileStackScreenProps } from '../../types/navigation';
 import { colors, spacing } from '../../theme';
 import { useUser } from '../../stores/authStore';
 import { SettingsSection } from '../../components/settings/SettingsSection';
+import { getDiagnosticInfo } from '../../services/crashReportingService';
+import { useSubscriptionStore } from '../../stores/subscriptionStore';
 
 type Props = ProfileStackScreenProps<'HelpCenter'>;
 
@@ -47,6 +47,7 @@ const SUPPORT_EMAIL = 'jimmy@agenticpersonnel.com';
  */
 const HelpCenterScreen = (_props: Props) => {
   const user = useUser();
+  const tier = useSubscriptionStore((state) => state.tier);
   const [selectedSubject, setSelectedSubject] = useState<SubjectType>('bug');
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -84,15 +85,18 @@ const HelpCenterScreen = (_props: Props) => {
         return;
       }
 
-      const appVersion = Constants.expoConfig?.version || '1.0.0';
-      const buildNumber = Constants.expoConfig?.ios?.buildNumber || '1';
+      const diagnostics = getDiagnosticInfo();
 
       const body = `${message}
 
 ---
-App Version: ${appVersion} (${buildNumber})
-Platform: ${Platform.OS} ${Platform.Version}
-User: ${user?.email || 'Not logged in'}`;
+Diagnostic Information:
+App Version: ${diagnostics.appVersion}
+Platform: ${diagnostics.platform}
+Device: ${diagnostics.deviceName}
+User: ${user?.email || 'Not logged in'}
+Subscription: ${tier || 'Free'}
+Crash Reporting: ${diagnostics.crashReportingEnabled}`;
 
       await MailComposer.composeAsync({
         recipients: [SUPPORT_EMAIL],

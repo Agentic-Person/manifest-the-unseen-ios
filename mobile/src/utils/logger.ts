@@ -142,14 +142,49 @@ const devLogger: Logger = {
 };
 
 /**
- * Production Logger (No-op)
- * All methods are no-ops in production
+ * Production Logger
+ * Captures errors to Sentry, silences other log levels
  */
 const prodLogger: Logger = {
   debug: () => {},
   info: () => {},
   warn: () => {},
-  error: () => {},
+  error: (message: string, ...args: any[]) => {
+    // In production, capture errors to Sentry
+    // Import dynamically to avoid circular dependencies
+    try {
+      const { captureException, captureMessage, addBreadcrumb } = require('../services/crashReportingService');
+
+      // Check if any of the args is an Error
+      const errorArg = args.find((arg) => arg instanceof Error);
+
+      if (errorArg) {
+        // Capture the error with context
+        captureException(errorArg, {
+          logMessage: message,
+          additionalContext: formatArgs(...args.filter((arg) => !(arg instanceof Error))),
+        });
+      } else {
+        // Capture as a message with warning level
+        captureMessage(message, 'error', {
+          additionalContext: formatArgs(...args),
+        });
+      }
+
+      // Add breadcrumb for debugging context
+      addBreadcrumb({
+        category: 'logger',
+        message: message,
+        level: 'error',
+        data: formatArgs(...args).reduce((acc, arg, i) => {
+          acc[`arg${i}`] = typeof arg === 'object' ? JSON.stringify(arg) : String(arg);
+          return acc;
+        }, {} as Record<string, string>),
+      });
+    } catch {
+      // Silently fail if crash reporting not available
+    }
+  },
 };
 
 /**

@@ -22,11 +22,20 @@ import { configurePurchases, setUserId } from './src/services/subscriptionServic
 import { FontSizeProvider } from './src/contexts/FontSizeContext';
 import { DisclaimerScreen, hasAcceptedDisclaimer } from './src/screens/onboarding/DisclaimerScreen';
 
+// Import crash reporting and analytics
+import { initializeCrashReporting, setUser as setSentryUser } from './src/services/crashReportingService';
+import { initializeAnalytics, setAnalyticsUser, trackDisclaimerAccepted } from './src/services/analyticsService';
+import ErrorBoundary from './src/components/ErrorBoundary';
+
 // Import stores for initialization
 import { useAppStore } from './src/stores/appStore';
 import { useSubscriptionStore } from './src/stores/subscriptionStore';
 import { useAuthStore } from './src/stores/authStore';
 import { useTrialStore } from './src/stores/trialStore';
+
+// Initialize crash reporting and analytics early (before React renders)
+initializeCrashReporting();
+initializeAnalytics();
 
 /**
  * App Component
@@ -92,10 +101,15 @@ const App = () => {
         await configurePurchases();
         console.log('✅ RevenueCat initialized');
 
-        // 3. If user is logged in, sync their ID with RevenueCat
+        // 3. If user is logged in, sync their ID with RevenueCat and crash reporting
         if (user?.id) {
           await setUserId(user.id);
           console.log('✅ RevenueCat user ID synced:', user.id);
+
+          // Sync user with crash reporting and analytics
+          setSentryUser(user.id, user.email || undefined);
+          setAnalyticsUser(user.id);
+          console.log('✅ User synced with crash reporting and analytics');
         }
 
         // 4. Load subscription state
@@ -130,6 +144,7 @@ const App = () => {
    */
   const handleDisclaimerAccept = () => {
     setDisclaimerAccepted(true);
+    trackDisclaimerAccepted();
     console.log('✅ Disclaimer accepted by user');
   };
 
@@ -147,13 +162,15 @@ const App = () => {
   // Show main app after disclaimer accepted
   return (
     <GestureHandlerRootView style={styles.container}>
-      <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <FontSizeProvider>
-            <RootNavigator />
-          </FontSizeProvider>
-        </QueryClientProvider>
-      </SafeAreaProvider>
+      <ErrorBoundary>
+        <SafeAreaProvider>
+          <QueryClientProvider client={queryClient}>
+            <FontSizeProvider>
+              <RootNavigator />
+            </FontSizeProvider>
+          </QueryClientProvider>
+        </SafeAreaProvider>
+      </ErrorBoundary>
     </GestureHandlerRootView>
   );
 };

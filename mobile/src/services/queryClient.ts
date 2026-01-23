@@ -6,20 +6,37 @@
  */
 
 import { QueryClient, QueryCache, MutationCache } from '@tanstack/react-query';
+import { captureException, addBreadcrumb } from './crashReportingService';
 
 /**
  * Error Handler
  * Global error handler for queries and mutations
  */
 const handleError = (error: unknown) => {
-  // Log error for debugging
-  console.error('Query/Mutation Error:', error);
+  // Log error for debugging in development
+  if (__DEV__) {
+    console.error('Query/Mutation Error:', error);
+  }
 
-  // TODO: Send to error tracking service (Sentry)
-  // Sentry.captureException(error);
+  // Send to Sentry for production error tracking
+  captureException(error, {
+    source: 'TanStack Query',
+    type: error instanceof Error ? error.name : 'UnknownError',
+  });
+};
 
-  // Show user-friendly error message
-  // TODO: Integrate with toast/notification system
+/**
+ * Add breadcrumb for query/mutation tracking
+ */
+const addQueryBreadcrumb = (type: 'query' | 'mutation', key: unknown, status: string) => {
+  addBreadcrumb({
+    category: 'tanstack-query',
+    message: `${type} ${status}`,
+    level: status === 'error' ? 'error' : 'info',
+    data: {
+      queryKey: JSON.stringify(key),
+    },
+  });
 };
 
 /**
@@ -27,7 +44,13 @@ const handleError = (error: unknown) => {
  * Configure global query cache
  */
 const queryCache = new QueryCache({
-  onError: handleError,
+  onError: (error, query) => {
+    addQueryBreadcrumb('query', query.queryKey, 'error');
+    handleError(error);
+  },
+  onSuccess: (_data, query) => {
+    addQueryBreadcrumb('query', query.queryKey, 'success');
+  },
 });
 
 /**
@@ -35,7 +58,13 @@ const queryCache = new QueryCache({
  * Configure global mutation cache
  */
 const mutationCache = new MutationCache({
-  onError: handleError,
+  onError: (error, _variables, _context, mutation) => {
+    addQueryBreadcrumb('mutation', mutation.options.mutationKey, 'error');
+    handleError(error);
+  },
+  onSuccess: (_data, _variables, _context, mutation) => {
+    addQueryBreadcrumb('mutation', mutation.options.mutationKey, 'success');
+  },
 });
 
 /**

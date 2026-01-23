@@ -69,7 +69,14 @@
           }
         }
       ],
-      "expo-mail-composer"
+      "expo-mail-composer",
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "agentic-personnel-llc",
+          "project": "manifest-ios"
+        }
+      ]
     ],
     "extra": {
       "eas": {

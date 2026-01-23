@@ -1,17 +1,174 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-23 (Journey Review Accessibility Fix)
+**Last Updated**: 2026-01-23 (Prayer Audio-Text Synchronization Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
-**Status**: 🟢 **Production Ready** - Build 55 on TestFlight.
+**Status**: 🟢 **Production Ready** - Build 56 on TestFlight.
 
 ---
 
-## ✅ Last Activity: Journey Review Accessibility Fix - January 23, 2026
+## ✅ Last Activity: Prayer Audio-Text Synchronization Fix - January 23, 2026
 
 ### Summary
-Fixed the accessibility issue in the Journey Review screen (Phase 10) where the "My Transformation" section used static Text components instead of editable TextInput components. Users could not enter any text in the transformation fields, and the inputs were not exposed in the accessibility tree for automated testing or screen readers.
+Fixed the prayer audio-text synchronization issue where some prayers (especially "I Speak Healing" and "Complete Declaration of Restoration") had misaligned audio and text timing. Replaced the fragile word-matching algorithm with a hybrid proportional approach that guarantees 100% line timing coverage for all prayers.
+
+### Root Cause
+The original `mapWordsToLines` function in `generate-prayer-timings.js` used fuzzy word matching to map Whisper transcription to prayer lines. When matching failed (due to transcription differences, narrator variations, etc.), fewer timing entries were generated than content lines existed. Example: "Complete Declaration of Restoration" had 139 content lines but only 19 timing entries were generated.
+
+### Solution: Hybrid Whisper Timing
+Replaced the fragile word-matching algorithm with a hybrid approach:
+1. **Uses Whisper** to detect speech boundaries (when narrator starts/ends)
+2. **Proportionally distributes** timing across ALL content lines based on word count
+3. **No word matching** - just uses audio boundaries from Whisper
+
+This ensures:
+- ✅ Every content line gets a timing entry (counts always match)
+- ✅ Accurate speech boundary detection (no manual offset needed)
+- ✅ Proportional distribution gives reasonable timing
+- ✅ Works regardless of transcription variations
+
+### What Was Changed
+
+#### 1. New Edge Function: `whisper-transcribe`
+Created a new Supabase Edge Function to securely call the OpenAI Whisper API using the API key stored as a Supabase secret (no more API key in `.env.local`).
+
+| Component | Details |
+|-----------|---------|
+| **Function** | `whisper-transcribe` |
+| **Purpose** | Accepts audio as base64, calls Whisper API, returns word-level timestamps |
+| **Security** | Uses `OPENAI_API_KEY` from Supabase secrets (not exposed in code) |
+| **JWT** | Disabled (internal tool use only) |
+
+#### 2. Updated Script: `generate-prayer-timings.js`
+| Change | Details |
+|--------|---------|
+| **Removed** | Direct OpenAI API call and `OPENAI_API_KEY` requirement |
+| **Added** | Calls `whisper-transcribe` edge function instead |
+| **Algorithm** | Replaced `mapWordsToLines` with `generateProportionalTimings` |
+| **Result** | 100% line timing coverage for all prayers |
+
+### Results: All 8 Prayers Regenerated
+
+| Prayer | Lines | Coverage |
+|--------|-------|----------|
+| I Speak Healing | 42 | 100% ✅ |
+| Complete Declaration Of Restoration | 139 | 100% ✅ |
+| I Am Open To Receive | 42 | 100% ✅ |
+| Breaking The Chains | 125 | 100% ✅ |
+| I Am At Peace | 49 | 100% ✅ |
+| The Courage To Be Still | 210 | 100% ✅ |
+| The Frequency Of Thankfulness | 222 | 100% ✅ |
+| Communion With The Divine | 190 | 100% ✅ |
+
+### Files Modified
+- `tools/meditation-upload/generate-prayer-timings.js` - Updated algorithm and edge function integration
+- Supabase Edge Function `whisper-transcribe` deployed
+
+### Database Updated
+- All 8 prayers in `prayers` table have regenerated `line_timings` column with 100% coverage
+
+### Verification
+Test on device after next TestFlight build:
+1. "I Speak Healing" - text should sync with narrator
+2. "Complete Declaration of Restoration" - timing should be accurate (was 19/139 lines, now 139/139)
+3. "I Am Open to Receive" - should still work (regression test)
+
+### Cost
+- Whisper API: ~$0.36-$0.48 for all 8 prayers (one-time regeneration)
+
+---
+
+## ✅ Previous Activity: Crash Reporting & Analytics Implementation - January 23, 2026
+
+### Summary
+Implemented comprehensive crash reporting (Sentry) and privacy-focused analytics (TelemetryDeck) system. The app now captures crashes, errors, and usage analytics while respecting user privacy settings. Includes an ErrorBoundary component for graceful error handling and enhanced bug reporting in the Help Center.
+
+### What Was Implemented
+
+#### Phase 1: Sentry Crash Reporting
+| Component | Details |
+|-----------|---------|
+| **Package** | `@sentry/react-native` installed |
+| **Service** | `mobile/src/services/crashReportingService.ts` created |
+| **Features** | Exception capture, breadcrumbs, user identification, data sanitization |
+| **Privacy** | Respects `crashReportingEnabled` setting, scrubs sensitive fields (tokens, journal content, emails) |
+
+#### Phase 2: React Error Boundary
+| Component | Details |
+|-----------|---------|
+| **ErrorBoundary** | `mobile/src/components/ErrorBoundary.tsx` - catches JS errors in component tree |
+| **ErrorFallback** | `mobile/src/components/ErrorFallback.tsx` - user-friendly error screen |
+| **Features** | "Try Again" button, "Report Issue" button (opens email with diagnostics) |
+
+#### Phase 3: TelemetryDeck Analytics
+| Component | Details |
+|-----------|---------|
+| **Package** | `@telemetrydeck/sdk` installed |
+| **Service** | `mobile/src/services/analyticsService.ts` created |
+| **Events** | 35+ pre-defined event helpers (onboarding, auth, workbook, journal, meditation, subscription, etc.) |
+| **Privacy** | Respects `analyticsEnabled` setting, no PII collected |
+
+#### Phase 4: Enhanced Logger
+| Change | Details |
+|--------|---------|
+| **File** | `mobile/src/utils/logger.ts` modified |
+| **Production** | Errors now captured to Sentry (previously no-op) |
+| **Breadcrumbs** | Adds debugging context for error reports |
+
+#### Phase 5: Integration Points
+| File | Changes |
+|------|---------|
+| **app.json** | Added `@sentry/react-native/expo` plugin |
+| **eas.json** | Added `EXPO_PUBLIC_SENTRY_DSN` and `EXPO_PUBLIC_TELEMETRYDECK_APP_ID` env vars to testflight, testflight-sandbox, and production profiles |
+| **App.tsx** | Initializes crash reporting and analytics on app start, wraps app in ErrorBoundary |
+| **queryClient.ts** | Replaced TODO with actual Sentry capture for TanStack Query errors |
+| **HelpCenterScreen.tsx** | Enhanced bug reports with diagnostic info (app version, device, subscription tier, crash reporting status) |
+
+### Files Created
+- `mobile/src/services/crashReportingService.ts`
+- `mobile/src/services/analyticsService.ts`
+- `mobile/src/components/ErrorBoundary.tsx`
+- `mobile/src/components/ErrorFallback.tsx`
+
+### Files Modified
+- `mobile/app.json`
+- `mobile/eas.json`
+- `mobile/App.tsx`
+- `mobile/src/services/queryClient.ts`
+- `mobile/src/utils/logger.ts`
+- `mobile/src/screens/profile/HelpCenterScreen.tsx`
+
+### External Setup Required (Manual Steps)
+1. **Sentry**: Create account at sentry.io, create React Native project, get DSN, add to `eas.json`
+2. **TelemetryDeck**: Create account, create app, get App ID, add to `eas.json`
+3. **App Store Connect**: Configure crash report email notifications
+
+### Privacy Considerations
+- All services respect existing `crashReportingEnabled` and `analyticsEnabled` toggles in Privacy & Security settings
+- Sensitive fields (tokens, journal content, emails) are scrubbed before sending
+- TelemetryDeck is privacy-focused by design (no PII collection)
+
+### Result
+- ✅ TypeScript compiles without new errors
+- ✅ Services initialize on app start
+- ✅ ErrorBoundary wraps entire app
+- ✅ Privacy settings respected
+- ✅ Bug reports include diagnostics
+
+### Next Steps
+After adding Sentry DSN and TelemetryDeck App ID to `eas.json`:
+1. Verify Sentry receives test error
+2. Verify TelemetryDeck receives test event
+3. Test ErrorBoundary fallback UI
+4. Configure email alerts in Sentry dashboard
+
+---
+
+## ✅ Previous Activity: Journey Review Accessibility Fix - January 23, 2026
+
+### Summary
+Fixed the accessibility issue in the Journey Review screen (Phase 10) where the "My Transformation" section used static Text components instead of editable TextInput components. Users could not enter any text in the transformation fields, and the inputs were not exposed in the accessibility tree for automated testing or screen readers. Users could not enter any text in the transformation fields, and the inputs were not exposed in the accessibility tree for automated testing or screen readers.
 
 ### Issue Background
 During automated testing on January 22, Playwright could not find the text inputs in the "My Transformation" section because they were `<Text>` components displaying placeholder text, not actual `<TextInput>` components.

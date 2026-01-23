@@ -16,14 +16,17 @@ require('dotenv').config({ path: path.join(__dirname, '../../.env.local') });
 const PRAYERS_DIR = path.join(__dirname, '../../meditation-audio/prayers');
 const PRAYER_CONTENT_FILE = path.join(__dirname, 'prayer-content.json');
 
-// Validate environment
-const requiredVars = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'OPENAI_API_KEY'];
+// Validate environment (no longer need OPENAI_API_KEY - it's in the edge function)
+const requiredVars = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 for (const envVar of requiredVars) {
   if (!process.env[envVar]) {
     console.error(`Missing required environment variable: ${envVar}`);
     process.exit(1);
   }
 }
+
+// Edge function URL for Whisper transcription
+const WHISPER_EDGE_FUNCTION_URL = `${process.env.SUPABASE_URL}/functions/v1/whisper-transcribe`;
 
 // Initialize Supabase
 const supabase = createClient(
@@ -72,29 +75,36 @@ function getTitleFromFilename(filename) {
 }
 
 /**
- * Transcribe audio with Whisper (word-level timestamps)
+ * Transcribe audio with Whisper via Edge Function
+ *
+ * Uses the whisper-transcribe edge function which has the OpenAI API key
+ * stored securely as a Supabase secret.
  */
 async function transcribeWithWhisper(audioFilePath) {
-  console.log(`  Transcribing with Whisper...`);
+  console.log(`  Transcribing with Whisper (via Edge Function)...`);
 
-  const formData = new FormData();
-  formData.append('file', fs.createReadStream(audioFilePath));
-  formData.append('model', 'whisper-1');
-  formData.append('response_format', 'verbose_json');
-  formData.append('timestamp_granularities[]', 'word');
+  // Read file and convert to base64
+  const audioBuffer = fs.readFileSync(audioFilePath);
+  const audioBase64 = audioBuffer.toString('base64');
+  const filename = path.basename(audioFilePath);
 
-  const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+  console.log(`  Audio file size: ${(audioBuffer.length / 1024 / 1024).toFixed(2)} MB`);
+
+  const response = await fetch(WHISPER_EDGE_FUNCTION_URL, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      ...formData.getHeaders(),
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
     },
-    body: formData,
+    body: JSON.stringify({
+      audioBase64,
+      filename,
+    }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Whisper API error: ${response.status} - ${errorText}`);
+    throw new Error(`Edge Function error: ${response.status} - ${errorText}`);
   }
 
   return await response.json();
@@ -111,69 +121,54 @@ function getPrayerLines(prayerText) {
 }
 
 /**
- * Map Whisper words to prayer lines with timestamps
+ * Generate proportional timings using Whisper speech boundaries
+ *
+ * Instead of trying to match words (fragile), this approach:
+ * 1. Uses Whisper to detect when speech starts/ends
+ * 2. Distributes timing proportionally across ALL content lines based on word count
+ *
+ * This ensures every content line gets a timing entry, regardless of
+ * transcription variations or narrator differences.
  */
-function mapWordsToLines(whisperWords, prayerLines) {
-  const lineTimings = [];
-  let currentLineIndex = 0;
-  let currentLineWords = [];
-  let currentLineStartMs = null;
-
-  // Get expected words for current line
-  let expectedWords = prayerLines[currentLineIndex]
-    .toLowerCase()
-    .replace(/[.,!?;:]/g, '')
-    .split(/\s+/);
-
-  for (const wordData of whisperWords) {
-    const word = wordData.word.toLowerCase().replace(/[.,!?;:]/g, '');
-    const startMs = Math.round(wordData.start * 1000);
-    const endMs = Math.round(wordData.end * 1000);
-
-    if (currentLineStartMs === null) {
-      currentLineStartMs = startMs;
-    }
-
-    currentLineWords.push(word);
-
-    // Check if we've completed the current line
-    const matchedAllWords = expectedWords.every(ew =>
-      currentLineWords.some(cw => cw.includes(ew) || ew.includes(cw))
-    );
-
-    if (matchedAllWords && currentLineIndex < prayerLines.length) {
-      // Line complete
-      lineTimings.push({
-        line: currentLineIndex,
-        text: prayerLines[currentLineIndex],
-        startMs: currentLineStartMs,
-        endMs: endMs,
-      });
-
-      // Move to next line
-      currentLineIndex++;
-      currentLineWords = [];
-      currentLineStartMs = null;
-
-      if (currentLineIndex < prayerLines.length) {
-        expectedWords = prayerLines[currentLineIndex]
-          .toLowerCase()
-          .replace(/[.,!?;:]/g, '')
-          .split(/\s+/);
-      }
-    }
+function generateProportionalTimings(whisperResult, prayerLines) {
+  const words = whisperResult.words;
+  if (!words || words.length === 0) {
+    console.log('  ⚠️  No words from Whisper, cannot generate timings');
+    return null;
   }
 
-  // Handle any remaining line
-  if (currentLineIndex < prayerLines.length && currentLineWords.length > 0) {
-    const lastWord = whisperWords[whisperWords.length - 1];
-    lineTimings.push({
-      line: currentLineIndex,
-      text: prayerLines[currentLineIndex],
-      startMs: currentLineStartMs,
-      endMs: Math.round(lastWord.end * 1000),
-    });
-  }
+  // Get speech boundaries from Whisper
+  const speechStartMs = Math.round(words[0].start * 1000);
+  const speechEndMs = Math.round(words[words.length - 1].end * 1000);
+  const totalSpeechDurationMs = speechEndMs - speechStartMs;
+
+  console.log(`  Speech boundaries: ${(speechStartMs / 1000).toFixed(2)}s - ${(speechEndMs / 1000).toFixed(2)}s`);
+  console.log(`  Total speech duration: ${(totalSpeechDurationMs / 1000).toFixed(2)}s`);
+
+  // Count words per line
+  const lineWordCounts = prayerLines.map(line =>
+    line.split(/\s+/).filter(w => w.length > 0).length
+  );
+  const totalWords = lineWordCounts.reduce((sum, c) => sum + c, 0);
+
+  console.log(`  Content: ${prayerLines.length} lines, ${totalWords} total words`);
+
+  // Distribute timing proportionally based on word count per line
+  let currentTimeMs = speechStartMs;
+  const lineTimings = prayerLines.map((text, index) => {
+    const wordCount = lineWordCounts[index];
+    const lineDurationMs = (wordCount / totalWords) * totalSpeechDurationMs;
+    const startMs = currentTimeMs;
+    const endMs = startMs + lineDurationMs;
+    currentTimeMs = endMs;
+
+    return {
+      line: index,
+      text,
+      startMs: Math.round(startMs),
+      endMs: Math.round(endMs)
+    };
+  });
 
   return lineTimings;
 }
@@ -233,11 +228,20 @@ async function processPrayers() {
 
       console.log(`  ✓ Transcribed (${whisperResult.words.length} words)`);
 
-      // Map words to prayer lines
+      // Generate proportional timings using Whisper speech boundaries
       const prayerLines = getPrayerLines(prayerContent[title]);
-      const lineTimings = mapWordsToLines(whisperResult.words, prayerLines);
+      const lineTimings = generateProportionalTimings(whisperResult, prayerLines);
 
-      console.log(`  ✓ Mapped to ${lineTimings.length} lines`);
+      if (!lineTimings) {
+        throw new Error('Failed to generate timings from Whisper result');
+      }
+
+      // Verify line count matches
+      if (lineTimings.length !== prayerLines.length) {
+        console.log(`  ⚠️  Line count mismatch: ${lineTimings.length} timings vs ${prayerLines.length} content lines`);
+      } else {
+        console.log(`  ✓ Generated ${lineTimings.length} line timings (100% coverage)`);
+      }
 
       // Update database
       await updatePrayerTimings(title, lineTimings);

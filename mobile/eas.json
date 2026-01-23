@@ -36,7 +36,9 @@
         "EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS": "true",
         "EXPO_PUBLIC_SALE_ACTIVE": "false",
         "EXPO_PUBLIC_SALE_DISCOUNT": "50",
-        "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!"
+        "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://e43dad74b1427f9d734ab2ee1e878275@o4510758715392000.ingest.us.sentry.io/4510758719651840",
+        "EXPO_PUBLIC_TELEMETRYDECK_APP_ID": ""
       }
     },
     "testflight-sandbox": {
@@ -53,7 +55,9 @@
         "EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS": "false",
         "EXPO_PUBLIC_SALE_ACTIVE": "false",
         "EXPO_PUBLIC_SALE_DISCOUNT": "50",
-        "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!"
+        "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://e43dad74b1427f9d734ab2ee1e878275@o4510758715392000.ingest.us.sentry.io/4510758719651840",
+        "EXPO_PUBLIC_TELEMETRYDECK_APP_ID": ""
       }
     },
     "production": {
@@ -70,7 +74,9 @@
         "EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS": "false",
         "EXPO_PUBLIC_SALE_ACTIVE": "false",
         "EXPO_PUBLIC_SALE_DISCOUNT": "50",
-        "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!"
+        "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://e43dad74b1427f9d734ab2ee1e878275@o4510758715392000.ingest.us.sentry.io/4510758719651840",
+        "EXPO_PUBLIC_TELEMETRYDECK_APP_ID": ""
       }
     }
   },
