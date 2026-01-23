@@ -34,7 +34,7 @@
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_GlejN28GSh4yG5c7_d6RBg_oIZkFqdR",
         "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_syRiYucCEYWABHxxiKjporBRJVM",
         "EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS": "true",
-        "EXPO_PUBLIC_SALE_ACTIVE": "true",
+        "EXPO_PUBLIC_SALE_ACTIVE": "false",
         "EXPO_PUBLIC_SALE_DISCOUNT": "50",
         "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!"
       }
@@ -51,7 +51,7 @@
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_GlejN28GSh4yG5c7_d6RBg_oIZkFqdR",
         "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_syRiYucCEYWABHxxiKjporBRJVM",
         "EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS": "false",
-        "EXPO_PUBLIC_SALE_ACTIVE": "true",
+        "EXPO_PUBLIC_SALE_ACTIVE": "false",
         "EXPO_PUBLIC_SALE_DISCOUNT": "50",
         "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!"
       }
@@ -68,7 +68,7 @@
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_GlejN28GSh4yG5c7_d6RBg_oIZkFqdR",
         "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_syRiYucCEYWABHxxiKjporBRJVM",
         "EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS": "false",
-        "EXPO_PUBLIC_SALE_ACTIVE": "true",
+        "EXPO_PUBLIC_SALE_ACTIVE": "false",
         "EXPO_PUBLIC_SALE_DISCOUNT": "50",
         "EXPO_PUBLIC_SALE_BANNER_TEXT": "Monthly or Annual - You Choose!"
       }
