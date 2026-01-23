@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-21 (YouTube Transcript Scraper Fix)
+**Last Updated**: 2026-01-22 (Workbook Completion Criteria Bug Fixes)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
@@ -8,7 +8,71 @@
 
 ---
 
-## ✅ Last Activity: Fix YouTube Transcript Scraper Tool - January 21, 2026
+## ✅ Last Activity: Fix Workbook Completion Criteria Bugs - January 22, 2026
+
+### Summary
+Conducted comprehensive testing of workbook exercise completion tracking and discovered **6 critical bugs** where completion criteria didn't match actual screen data structures. All bugs have been fixed.
+
+### Problem
+Exercise completion was not being properly detected because the `worksheetConfigs.ts` validation functions expected different data structures than what the screens actually saved.
+
+### Bugs Fixed
+
+| Exercise | Issue | Fix Applied |
+|----------|-------|-------------|
+| **habits-audit** | Expected `data.habits` but actual uses `morning/afternoon/evening` arrays | Updated to count habits from all three time-of-day arrays |
+| **values-assessment** | Expected `data.values` with `{name, rank}` but actual uses `selectedValues: string[]` | Updated to check `selectedValues` array length |
+| **swot-analysis** | Expected separate `strengths/weaknesses/opportunities/threats` arrays but actual uses `swotData` array of quadrants | Updated to iterate through quadrants by ID |
+| **strengths-weaknesses** | Only checked array length, not content validity | Updated to validate non-empty text content |
+| **three-six-nine** | Expected `data.manifestation/cycles` but actual uses `practice` wrapper object | Updated to access nested `practice.manifestation` and `practice.dailyProgress` |
+| **gratitude-journal** | Expected `entries` array but actual uses `Record<string, entry>` keyed by date | Updated to convert record values to array for validation |
+
+### Technical Details
+The root cause was a disconnect between screen implementations and completion criteria. Each screen has its own data structure for auto-save, but the completion validators in `worksheetConfigs.ts` were written with assumed structures that didn't match.
+
+Example fix for `habits-audit`:
+```typescript
+// Before (broken):
+const habitsData = data as { habits?: Array<{ name: string }> };
+return (habitsData.habits?.length ?? 0) >= 5;
+
+// After (fixed):
+const habitsData = data as { morning?: Habit[]; afternoon?: Habit[]; evening?: Habit[] };
+const allHabits = [
+  ...(habitsData.morning ?? []),
+  ...(habitsData.afternoon ?? []),
+  ...(habitsData.evening ?? []),
+];
+const validHabits = allHabits.filter(h => h.habit && h.habit.trim().length >= 10);
+return validHabits.length >= 5;
+```
+
+### Additional Findings
+
+1. **Slider-based exercises auto-complete**: Wheel of Life and Feel Wheel auto-complete when opened because default slider values (5) satisfy the ">0" requirement. This is by design but could confuse users.
+
+2. **"Complete & Continue" navigation bug**: After clicking complete, navigation sometimes goes to unexpected screens (e.g., Meditate instead of next exercise). Needs investigation.
+
+3. **Phase 1 count fixed previously**: The `totalPerPhase` was already corrected (Phase 1: 4→11, Phase 2: 3→2) in the workbook service.
+
+### Files Changed
+- `mobile/src/config/worksheetConfigs.ts` - Fixed 6 completion criteria validators
+
+### Commit
+```
+fix: correct worksheet completion criteria data structure mismatches
+```
+
+### Testing Methodology
+- Used Playwright browser automation on localhost:3007
+- Created fresh test account to verify completion flow
+- Tested Phase 1 exercises: Wheel of Life, Feel Wheel, Habit Tracking
+- Verified console logs showing `meetsCompletion: true/false` status
+- Confirmed phase progress updates (e.g., "3 of 11 exercises completed")
+
+---
+
+## ✅ Previous Activity: Fix YouTube Transcript Scraper Tool - January 21, 2026
 
 ### Summary
 Fixed the YouTube transcript scraper tool (`tools/youtube-scraper/`) which had stopped working due to YouTube API changes. Replaced broken npm libraries with `yt-dlp` which is actively maintained and handles YouTube's anti-scraping measures.
