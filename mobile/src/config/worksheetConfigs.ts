@@ -72,17 +72,21 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     completionCriteria: {
       customValidator: (data) => {
         // Each SWOT category should have at least 2 items
-        const swotData = data as {
-          strengths?: string[];
-          weaknesses?: string[];
-          opportunities?: string[];
-          threats?: string[];
+        // Data structure: { swotData: Array<{ id: string; items: Array<{ text: string }> }> }
+        interface SWOTQuadrant { id: string; items?: Array<{ text: string }> }
+        const swotWrapper = data as { swotData?: SWOTQuadrant[] };
+        const quadrants = swotWrapper.swotData ?? [];
+
+        const getCount = (id: string) => {
+          const quadrant = quadrants.find(q => q.id === id);
+          return quadrant?.items?.filter(i => i.text?.trim().length > 0)?.length ?? 0;
         };
+
         return (
-          (swotData.strengths?.length ?? 0) >= 2 &&
-          (swotData.weaknesses?.length ?? 0) >= 2 &&
-          (swotData.opportunities?.length ?? 0) >= 2 &&
-          (swotData.threats?.length ?? 0) >= 2
+          getCount('strengths') >= 2 &&
+          getCount('weaknesses') >= 2 &&
+          getCount('opportunities') >= 2 &&
+          getCount('threats') >= 2
         );
       },
     },
@@ -93,9 +97,18 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 1,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have at least 5 habits logged
-        const habitsData = data as { habits?: Array<{ name: string }> };
-        return (habitsData.habits?.length ?? 0) >= 5;
+        // Should have at least 5 habits logged with 10+ char names
+        // Data structure: { morning: Habit[], afternoon: Habit[], evening: Habit[] }
+        interface Habit { id: string; habit: string; category: string; }
+        const habitsData = data as { morning?: Habit[]; afternoon?: Habit[]; evening?: Habit[] };
+        const allHabits = [
+          ...(habitsData.morning ?? []),
+          ...(habitsData.afternoon ?? []),
+          ...(habitsData.evening ?? []),
+        ];
+        // Count habits with 10+ character names
+        const validHabits = allHabits.filter(h => h.habit && h.habit.trim().length >= 10);
+        return validHabits.length >= 5;
       },
     },
   },
@@ -105,9 +118,10 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 1,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have at least 5 values ranked
-        const valuesData = data as { values?: Array<{ name: string; rank: number }> };
-        return (valuesData.values?.length ?? 0) >= 5;
+        // Should have at least 5 values selected
+        // Data structure: { selectedValues: string[] }
+        const valuesData = data as { selectedValues?: string[] };
+        return (valuesData.selectedValues?.length ?? 0) >= 5;
       },
     },
   },
@@ -137,12 +151,13 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 1,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have at least 3 strengths and 3 weaknesses
-        const strengthsData = data as { strengths?: string[]; weaknesses?: string[] };
-        return (
-          (strengthsData.strengths?.length ?? 0) >= 3 &&
-          (strengthsData.weaknesses?.length ?? 0) >= 3
-        );
+        // Should have at least 3 strengths and 3 weaknesses with non-empty text
+        // Data structure: { strengths: Array<{ text: string }>, weaknesses: Array<{ text: string }> }
+        interface Item { text?: string }
+        const strengthsData = data as { strengths?: Item[]; weaknesses?: Item[] };
+        const validStrengths = strengthsData.strengths?.filter(s => s.text?.trim().length > 0) ?? [];
+        const validWeaknesses = strengthsData.weaknesses?.filter(w => w.text?.trim().length > 0) ?? [];
+        return validStrengths.length >= 3 && validWeaknesses.length >= 3;
       },
     },
   },
@@ -412,11 +427,15 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 6,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have manifestation text and at least 3 days of cycles
-        const methodData = data as { manifestation?: string; cycles?: Array<unknown> };
+        // Should have manifestation text and at least 3 days of practice
+        // Data structure: { practice: { manifestation: string; dailyProgress: Array } }
+        interface PracticeData { manifestation?: string; dailyProgress?: Array<unknown> }
+        const methodData = data as { practice?: PracticeData };
+        const manifestation = methodData.practice?.manifestation ?? '';
+        const dailyProgress = methodData.practice?.dailyProgress ?? [];
         return (
-          (methodData.manifestation?.trim().length ?? 0) >= 10 &&
-          (methodData.cycles?.length ?? 0) >= 3
+          manifestation.trim().length >= 10 &&
+          dailyProgress.length >= 3
         );
       },
     },
@@ -454,11 +473,18 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     completionCriteria: {
       customValidator: (data) => {
         // Should have at least 7 gratitude entries (one week)
-        const journalData = data as { entries?: Array<{ items: string[]; reflection: string }> };
-        const validEntries = journalData.entries?.filter(
-          (e) => (e.items?.length ?? 0) >= 3 && e.reflection?.trim().length >= 20
+        // Data structure: Record<string, { dateKey: string; items: Array<{ text: string }>; ... }>
+        // The data is keyed by date string, so we need to get the values
+        interface GratitudeEntry { dateKey: string; items?: Array<{ text: string }> }
+        const entriesRecord = data as Record<string, GratitudeEntry>;
+        const entries = Object.values(entriesRecord).filter(
+          e => e && typeof e === 'object' && e.dateKey
         );
-        return (validEntries?.length ?? 0) >= 7;
+        // Count entries with at least 3 non-empty items
+        const validEntries = entries.filter(
+          (e) => (e.items?.filter(item => item.text?.trim().length > 0)?.length ?? 0) >= 3
+        );
+        return validEntries.length >= 7;
       },
     },
   },
