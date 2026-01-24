@@ -148,7 +148,7 @@ export const MainTabNavigator = () => {
         options={{
           title: 'Guru',
           tabBarLabel: 'Guru',
-          headerLeft: () => <ClickableHeaderLogo />,
+          headerShown: false, // GuruScreen manages its own header
           tabBarIcon: ({ focused }) => (
             <Image
               source={BackgroundImages.guru}

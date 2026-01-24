@@ -38,6 +38,8 @@ export const StickyCompletionButton: React.FC<StickyCompletionButtonProps> = ({
   onComplete,
 }) => {
   const insets = useSafeAreaInsets();
+  // Defensive fallback: use 0 if insets.bottom is undefined
+  const safeBottom = insets?.bottom ?? 0;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
 
@@ -113,7 +115,7 @@ export const StickyCompletionButton: React.FC<StickyCompletionButtonProps> = ({
 
   // Add extra padding to lift button above the tab bar (approx 60px on web/mobile)
   const tabBarHeight = 60;
-  const bottomPadding = Math.max(insets.bottom, spacing.md) + tabBarHeight;
+  const bottomPadding = Math.max(safeBottom, spacing.md) + tabBarHeight;
 
   return (
     <View style={[styles.stickyContainer, { paddingBottom: bottomPadding }]}>

@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, initialWindowMetrics } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
@@ -152,7 +152,7 @@ const App = () => {
   if (!disclaimerChecked || !disclaimerAccepted) {
     return (
       <GestureHandlerRootView style={styles.container}>
-        <SafeAreaProvider>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
           <DisclaimerScreen onAccept={handleDisclaimerAccept} />
         </SafeAreaProvider>
       </GestureHandlerRootView>
@@ -163,7 +163,7 @@ const App = () => {
   return (
     <GestureHandlerRootView style={styles.container}>
       <ErrorBoundary>
-        <SafeAreaProvider>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
           <QueryClientProvider client={queryClient}>
             <FontSizeProvider>
               <RootNavigator />

@@ -1468,13 +1468,52 @@ serve(async (req) => {
       );
     }
 
-    // Step 3: Verify phase completion
-    const isPhaseComplete = await verifyPhaseCompletion(supabase, user.id, phaseNumber);
+    // Step 3: Verify phase completion with detailed error info
+    const expectedWorksheetCount = WORKSHEETS_PER_PHASE[phaseNumber] || 3;
+
+    // Get actual worksheets for detailed error message
+    const { data: userWorksheets, error: worksheetError } = await supabase
+      .from('workbook_progress')
+      .select('worksheet_id, completed')
+      .eq('user_id', user.id)
+      .eq('phase_number', phaseNumber);
+
+    if (worksheetError) {
+      console.error('Failed to fetch worksheets for verification:', worksheetError);
+    }
+
+    const completedWorksheets = userWorksheets?.filter((w: any) => w.completed === true) || [];
+    const incompleteWorksheets = userWorksheets?.filter((w: any) => !w.completed) || [];
+    const totalFound = userWorksheets?.length || 0;
+
+    const isPhaseComplete = totalFound >= expectedWorksheetCount && completedWorksheets.length >= expectedWorksheetCount;
+
     if (!isPhaseComplete) {
+      // Build detailed error message
+      let errorDetails = `Phase ${phaseNumber} must be fully completed before Guru analysis.`;
+
+      if (totalFound < expectedWorksheetCount) {
+        errorDetails += ` Found ${totalFound} of ${expectedWorksheetCount} required worksheets.`;
+      } else if (incompleteWorksheets.length > 0) {
+        const incompleteNames = incompleteWorksheets
+          .map((w: any) => w.worksheet_id.replace(/-/g, ' '))
+          .join(', ');
+        errorDetails += ` Incomplete worksheets: ${incompleteNames}.`;
+      }
+
+      errorDetails += ` Please complete all exercises in Phase ${phaseNumber} first.`;
+
       return new Response(
         JSON.stringify({
-          error: `Phase ${phaseNumber} must be fully completed before Guru analysis`,
+          error: errorDetails,
           code: 'PHASE_INCOMPLETE',
+          details: {
+            phaseNumber,
+            expectedWorksheets: expectedWorksheetCount,
+            foundWorksheets: totalFound,
+            completedWorksheets: completedWorksheets.length,
+            incompleteWorksheets: incompleteWorksheets.map((w: any) => w.worksheet_id),
+          },
         }),
         {
           status: 400,

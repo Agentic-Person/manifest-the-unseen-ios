@@ -68,7 +68,9 @@ export const ExerciseScreenLayout = forwardRef<ScrollView, ExerciseScreenLayoutP
 
     // Calculate padding needed at the bottom of scroll content to ensure
     // it doesn't get hidden behind the sticky button (approx 100px for button + hints)
-    const stickyButtonHeight = 100 + Math.max(insets.bottom, spacing.md);
+    // Defensive fallback: use 0 if insets.bottom is undefined
+    const safeBottom = insets?.bottom ?? 0;
+    const stickyButtonHeight = 100 + Math.max(safeBottom, spacing.md);
 
     return (
       <View style={[styles.container, { backgroundColor }]}>
