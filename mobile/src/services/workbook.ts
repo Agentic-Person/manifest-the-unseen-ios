@@ -8,10 +8,7 @@
 import { supabase } from './supabase';
 import { invalidateGuruQueries } from './queryClient';
 import { logger } from '../utils/logger';
-import type {
-  WorkbookProgress,
-  WorkbookProgressInsert,
-} from '../types/workbook';
+import type { WorkbookProgress, WorkbookProgressInsert } from '../types/workbook';
 
 /**
  * Check if the Supabase client session is valid
@@ -29,19 +26,21 @@ const ensureValidSession = async (): Promise<void> => {
     try {
       // Use a shorter timeout for session check (5 seconds)
       const sessionPromise = supabase.auth.getSession();
-      const { data: { session }, error } = await withTimeout(
-        sessionPromise,
-        5000,
-        'Session validation'
-      );
+      const {
+        data: { session },
+        error,
+      } = await withTimeout(sessionPromise, 5000, 'Session validation');
 
       if (error) {
         lastError = new Error('Authentication session invalid');
-        logger.error(`[workbook.service] Session check failed (attempt ${attempt + 1}/${MAX_RETRIES}):`, error);
+        logger.error(
+          `[workbook.service] Session check failed (attempt ${attempt + 1}/${MAX_RETRIES}):`,
+          error
+        );
 
         // If this is not the last attempt, wait before retrying
         if (attempt < MAX_RETRIES - 1) {
-          await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+          await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS[attempt]));
           continue; // Retry
         }
         throw lastError;
@@ -49,11 +48,13 @@ const ensureValidSession = async (): Promise<void> => {
 
       if (!session) {
         lastError = new Error('No active authentication session');
-        logger.error(`[workbook.service] No active session found (attempt ${attempt + 1}/${MAX_RETRIES})`);
+        logger.error(
+          `[workbook.service] No active session found (attempt ${attempt + 1}/${MAX_RETRIES})`
+        );
 
         // If this is not the last attempt, wait before retrying
         if (attempt < MAX_RETRIES - 1) {
-          await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+          await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS[attempt]));
           continue; // Retry
         }
         throw lastError;
@@ -65,11 +66,13 @@ const ensureValidSession = async (): Promise<void> => {
         const now = Date.now();
         if (expiresAt < now) {
           lastError = new Error('Session expired - please sign in again');
-          logger.error(`[workbook.service] Session expired (attempt ${attempt + 1}/${MAX_RETRIES})`);
+          logger.error(
+            `[workbook.service] Session expired (attempt ${attempt + 1}/${MAX_RETRIES})`
+          );
 
           // If this is not the last attempt, wait before retrying
           if (attempt < MAX_RETRIES - 1) {
-            await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+            await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS[attempt]));
             continue; // Retry
           }
           throw lastError;
@@ -80,16 +83,22 @@ const ensureValidSession = async (): Promise<void> => {
       if (attempt > 0) {
         logger.debug(`[workbook.service] Session valid on attempt ${attempt + 1}/${MAX_RETRIES}`);
       }
-      logger.debug('[workbook.service] Session is valid, expires in',
-        session.expires_at ? Math.round((session.expires_at * 1000 - Date.now()) / 1000 / 60) : '?', 'minutes');
+      logger.debug(
+        '[workbook.service] Session is valid, expires in',
+        session.expires_at ? Math.round((session.expires_at * 1000 - Date.now()) / 1000 / 60) : '?',
+        'minutes'
+      );
       return; // Success - exit the function
     } catch (err) {
       lastError = err as Error;
-      logger.error(`[workbook.service] Session validation error (attempt ${attempt + 1}/${MAX_RETRIES}):`, err);
+      logger.error(
+        `[workbook.service] Session validation error (attempt ${attempt + 1}/${MAX_RETRIES}):`,
+        err
+      );
 
       // If this is not the last attempt, wait before retrying
       if (attempt < MAX_RETRIES - 1) {
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAYS[attempt]));
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS[attempt]));
         continue; // Retry
       }
       throw err; // Last attempt failed - throw the error
@@ -123,7 +132,7 @@ const withTimeout = <T>(
       clearTimeout(timeoutId);
       return result;
     }),
-    timeoutPromise
+    timeoutPromise,
   ]);
 };
 
@@ -148,11 +157,7 @@ export const getWorkbookProgress = async (
       .single();
 
     // Add timeout to prevent hanging (15 seconds for mobile networks)
-    const { data, error } = await withTimeout(
-      queryPromise,
-      15000,
-      'getWorkbookProgress'
-    );
+    const { data, error } = await withTimeout(queryPromise, 15000, 'getWorkbookProgress');
 
     logger.debug('[workbook.service] Query completed:', { hasData: !!data, error });
 
@@ -173,9 +178,7 @@ export const getWorkbookProgress = async (
 /**
  * Get all progress for a user
  */
-export const getAllWorkbookProgress = async (
-  userId: string
-): Promise<WorkbookProgress[]> => {
+export const getAllWorkbookProgress = async (userId: string): Promise<WorkbookProgress[]> => {
   logger.debug('[workbook.service] Starting getAllWorkbookProgress query');
 
   try {
@@ -186,15 +189,17 @@ export const getAllWorkbookProgress = async (
       .order('phase_number', { ascending: true });
 
     // Add timeout to prevent hanging (15 seconds for mobile networks)
-    const { data, error } = await withTimeout(
-      queryPromise,
-      15000,
-      'getAllWorkbookProgress'
-    );
+    const { data, error } = await withTimeout(queryPromise, 15000, 'getAllWorkbookProgress');
 
-    logger.debug('[workbook.service] getAllWorkbookProgress completed:', { hasData: !!data, count: data?.length, error });
+    logger.debug('[workbook.service] getAllWorkbookProgress completed:', {
+      hasData: !!data,
+      count: data?.length,
+      error,
+    });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
     return (data as WorkbookProgress[]) || [];
   } catch (err) {
     logger.error('[workbook.service] Exception in getAllWorkbookProgress:', err);
@@ -214,7 +219,7 @@ export const getPhaseProgress = async (
   // Total worksheets per phase (must match exercise counts in each Phase Dashboard)
   const totalPerPhase: Record<number, number> = {
     1: 11, // 11 exercises in Phase1Dashboard
-    2: 2,  // 2 exercises in Phase2Dashboard (life-mission, vision-board)
+    2: 2, // 2 exercises in Phase2Dashboard (life-mission, vision-board)
     3: 3,
     4: 3,
     5: 3,
@@ -233,15 +238,18 @@ export const getPhaseProgress = async (
       .eq('phase_number', phaseNumber);
 
     // Add timeout to prevent hanging (15 seconds for mobile networks)
-    const { data, error } = await withTimeout(
-      queryPromise,
-      15000,
-      'getPhaseProgress'
-    );
+    const { data, error } = await withTimeout(queryPromise, 15000, 'getPhaseProgress');
 
-    logger.debug('[workbook.service] getPhaseProgress completed:', { phaseNumber, hasData: !!data, count: data?.length, error });
+    logger.debug('[workbook.service] getPhaseProgress completed:', {
+      phaseNumber,
+      hasData: !!data,
+      count: data?.length,
+      error,
+    });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     const worksheets = (data as WorkbookProgress[]) || [];
     const completed = worksheets.filter((w) => w.completed).length;
@@ -289,10 +297,12 @@ const retryWithBackoff = async <T>(
 
       // Calculate delay with exponential backoff
       const delayMs = initialDelayMs * Math.pow(2, attempt);
-      logger.debug(`[workbook.service] Retry attempt ${attempt + 1}/${maxRetries} after ${delayMs}ms`);
+      logger.debug(
+        `[workbook.service] Retry attempt ${attempt + 1}/${maxRetries} after ${delayMs}ms`
+      );
 
       // Wait before retrying
-      await new Promise(resolve => setTimeout(resolve, delayMs));
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
   }
 
@@ -344,7 +354,10 @@ export const upsertWorkbookProgress = async (
         'upsertWorkbookProgress'
       );
 
-      logger.debug('[workbook.service] Upsert completed:', { result: result ? 'success' : 'null', error });
+      logger.debug('[workbook.service] Upsert completed:', {
+        result: result ? 'success' : 'null',
+        error,
+      });
 
       if (error) {
         // H3 Security Fix: Don't log userId in production
@@ -394,13 +407,11 @@ export const markWorksheetComplete = async (
       .select()
       .single();
 
-    const { data, error } = await withTimeout(
-      updatePromise,
-      20000,
-      'markWorksheetComplete'
-    );
+    const { data, error } = await withTimeout(updatePromise, 20000, 'markWorksheetComplete');
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
     return data as WorkbookProgress;
   } catch (err) {
     logger.error('[workbook.service] Exception in markWorksheetComplete:', err);
@@ -423,33 +434,33 @@ export const deleteWorkbookProgress = async (
     .eq('phase_number', phaseNumber)
     .eq('worksheet_id', worksheetId);
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 };
 
 /**
  * Reset all progress for a phase
  */
-export const resetPhaseProgress = async (
-  userId: string,
-  phaseNumber: number
-): Promise<void> => {
+export const resetPhaseProgress = async (userId: string, phaseNumber: number): Promise<void> => {
   const { error } = await supabase
     .from('workbook_progress')
     .delete()
     .eq('user_id', userId)
     .eq('phase_number', phaseNumber);
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 };
 
 /**
  * Reset all workbook progress for a user
  */
 export const resetAllProgress = async (userId: string): Promise<void> => {
-  const { error } = await supabase
-    .from('workbook_progress')
-    .delete()
-    .eq('user_id', userId);
+  const { error } = await supabase.from('workbook_progress').delete().eq('user_id', userId);
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 };

@@ -29,10 +29,7 @@ type AuthStackParamList = {
   ForgotPassword: undefined;
 };
 
-type NavigationProp = NativeStackNavigationProp<
-  AuthStackParamList,
-  'ForgotPassword'
->;
+type NavigationProp = NativeStackNavigationProp<AuthStackParamList, 'ForgotPassword'>;
 
 export const ForgotPasswordScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -83,8 +80,7 @@ export const ForgotPasswordScreen: React.FC = () => {
         navigation.navigate('Login');
       }, 5000);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Password reset failed';
+      const message = error instanceof Error ? error.message : 'Password reset failed';
       setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
@@ -104,18 +100,14 @@ export const ForgotPasswordScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         {/* Header */}
         <View style={styles.header}>
           <Text variant="h1" style={styles.title}>
             Reset Password
           </Text>
           <Text variant="body" style={styles.subtitle}>
-            Enter your email and we'll send you instructions to reset your
-            password
+            Enter your email and we'll send you instructions to reset your password
           </Text>
         </View>
 
@@ -164,12 +156,9 @@ export const ForgotPasswordScreen: React.FC = () => {
         <Card elevation="flat" style={styles.infoCard}>
           <Text variant="body" style={styles.infoText}>
             <Text style={styles.infoBold}>Didn't receive the email?</Text>
-            {'\n\n'}
-            • Check your spam/junk folder
-            {'\n'}
-            • Make sure you entered the correct email address
-            {'\n'}
-            • Wait a few minutes and check again
+            {'\n\n'}• Check your spam/junk folder
+            {'\n'}• Make sure you entered the correct email address
+            {'\n'}• Wait a few minutes and check again
           </Text>
         </Card>
 

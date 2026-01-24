@@ -4,11 +4,17 @@
  */
 
 export const LIFE_AREAS = [
-  'career', 'health', 'relationships', 'finance',
-  'personalGrowth', 'family', 'recreation', 'spirituality'
+  'career',
+  'health',
+  'relationships',
+  'finance',
+  'personalGrowth',
+  'family',
+  'recreation',
+  'spirituality',
 ] as const;
 
-export type LifeArea = typeof LIFE_AREAS[number];
+export type LifeArea = (typeof LIFE_AREAS)[number];
 
 export const LIFE_AREA_DISPLAY_NAMES: Record<LifeArea, string> = {
   career: 'Career',

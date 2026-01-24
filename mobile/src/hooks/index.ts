@@ -43,12 +43,5 @@ export { useAIChat, useConversations } from './useAIChat';
 export { useGuru } from './useGuru';
 
 // All phases progress hook
-export {
-  useAllPhasesProgress,
-  getProgressColor,
-  getProgressMessage,
-} from './useAllPhasesProgress';
-export type {
-  PhaseProgressSummary,
-  AllPhasesProgressResult,
-} from './useAllPhasesProgress';
+export { useAllPhasesProgress, getProgressColor, getProgressMessage } from './useAllPhasesProgress';
+export type { PhaseProgressSummary, AllPhasesProgressResult } from './useAllPhasesProgress';

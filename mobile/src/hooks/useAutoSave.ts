@@ -122,7 +122,9 @@ export function useAutoSave<T extends Record<string, unknown>>({
 
   // Check completion status continuously (not just on save)
   useEffect(() => {
-    if (!enableAutoComplete) return;
+    if (!enableAutoComplete) {
+      return;
+    }
 
     try {
       const config = getWorksheetConfig(worksheetId);

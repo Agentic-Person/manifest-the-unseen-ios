@@ -16,12 +16,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
@@ -30,10 +25,10 @@ import { colors, spacing, borderRadius, shadows } from '../../theme';
  * Goal categories with their colors
  */
 export const CATEGORY_COLORS: Record<GoalCategory, string> = {
-  personal: '#9333ea',     // Purple
+  personal: '#9333ea', // Purple
   professional: '#2563eb', // Blue
-  health: '#16a34a',       // Green
-  financial: '#d97706',    // Amber
+  health: '#16a34a', // Green
+  financial: '#d97706', // Amber
   relationship: '#db2777', // Pink
 };
 
@@ -142,21 +137,17 @@ export const GoalCard: React.FC<GoalCardProps> = ({
    */
   const handleDelete = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      'Delete Goal',
-      `Are you sure you want to delete "${goal.title}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            onDelete();
-          },
+    Alert.alert('Delete Goal', `Are you sure you want to delete "${goal.title}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          onDelete();
         },
-      ]
-    );
+      },
+    ]);
   }, [goal.title, onDelete]);
 
   /**
@@ -200,10 +191,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={[
-        styles.container,
-        { borderLeftColor: categoryColor },
-      ]}
+      style={[styles.container, { borderLeftColor: categoryColor }]}
       onPress={handlePress}
       onLongPress={handleDelete}
       activeOpacity={0.7}
@@ -252,9 +240,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         {/* Deadline */}
         <View style={styles.deadlineContainer}>
           <Text style={styles.deadlineIcon}>{'\u23F0'}</Text>
-          <Text style={[styles.deadlineText, isOverdue && styles.overdueText]}>
-            {deadlineText}
-          </Text>
+          <Text style={[styles.deadlineText, isOverdue && styles.overdueText]}>{deadlineText}</Text>
         </View>
 
         {/* SMART Progress */}
@@ -265,15 +251,9 @@ export const GoalCard: React.FC<GoalCardProps> = ({
             return (
               <View
                 key={letter}
-                style={[
-                  styles.smartDot,
-                  isFilled && { backgroundColor: categoryColor },
-                ]}
+                style={[styles.smartDot, isFilled && { backgroundColor: categoryColor }]}
               >
-                <Text style={[
-                  styles.smartLetter,
-                  isFilled && styles.smartLetterFilled,
-                ]}>
+                <Text style={[styles.smartLetter, isFilled && styles.smartLetterFilled]}>
                   {letter}
                 </Text>
               </View>

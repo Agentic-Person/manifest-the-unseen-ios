@@ -63,8 +63,8 @@ export const fontSizes = {
  * Line heights (multipliers)
  */
 export const lineHeights = {
-  tight: 1.2,   // For headings
-  normal: 1.5,  // For body text
+  tight: 1.2, // For headings
+  normal: 1.5, // For body text
   relaxed: 1.75, // For long-form content
 } as const;
 

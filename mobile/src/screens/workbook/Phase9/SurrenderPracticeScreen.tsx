@@ -20,14 +20,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, StyleSheet, Text, Pressable, ActivityIndicator, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import {
@@ -83,17 +76,22 @@ const PHASE_NUMBER = 9;
 const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
 
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.SURRENDER_PRACTICE
-  );
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.SURRENDER_PRACTICE);
 
   const [entries, setEntries] = useState<SurrenderEntryData[]>([]);
   const [dailyAffirmation, setDailyAffirmation] = useState<string>(getRandomAffirmation());
   const [totalReleased, setTotalReleased] = useState(0);
 
   // Auto-save hook
-  const formData: SurrenderPracticeData = useMemo(() => ({ entries, totalReleased }), [entries, totalReleased]);
+  const formData: SurrenderPracticeData = useMemo(
+    () => ({ entries, totalReleased }),
+    [entries, totalReleased]
+  );
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
@@ -114,7 +112,9 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SurrenderPracticeData;
@@ -151,9 +151,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleControllingChange = (id: string, text: string) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, controllingText: text } : entry
-      )
+      prev.map((entry) => (entry.id === id ? { ...entry, controllingText: text } : entry))
     );
   };
 
@@ -162,9 +160,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleSurrenderChange = (id: string, text: string) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, surrenderText: text } : entry
-      )
+      prev.map((entry) => (entry.id === id ? { ...entry, surrenderText: text } : entry))
     );
   };
 
@@ -173,9 +169,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleAffirmationChange = (id: string, text: string) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, affirmation: text } : entry
-      )
+      prev.map((entry) => (entry.id === id ? { ...entry, affirmation: text } : entry))
     );
   };
 
@@ -206,21 +200,17 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
    * Delete entry
    */
   const handleDelete = (id: string) => {
-    Alert.alert(
-      'Delete Entry',
-      'Are you sure you want to delete this surrender practice?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            setEntries((prev) => prev.filter((entry) => entry.id !== id));
-          },
+    Alert.alert('Delete Entry', 'Are you sure you want to delete this surrender practice?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          setEntries((prev) => prev.filter((entry) => entry.id !== id));
         },
-      ]
-    );
+      },
+    ]);
   };
 
   /**
@@ -296,10 +286,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Add Entry Button */}
       <Pressable
-        style={({ pressed }) => [
-          styles.addButton,
-          pressed && styles.addButtonPressed,
-        ]}
+        style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
         onPress={handleAddEntry}
         accessibilityRole="button"
         accessibilityLabel="Start a new surrender practice"
@@ -320,9 +307,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
           </View>
           <View style={styles.instructionStep}>
             <Text style={styles.stepNumber}>2</Text>
-            <Text style={styles.stepText}>
-              Describe what you choose to surrender and let go of
-            </Text>
+            <Text style={styles.stepText}>Describe what you choose to surrender and let go of</Text>
           </View>
           <View style={styles.instructionStep}>
             <Text style={styles.stepNumber}>3</Text>
@@ -332,9 +317,7 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
           </View>
           <View style={styles.instructionStep}>
             <Text style={styles.stepNumber}>4</Text>
-            <Text style={styles.stepText}>
-              Press "Release & Surrender" to symbolically let go
-            </Text>
+            <Text style={styles.stepText}>Press "Release & Surrender" to symbolically let go</Text>
           </View>
         </View>
       )}
@@ -382,23 +365,22 @@ const SurrenderPracticeScreen: React.FC<Props> = ({ navigation }) => {
       {/* Tips Card */}
       <View style={styles.tipsCard}>
         <Text style={styles.tipsTitle}>Surrender Wisdom</Text>
-        <Text style={styles.tipItem}>
-          - Surrender is not giving up; it's giving over to trust
-        </Text>
+        <Text style={styles.tipItem}>- Surrender is not giving up; it's giving over to trust</Text>
         <Text style={styles.tipItem}>
           - You can't control outcomes, only your effort and intentions
         </Text>
-        <Text style={styles.tipItem}>
-          - What you resist persists; what you accept transforms
-        </Text>
-        <Text style={styles.tipItem}>
-          - Letting go creates space for new blessings to enter
-        </Text>
+        <Text style={styles.tipItem}>- What you resist persists; what you accept transforms</Text>
+        <Text style={styles.tipItem}>- Letting go creates space for new blessings to enter</Text>
       </View>
 
       {/* Save Status */}
       <View style={styles.saveStatusContainer}>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </View>
     </ExerciseScreenLayout>
   );

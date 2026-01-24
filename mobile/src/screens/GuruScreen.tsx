@@ -58,14 +58,18 @@ export function GuruScreen() {
   } = useGuru();
 
   // Get effective access (combines trial + subscription)
-  const { effectiveTier: _effectiveTier, isTrialUser, hasGuruAnalysis: _hasGuruAnalysis } = useEffectiveAccess();
+  const {
+    effectiveTier: _effectiveTier,
+    isTrialUser,
+    hasGuruAnalysis: _hasGuruAnalysis,
+  } = useEffectiveAccess();
 
   // Rate limiting for trial users only
   const { canMakeRequest, incrementUsage, getResetTime, loadUsage } = useGuruRateLimit();
   const [showRateLimitModal, setShowRateLimitModal] = useState(false);
 
   // Rate limit only applies to trial users, paid Awakening+ users have unlimited
-  const shouldRateLimit = isTrialUser;
+  const shouldRateLimit = isTrialUser;
 
   // Load rate limit usage on mount
   useEffect(() => {
@@ -92,7 +96,14 @@ export function GuruScreen() {
       // This fixes the navigation loop bug where backing out would re-trigger auto-selection
       navigation.setParams({ preSelectedPhase: undefined });
     }
-  }, [route.params?.preSelectedPhase, hasAccess, completedPhases, selectedPhase, selectPhase, navigation]);
+  }, [
+    route.params?.preSelectedPhase,
+    hasAccess,
+    completedPhases,
+    selectedPhase,
+    selectPhase,
+    navigation,
+  ]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -167,17 +178,14 @@ export function GuruScreen() {
         ) : (
           // Show phase selector
           <View style={styles.selectorContainer}>
-            <PhaseSelector
-              completedPhases={completedPhases}
-              onSelectPhase={handleSelectPhase}
-            />
+            <PhaseSelector completedPhases={completedPhases} onSelectPhase={handleSelectPhase} />
 
             {/* Info Box */}
             <View style={styles.infoBox}>
               <Ionicons name="information-circle" size={24} color={colors.brand.amber} />
               <Text style={styles.infoText}>
-                Select a completed phase to receive personalized insights based on
-                your unique journey and responses.
+                Select a completed phase to receive personalized insights based on your unique
+                journey and responses.
               </Text>
             </View>
           </View>
@@ -188,16 +196,18 @@ export function GuruScreen() {
 
   // STATE: Conversation (phase selected)
   // Filter out system messages as MessageBubble only handles user/assistant
-  const displayMessages = messages.filter(
-    (msg) => msg.role === 'user' || msg.role === 'assistant'
-  );
+  const displayMessages = messages.filter((msg) => msg.role === 'user' || msg.role === 'assistant');
 
   const renderMessage = ({ item }: { item: GuruMessage }) => (
-    <MessageBubble message={item as { role: 'user' | 'assistant'; content: string; timestamp: string }} />
+    <MessageBubble
+      message={item as { role: 'user' | 'assistant'; content: string; timestamp: string }}
+    />
   );
 
   const renderError = () => {
-    if (!error) return null;
+    if (!error) {
+      return null;
+    }
 
     return (
       <View style={styles.errorContainer}>
@@ -226,8 +236,8 @@ export function GuruScreen() {
         </View>
         <Text style={styles.emptyTitle}>Phase {selectedPhase} Analysis</Text>
         <Text style={styles.emptyDescription}>
-          Ask me anything about your journey through this phase. I'll provide
-          personalized insights based on your responses.
+          Ask me anything about your journey through this phase. I'll provide personalized insights
+          based on your responses.
         </Text>
       </View>
     );
@@ -282,7 +292,12 @@ export function GuruScreen() {
 
       {/* Disclaimer Footer */}
       <View style={styles.disclaimerFooter}>
-        <Ionicons name="information-circle-outline" size={14} color={colors.text.tertiary} style={styles.disclaimerIcon} />
+        <Ionicons
+          name="information-circle-outline"
+          size={14}
+          color={colors.text.tertiary}
+          style={styles.disclaimerIcon}
+        />
         <Text style={styles.disclaimerText}>
           AI guidance is not professional medical or psychological advice
         </Text>
@@ -311,9 +326,7 @@ export function GuruScreen() {
               {'\n\n'}
               Upgrade to Awakening for unlimited Guru access!
             </Text>
-            <Text style={styles.modalResetText}>
-              Resets in {getResetTime()}
-            </Text>
+            <Text style={styles.modalResetText}>Resets in {getResetTime()}</Text>
             <View style={styles.modalButtons}>
               <Pressable
                 style={styles.modalSecondaryButton}

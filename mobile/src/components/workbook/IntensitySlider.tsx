@@ -20,11 +20,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
@@ -54,10 +50,18 @@ const getIntensityColor = (value: number): string => {
  * Get intensity label based on value
  */
 const getIntensityLabel = (value: number): string => {
-  if (value <= 2) return 'Minimal';
-  if (value <= 4) return 'Low';
-  if (value <= 6) return 'Moderate';
-  if (value <= 8) return 'High';
+  if (value <= 2) {
+    return 'Minimal';
+  }
+  if (value <= 4) {
+    return 'Low';
+  }
+  if (value <= 6) {
+    return 'Moderate';
+  }
+  if (value <= 8) {
+    return 'High';
+  }
   return 'Intense';
 };
 
@@ -109,13 +113,16 @@ export const IntensitySlider: React.FC<IntensitySliderProps> = ({
   /**
    * Handle value change with haptic feedback
    */
-  const handleValueChange = useCallback((newValue: number) => {
-    const roundedValue = Math.round(newValue);
-    if (roundedValue !== value) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    onValueChange(roundedValue);
-  }, [value, onValueChange]);
+  const handleValueChange = useCallback(
+    (newValue: number) => {
+      const roundedValue = Math.round(newValue);
+      if (roundedValue !== value) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+      onValueChange(roundedValue);
+    },
+    [value, onValueChange]
+  );
 
   /**
    * Handle sliding complete with medium haptic
@@ -131,13 +138,9 @@ export const IntensitySlider: React.FC<IntensitySliderProps> = ({
         <Text style={styles.label}>{label}</Text>
         <View style={styles.valueContainer}>
           <View style={[styles.valueBadge, { backgroundColor: `${intensityColor}30` }]}>
-            <Text style={[styles.valueNumber, { color: intensityColor }]}>
-              {value}
-            </Text>
+            <Text style={[styles.valueNumber, { color: intensityColor }]}>{value}</Text>
           </View>
-          <Text style={[styles.valueLabel, { color: intensityColor }]}>
-            {intensityLabel}
-          </Text>
+          <Text style={[styles.valueLabel, { color: intensityColor }]}>{intensityLabel}</Text>
         </View>
       </View>
 

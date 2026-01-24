@@ -18,14 +18,7 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Modal,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, Modal, ScrollView } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors
@@ -45,8 +38,18 @@ const DESIGN_COLORS = {
 // Day names for calendar
 const DAY_NAMES = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 export interface StreakData {
@@ -125,10 +128,7 @@ const getDaysInMonth = (year: number, month: number): Date[] => {
 /**
  * StreakDisplay Component
  */
-export const StreakDisplay: React.FC<StreakDisplayProps> = ({
-  data,
-  onDayTap,
-}) => {
+export const StreakDisplay: React.FC<StreakDisplayProps> = ({ data, onDayTap }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
 
@@ -192,9 +192,7 @@ export const StreakDisplay: React.FC<StreakDisplayProps> = ({
           <Text style={styles.flameIcon}>{'\uD83D\uDD25'}</Text>
           <View style={styles.streakInfo}>
             <Text style={styles.streakCount}>{data.currentStreak}</Text>
-            <Text style={styles.streakLabel}>
-              day{data.currentStreak !== 1 ? 's' : ''} streak
-            </Text>
+            <Text style={styles.streakLabel}>day{data.currentStreak !== 1 ? 's' : ''} streak</Text>
           </View>
         </View>
 
@@ -206,21 +204,14 @@ export const StreakDisplay: React.FC<StreakDisplayProps> = ({
         )}
 
         {/* Today Status */}
-        <View
-          style={[
-            styles.todayBadge,
-            todayCompleted && styles.todayBadgeCompleted,
-          ]}
-        >
+        <View style={[styles.todayBadge, todayCompleted && styles.todayBadgeCompleted]}>
           <Text style={styles.todayText}>
             {todayCompleted ? 'Today Completed' : 'Complete Today'}
           </Text>
         </View>
 
         {/* Best Streak */}
-        <Text style={styles.bestStreak}>
-          Best streak: {data.longestStreak} days
-        </Text>
+        <Text style={styles.bestStreak}>Best streak: {data.longestStreak} days</Text>
       </View>
 
       {/* 7-Day Mini Calendar */}
@@ -232,9 +223,7 @@ export const StreakDisplay: React.FC<StreakDisplayProps> = ({
             const completed = isCompleted(date);
             return (
               <View key={index} style={styles.dayColumn}>
-                <Text style={styles.dayName}>
-                  {DAY_NAMES[date.getDay()]}
-                </Text>
+                <Text style={styles.dayName}>{DAY_NAMES[date.getDay()]}</Text>
                 <View
                   style={[
                     styles.dayDot,
@@ -242,9 +231,7 @@ export const StreakDisplay: React.FC<StreakDisplayProps> = ({
                     isToday && !completed && styles.dayDotToday,
                   ]}
                 >
-                  {completed && (
-                    <Text style={styles.dayDotCheck}>{'\u2713'}</Text>
-                  )}
+                  {completed && <Text style={styles.dayDotCheck}>{'\u2713'}</Text>}
                 </View>
                 <Text style={styles.dayNumber}>{date.getDate()}</Text>
               </View>
@@ -271,14 +258,8 @@ export const StreakDisplay: React.FC<StreakDisplayProps> = ({
         animationType="fade"
         onRequestClose={() => setShowCalendar(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowCalendar(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowCalendar(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             {/* Month Header */}
             <View style={styles.calendarHeader}>
               <Pressable
@@ -312,10 +293,7 @@ export const StreakDisplay: React.FC<StreakDisplayProps> = ({
             </View>
 
             {/* Calendar Grid */}
-            <ScrollView
-              style={styles.calendarGrid}
-              showsVerticalScrollIndicator={false}
-            >
+            <ScrollView style={styles.calendarGrid} showsVerticalScrollIndicator={false}>
               <View style={styles.daysGrid}>
                 {monthDays.map((date, index) => {
                   const isCurrentMonth = date.getMonth() === viewDate.getMonth();
@@ -347,9 +325,7 @@ export const StreakDisplay: React.FC<StreakDisplayProps> = ({
                       >
                         {date.getDate()}
                       </Text>
-                      {completed && (
-                        <View style={styles.completedDot} />
-                      )}
+                      {completed && <View style={styles.completedDot} />}
                     </Pressable>
                   );
                 })}

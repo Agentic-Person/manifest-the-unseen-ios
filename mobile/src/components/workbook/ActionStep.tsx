@@ -8,13 +8,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors from APP-DESIGN.md
@@ -152,12 +146,12 @@ const ActionStep: React.FC<ActionStepProps> = ({
           disabled={isFirst}
           accessibilityRole="button"
           accessibilityLabel="Move step up"
-          accessibilityHint={isFirst ? 'Cannot move first step up' : 'Moves this step up in the list'}
+          accessibilityHint={
+            isFirst ? 'Cannot move first step up' : 'Moves this step up in the list'
+          }
           testID={`action-step-move-up-${step.id}`}
         >
-          <Text
-            style={[styles.reorderButtonText, isFirst && styles.reorderButtonTextDisabled]}
-          >
+          <Text style={[styles.reorderButtonText, isFirst && styles.reorderButtonTextDisabled]}>
             ↑
           </Text>
         </TouchableOpacity>
@@ -167,12 +161,12 @@ const ActionStep: React.FC<ActionStepProps> = ({
           disabled={isLast}
           accessibilityRole="button"
           accessibilityLabel="Move step down"
-          accessibilityHint={isLast ? 'Cannot move last step down' : 'Moves this step down in the list'}
+          accessibilityHint={
+            isLast ? 'Cannot move last step down' : 'Moves this step down in the list'
+          }
           testID={`action-step-move-down-${step.id}`}
         >
-          <Text
-            style={[styles.reorderButtonText, isLast && styles.reorderButtonTextDisabled]}
-          >
+          <Text style={[styles.reorderButtonText, isLast && styles.reorderButtonTextDisabled]}>
             ↓
           </Text>
         </TouchableOpacity>

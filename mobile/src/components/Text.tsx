@@ -30,11 +30,7 @@
  */
 
 import React from 'react';
-import {
-  Text as RNText,
-  TextProps as RNTextProps,
-  TextStyle,
-} from 'react-native';
+import { Text as RNText, TextProps as RNTextProps, TextStyle } from 'react-native';
 import { colors, typography, TypographyVariant } from '../theme';
 
 export interface TextProps extends RNTextProps {
@@ -69,15 +65,11 @@ export const Text: React.FC<TextProps> = ({
   ...rest
 }) => {
   const getTextStyle = (): TextStyle[] => {
-    const baseStyles: TextStyle[] = [
-      typography[variant],
-      { textAlign: align },
-    ];
+    const baseStyles: TextStyle[] = [typography[variant], { textAlign: align }];
 
     // Color
-    const colorValue = color in colors.text
-      ? colors.text[color as keyof typeof colors.text]
-      : color;
+    const colorValue =
+      color in colors.text ? colors.text[color as keyof typeof colors.text] : color;
     baseStyles.push({ color: colorValue });
 
     // Weight override

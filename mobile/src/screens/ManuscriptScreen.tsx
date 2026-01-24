@@ -26,10 +26,7 @@ const ManuscriptScreen = ({ navigation }: Props) => {
       {/* Header with back button */}
       <View style={styles.header}>
         <Pressable
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.backButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
           onPress={() => navigation.goBack()}
           accessibilityRole="button"
           accessibilityLabel="Go back"
@@ -46,7 +43,8 @@ const ManuscriptScreen = ({ navigation }: Props) => {
         <View style={styles.comingSoonCard}>
           <Text style={styles.comingSoonText}>Coming Soon</Text>
           <Text style={styles.descriptionText}>
-            The complete manuscript of "Manifest the Unseen" will be available here for reading and study.
+            The complete manuscript of "Manifest the Unseen" will be available here for reading and
+            study.
           </Text>
         </View>
       </View>

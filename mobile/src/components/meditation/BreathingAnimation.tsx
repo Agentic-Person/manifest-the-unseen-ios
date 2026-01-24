@@ -6,14 +6,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Easing,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, shadows, borderRadius } from '../../theme';
 import {
@@ -151,11 +144,9 @@ export const BreathingAnimation: React.FC<BreathingAnimationProps> = ({
       // Run scale animation
       animationRef.current = Animated.timing(scaleAnim, {
         toValue: targetScale,
-        duration: duration,
+        duration,
         easing:
-          phase === 'inhale' || phase === 'exhale'
-            ? Easing.inOut(Easing.ease)
-            : Easing.linear,
+          phase === 'inhale' || phase === 'exhale' ? Easing.inOut(Easing.ease) : Easing.linear,
         useNativeDriver: true,
       });
 
@@ -323,9 +314,7 @@ export const BreathingAnimation: React.FC<BreathingAnimationProps> = ({
             },
           ]}
         >
-          <Text style={styles.phaseText}>
-            {BREATHING_PHASE_LABELS[currentPhase]}
-          </Text>
+          <Text style={styles.phaseText}>{BREATHING_PHASE_LABELS[currentPhase]}</Text>
           {animationState === 'running' && (
             <Text style={styles.countdownText}>{phaseTimeRemaining}</Text>
           )}
@@ -338,17 +327,14 @@ export const BreathingAnimation: React.FC<BreathingAnimationProps> = ({
           {cycleCount} {cycleCount === 1 ? 'cycle' : 'cycles'}
         </Text>
         <Text style={styles.patternText}>
-          {breathingPattern.inhale}-{breathingPattern.holdIn}-
-          {breathingPattern.exhale}-{breathingPattern.holdOut}
+          {breathingPattern.inhale}-{breathingPattern.holdIn}-{breathingPattern.exhale}-
+          {breathingPattern.holdOut}
         </Text>
       </View>
 
       {/* Controls */}
       <Pressable
-        style={[
-          styles.controlButton,
-          animationState === 'running' && styles.controlButtonActive,
-        ]}
+        style={[styles.controlButton, animationState === 'running' && styles.controlButtonActive]}
         onPress={handleToggle}
         accessibilityRole="button"
         accessibilityLabel={animationState === 'running' ? 'Pause breathing' : 'Start breathing'}

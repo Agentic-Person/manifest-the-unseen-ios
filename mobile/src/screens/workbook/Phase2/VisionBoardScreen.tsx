@@ -87,7 +87,11 @@ type Props = WorkbookStackScreenProps<'VisionBoard'>;
  */
 const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-  const { data: savedProgress, isLoading: isLoadingProgress, isError: isLoadError } = useWorkbookProgress(2, WORKSHEET_IDS.VISION_BOARD);
+  const {
+    data: savedProgress,
+    isLoading: isLoadingProgress,
+    isError: isLoadError,
+  } = useWorkbookProgress(2, WORKSHEET_IDS.VISION_BOARD);
 
   const [board, setBoard] = useState<VisionBoardData>(createEmptyBoard());
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
@@ -96,10 +100,13 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
   const [newText, setNewText] = useState('');
 
   // Auto-save hook
-  const formData = useMemo(() => ({
-    ...board,
-    updatedAt: new Date().toISOString(),
-  }), [board]);
+  const formData = useMemo(
+    () => ({
+      ...board,
+      updatedAt: new Date().toISOString(),
+    }),
+    [board]
+  );
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
@@ -133,27 +140,30 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Add an image to the board
    */
-  const handleAddImage = useCallback((imageUri: string) => {
-    const newItem: VisionBoardItem = {
-      id: generateItemId(),
-      type: 'image',
-      content: imageUri,
-      position: { x: 50, y: 50 + (board.items.length * 20) % 300 },
-      size: DEFAULT_IMAGE_SIZE,
-      style: DEFAULT_IMAGE_STYLE,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  const handleAddImage = useCallback(
+    (imageUri: string) => {
+      const newItem: VisionBoardItem = {
+        id: generateItemId(),
+        type: 'image',
+        content: imageUri,
+        position: { x: 50, y: 50 + ((board.items.length * 20) % 300) },
+        size: DEFAULT_IMAGE_SIZE,
+        style: DEFAULT_IMAGE_STYLE,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-    setBoard((prev) => ({
-      ...prev,
-      items: [...prev.items, newItem],
-      updatedAt: new Date().toISOString(),
-    }));
+      setBoard((prev) => ({
+        ...prev,
+        items: [...prev.items, newItem],
+        updatedAt: new Date().toISOString(),
+      }));
 
-    setSelectedItemId(newItem.id);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  }, [board.items.length]);
+      setSelectedItemId(newItem.id);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    },
+    [board.items.length]
+  );
 
   /**
    * Open text input modal
@@ -177,7 +187,7 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
       id: generateItemId(),
       type: 'text',
       content: newText.trim(),
-      position: { x: 30, y: 30 + (board.items.length * 30) % 350 },
+      position: { x: 30, y: 30 + ((board.items.length * 30) % 350) },
       size: DEFAULT_TEXT_SIZE,
       style: DEFAULT_TEXT_STYLE,
       createdAt: new Date().toISOString(),
@@ -229,9 +239,7 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
     setBoard((prev) => ({
       ...prev,
       items: prev.items.map((item) =>
-        item.id === id
-          ? { ...item, position, updatedAt: new Date().toISOString() }
-          : item
+        item.id === id ? { ...item, position, updatedAt: new Date().toISOString() } : item
       ),
       updatedAt: new Date().toISOString(),
     }));
@@ -279,8 +287,8 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
           title="Vision Board"
           subtitle="Create a visual representation of your dreams and goals. Add images and inspiring words to manifest your future."
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Vision Canvas */}
         <VisionCanvas
@@ -322,7 +330,12 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </ExerciseScreenLayout>
 
       {/* Add Text Modal */}
@@ -332,14 +345,8 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowTextModal(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowTextModal(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowTextModal(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Add Inspirational Text</Text>
             <Text style={styles.modalSubtitle}>
               Enter an affirmation, goal, or motivational quote
@@ -365,10 +372,7 @@ const VisionBoardScreen: React.FC<Props> = ({ navigation }) => {
               >
                 <Text style={styles.modalCancelText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.modalAddButton}
-                onPress={handleAddText}
-              >
+              <TouchableOpacity style={styles.modalAddButton} onPress={handleAddText}>
                 <Text style={styles.modalAddText}>Add Text</Text>
               </TouchableOpacity>
             </View>

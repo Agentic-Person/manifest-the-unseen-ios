@@ -22,7 +22,9 @@ export async function getPrayers(): Promise<Prayer[]> {
     .select('*')
     .order('order_index', { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return (data as Prayer[]) || [];
 }
 
@@ -45,8 +47,8 @@ export async function getPrayersWithAudio(): Promise<Prayer[]> {
   try {
     const response = await fetch(url, {
       headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
       },
     });
@@ -58,7 +60,9 @@ export async function getPrayersWithAudio(): Promise<Prayer[]> {
     }
 
     const data = await response.json();
-    logger.debug('[getPrayersWithAudio] Query complete in', Date.now() - startTime, 'ms', { dataCount: data?.length });
+    logger.debug('[getPrayersWithAudio] Query complete in', Date.now() - startTime, 'ms', {
+      dataCount: data?.length,
+    });
 
     return (data as Prayer[]) || [];
   } catch (err) {
@@ -71,7 +75,9 @@ export async function getPrayersWithAudio(): Promise<Prayer[]> {
  * Get a single prayer by ID
  */
 export async function getPrayerById(id: string): Promise<Prayer | null> {
-  if (!id) return null;
+  if (!id) {
+    return null;
+  }
 
   logger.debug('[getPrayerById] Fetching prayer:', id);
 
@@ -84,10 +90,10 @@ export async function getPrayerById(id: string): Promise<Prayer | null> {
   try {
     const response = await fetch(url, {
       headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/vnd.pgrst.object+json', // Return single object instead of array
+        Accept: 'application/vnd.pgrst.object+json', // Return single object instead of array
       },
     });
 
@@ -122,7 +128,9 @@ export async function getPrayersByLifeArea(lifeArea: string): Promise<Prayer[]> 
     .contains('life_areas', [lifeArea])
     .order('order_index', { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return (data as Prayer[]) || [];
 }
 
@@ -138,7 +146,9 @@ export async function getPrayersByTier(
     .eq('tier_required', tier)
     .order('order_index', { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return (data as Prayer[]) || [];
 }
 

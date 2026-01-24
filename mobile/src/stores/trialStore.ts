@@ -50,9 +50,6 @@ export const useTrialStore = create<TrialState>((set, get) => ({
         // First install - start trial
         installDate = new Date().toISOString();
         await AsyncStorage.setItem(TRIAL_KEY, installDate);
-        console.log('[Trial] First install, starting 7-day trial');
-      } else {
-        console.log('[Trial] Returning user, checking trial status');
       }
 
       set({ firstInstallDate: installDate, isLoading: false });
@@ -86,8 +83,6 @@ export const useTrialStore = create<TrialState>((set, get) => ({
     const daysRemaining = Math.max(0, TRIAL_DAYS - daysPassed);
 
     const isInTrialPeriod = daysRemaining > 0;
-
-    console.log(`[Trial] Days passed: ${daysPassed}, Days remaining: ${daysRemaining}, In trial: ${isInTrialPeriod}`);
 
     set({
       isInTrialPeriod,

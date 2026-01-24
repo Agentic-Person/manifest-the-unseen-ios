@@ -27,10 +27,7 @@ const ObservableScienceScreen = ({ navigation }: Props) => {
       {/* Header with back button */}
       <View style={styles.header}>
         <Pressable
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.backButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
           onPress={() => navigation.goBack()}
           accessibilityRole="button"
           accessibilityLabel="Go back"
@@ -47,7 +44,8 @@ const ObservableScienceScreen = ({ navigation }: Props) => {
         <View style={styles.comingSoonCard}>
           <Text style={styles.comingSoonText}>Coming Soon</Text>
           <Text style={styles.descriptionText}>
-            Explore the scientific foundations behind manifestation, mindfulness, and the power of focused intention.
+            Explore the scientific foundations behind manifestation, mindfulness, and the power of
+            focused intention.
           </Text>
         </View>
       </View>

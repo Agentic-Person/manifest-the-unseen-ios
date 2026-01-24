@@ -44,8 +44,8 @@ export const GuruEmptyState: React.FC = () => {
 
       {/* Description */}
       <Text style={styles.description}>
-        Complete your first phase in the Workbook to unlock personalized insights
-        from your Guru. Your journey to manifestation starts with self-discovery.
+        Complete your first phase in the Workbook to unlock personalized insights from your Guru.
+        Your journey to manifestation starts with self-discovery.
       </Text>
 
       {/* Encouragement */}
@@ -65,11 +65,7 @@ export const GuruEmptyState: React.FC = () => {
         accessibilityLabel="Go to Workbook to start your journey"
       >
         <Text style={styles.ctaButtonText}>Start with Phase 1</Text>
-        <Ionicons
-          name="arrow-forward"
-          size={20}
-          color={colors.background.primary}
-        />
+        <Ionicons name="arrow-forward" size={20} color={colors.background.primary} />
       </TouchableOpacity>
     </View>
   );

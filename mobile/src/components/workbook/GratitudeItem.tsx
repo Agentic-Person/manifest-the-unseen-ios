@@ -123,10 +123,7 @@ export const GratitudeItem: React.FC<GratitudeItemProps> = ({
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'Please grant photo library access to add images.'
-        );
+        Alert.alert('Permission Required', 'Please grant photo library access to add images.');
         return;
       }
 
@@ -168,21 +165,17 @@ export const GratitudeItem: React.FC<GratitudeItemProps> = ({
    * Handle delete with confirmation
    */
   const handleDelete = () => {
-    Alert.alert(
-      'Delete Gratitude',
-      'Are you sure you want to remove this gratitude item?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            onDelete(item.id);
-          },
+    Alert.alert('Delete Gratitude', 'Are you sure you want to remove this gratitude item?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          onDelete(item.id);
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const categoryConfig = GRATITUDE_CATEGORIES[item.category];
@@ -223,10 +216,7 @@ export const GratitudeItem: React.FC<GratitudeItemProps> = ({
       <View style={styles.categorySection}>
         <Text style={styles.categoryLabel}>Category:</Text>
         <Pressable
-          style={[
-            styles.categoryButton,
-            { borderColor: categoryConfig.color },
-          ]}
+          style={[styles.categoryButton, { borderColor: categoryConfig.color }]}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setShowCategories(!showCategories);
@@ -234,9 +224,7 @@ export const GratitudeItem: React.FC<GratitudeItemProps> = ({
           accessibilityRole="button"
           accessibilityLabel={`Category: ${categoryConfig.label}. Tap to change.`}
         >
-          <View
-            style={[styles.categoryDot, { backgroundColor: categoryConfig.color }]}
-          />
+          <View style={[styles.categoryDot, { backgroundColor: categoryConfig.color }]} />
           <Text style={styles.categoryButtonText}>{categoryConfig.label}</Text>
           <Text style={styles.categoryArrow}>{showCategories ? '\u25B2' : '\u25BC'}</Text>
         </Pressable>
@@ -245,42 +233,35 @@ export const GratitudeItem: React.FC<GratitudeItemProps> = ({
       {/* Category Dropdown */}
       {showCategories && (
         <View style={styles.categoryDropdown}>
-          {(Object.keys(GRATITUDE_CATEGORIES) as GratitudeCategory[]).map(
-            (categoryKey) => {
-              const config = GRATITUDE_CATEGORIES[categoryKey];
-              const isSelected = categoryKey === item.category;
-              return (
-                <TouchableOpacity
-                  key={categoryKey}
+          {(Object.keys(GRATITUDE_CATEGORIES) as GratitudeCategory[]).map((categoryKey) => {
+            const config = GRATITUDE_CATEGORIES[categoryKey];
+            const isSelected = categoryKey === item.category;
+            return (
+              <TouchableOpacity
+                key={categoryKey}
+                style={[
+                  styles.categoryOption,
+                  isSelected && styles.categoryOptionSelected,
+                  { borderColor: config.color },
+                ]}
+                onPress={() => handleCategorySelect(categoryKey)}
+                accessibilityRole="button"
+                accessibilityLabel={`Select ${config.label} category`}
+                accessibilityState={{ selected: isSelected }}
+              >
+                <View style={[styles.categoryDot, { backgroundColor: config.color }]} />
+                <Text
                   style={[
-                    styles.categoryOption,
-                    isSelected && styles.categoryOptionSelected,
-                    { borderColor: config.color },
+                    styles.categoryOptionText,
+                    isSelected && styles.categoryOptionTextSelected,
                   ]}
-                  onPress={() => handleCategorySelect(categoryKey)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Select ${config.label} category`}
-                  accessibilityState={{ selected: isSelected }}
                 >
-                  <View
-                    style={[
-                      styles.categoryDot,
-                      { backgroundColor: config.color },
-                    ]}
-                  />
-                  <Text
-                    style={[
-                      styles.categoryOptionText,
-                      isSelected && styles.categoryOptionTextSelected,
-                    ]}
-                  >
-                    {config.label}
-                  </Text>
-                  {isSelected && <Text style={styles.checkmark}>{'\u2713'}</Text>}
-                </TouchableOpacity>
-              );
-            }
-          )}
+                  {config.label}
+                </Text>
+                {isSelected && <Text style={styles.checkmark}>{'\u2713'}</Text>}
+              </TouchableOpacity>
+            );
+          })}
         </View>
       )}
 

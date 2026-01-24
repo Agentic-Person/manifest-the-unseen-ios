@@ -14,10 +14,7 @@
  */
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Card, Text } from '../../../components';
 import HabitSection, { TimeOfDay, Habit } from '../../../components/workbook/HabitSection';
 import { HabitCategory } from '../../../components/workbook/HabitEntry';
@@ -69,13 +66,14 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.HABITS_AUDIT);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: habitsData as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.HABITS_AUDIT,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: habitsData as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.HABITS_AUDIT,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -96,15 +94,11 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
    * Calculate summary statistics
    */
   const summary = useMemo(() => {
-    const allHabits = [
-      ...habitsData.morning,
-      ...habitsData.afternoon,
-      ...habitsData.evening,
-    ];
+    const allHabits = [...habitsData.morning, ...habitsData.afternoon, ...habitsData.evening];
 
-    const positive = allHabits.filter(h => h.category === 'positive').length;
-    const negative = allHabits.filter(h => h.category === 'negative').length;
-    const neutral = allHabits.filter(h => h.category === 'neutral').length;
+    const positive = allHabits.filter((h) => h.category === 'positive').length;
+    const negative = allHabits.filter((h) => h.category === 'negative').length;
+    const neutral = allHabits.filter((h) => h.category === 'neutral').length;
     const total = allHabits.length;
 
     // Calculate balance score (-100 to +100)
@@ -132,7 +126,7 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
       category: 'neutral',
     };
 
-    setHabitsData(prev => ({
+    setHabitsData((prev) => ({
       ...prev,
       [timeOfDay]: [...prev[timeOfDay], newHabit],
       updatedAt: new Date().toISOString(),
@@ -142,16 +136,10 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Edit habit text
    */
-  const handleEditHabit = useCallback((
-    timeOfDay: TimeOfDay,
-    habitId: string,
-    newText: string
-  ) => {
-    setHabitsData(prev => ({
+  const handleEditHabit = useCallback((timeOfDay: TimeOfDay, habitId: string, newText: string) => {
+    setHabitsData((prev) => ({
       ...prev,
-      [timeOfDay]: prev[timeOfDay].map(h =>
-        h.id === habitId ? { ...h, habit: newText } : h
-      ),
+      [timeOfDay]: prev[timeOfDay].map((h) => (h.id === habitId ? { ...h, habit: newText } : h)),
       updatedAt: new Date().toISOString(),
     }));
   }, []);
@@ -160,9 +148,9 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
    * Remove a habit
    */
   const handleRemoveHabit = useCallback((timeOfDay: TimeOfDay, habitId: string) => {
-    setHabitsData(prev => ({
+    setHabitsData((prev) => ({
       ...prev,
-      [timeOfDay]: prev[timeOfDay].filter(h => h.id !== habitId),
+      [timeOfDay]: prev[timeOfDay].filter((h) => h.id !== habitId),
       updatedAt: new Date().toISOString(),
     }));
   }, []);
@@ -170,19 +158,16 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Change habit category
    */
-  const handleCategoryChange = useCallback((
-    timeOfDay: TimeOfDay,
-    habitId: string,
-    category: HabitCategory
-  ) => {
-    setHabitsData(prev => ({
-      ...prev,
-      [timeOfDay]: prev[timeOfDay].map(h =>
-        h.id === habitId ? { ...h, category } : h
-      ),
-      updatedAt: new Date().toISOString(),
-    }));
-  }, []);
+  const handleCategoryChange = useCallback(
+    (timeOfDay: TimeOfDay, habitId: string, category: HabitCategory) => {
+      setHabitsData((prev) => ({
+        ...prev,
+        [timeOfDay]: prev[timeOfDay].map((h) => (h.id === habitId ? { ...h, category } : h)),
+        updatedAt: new Date().toISOString(),
+      }));
+    },
+    []
+  );
 
   /**
    * Get balance status text and color
@@ -237,10 +222,7 @@ const HabitsAuditScreen: React.FC<Props> = ({ navigation }) => {
       <Card elevation="raised" style={styles.summaryCard}>
         <View style={styles.summaryHeader}>
           <Text style={styles.summaryTitle}>Habit Balance</Text>
-          <View style={[
-            styles.balanceIndicator,
-            { backgroundColor: balanceStatus.color + '20' }
-          ]}>
+          <View style={[styles.balanceIndicator, { backgroundColor: `${balanceStatus.color}20` }]}>
             <Text style={[styles.balanceText, { color: balanceStatus.color }]}>
               {balanceStatus.text}
             </Text>

@@ -57,12 +57,7 @@ export const PhaseCard: React.FC<PhaseCardProps> = ({
       accessibilityState={{ disabled: !isCompleted }}
     >
       {/* Phase Number Badge */}
-      <View
-        style={[
-          styles.badge,
-          isCompleted ? styles.badgeCompleted : styles.badgeLocked,
-        ]}
-      >
+      <View style={[styles.badge, isCompleted ? styles.badgeCompleted : styles.badgeLocked]}>
         <Text
           style={[
             styles.badgeText,
@@ -75,10 +70,7 @@ export const PhaseCard: React.FC<PhaseCardProps> = ({
 
       {/* Phase Name */}
       <Text
-        style={[
-          styles.phaseName,
-          isCompleted ? styles.phaseNameCompleted : styles.phaseNameLocked,
-        ]}
+        style={[styles.phaseName, isCompleted ? styles.phaseNameCompleted : styles.phaseNameLocked]}
         numberOfLines={2}
       >
         {phaseName}
@@ -88,11 +80,7 @@ export const PhaseCard: React.FC<PhaseCardProps> = ({
       <View style={styles.statusContainer}>
         {isCompleted ? (
           <>
-            <Ionicons
-              name="checkmark-circle"
-              size={18}
-              color={colors.dark.accentGold}
-            />
+            <Ionicons name="checkmark-circle" size={18} color={colors.dark.accentGold} />
             <Text style={styles.statusText}>Analyze</Text>
           </>
         ) : (

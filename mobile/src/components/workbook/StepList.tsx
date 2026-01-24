@@ -8,13 +8,7 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  ListRenderItemInfo,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, ListRenderItemInfo } from 'react-native';
 import ActionStep from './ActionStep';
 import type { ActionStepData } from './ActionStep';
 
@@ -58,10 +52,7 @@ const EmptyState: React.FC<{ message: string }> = ({ message }) => (
 /**
  * Progress bar component
  */
-const ProgressBar: React.FC<{ completed: number; total: number }> = ({
-  completed,
-  total,
-}) => {
+const ProgressBar: React.FC<{ completed: number; total: number }> = ({ completed, total }) => {
   const percentage = total > 0 ? (completed / total) * 100 : 0;
   const isComplete = completed === total && total > 0;
 
@@ -144,7 +135,9 @@ const StepList: React.FC<StepListProps> = ({
    * Header component showing progress
    */
   const ListHeaderComponent = useCallback(() => {
-    if (steps.length === 0) return null;
+    if (steps.length === 0) {
+      return null;
+    }
     return <ProgressBar completed={completedCount} total={steps.length} />;
   }, [completedCount, steps.length]);
 

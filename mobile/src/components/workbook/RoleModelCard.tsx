@@ -226,9 +226,7 @@ export const RoleModelCard: React.FC<RoleModelCardProps> = ({
           <Text style={styles.name}>{roleModel.name}</Text>
           <View style={[styles.categoryBadge, { backgroundColor: `${category.color}25` }]}>
             <Text style={styles.categoryIcon}>{category.icon}</Text>
-            <Text style={[styles.categoryText, { color: category.color }]}>
-              {category.label}
-            </Text>
+            <Text style={[styles.categoryText, { color: category.color }]}>{category.label}</Text>
           </View>
         </View>
 
@@ -280,9 +278,7 @@ export const RoleModelCard: React.FC<RoleModelCardProps> = ({
         <Text style={styles.lessonsToggleText}>
           {'\u{1F4DA}'} Lessons Learned ({roleModel.lessons.length})
         </Text>
-        <Text style={styles.lessonsToggleIcon}>
-          {isExpanded ? '\u{1F53C}' : '\u{1F53D}'}
-        </Text>
+        <Text style={styles.lessonsToggleIcon}>{isExpanded ? '\u{1F53C}' : '\u{1F53D}'}</Text>
       </TouchableOpacity>
 
       {/* Expanded Lessons */}

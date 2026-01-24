@@ -60,7 +60,7 @@ const WRITING_PROMPTS = [
     id: 'achievements',
     title: 'What have you achieved?',
     placeholder: 'By now, I have accomplished...',
-    hint: 'Describe the goals you\'ve reached, both big and small.',
+    hint: "Describe the goals you've reached, both big and small.",
   },
   {
     id: 'feelings',
@@ -71,8 +71,8 @@ const WRITING_PROMPTS = [
   {
     id: 'gratitude',
     title: 'What are you grateful for?',
-    placeholder: 'I\'m grateful for...',
-    hint: 'List the blessings and growth you\'ve experienced.',
+    placeholder: "I'm grateful for...",
+    hint: "List the blessings and growth you've experienced.",
   },
   {
     id: 'wisdom',
@@ -109,10 +109,12 @@ const PHASE_NUMBER = 10;
 const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
 
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.FUTURE_LETTER
-  );
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.FUTURE_LETTER);
 
   const [existingLetter, setExistingLetter] = useState<FutureLetter | null>(null);
   const [letterContent, setLetterContent] = useState('');
@@ -124,11 +126,14 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
   openDate.setFullYear(openDate.getFullYear() + 1);
 
   // Auto-save hook
-  const formData: FutureLetterData = useMemo(() => ({
-    letterContent,
-    promptResponses,
-    existingLetter
-  }), [letterContent, promptResponses, existingLetter]);
+  const formData: FutureLetterData = useMemo(
+    () => ({
+      letterContent,
+      promptResponses,
+      existingLetter,
+    }),
+    [letterContent, promptResponses, existingLetter]
+  );
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
@@ -171,7 +176,8 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         setExistingLetter({
           ...letter,
           openDate: letter.openDate instanceof Date ? letter.openDate : new Date(letter.openDate),
-          createdAt: letter.createdAt instanceof Date ? letter.createdAt : new Date(letter.createdAt),
+          createdAt:
+            letter.createdAt instanceof Date ? letter.createdAt : new Date(letter.createdAt),
         });
       }
       hasLoadedInitialData.current = true;
@@ -235,11 +241,9 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
     const finalContent = showPrompts ? compileLetterFromPrompts() : letterContent;
 
     if (!finalContent.trim()) {
-      Alert.alert(
-        'Empty Letter',
-        'Please write something before sealing your letter.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Empty Letter', 'Please write something before sealing your letter.', [
+        { text: 'OK' },
+      ]);
       return;
     }
 
@@ -278,7 +282,9 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
    * Handle opening sealed letter
    */
   const handleOpenLetter = () => {
-    if (!existingLetter) return;
+    if (!existingLetter) {
+      return;
+    }
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setExistingLetter({
@@ -334,9 +340,11 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         <ExerciseHeader
           image={Phase10ExerciseImages.letterFutureSelf}
           title="Letter to Future Self"
-          subtitle={existingLetter.isSealed
-            ? 'Your letter is safely sealed, waiting for the perfect moment.'
-            : 'Your letter has arrived. Read the message from your past self.'}
+          subtitle={
+            existingLetter.isSealed
+              ? 'Your letter is safely sealed, waiting for the perfect moment.'
+              : 'Your letter has arrived. Read the message from your past self.'
+          }
           progress={savedProgress?.progress || 0}
           isCompleted={savedProgress?.completed || false}
         />
@@ -351,10 +359,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
 
         {existingLetter.isSealed && (
           <Pressable
-            style={({ pressed }) => [
-              styles.reminderButton,
-              pressed && styles.buttonPressed,
-            ]}
+            style={({ pressed }) => [styles.reminderButton, pressed && styles.buttonPressed]}
             onPress={handleSetReminder}
             accessibilityRole="button"
             accessibilityLabel="Set email reminder"
@@ -364,10 +369,7 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
         )}
 
         <Pressable
-          style={({ pressed }) => [
-            styles.continueButton,
-            pressed && styles.buttonPressed,
-          ]}
+          style={({ pressed }) => [styles.continueButton, pressed && styles.buttonPressed]}
           onPress={handleContinue}
           accessibilityRole="button"
           accessibilityLabel="Continue to graduation"
@@ -495,15 +497,17 @@ const FutureLetterScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Save Status */}
         <View style={styles.saveStatusContainer}>
-          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+          <SaveIndicator
+            isSaving={isSaving}
+            lastSaved={lastSaved}
+            isError={isLoadError}
+            onRetry={saveNow}
+          />
         </View>
 
         {/* Seal Button */}
         <Pressable
-          style={({ pressed }) => [
-            styles.sealButton,
-            pressed && styles.buttonPressed,
-          ]}
+          style={({ pressed }) => [styles.sealButton, pressed && styles.buttonPressed]}
           onPress={handleSealLetter}
           accessibilityRole="button"
           accessibilityLabel="Seal letter"

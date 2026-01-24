@@ -112,9 +112,23 @@ const SAMPLE_PLANS: FearFacingPlan[] = [
     fearText: 'Fear of public speaking',
     fearCategory: 'career',
     steps: [
-      { id: 'step_1', description: 'Practice speaking in front of a mirror for 5 minutes', isCompleted: true, completedAt: new Date().toISOString() },
-      { id: 'step_2', description: 'Record yourself speaking and watch it back', isCompleted: true, completedAt: new Date().toISOString() },
-      { id: 'step_3', description: 'Present to one trusted friend or family member', isCompleted: false },
+      {
+        id: 'step_1',
+        description: 'Practice speaking in front of a mirror for 5 minutes',
+        isCompleted: true,
+        completedAt: new Date().toISOString(),
+      },
+      {
+        id: 'step_2',
+        description: 'Record yourself speaking and watch it back',
+        isCompleted: true,
+        completedAt: new Date().toISOString(),
+      },
+      {
+        id: 'step_3',
+        description: 'Present to one trusted friend or family member',
+        isCompleted: false,
+      },
       { id: 'step_4', description: 'Lead a small team meeting at work', isCompleted: false },
       { id: 'step_5', description: 'Give a presentation to a larger group', isCompleted: false },
     ],
@@ -155,19 +169,22 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: { plans, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
-    phaseNumber: 4,
-    worksheetId: WORKSHEET_IDS.FEAR_FACING_PLAN,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: { plans, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+      phaseNumber: 4,
+      worksheetId: WORKSHEET_IDS.FEAR_FACING_PLAN,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as FearFacingPlanData;
-      if (Array.isArray(data.plans)) setPlans(data.plans);
+      if (Array.isArray(data.plans)) {
+        setPlans(data.plans);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -251,7 +268,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
       updatedAt: new Date().toISOString(),
     };
 
-    setPlans(prev => [newPlan, ...prev]);
+    setPlans((prev) => [newPlan, ...prev]);
     setShowFearModal(false);
     setSelectedPlanId(newPlan.id);
   }, []);
@@ -260,7 +277,9 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
    * Handle adding a step to a plan
    */
   const handleAddStep = useCallback(() => {
-    if (!newStepText.trim() || !selectedPlanId) return;
+    if (!newStepText.trim() || !selectedPlanId) {
+      return;
+    }
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -270,15 +289,17 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
       isCompleted: false,
     };
 
-    setPlans(prev => prev.map(plan =>
-      plan.id === selectedPlanId
-        ? {
-            ...plan,
-            steps: [...plan.steps, newStep],
-            updatedAt: new Date().toISOString(),
-          }
-        : plan
-    ));
+    setPlans((prev) =>
+      prev.map((plan) =>
+        plan.id === selectedPlanId
+          ? {
+              ...plan,
+              steps: [...plan.steps, newStep],
+              updatedAt: new Date().toISOString(),
+            }
+          : plan
+      )
+    );
 
     setNewStepText('');
     setShowStepModal(false);
@@ -287,66 +308,76 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Handle toggling step completion
    */
-  const handleToggleStep = useCallback((planId: string, stepId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleToggleStep = useCallback(
+    (planId: string, stepId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    setPlans(prev => {
-      const updated = prev.map(plan => {
-        if (plan.id !== planId) return plan;
+      setPlans((prev) => {
+        const updated = prev.map((plan) => {
+          if (plan.id !== planId) {
+            return plan;
+          }
 
-        const updatedSteps = plan.steps.map(step =>
-          step.id === stepId
-            ? {
-                ...step,
-                isCompleted: !step.isCompleted,
-                completedAt: !step.isCompleted ? new Date().toISOString() : undefined,
-              }
-            : step
-        );
+          const updatedSteps = plan.steps.map((step) =>
+            step.id === stepId
+              ? {
+                  ...step,
+                  isCompleted: !step.isCompleted,
+                  completedAt: !step.isCompleted ? new Date().toISOString() : undefined,
+                }
+              : step
+          );
 
-        const allCompleted = updatedSteps.length > 0 && updatedSteps.every(s => s.isCompleted);
+          const allCompleted = updatedSteps.length > 0 && updatedSteps.every((s) => s.isCompleted);
 
-        return {
-          ...plan,
-          steps: updatedSteps,
-          isCompleted: allCompleted,
-          updatedAt: new Date().toISOString(),
-        };
+          return {
+            ...plan,
+            steps: updatedSteps,
+            isCompleted: allCompleted,
+            updatedAt: new Date().toISOString(),
+          };
+        });
+
+        // Check if plan just completed
+        const plan = updated.find((p) => p.id === planId);
+        const prevPlan = prev.find((p) => p.id === planId);
+        if (plan?.isCompleted && !prevPlan?.isCompleted) {
+          triggerCelebration();
+        }
+
+        return updated;
       });
-
-      // Check if plan just completed
-      const plan = updated.find(p => p.id === planId);
-      const prevPlan = prev.find(p => p.id === planId);
-      if (plan?.isCompleted && !prevPlan?.isCompleted) {
-        triggerCelebration();
-      }
-
-      return updated;
-    });
-  }, [triggerCelebration]);
+    },
+    [triggerCelebration]
+  );
 
   /**
    * Handle deleting a plan
    */
-  const handleDeletePlan = useCallback((planId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setPlans(prev => prev.filter(p => p.id !== planId));
-    if (selectedPlanId === planId) {
-      setSelectedPlanId(null);
-    }
-  }, [selectedPlanId]);
+  const handleDeletePlan = useCallback(
+    (planId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      setPlans((prev) => prev.filter((p) => p.id !== planId));
+      if (selectedPlanId === planId) {
+        setSelectedPlanId(null);
+      }
+    },
+    [selectedPlanId]
+  );
 
   /**
    * Get the selected plan
    */
-  const selectedPlan = plans.find(p => p.id === selectedPlanId);
+  const selectedPlan = plans.find((p) => p.id === selectedPlanId);
 
   /**
    * Calculate courage meter
    */
   const getCourageMeter = (plan: FearFacingPlan): number => {
-    if (plan.steps.length === 0) return 0;
-    return Math.round((plan.steps.filter(s => s.isCompleted).length / plan.steps.length) * 100);
+    if (plan.steps.length === 0) {
+      return 0;
+    }
+    return Math.round((plan.steps.filter((s) => s.isCompleted).length / plan.steps.length) * 100);
   };
 
   return (
@@ -372,7 +403,12 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
         />
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
 
         {/* Plans List */}
         <View style={styles.plansSection}>
@@ -387,7 +423,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
               </Text>
             </View>
           ) : (
-            plans.map(plan => (
+            plans.map((plan) => (
               <TouchableOpacity
                 key={plan.id}
                 style={[
@@ -407,17 +443,21 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
               >
                 {/* Plan Header */}
                 <View style={styles.planHeader}>
-                  <View style={[
-                    styles.categoryBadge,
-                    { backgroundColor: `${FEAR_CATEGORIES[plan.fearCategory].color}25` },
-                  ]}>
+                  <View
+                    style={[
+                      styles.categoryBadge,
+                      { backgroundColor: `${FEAR_CATEGORIES[plan.fearCategory].color}25` },
+                    ]}
+                  >
                     <Text style={styles.categoryIcon}>
                       {FEAR_CATEGORIES[plan.fearCategory].icon}
                     </Text>
-                    <Text style={[
-                      styles.categoryText,
-                      { color: FEAR_CATEGORIES[plan.fearCategory].color },
-                    ]}>
+                    <Text
+                      style={[
+                        styles.categoryText,
+                        { color: FEAR_CATEGORIES[plan.fearCategory].color },
+                      ]}
+                    >
                       {FEAR_CATEGORIES[plan.fearCategory].label}
                     </Text>
                   </View>
@@ -448,7 +488,8 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
                 </View>
 
                 <Text style={styles.stepCount}>
-                  {plan.steps.filter(s => s.isCompleted).length} / {plan.steps.length} steps completed
+                  {plan.steps.filter((s) => s.isCompleted).length} / {plan.steps.length} steps
+                  completed
                 </Text>
               </TouchableOpacity>
             ))
@@ -488,20 +529,19 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
                   accessibilityLabel={`Step ${index + 1}: ${step.description}`}
                   testID={`step-${step.id}`}
                 >
-                  <View style={[
-                    styles.stepCheckbox,
-                    step.isCompleted && styles.stepCheckboxChecked,
-                  ]}>
-                    {step.isCompleted && (
-                      <Text style={styles.stepCheckmark}>{'\u2713'}</Text>
-                    )}
+                  <View
+                    style={[styles.stepCheckbox, step.isCompleted && styles.stepCheckboxChecked]}
+                  >
+                    {step.isCompleted && <Text style={styles.stepCheckmark}>{'\u2713'}</Text>}
                   </View>
                   <View style={styles.stepContent}>
                     <Text style={styles.stepNumber}>Step {index + 1}</Text>
-                    <Text style={[
-                      styles.stepDescription,
-                      step.isCompleted && styles.stepDescriptionComplete,
-                    ]}>
+                    <Text
+                      style={[
+                        styles.stepDescription,
+                        step.isCompleted && styles.stepDescriptionComplete,
+                      ]}
+                    >
                       {step.description}
                     </Text>
                   </View>
@@ -520,7 +560,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
               'Practice relaxation techniques before each step',
               'Repeat each step until anxiety decreases by 50%',
               'Celebrate every small victory along the way',
-              'It\'s okay to take breaks - consistency is more important than speed',
+              "It's okay to take breaks - consistency is more important than speed",
             ].map((tip, index) => (
               <View key={index} style={styles.tipRow}>
                 <Text style={styles.tipBullet}>{index + 1}.</Text>
@@ -533,19 +573,15 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
         {/* Inspirational Quote */}
         <View style={styles.quoteContainer}>
           <Text style={styles.quoteText}>
-            "Courage is not the absence of fear, but rather the judgment that something else is more important than fear."
+            "Courage is not the absence of fear, but rather the judgment that something else is more
+            important than fear."
           </Text>
           <Text style={styles.quoteAuthor}>- Ambrose Redmoon</Text>
         </View>
       </ExerciseScreenLayout>
 
       {/* Floating Action Button */}
-      <Animated.View
-        style={[
-          styles.fabContainer,
-          { transform: [{ scale: fabScale }] },
-        ]}
-      >
+      <Animated.View style={[styles.fabContainer, { transform: [{ scale: fabScale }] }]}>
         <TouchableOpacity
           style={styles.fab}
           onPress={handleCreatePlan}
@@ -605,8 +641,8 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
 
             <ScrollView style={styles.fearList}>
               {availableFears
-                .filter(fear => !plans.some(p => p.fearId === fear.id))
-                .map(fear => (
+                .filter((fear) => !plans.some((p) => p.fearId === fear.id))
+                .map((fear) => (
                   <TouchableOpacity
                     key={fear.id}
                     style={styles.fearOption}
@@ -615,9 +651,7 @@ const FearFacingPlanScreen: React.FC<Props> = ({ navigation }) => {
                     accessibilityLabel={`Select: ${fear.text}`}
                     testID={`fear-option-${fear.id}`}
                   >
-                    <Text style={styles.fearOptionIcon}>
-                      {FEAR_CATEGORIES[fear.category].icon}
-                    </Text>
+                    <Text style={styles.fearOptionIcon}>{FEAR_CATEGORIES[fear.category].icon}</Text>
                     <View style={styles.fearOptionContent}>
                       <Text style={styles.fearOptionText}>{fear.text}</Text>
                       <Text style={styles.fearOptionCategory}>

@@ -10,13 +10,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Animated,
-  Dimensions,
-  Easing,
-} from 'react-native';
+import { View, StyleSheet, Animated, Dimensions, Easing } from 'react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -84,7 +78,7 @@ export const ConfettiCelebration: React.FC<ConfettiCelebrationProps> = ({
   useEffect(() => {
     if (!isActive) {
       // Clean up
-      animationsRef.current.forEach(anim => anim.stop());
+      animationsRef.current.forEach((anim) => anim.stop());
       animationsRef.current = [];
       setParticles([]);
       return;
@@ -162,7 +156,7 @@ export const ConfettiCelebration: React.FC<ConfettiCelebrationProps> = ({
     });
 
     return () => {
-      animations.forEach(anim => anim.stop());
+      animations.forEach((anim) => anim.stop());
     };
   }, [isActive, duration, particleCount, onComplete]);
 
@@ -194,11 +188,7 @@ export const ConfettiCelebration: React.FC<ConfettiCelebrationProps> = ({
               },
             ]}
           >
-            <ConfettiShape
-              shape={particle.shape}
-              color={particle.color}
-              size={particle.size}
-            />
+            <ConfettiShape shape={particle.shape} color={particle.color} size={particle.size} />
           </Animated.View>
         );
       })}
@@ -389,11 +379,7 @@ export const ConfettiBurst: React.FC<ConfettiBurstProps> = ({
               },
             ]}
           >
-            <ConfettiShape
-              shape={particle.shape}
-              color={particle.color}
-              size={particle.size}
-            />
+            <ConfettiShape shape={particle.shape} color={particle.color} size={particle.size} />
           </Animated.View>
         );
       })}

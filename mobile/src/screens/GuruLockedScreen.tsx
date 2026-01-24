@@ -6,13 +6,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { colors, spacing, shadows, borderRadius } from '../theme';
@@ -60,10 +54,7 @@ const GuruLockedScreen = () => {
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Lock Icon */}
         <View style={styles.iconContainer}>
           <View style={styles.iconCircle}>
@@ -76,8 +67,8 @@ const GuruLockedScreen = () => {
 
         {/* Description */}
         <Text style={styles.description}>
-          Your personal Guru provides deep, customized insights based on your
-          unique manifestation journey and completed phases.
+          Your personal Guru provides deep, customized insights based on your unique manifestation
+          journey and completed phases.
         </Text>
 
         {/* Tier Badge */}
@@ -92,11 +83,7 @@ const GuruLockedScreen = () => {
           {benefits.map((benefit, index) => (
             <View key={index} style={styles.benefitItem}>
               <View style={styles.benefitIconContainer}>
-                <Ionicons
-                  name="checkmark-circle"
-                  size={20}
-                  color={colors.dark.accentGold}
-                />
+                <Ionicons name="checkmark-circle" size={20} color={colors.dark.accentGold} />
               </View>
               <Text style={styles.benefitText}>{benefit}</Text>
             </View>
@@ -106,12 +93,8 @@ const GuruLockedScreen = () => {
         {/* Pricing */}
         <View style={styles.pricingContainer}>
           <Text style={styles.pricingLabel}>Starting at</Text>
-          <Text style={styles.pricingAmount}>
-            ${TIER_PRICING.awakening.monthly}/month
-          </Text>
-          <Text style={styles.pricingSubtext}>
-            or ${TIER_PRICING.awakening.yearly}/year
-          </Text>
+          <Text style={styles.pricingAmount}>${TIER_PRICING.awakening.monthly}/month</Text>
+          <Text style={styles.pricingSubtext}>or ${TIER_PRICING.awakening.yearly}/year</Text>
         </View>
 
         {/* CTA Button */}
@@ -122,9 +105,7 @@ const GuruLockedScreen = () => {
           accessibilityRole="button"
           accessibilityLabel="Upgrade to Awakening Path"
         >
-          <Text style={styles.upgradeButtonText}>
-            Upgrade to Awakening
-          </Text>
+          <Text style={styles.upgradeButtonText}>Upgrade to Awakening</Text>
           <Ionicons name="arrow-forward" size={20} color={colors.background.primary} />
         </TouchableOpacity>
 

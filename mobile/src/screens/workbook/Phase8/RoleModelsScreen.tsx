@@ -34,8 +34,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Text } from '../../../components/Text';
-import { RoleModelCard, ROLE_MODEL_CATEGORIES, RoleModel, RoleModelCategory } from '../../../components/workbook/RoleModelCard';
-import { SaveIndicator, ExerciseHeader, StickyCompletionButton } from '../../../components/workbook';
+import {
+  RoleModelCard,
+  ROLE_MODEL_CATEGORIES,
+  RoleModel,
+  RoleModelCategory,
+} from '../../../components/workbook/RoleModelCard';
+import {
+  SaveIndicator,
+  ExerciseHeader,
+  StickyCompletionButton,
+} from '../../../components/workbook';
 import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -65,10 +74,7 @@ const PHASE_NUMBER = 8;
 const RoleModelsScreen: React.FC<Props> = () => {
   // Supabase data fetching
 
-  const { data: savedProgress } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.ROLE_MODELS
-  );
+  const { data: savedProgress } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.ROLE_MODELS);
 
   // State
   const [roleModels, setRoleModels] = useState<RoleModel[]>([]);
@@ -79,13 +85,14 @@ const RoleModelsScreen: React.FC<Props> = () => {
 
   // Auto-save hook
   const formData: RoleModelsData = useMemo(() => ({ roleModels }), [roleModels]);
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: formData as unknown as Record<string, unknown>,
-    phaseNumber: PHASE_NUMBER,
-    worksheetId: WORKSHEET_IDS.ROLE_MODELS,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: formData as unknown as Record<string, unknown>,
+      phaseNumber: PHASE_NUMBER,
+      worksheetId: WORKSHEET_IDS.ROLE_MODELS,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -136,10 +143,7 @@ const RoleModelsScreen: React.FC<Props> = () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'Please grant camera roll permissions to add photos.'
-        );
+        Alert.alert('Permission Required', 'Please grant camera roll permissions to add photos.');
         return;
       }
 
@@ -195,21 +199,26 @@ const RoleModelsScreen: React.FC<Props> = () => {
   /**
    * Handle photo pick for existing item
    */
-  const handlePickPhoto = useCallback((id: string) => {
-    // Find the item and open modal for editing
-    const item = roleModels.find((rm) => rm.id === id);
-    if (item) {
-      handleEdit(item);
-      // Auto-trigger photo picker after modal opens
-      setTimeout(pickImage, 500);
-    }
-  }, [roleModels, handleEdit, pickImage]);
+  const handlePickPhoto = useCallback(
+    (id: string) => {
+      // Find the item and open modal for editing
+      const item = roleModels.find((rm) => rm.id === id);
+      if (item) {
+        handleEdit(item);
+        // Auto-trigger photo picker after modal opens
+        setTimeout(pickImage, 500);
+      }
+    },
+    [roleModels, handleEdit, pickImage]
+  );
 
   /**
    * Add lesson to form
    */
   const handleAddLesson = useCallback(() => {
-    if (!formNewLesson.trim()) return;
+    if (!formNewLesson.trim()) {
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setFormLessons((prev) => [...prev, formNewLesson.trim()]);
     setFormNewLesson('');
@@ -287,10 +296,7 @@ const RoleModelsScreen: React.FC<Props> = () => {
     return (
       <TouchableOpacity
         key={key}
-        style={[
-          styles.categoryChip,
-          isSelected && { backgroundColor: color, borderColor: color },
-        ]}
+        style={[styles.categoryChip, isSelected && { backgroundColor: color, borderColor: color }]}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           setSelectedCategory(key);
@@ -315,8 +321,8 @@ const RoleModelsScreen: React.FC<Props> = () => {
       <Text style={styles.emptyStateIcon}>{'\u{1F31F}'}</Text>
       <Text style={styles.emptyStateTitle}>Build Your Role Model Board</Text>
       <Text style={styles.emptyStateText}>
-        Who inspires you? Document the people whose qualities you admire and
-        what you can learn from them.
+        Who inspires you? Document the people whose qualities you admire and what you can learn from
+        them.
         {'\n\n'}
         Tap the + button to add your first role model.
       </Text>
@@ -348,7 +354,12 @@ const RoleModelsScreen: React.FC<Props> = () => {
       />
 
       <View style={styles.headerInfo}>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
       </View>
 
       {/* Category Filters */}

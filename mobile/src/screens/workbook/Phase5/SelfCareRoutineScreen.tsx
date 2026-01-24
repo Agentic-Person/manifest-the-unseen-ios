@@ -66,20 +66,104 @@ interface PresetActivity {
 }
 
 const PRESET_ACTIVITIES: PresetActivity[] = [
-  { id: 'meditation', name: 'Meditation', icon: 'meditation', defaultDuration: 10, description: 'Quiet your mind and find inner peace' },
-  { id: 'journaling', name: 'Journaling', icon: 'journaling', defaultDuration: 15, description: 'Write your thoughts and feelings' },
-  { id: 'exercise', name: 'Exercise', icon: 'exercise', defaultDuration: 30, description: 'Move your body and energize' },
-  { id: 'skincare', name: 'Skincare', icon: 'skincare', defaultDuration: 10, description: 'Nourish and care for your skin' },
-  { id: 'reading', name: 'Reading', icon: 'reading', defaultDuration: 20, description: 'Feed your mind with knowledge' },
-  { id: 'stretching', name: 'Stretching', icon: 'stretching', defaultDuration: 10, description: 'Loosen tension and increase flexibility' },
-  { id: 'hydration', name: 'Hydration', icon: 'hydration', defaultDuration: 2, description: 'Drink water to start fresh' },
-  { id: 'gratitude', name: 'Gratitude Practice', icon: 'gratitude', defaultDuration: 5, description: 'List things you are grateful for' },
-  { id: 'affirmations', name: 'Affirmations', icon: 'affirmations', defaultDuration: 5, description: 'Speak positive words to yourself' },
-  { id: 'breathing', name: 'Breathing Exercises', icon: 'breathing', defaultDuration: 5, description: 'Deep breaths to calm your system' },
-  { id: 'walking', name: 'Walking', icon: 'walking', defaultDuration: 20, description: 'A mindful stroll in nature' },
-  { id: 'tea', name: 'Tea/Coffee Ritual', icon: 'tea', defaultDuration: 10, description: 'Enjoy a warm beverage mindfully' },
-  { id: 'music', name: 'Calming Music', icon: 'music', defaultDuration: 15, description: 'Listen to soothing sounds' },
-  { id: 'sleep', name: 'Sleep Preparation', icon: 'sleep', defaultDuration: 15, description: 'Wind down for restful sleep' },
+  {
+    id: 'meditation',
+    name: 'Meditation',
+    icon: 'meditation',
+    defaultDuration: 10,
+    description: 'Quiet your mind and find inner peace',
+  },
+  {
+    id: 'journaling',
+    name: 'Journaling',
+    icon: 'journaling',
+    defaultDuration: 15,
+    description: 'Write your thoughts and feelings',
+  },
+  {
+    id: 'exercise',
+    name: 'Exercise',
+    icon: 'exercise',
+    defaultDuration: 30,
+    description: 'Move your body and energize',
+  },
+  {
+    id: 'skincare',
+    name: 'Skincare',
+    icon: 'skincare',
+    defaultDuration: 10,
+    description: 'Nourish and care for your skin',
+  },
+  {
+    id: 'reading',
+    name: 'Reading',
+    icon: 'reading',
+    defaultDuration: 20,
+    description: 'Feed your mind with knowledge',
+  },
+  {
+    id: 'stretching',
+    name: 'Stretching',
+    icon: 'stretching',
+    defaultDuration: 10,
+    description: 'Loosen tension and increase flexibility',
+  },
+  {
+    id: 'hydration',
+    name: 'Hydration',
+    icon: 'hydration',
+    defaultDuration: 2,
+    description: 'Drink water to start fresh',
+  },
+  {
+    id: 'gratitude',
+    name: 'Gratitude Practice',
+    icon: 'gratitude',
+    defaultDuration: 5,
+    description: 'List things you are grateful for',
+  },
+  {
+    id: 'affirmations',
+    name: 'Affirmations',
+    icon: 'affirmations',
+    defaultDuration: 5,
+    description: 'Speak positive words to yourself',
+  },
+  {
+    id: 'breathing',
+    name: 'Breathing Exercises',
+    icon: 'breathing',
+    defaultDuration: 5,
+    description: 'Deep breaths to calm your system',
+  },
+  {
+    id: 'walking',
+    name: 'Walking',
+    icon: 'walking',
+    defaultDuration: 20,
+    description: 'A mindful stroll in nature',
+  },
+  {
+    id: 'tea',
+    name: 'Tea/Coffee Ritual',
+    icon: 'tea',
+    defaultDuration: 10,
+    description: 'Enjoy a warm beverage mindfully',
+  },
+  {
+    id: 'music',
+    name: 'Calming Music',
+    icon: 'music',
+    defaultDuration: 15,
+    description: 'Listen to soothing sounds',
+  },
+  {
+    id: 'sleep',
+    name: 'Sleep Preparation',
+    icon: 'sleep',
+    defaultDuration: 15,
+    description: 'Wind down for restful sleep',
+  },
 ];
 
 /**
@@ -123,17 +207,32 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
   const [bestEveningStreak, setBestEveningStreak] = useState(0);
 
   // Supabase hooks
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(5, WORKSHEET_IDS.SELF_CARE_ROUTINE);
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(5, WORKSHEET_IDS.SELF_CARE_ROUTINE);
 
   // Prepare form data for auto-save
-  const formData: SelfCareFormData = useMemo(() => ({
-    morningActivities,
-    eveningActivities,
-    morningStreak,
-    eveningStreak,
-    bestMorningStreak,
-    bestEveningStreak,
-  }), [morningActivities, eveningActivities, morningStreak, eveningStreak, bestMorningStreak, bestEveningStreak]);
+  const formData: SelfCareFormData = useMemo(
+    () => ({
+      morningActivities,
+      eveningActivities,
+      morningStreak,
+      eveningStreak,
+      bestMorningStreak,
+      bestEveningStreak,
+    }),
+    [
+      morningActivities,
+      eveningActivities,
+      morningStreak,
+      eveningStreak,
+      bestMorningStreak,
+      bestEveningStreak,
+    ]
+  );
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
@@ -147,7 +246,8 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
 
   // Current activities based on tab
   const currentActivities = activeTab === 'morning' ? morningActivities : eveningActivities;
-  const setCurrentActivities = activeTab === 'morning' ? setMorningActivities : setEveningActivities;
+  const setCurrentActivities =
+    activeTab === 'morning' ? setMorningActivities : setEveningActivities;
 
   /**
    * Calculate total routine time
@@ -160,7 +260,9 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
    * Calculate completion percentage
    */
   const completionPercentage = useMemo(() => {
-    if (currentActivities.length === 0) return 0;
+    if (currentActivities.length === 0) {
+      return 0;
+    }
     const completed = currentActivities.filter((a) => a.completed).length;
     return Math.round((completed / currentActivities.length) * 100);
   }, [currentActivities]);
@@ -175,7 +277,9 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SelfCareFormData;
@@ -253,93 +357,107 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Toggle activity completion
    */
-  const handleToggleComplete = useCallback((id: string) => {
-    setCurrentActivities((prev) =>
-      prev.map((act) =>
-        act.id === id
-          ? { ...act, completed: !act.completed, updatedAt: new Date().toISOString() }
-          : act
-      )
-    );
-  }, [setCurrentActivities]);
+  const handleToggleComplete = useCallback(
+    (id: string) => {
+      setCurrentActivities((prev) =>
+        prev.map((act) =>
+          act.id === id
+            ? { ...act, completed: !act.completed, updatedAt: new Date().toISOString() }
+            : act
+        )
+      );
+    },
+    [setCurrentActivities]
+  );
 
   /**
    * Move activity up
    */
-  const handleMoveUp = useCallback((id: string) => {
-    setCurrentActivities((prev) => {
-      const sorted = [...prev].sort((a, b) => a.order - b.order);
-      const index = sorted.findIndex((a) => a.id === id);
-      if (index <= 0) return prev;
+  const handleMoveUp = useCallback(
+    (id: string) => {
+      setCurrentActivities((prev) => {
+        const sorted = [...prev].sort((a, b) => a.order - b.order);
+        const index = sorted.findIndex((a) => a.id === id);
+        if (index <= 0) {
+          return prev;
+        }
 
-      const newActivities = [...sorted];
-      const temp = newActivities[index].order;
-      newActivities[index] = { ...newActivities[index], order: newActivities[index - 1].order };
-      newActivities[index - 1] = { ...newActivities[index - 1], order: temp };
+        const newActivities = [...sorted];
+        const temp = newActivities[index].order;
+        newActivities[index] = { ...newActivities[index], order: newActivities[index - 1].order };
+        newActivities[index - 1] = { ...newActivities[index - 1], order: temp };
 
-      return newActivities;
-    });
-  }, [setCurrentActivities]);
+        return newActivities;
+      });
+    },
+    [setCurrentActivities]
+  );
 
   /**
    * Move activity down
    */
-  const handleMoveDown = useCallback((id: string) => {
-    setCurrentActivities((prev) => {
-      const sorted = [...prev].sort((a, b) => a.order - b.order);
-      const index = sorted.findIndex((a) => a.id === id);
-      if (index < 0 || index >= sorted.length - 1) return prev;
+  const handleMoveDown = useCallback(
+    (id: string) => {
+      setCurrentActivities((prev) => {
+        const sorted = [...prev].sort((a, b) => a.order - b.order);
+        const index = sorted.findIndex((a) => a.id === id);
+        if (index < 0 || index >= sorted.length - 1) {
+          return prev;
+        }
 
-      const newActivities = [...sorted];
-      const temp = newActivities[index].order;
-      newActivities[index] = { ...newActivities[index], order: newActivities[index + 1].order };
-      newActivities[index + 1] = { ...newActivities[index + 1], order: temp };
+        const newActivities = [...sorted];
+        const temp = newActivities[index].order;
+        newActivities[index] = { ...newActivities[index], order: newActivities[index + 1].order };
+        newActivities[index + 1] = { ...newActivities[index + 1], order: temp };
 
-      return newActivities;
-    });
-  }, [setCurrentActivities]);
+        return newActivities;
+      });
+    },
+    [setCurrentActivities]
+  );
 
   /**
    * Delete activity
    */
-  const handleDelete = useCallback((id: string) => {
-    Alert.alert(
-      'Remove Activity',
-      'Are you sure you want to remove this activity from your routine?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () => {
-            setCurrentActivities((prev) => {
-              const filtered = prev.filter((a) => a.id !== id);
-              return filtered.map((a, index) => ({
-                ...a,
-                order: index,
-                updatedAt: new Date().toISOString(),
-              }));
-            });
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  const handleDelete = useCallback(
+    (id: string) => {
+      Alert.alert(
+        'Remove Activity',
+        'Are you sure you want to remove this activity from your routine?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Remove',
+            style: 'destructive',
+            onPress: () => {
+              setCurrentActivities((prev) => {
+                const filtered = prev.filter((a) => a.id !== id);
+                return filtered.map((a, index) => ({
+                  ...a,
+                  order: index,
+                  updatedAt: new Date().toISOString(),
+                }));
+              });
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            },
           },
-        },
-      ]
-    );
-  }, [setCurrentActivities]);
+        ]
+      );
+    },
+    [setCurrentActivities]
+  );
 
   /**
    * Complete daily check-in
    */
   const handleDailyCheckIn = () => {
-    const allCompleted = currentActivities.length > 0 &&
-      currentActivities.every((a) => a.completed);
+    const allCompleted =
+      currentActivities.length > 0 && currentActivities.every((a) => a.completed);
 
     if (!allCompleted) {
-      Alert.alert(
-        'Incomplete Routine',
-        'Complete all activities to check in for today!',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Incomplete Routine', 'Complete all activities to check in for today!', [
+        { text: 'OK' },
+      ]);
       return;
     }
 
@@ -379,7 +497,9 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
    * Format time display
    */
   const formatTime = (minutes: number): string => {
-    if (minutes < 60) return `${minutes} min`;
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
@@ -477,7 +597,9 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
           </View>
           <View style={styles.statDivider} />
           <View style={styles.stat}>
-            <Text style={[styles.statValue, completionPercentage === 100 && styles.statValueComplete]}>
+            <Text
+              style={[styles.statValue, completionPercentage === 100 && styles.statValueComplete]}
+            >
               {completionPercentage}%
             </Text>
             <Text style={styles.statLabel}>Complete</Text>
@@ -504,7 +626,9 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
 
           {sortedActivities.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyIcon}>{activeTab === 'morning' ? '\u2600' : '\u{1F319}'}</Text>
+              <Text style={styles.emptyIcon}>
+                {activeTab === 'morning' ? '\u2600' : '\u{1F319}'}
+              </Text>
               <Text style={styles.emptyText}>
                 No activities yet. Tap "Add" to build your {activeTab} routine.
               </Text>
@@ -539,13 +663,20 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
             testID="daily-checkin-button"
           >
             <Text style={styles.checkInButtonText}>
-              {completionPercentage === 100 ? '\u2713 Complete Check-In' : 'Complete All Activities to Check In'}
+              {completionPercentage === 100
+                ? '\u2713 Complete Check-In'
+                : 'Complete All Activities to Check In'}
             </Text>
           </Pressable>
         )}
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </ExerciseScreenLayout>
 
       {/* Add Activity Modal (Presets) */}
@@ -555,18 +686,10 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowAddModal(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowAddModal(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowAddModal(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Add Activity</Text>
-            <Text style={styles.modalSubtitle}>
-              Choose from our library or create your own
-            </Text>
+            <Text style={styles.modalSubtitle}>Choose from our library or create your own</Text>
 
             <ScrollView style={styles.presetList} showsVerticalScrollIndicator={false}>
               {PRESET_ACTIVITIES.map((preset) => (
@@ -578,9 +701,7 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
                   accessibilityLabel={`Add ${preset.name}`}
                   testID={`preset-${preset.id}`}
                 >
-                  <Text style={styles.presetIcon}>
-                    {ACTIVITY_ICONS[preset.icon] || '\u2B50'}
-                  </Text>
+                  <Text style={styles.presetIcon}>{ACTIVITY_ICONS[preset.icon] || '\u2B50'}</Text>
                   <View style={styles.presetInfo}>
                     <Text style={styles.presetName}>{preset.name}</Text>
                     <Text style={styles.presetDescription}>{preset.description}</Text>
@@ -619,18 +740,10 @@ const SelfCareRoutineScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowCustomModal(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowCustomModal(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowCustomModal(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Custom Activity</Text>
-            <Text style={styles.modalSubtitle}>
-              Create a self-care activity unique to you
-            </Text>
+            <Text style={styles.modalSubtitle}>Create a self-care activity unique to you</Text>
 
             <Text style={styles.inputLabel}>Activity Name</Text>
             <TextInput

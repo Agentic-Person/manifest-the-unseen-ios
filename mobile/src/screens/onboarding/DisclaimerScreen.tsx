@@ -6,13 +6,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, spacing } from '../../theme';
@@ -36,10 +30,7 @@ export const DisclaimerScreen: React.FC<DisclaimerScreenProps> = ({ onAccept }) 
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.icon}>⚕️</Text>
@@ -49,20 +40,22 @@ export const DisclaimerScreen: React.FC<DisclaimerScreenProps> = ({ onAccept }) 
         {/* Content */}
         <View style={styles.section}>
           <Text style={styles.paragraph}>
-            Manifest the Unseen provides general wellness and personal development
-            content for educational and inspirational purposes only.
+            Manifest the Unseen provides general wellness and personal development content for
+            educational and inspirational purposes only.
           </Text>
 
           <Text style={styles.paragraph}>
-            This app is <Text style={styles.bold}>not intended to diagnose, treat,
-            cure, or prevent any disease</Text>, medical condition, or mental health
-            disorder.
+            This app is{' '}
+            <Text style={styles.bold}>
+              not intended to diagnose, treat, cure, or prevent any disease
+            </Text>
+            , medical condition, or mental health disorder.
           </Text>
 
           <Text style={styles.paragraph}>
-            The information provided, including AI-generated guidance, meditation
-            practices, and workbook exercises, should not be considered professional
-            medical, psychological, therapeutic, or financial advice.
+            The information provided, including AI-generated guidance, meditation practices, and
+            workbook exercises, should not be considered professional medical, psychological,
+            therapeutic, or financial advice.
           </Text>
 
           <Text style={styles.paragraph}>
@@ -74,30 +67,24 @@ export const DisclaimerScreen: React.FC<DisclaimerScreenProps> = ({ onAccept }) 
         <View style={[styles.section, styles.crisisSection]}>
           <Text style={styles.crisisTitle}>Mental Health Crisis?</Text>
           <Text style={styles.crisisParagraph}>
-            If you are experiencing severe emotional distress or thoughts of self-harm,
-            please contact emergency services (911) or a mental health crisis hotline
-            immediately.
+            If you are experiencing severe emotional distress or thoughts of self-harm, please
+            contact emergency services (911) or a mental health crisis hotline immediately.
           </Text>
-          <Text style={styles.crisisParagraph}>
-            National Suicide Prevention Lifeline: 988
-          </Text>
+          <Text style={styles.crisisParagraph}>National Suicide Prevention Lifeline: 988</Text>
         </View>
 
         {/* Professional Advice */}
         <View style={styles.section}>
           <Text style={styles.paragraph}>
-            Always consult with qualified healthcare professionals before making
-            significant changes to your health, wellness, or lifestyle practices.
+            Always consult with qualified healthcare professionals before making significant changes
+            to your health, wellness, or lifestyle practices.
           </Text>
         </View>
       </ScrollView>
 
       {/* Accept Button */}
       <View style={styles.footer}>
-        <Pressable
-          style={styles.button}
-          onPress={handleAccept}
-        >
+        <Pressable style={styles.button} onPress={handleAccept}>
           <Text style={styles.buttonText}>I Understand</Text>
         </Pressable>
       </View>

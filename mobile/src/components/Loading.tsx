@@ -12,12 +12,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  ActivityIndicator,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, ActivityIndicator, StyleSheet, ViewStyle } from 'react-native';
 import { colors, spacing, borderRadius } from '../theme';
 
 export type LoadingVariant = 'spinner' | 'skeleton';
@@ -60,10 +55,7 @@ export const Loading: React.FC<LoadingProps> = ({
         accessibilityRole="progressbar"
         accessibilityLabel={accessibilityLabel}
       >
-        <ActivityIndicator
-          size={size}
-          color={color}
-        />
+        <ActivityIndicator size={size} color={color} />
       </View>
     );
   }
@@ -84,9 +76,7 @@ export const Loading: React.FC<LoadingProps> = ({
         </>
       )}
 
-      {skeletonType === 'image' && (
-        <View style={styles.skeletonImage} />
-      )}
+      {skeletonType === 'image' && <View style={styles.skeletonImage} />}
 
       {skeletonType === 'card' && (
         <View style={styles.skeletonCard}>

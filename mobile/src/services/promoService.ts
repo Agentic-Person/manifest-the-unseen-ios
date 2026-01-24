@@ -135,7 +135,7 @@ export async function recordPromoRedemption(
  */
 export async function getPromoCodeSlots(code: string): Promise<number | null> {
   const result = await validatePromoCode(code, undefined, true);
-  return result.valid ? result.remainingSlots ?? null : null;
+  return result.valid ? (result.remainingSlots ?? null) : null;
 }
 
 /**
@@ -145,10 +145,7 @@ export async function getPromoCodeSlots(code: string): Promise<number | null> {
  * @param tier - The subscription tier to check against
  * @returns true if code is valid for the tier
  */
-export async function isPromoValidForTier(
-  code: string,
-  tier: string
-): Promise<boolean> {
+export async function isPromoValidForTier(code: string, tier: string): Promise<boolean> {
   const result = await validatePromoCode(code, tier, true);
   return result.valid;
 }

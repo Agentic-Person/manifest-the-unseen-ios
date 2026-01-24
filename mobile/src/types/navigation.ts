@@ -18,9 +18,11 @@ export type RootStackParamList = {
   Main: undefined;
   Manuscript: undefined;
   ObservableScience: undefined;
-  Paywall: {
-    lockedFeature?: string;
-  } | undefined;
+  Paywall:
+    | {
+        lockedFeature?: string;
+      }
+    | undefined;
 };
 
 /**
@@ -55,7 +57,7 @@ export type WorkbookStackParamList = {
   ExerciseDetail: {
     phaseId: number;
     exerciseId: string;
-    exerciseName: string
+    exerciseName: string;
   };
   // Phase 1: Self-Evaluation screens
   Phase1Dashboard: undefined;
@@ -169,40 +171,40 @@ export type AIChatStackParamList = {
  */
 
 // Root Stack Screen Props
-export type RootStackScreenProps<T extends keyof RootStackParamList> =
-  NativeStackScreenProps<RootStackParamList, T>;
+export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<
+  RootStackParamList,
+  T
+>;
 
 // Auth Stack Screen Props
-export type AuthStackScreenProps<T extends keyof AuthStackParamList> =
-  NativeStackScreenProps<AuthStackParamList, T>;
+export type AuthStackScreenProps<T extends keyof AuthStackParamList> = NativeStackScreenProps<
+  AuthStackParamList,
+  T
+>;
 
 // Main Tab Screen Props
-export type MainTabScreenProps<T extends keyof MainTabParamList> =
-  CompositeScreenProps<
-    BottomTabScreenProps<MainTabParamList, T>,
-    RootStackScreenProps<keyof RootStackParamList>
-  >;
+export type MainTabScreenProps<T extends keyof MainTabParamList> = CompositeScreenProps<
+  BottomTabScreenProps<MainTabParamList, T>,
+  RootStackScreenProps<keyof RootStackParamList>
+>;
 
 // Workbook Stack Screen Props
-export type WorkbookStackScreenProps<T extends keyof WorkbookStackParamList> =
-  CompositeScreenProps<
-    NativeStackScreenProps<WorkbookStackParamList, T>,
-    MainTabScreenProps<'Workbook'>
-  >;
+export type WorkbookStackScreenProps<T extends keyof WorkbookStackParamList> = CompositeScreenProps<
+  NativeStackScreenProps<WorkbookStackParamList, T>,
+  MainTabScreenProps<'Workbook'>
+>;
 
 // Meditate Stack Screen Props
-export type MeditateStackScreenProps<T extends keyof MeditateStackParamList> =
-  CompositeScreenProps<
-    NativeStackScreenProps<MeditateStackParamList, T>,
-    MainTabScreenProps<'Meditate'>
-  >;
+export type MeditateStackScreenProps<T extends keyof MeditateStackParamList> = CompositeScreenProps<
+  NativeStackScreenProps<MeditateStackParamList, T>,
+  MainTabScreenProps<'Meditate'>
+>;
 
 // Profile Stack Screen Props
-export type ProfileStackScreenProps<T extends keyof ProfileStackParamList> =
-  CompositeScreenProps<
-    NativeStackScreenProps<ProfileStackParamList, T>,
-    MainTabScreenProps<'Profile'>
-  >;
+export type ProfileStackScreenProps<T extends keyof ProfileStackParamList> = CompositeScreenProps<
+  NativeStackScreenProps<ProfileStackParamList, T>,
+  MainTabScreenProps<'Profile'>
+>;
 
 /**
  * Global Navigation Declaration

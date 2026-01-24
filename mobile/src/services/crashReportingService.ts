@@ -139,8 +139,8 @@ const scrubSensitiveData = (obj: Record<string, any>): Record<string, any> => {
   const scrubbed: Record<string, any> = {};
 
   for (const [key, value] of Object.entries(obj)) {
-    const isFieldSensitive = SENSITIVE_FIELDS.some(
-      (field) => key.toLowerCase().includes(field.toLowerCase())
+    const isFieldSensitive = SENSITIVE_FIELDS.some((field) =>
+      key.toLowerCase().includes(field.toLowerCase())
     );
 
     if (isFieldSensitive) {
@@ -161,10 +161,7 @@ const scrubSensitiveData = (obj: Record<string, any>): Record<string, any> => {
  * @param error - The error to capture
  * @param context - Additional context data
  */
-export const captureException = (
-  error: Error | unknown,
-  context?: Record<string, any>
-): void => {
+export const captureException = (error: Error | unknown, context?: Record<string, any>): void => {
   if (!isCrashReportingEnabled()) {
     if (__DEV__) {
       console.error('[CrashReporting] (Not sent - disabled)', error);

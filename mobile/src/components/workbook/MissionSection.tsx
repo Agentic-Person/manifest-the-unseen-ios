@@ -135,10 +135,7 @@ export const MissionSection: React.FC<MissionSectionProps> = ({
 
   return (
     <View
-      style={[
-        styles.container,
-        { borderColor: isExpanded ? borderColor : 'transparent' },
-      ]}
+      style={[styles.container, { borderColor: isExpanded ? borderColor : 'transparent' }]}
       testID={testID}
     >
       {/* Section Header - Tappable */}
@@ -191,7 +188,7 @@ export const MissionSection: React.FC<MissionSectionProps> = ({
           {/* Text Input */}
           <View style={styles.inputContainer}>
             <RNTextInput
-              style={[styles.textInput, { borderColor: borderColor }]}
+              style={[styles.textInput, { borderColor }]}
               value={value}
               onChangeText={onChangeText}
               placeholder="Write your thoughts here..."

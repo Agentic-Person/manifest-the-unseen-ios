@@ -49,14 +49,42 @@ const DESIGN_COLORS = {
 
 // Cognitive distortion types
 const DISTORTIONS = [
-  { id: 'allOrNothing', label: 'All-or-Nothing', description: 'Black and white thinking, no middle ground' },
-  { id: 'overgeneralizing', label: 'Overgeneralizing', description: 'Making broad conclusions from single events' },
-  { id: 'catastrophizing', label: 'Catastrophizing', description: 'Expecting the worst possible outcome' },
+  {
+    id: 'allOrNothing',
+    label: 'All-or-Nothing',
+    description: 'Black and white thinking, no middle ground',
+  },
+  {
+    id: 'overgeneralizing',
+    label: 'Overgeneralizing',
+    description: 'Making broad conclusions from single events',
+  },
+  {
+    id: 'catastrophizing',
+    label: 'Catastrophizing',
+    description: 'Expecting the worst possible outcome',
+  },
   { id: 'mindReading', label: 'Mind Reading', description: 'Assuming you know what others think' },
-  { id: 'fortuneTelling', label: 'Fortune Telling', description: 'Predicting negative futures without evidence' },
-  { id: 'shouldStatements', label: 'Should Statements', description: 'Rigid rules about how things must be' },
-  { id: 'labeling', label: 'Labeling', description: 'Attaching negative labels to yourself or others' },
-  { id: 'emotionalReasoning', label: 'Emotional Reasoning', description: 'Feeling it, so it must be true' },
+  {
+    id: 'fortuneTelling',
+    label: 'Fortune Telling',
+    description: 'Predicting negative futures without evidence',
+  },
+  {
+    id: 'shouldStatements',
+    label: 'Should Statements',
+    description: 'Rigid rules about how things must be',
+  },
+  {
+    id: 'labeling',
+    label: 'Labeling',
+    description: 'Attaching negative labels to yourself or others',
+  },
+  {
+    id: 'emotionalReasoning',
+    label: 'Emotional Reasoning',
+    description: 'Feeling it, so it must be true',
+  },
 ] as const;
 
 type DistortionType = (typeof DISTORTIONS)[number]['id'];
@@ -108,16 +136,20 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Load saved data from Supabase
-  const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.THOUGHT_AWARENESS);
+  const { data: savedProgress, isLoading } = useWorkbookProgress(
+    1,
+    WORKSHEET_IDS.THOUGHT_AWARENESS
+  );
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: data as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.THOUGHT_AWARENESS,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: data as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.THOUGHT_AWARENESS,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -161,19 +193,18 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Update entry field
    */
-  const handleUpdateEntry = useCallback((
-    entryId: string,
-    field: keyof ThoughtEntry,
-    value: unknown
-  ) => {
-    setData((prev) => ({
-      ...prev,
-      entries: prev.entries.map((entry) =>
-        entry.id === entryId ? { ...entry, [field]: value } : entry
-      ),
-      updatedAt: new Date().toISOString(),
-    }));
-  }, []);
+  const handleUpdateEntry = useCallback(
+    (entryId: string, field: keyof ThoughtEntry, value: unknown) => {
+      setData((prev) => ({
+        ...prev,
+        entries: prev.entries.map((entry) =>
+          entry.id === entryId ? { ...entry, [field]: value } : entry
+        ),
+        updatedAt: new Date().toISOString(),
+      }));
+    },
+    []
+  );
 
   /**
    * Toggle distortion for entry
@@ -182,7 +213,9 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
     setData((prev) => ({
       ...prev,
       entries: prev.entries.map((entry) => {
-        if (entry.id !== entryId) return entry;
+        if (entry.id !== entryId) {
+          return entry;
+        }
         const hasDistortion = entry.distortions.includes(distortionId);
         return {
           ...entry,
@@ -200,25 +233,21 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
    * Delete entry
    */
   const handleDeleteEntry = useCallback((entryId: string) => {
-    Alert.alert(
-      'Delete Entry',
-      'Are you sure you want to delete this thought entry?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            setData((prev) => ({
-              ...prev,
-              entries: prev.entries.filter((e) => e.id !== entryId),
-              updatedAt: new Date().toISOString(),
-            }));
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          },
+    Alert.alert('Delete Entry', 'Are you sure you want to delete this thought entry?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          setData((prev) => ({
+            ...prev,
+            entries: prev.entries.filter((e) => e.id !== entryId),
+            updatedAt: new Date().toISOString(),
+          }));
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         },
-      ]
-    );
+      },
+    ]);
   }, []);
 
   /**
@@ -250,8 +279,7 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
       });
     });
 
-    const topDistortion = Object.entries(distortionCounts)
-      .sort((a, b) => b[1] - a[1])[0];
+    const topDistortion = Object.entries(distortionCounts).sort((a, b) => b[1] - a[1])[0];
 
     return {
       total,
@@ -335,10 +363,7 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Add Entry Button */}
       <Pressable
-        style={({ pressed }) => [
-          styles.addButton,
-          pressed && styles.addButtonPressed,
-        ]}
+        style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
         onPress={handleAddEntry}
       >
         <Text style={styles.addButtonText}>+ Log a Thought</Text>
@@ -451,14 +476,19 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
                               key={cat}
                               style={[
                                 styles.categoryButton,
-                                isSelected && { backgroundColor: config.color, borderColor: config.color },
+                                isSelected && {
+                                  backgroundColor: config.color,
+                                  borderColor: config.color,
+                                },
                               ]}
                               onPress={() => handleUpdateEntry(entry.id, 'category', cat)}
                             >
-                              <Text style={[
-                                styles.categoryButtonText,
-                                isSelected && styles.categoryButtonTextSelected,
-                              ]}>
+                              <Text
+                                style={[
+                                  styles.categoryButtonText,
+                                  isSelected && styles.categoryButtonTextSelected,
+                                ]}
+                              >
                                 {config.emoji} {config.label}
                               </Text>
                             </Pressable>
@@ -482,10 +512,12 @@ const ThoughtAwarenessScreen: React.FC<Props> = ({ navigation }) => {
                               ]}
                               onPress={() => handleToggleDistortion(entry.id, d.id)}
                             >
-                              <Text style={[
-                                styles.distortionChipText,
-                                isSelected && styles.distortionChipTextSelected,
-                              ]}>
+                              <Text
+                                style={[
+                                  styles.distortionChipText,
+                                  isSelected && styles.distortionChipTextSelected,
+                                ]}
+                              >
                                 {d.label}
                               </Text>
                             </Pressable>

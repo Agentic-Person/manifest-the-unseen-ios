@@ -17,9 +17,9 @@ interface UseAIChatOptions {
 export function useAIChat(options: UseAIChatOptions = {}) {
   const { conversationId } = options;
   const queryClient = useQueryClient();
-  const [currentConversationId, setCurrentConversationId] = useState<
-    string | undefined
-  >(conversationId);
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(
+    conversationId
+  );
 
   // Query for current conversation
   const {
@@ -38,10 +38,7 @@ export function useAIChat(options: UseAIChatOptions = {}) {
   // Mutation for sending messages
   const sendMessageMutation = useMutation({
     mutationFn: async (message: string) => {
-      const response = await aiChatService.sendMessage(
-        currentConversationId,
-        message
-      );
+      const response = await aiChatService.sendMessage(currentConversationId, message);
 
       // If this was a new conversation, store the ID
       if (!currentConversationId) {
@@ -70,13 +67,10 @@ export function useAIChat(options: UseAIChatOptions = {}) {
           timestamp: new Date().toISOString(),
         };
 
-        queryClient.setQueryData<AIConversation>(
-          ['ai-chat', currentConversationId],
-          {
-            ...previousConversation,
-            messages: [...previousConversation.messages, optimisticMessage],
-          }
-        );
+        queryClient.setQueryData<AIConversation>(['ai-chat', currentConversationId], {
+          ...previousConversation,
+          messages: [...previousConversation.messages, optimisticMessage],
+        });
       }
 
       return { previousConversation };
@@ -84,10 +78,7 @@ export function useAIChat(options: UseAIChatOptions = {}) {
     onError: (_err, _message, context) => {
       // Rollback on error
       if (context?.previousConversation) {
-        queryClient.setQueryData(
-          ['ai-chat', currentConversationId],
-          context.previousConversation
-        );
+        queryClient.setQueryData(['ai-chat', currentConversationId], context.previousConversation);
       }
     },
     onSuccess: (data) => {
@@ -132,7 +123,11 @@ export function useAIChat(options: UseAIChatOptions = {}) {
  * List all conversations (for future conversation list screen)
  */
 export function useConversations() {
-  const { data: conversations, isLoading, error } = useQuery({
+  const {
+    data: conversations,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['ai-conversations'],
     queryFn: () => aiChatService.listConversations(),
   });

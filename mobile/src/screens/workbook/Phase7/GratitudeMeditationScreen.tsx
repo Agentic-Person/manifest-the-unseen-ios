@@ -33,9 +33,7 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
-import {
-  MeditationTimer,
-} from '../../../components/workbook/MeditationTimer';
+import { MeditationTimer } from '../../../components/workbook/MeditationTimer';
 import type { TimerState } from '../../../components/workbook/MeditationTimer';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
 import { useAutoSave } from '../../../hooks/useAutoSave';
@@ -64,27 +62,33 @@ const DESIGN_COLORS = {
 const GRATITUDE_PROMPTS = [
   {
     title: 'Morning Blessings',
-    prompt: 'As you breathe deeply, think of three things you\'re grateful for this morning. Visualize each one surrounded by warm, golden light.',
+    prompt:
+      "As you breathe deeply, think of three things you're grateful for this morning. Visualize each one surrounded by warm, golden light.",
   },
   {
     title: 'People in Your Life',
-    prompt: 'Bring to mind someone who has shown you kindness. See their face clearly. Feel gratitude for their presence in your life.',
+    prompt:
+      'Bring to mind someone who has shown you kindness. See their face clearly. Feel gratitude for their presence in your life.',
   },
   {
     title: 'Simple Pleasures',
-    prompt: 'Think of a simple pleasure you experienced recently - a warm drink, a smile from a stranger, sunshine on your face. Let gratitude fill your heart.',
+    prompt:
+      'Think of a simple pleasure you experienced recently - a warm drink, a smile from a stranger, sunshine on your face. Let gratitude fill your heart.',
   },
   {
     title: 'Your Body',
-    prompt: 'Feel gratitude for your body. Thank your heart for beating, your lungs for breathing, your senses for experiencing the world.',
+    prompt:
+      'Feel gratitude for your body. Thank your heart for beating, your lungs for breathing, your senses for experiencing the world.',
   },
   {
     title: 'Growth & Challenges',
-    prompt: 'Consider a challenge you\'ve overcome. Feel gratitude for the strength it revealed in you, for the lessons learned.',
+    prompt:
+      "Consider a challenge you've overcome. Feel gratitude for the strength it revealed in you, for the lessons learned.",
   },
   {
     title: 'Abundance',
-    prompt: 'Visualize all the abundance in your life - love, opportunities, connections, experiences. Let gratitude for this abundance expand in your heart.',
+    prompt:
+      'Visualize all the abundance in your life - love, opportunities, connections, experiences. Let gratitude for this abundance expand in your heart.',
   },
 ];
 
@@ -134,7 +138,12 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
   const breatheAnim = useRef(new Animated.Value(1)).current;
 
   // Supabase integration hooks
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_MEDITATION);
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_MEDITATION);
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: { sessions, stats } as Record<string, unknown>,
@@ -155,10 +164,15 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data && typeof savedProgress.data === 'object') {
-      const loadedData = savedProgress.data as { sessions: MeditationSession[]; stats: SessionStats };
+      const loadedData = savedProgress.data as {
+        sessions: MeditationSession[];
+        stats: SessionStats;
+      };
       if (Array.isArray(loadedData.sessions)) {
         setSessions(loadedData.sessions);
       }
@@ -244,19 +258,11 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
 
-    const weekSessions = allSessions.filter(
-      (s) => new Date(s.completedAt) >= weekAgo
-    );
+    const weekSessions = allSessions.filter((s) => new Date(s.completedAt) >= weekAgo);
 
-    const totalMinutes = allSessions.reduce(
-      (sum, s) => sum + Math.floor(s.duration / 60),
-      0
-    );
+    const totalMinutes = allSessions.reduce((sum, s) => sum + Math.floor(s.duration / 60), 0);
 
-    const longestSession = allSessions.reduce(
-      (max, s) => Math.max(max, s.duration),
-      0
-    );
+    const longestSession = allSessions.reduce((max, s) => Math.max(max, s.duration), 0);
 
     setStats({
       totalSessions: allSessions.length,
@@ -332,11 +338,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
    */
   const gradientColor = gradientAnim.interpolate({
     inputRange: [0, 0.5, 1],
-    outputRange: [
-      DESIGN_COLORS.accentPurple,
-      DESIGN_COLORS.accentIndigo,
-      DESIGN_COLORS.accentTeal,
-    ],
+    outputRange: [DESIGN_COLORS.accentPurple, DESIGN_COLORS.accentIndigo, DESIGN_COLORS.accentTeal],
   });
 
   if (isLoading) {
@@ -437,10 +439,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
         {timerState === 'running' && (
           <View style={styles.breathingGuide}>
             <Animated.View
-              style={[
-                styles.breathingCircle,
-                { transform: [{ scale: breatheAnim }] },
-              ]}
+              style={[styles.breathingCircle, { transform: [{ scale: breatheAnim }] }]}
             >
               <Text style={styles.breathingText}>Breathe</Text>
             </Animated.View>
@@ -474,9 +473,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
                       "{session.reflection}"
                     </Text>
                   )}
-                  <Text style={styles.sessionPrompt}>
-                    Focus: {session.promptUsed}
-                  </Text>
+                  <Text style={styles.sessionPrompt}>Focus: {session.promptUsed}</Text>
                 </View>
               );
             })}
@@ -495,7 +492,12 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
         )}
 
         {/* Save Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </ExerciseScreenLayout>
 
       {/* Reflection Modal */}
@@ -512,9 +514,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
               ✨ Beautiful work! You meditated for {Math.floor(lastDuration / 60)} minutes.
             </Text>
 
-            <Text style={styles.reflectionLabel}>
-              How do you feel? (Optional)
-            </Text>
+            <Text style={styles.reflectionLabel}>How do you feel? (Optional)</Text>
             <TextInput
               style={styles.reflectionInput}
               value={reflectionText}
@@ -528,16 +528,10 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
             />
 
             <View style={styles.reflectionActions}>
-              <TouchableOpacity
-                style={styles.skipButton}
-                onPress={handleSkipReflection}
-              >
+              <TouchableOpacity style={styles.skipButton} onPress={handleSkipReflection}>
                 <Text style={styles.skipButtonText}>Skip</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.saveReflectionButton}
-                onPress={handleSaveReflection}
-              >
+              <TouchableOpacity style={styles.saveReflectionButton} onPress={handleSaveReflection}>
                 <Text style={styles.saveReflectionText}>Save</Text>
               </TouchableOpacity>
             </View>

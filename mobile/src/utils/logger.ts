@@ -153,7 +153,11 @@ const prodLogger: Logger = {
     // In production, capture errors to Sentry
     // Import dynamically to avoid circular dependencies
     try {
-      const { captureException, captureMessage, addBreadcrumb } = require('../services/crashReportingService');
+      const {
+        captureException,
+        captureMessage,
+        addBreadcrumb,
+      } = require('../services/crashReportingService');
 
       // Check if any of the args is an Error
       const errorArg = args.find((arg) => arg instanceof Error);
@@ -174,12 +178,15 @@ const prodLogger: Logger = {
       // Add breadcrumb for debugging context
       addBreadcrumb({
         category: 'logger',
-        message: message,
+        message,
         level: 'error',
-        data: formatArgs(...args).reduce((acc, arg, i) => {
-          acc[`arg${i}`] = typeof arg === 'object' ? JSON.stringify(arg) : String(arg);
-          return acc;
-        }, {} as Record<string, string>),
+        data: formatArgs(...args).reduce(
+          (acc, arg, i) => {
+            acc[`arg${i}`] = typeof arg === 'object' ? JSON.stringify(arg) : String(arg);
+            return acc;
+          },
+          {} as Record<string, string>
+        ),
       });
     } catch {
       // Silently fail if crash reporting not available

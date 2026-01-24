@@ -18,15 +18,7 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  Pressable,
-  Image,
-  Alert,
-} from 'react-native';
+import { View, StyleSheet, Text, TextInput, Pressable, Image, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -50,13 +42,7 @@ const DESIGN_COLORS = {
 /**
  * Sign Category Type
  */
-export type SignCategory =
-  | 'numbers'
-  | 'animals'
-  | 'people'
-  | 'events'
-  | 'dreams'
-  | 'other';
+export type SignCategory = 'numbers' | 'animals' | 'people' | 'events' | 'dreams' | 'other';
 
 /**
  * Sign Category Configuration
@@ -305,7 +291,9 @@ export const SignCard: React.FC<SignCardProps> = ({
             >
               <Text style={styles.categorySelectorIcon}>{selectedCategory?.icon}</Text>
               <Text style={styles.categorySelectorText}>{selectedCategory?.label}</Text>
-              <Text style={styles.categorySelectorArrow}>{showCategoryPicker ? '\u25b2' : '\u25bc'}</Text>
+              <Text style={styles.categorySelectorArrow}>
+                {showCategoryPicker ? '\u25b2' : '\u25bc'}
+              </Text>
             </Pressable>
             {showCategoryPicker && (
               <View style={styles.categoryPicker}>
@@ -418,15 +406,8 @@ export const SignCard: React.FC<SignCardProps> = ({
             accessibilityLabel="Mark as recurring sign"
             accessibilityState={{ checked: entry.isRecurring }}
           >
-            <View
-              style={[
-                styles.checkbox,
-                entry.isRecurring && styles.checkboxChecked,
-              ]}
-            >
-              {entry.isRecurring && (
-                <Text style={styles.checkboxIcon}>{'\u2713'}</Text>
-              )}
+            <View style={[styles.checkbox, entry.isRecurring && styles.checkboxChecked]}>
+              {entry.isRecurring && <Text style={styles.checkboxIcon}>{'\u2713'}</Text>}
             </View>
             <View style={styles.recurringInfo}>
               <Text style={styles.recurringLabel}>This is a recurring sign</Text>

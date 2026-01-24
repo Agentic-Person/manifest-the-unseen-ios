@@ -13,11 +13,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from '../../../components';
 import MissionSection, { MissionId } from '../../../components/workbook/MissionSection';
 import CombinedMissionView from '../../../components/workbook/CombinedMissionView';
@@ -61,7 +57,8 @@ const MISSION_SECTIONS: MissionSectionConfig[] = [
     id: 'personal',
     title: 'Personal Mission',
     subtitle: 'Who I am at my core',
-    prompt: 'Describe the person you aspire to be. What character traits define you? What values guide your decisions? Who are you when you are at your best?',
+    prompt:
+      'Describe the person you aspire to be. What character traits define you? What values guide your decisions? Who are you when you are at your best?',
     icon: '\u2B50', // Star
     color: '#4a1a6b', // Deep purple
   },
@@ -69,7 +66,8 @@ const MISSION_SECTIONS: MissionSectionConfig[] = [
     id: 'professional',
     title: 'Professional Mission',
     subtitle: 'What I contribute through my work',
-    prompt: 'What impact do you want to make through your career or creative work? How do you want to grow professionally? What problems do you want to solve?',
+    prompt:
+      'What impact do you want to make through your career or creative work? How do you want to grow professionally? What problems do you want to solve?',
     icon: '\uD83D\uDCBC', // Briefcase
     color: '#1a4a6b', // Deep blue
   },
@@ -77,7 +75,8 @@ const MISSION_SECTIONS: MissionSectionConfig[] = [
     id: 'impact',
     title: 'Impact Mission',
     subtitle: 'How I serve others',
-    prompt: 'How do you want to help others and contribute to your community? What causes matter most to you? How can you make a difference in the world?',
+    prompt:
+      'How do you want to help others and contribute to your community? What causes matter most to you? How can you make a difference in the world?',
     icon: '\uD83E\uDD1D', // Handshake
     color: '#2d5a4a', // Forest green
   },
@@ -85,7 +84,8 @@ const MISSION_SECTIONS: MissionSectionConfig[] = [
     id: 'legacy',
     title: 'Legacy Mission',
     subtitle: 'What I leave behind',
-    prompt: 'When people remember you, what do you want them to say? What lasting impact do you want to have? What wisdom do you want to pass on?',
+    prompt:
+      'When people remember you, what do you want them to say? What lasting impact do you want to have? What wisdom do you want to pass on?',
     icon: '\uD83C\uDF33', // Tree
     color: '#6b5a1a', // Gold tint
   },
@@ -117,22 +117,15 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
   const [showCombinedView, setShowCombinedView] = useState(false);
 
   // Auto-save hook
-  const {
-    isSaving,
-    isError,
-    lastSaved,
-    saveNow,
-    isAutoCompleted,
-    canComplete,
-    markComplete,
-  } = useAutoSave({
-    data: missionData as unknown as Record<string, unknown>,
-    phaseNumber: 2,
-    worksheetId: WORKSHEET_IDS.LIFE_MISSION,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-    enableAutoComplete: true,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: missionData as unknown as Record<string, unknown>,
+      phaseNumber: 2,
+      worksheetId: WORKSHEET_IDS.LIFE_MISSION,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+      enableAutoComplete: true,
+    });
 
   const hasLoadedInitialData = useRef(false);
 
@@ -143,7 +136,8 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
       const data = savedProgress.data as unknown as LifeMissionData;
       setMissionData({
         personalMission: typeof data.personalMission === 'string' ? data.personalMission : '',
-        professionalMission: typeof data.professionalMission === 'string' ? data.professionalMission : '',
+        professionalMission:
+          typeof data.professionalMission === 'string' ? data.professionalMission : '',
         impactMission: typeof data.impactMission === 'string' ? data.impactMission : '',
         legacyMission: typeof data.legacyMission === 'string' ? data.legacyMission : '',
         combinedStatement: typeof data.combinedStatement === 'string' ? data.combinedStatement : '',
@@ -157,7 +151,7 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
    * Handle text change for a mission section
    */
   const handleMissionChange = useCallback((sectionId: MissionId, text: string) => {
-    setMissionData(prev => {
+    setMissionData((prev) => {
       const key = `${sectionId}Mission` as keyof LifeMissionData;
       return {
         ...prev,
@@ -171,7 +165,7 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
    * Toggle section expansion
    */
   const handleToggleSection = useCallback((sectionId: MissionId) => {
-    setExpandedSection(prev => prev === sectionId ? null : sectionId);
+    setExpandedSection((prev) => (prev === sectionId ? null : sectionId));
   }, []);
 
   /**
@@ -206,7 +200,12 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
         />
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
 
         {/* Mission Sections */}
         <View style={styles.sectionsContainer}>
@@ -230,10 +229,7 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* View Combined Mission Button */}
         <TouchableOpacity
-          style={[
-            styles.viewCombinedButton,
-            !canComplete && styles.viewCombinedButtonDisabled,
-          ]}
+          style={[styles.viewCombinedButton, !canComplete && styles.viewCombinedButtonDisabled]}
           onPress={() => setShowCombinedView(true)}
           disabled={!canComplete}
           accessibilityRole="button"
@@ -242,9 +238,7 @@ const LifeMissionScreen: React.FC<Props> = ({ navigation }) => {
           testID="view-combined-button"
         >
           <Text style={styles.viewCombinedIcon}>✨</Text>
-          <Text style={styles.viewCombinedText}>
-            View Your Complete Mission
-          </Text>
+          <Text style={styles.viewCombinedText}>View Your Complete Mission</Text>
         </TouchableOpacity>
 
         {/* Inspirational Quote */}

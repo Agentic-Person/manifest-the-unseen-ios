@@ -45,9 +45,15 @@ export interface AllPhasesProgressResult {
  * Red (0-25%) -> Orange (26-50%) -> Yellow (51-75%) -> Green (76-100%)
  */
 export function getProgressColor(percentage: number): string {
-  if (percentage <= 25) return '#dc2626'; // Red
-  if (percentage <= 50) return '#c9a227'; // Orange
-  if (percentage <= 75) return '#8b6914'; // Yellow/Amber
+  if (percentage <= 25) {
+    return '#dc2626';
+  } // Red
+  if (percentage <= 50) {
+    return '#c9a227';
+  } // Orange
+  if (percentage <= 75) {
+    return '#8b6914';
+  } // Yellow/Amber
   return '#2d5a4a'; // Green
 }
 
@@ -55,11 +61,21 @@ export function getProgressColor(percentage: number): string {
  * Get a motivational message based on overall progress
  */
 export function getProgressMessage(percentage: number): string {
-  if (percentage === 0) return 'Begin your transformation journey';
-  if (percentage <= 25) return "You've taken the first steps!";
-  if (percentage <= 50) return 'Making great progress!';
-  if (percentage <= 75) return 'Over halfway there!';
-  if (percentage < 100) return 'Almost complete!';
+  if (percentage === 0) {
+    return 'Begin your transformation journey';
+  }
+  if (percentage <= 25) {
+    return "You've taken the first steps!";
+  }
+  if (percentage <= 50) {
+    return 'Making great progress!';
+  }
+  if (percentage <= 75) {
+    return 'Over halfway there!';
+  }
+  if (percentage < 100) {
+    return 'Almost complete!';
+  }
   return 'Journey complete!';
 }
 
@@ -89,16 +105,16 @@ export function useAllPhasesProgress(): AllPhasesProgressResult {
       totalWorksheets += total;
 
       // Filter progress entries for this phase
-      const phaseEntries = allProgress?.filter(
-        (entry) => entry.phase_number === phaseNumber
-      ) || [];
+      const phaseEntries = allProgress?.filter((entry) => entry.phase_number === phaseNumber) || [];
 
       // Count completed worksheets using ACTUAL completion detection
       // This runs the completion criteria against the saved data, not just the boolean flag
       // This ensures we always use the latest completion criteria
       const completed = phaseEntries.filter((entry) => {
         // First check the database boolean (fast path)
-        if (entry.completed) return true;
+        if (entry.completed) {
+          return true;
+        }
 
         // If not marked complete, run completion detection on the actual data
         // This catches worksheets saved before criteria were fixed
@@ -111,13 +127,18 @@ export function useAllPhasesProgress(): AllPhasesProgressResult {
                 config.completionCriteria
               );
               if (isComplete) {
-                logger.debug(`[useAllPhasesProgress] Worksheet ${entry.worksheet_id} detected as complete via criteria (not marked in DB)`);
+                logger.debug(
+                  `[useAllPhasesProgress] Worksheet ${entry.worksheet_id} detected as complete via criteria (not marked in DB)`
+                );
               }
               return isComplete;
             }
           } catch (err) {
             // If detection fails, fall back to database boolean
-            logger.warn(`[useAllPhasesProgress] Completion detection failed for ${entry.worksheet_id}:`, err);
+            logger.warn(
+              `[useAllPhasesProgress] Completion detection failed for ${entry.worksheet_id}:`,
+              err
+            );
           }
         }
 

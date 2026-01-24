@@ -19,11 +19,7 @@ import {
   getSessionStats,
   getMeditationAudioUrl,
 } from '../services/meditationService';
-import type {
-  MeditationType,
-  NarratorGender,
-  CreateMeditationSession,
-} from '../types/meditation';
+import type { MeditationType, NarratorGender, CreateMeditationSession } from '../types/meditation';
 import { logger } from '../utils/logger';
 
 /**
@@ -216,7 +212,9 @@ export function useStartMeditationSession() {
 
   return useMutation({
     mutationFn: (data: Omit<CreateMeditationSession, 'user_id'>) => {
-      if (!user?.id) throw new Error('User not authenticated');
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
       return createSession({
         user_id: user.id,
         meditation_id: data.meditation_id,
@@ -254,13 +252,8 @@ export function useCompleteMeditationSession() {
   const user = useAuthStore((state) => state.user);
 
   return useMutation({
-    mutationFn: ({
-      sessionId,
-      durationSeconds,
-    }: {
-      sessionId: string;
-      durationSeconds: number;
-    }) => completeSession(sessionId, durationSeconds),
+    mutationFn: ({ sessionId, durationSeconds }: { sessionId: string; durationSeconds: number }) =>
+      completeSession(sessionId, durationSeconds),
     onSuccess: () => {
       if (user?.id) {
         // Invalidate sessions and stats (streak may have changed)

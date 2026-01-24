@@ -165,16 +165,10 @@ export const SWOTQuadrant: React.FC<SWOTQuadrantProps> = ({
     >
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.icon, { color: config.color.primary }]}>
-          {config.icon}
-        </Text>
+        <Text style={[styles.icon, { color: config.color.primary }]}>{config.icon}</Text>
         <View style={styles.titleContainer}>
-          <Text style={[styles.title, { color: config.color.primary }]}>
-            {config.title}
-          </Text>
-          <Text style={[styles.subtitle, { color: config.color.primary }]}>
-            {config.subtitle}
-          </Text>
+          <Text style={[styles.title, { color: config.color.primary }]}>{config.title}</Text>
+          <Text style={[styles.subtitle, { color: config.color.primary }]}>{config.subtitle}</Text>
         </View>
         <View style={[styles.countBadge, { backgroundColor: config.color.primary }]}>
           <Text style={styles.countText}>{items.length}</Text>
@@ -205,9 +199,7 @@ export const SWOTQuadrant: React.FC<SWOTQuadrantProps> = ({
       {isExpanded && (
         <View style={styles.expandedContent}>
           {/* Prompt */}
-          <Text style={[styles.prompt, { color: config.color.primary }]}>
-            {config.prompt}
-          </Text>
+          <Text style={[styles.prompt, { color: config.color.primary }]}>{config.prompt}</Text>
 
           {/* Items list */}
           <ScrollView
@@ -247,10 +239,7 @@ export const SWOTQuadrant: React.FC<SWOTQuadrantProps> = ({
               blurOnSubmit={false}
             />
             <TouchableOpacity
-              style={[
-                styles.addButton,
-                { backgroundColor: config.color.primary },
-              ]}
+              style={[styles.addButton, { backgroundColor: config.color.primary }]}
               onPress={handleAddItem}
               disabled={!inputValue.trim()}
               accessibilityRole="button"
@@ -264,9 +253,7 @@ export const SWOTQuadrant: React.FC<SWOTQuadrantProps> = ({
 
       {/* Tap hint when collapsed and empty */}
       {!isExpanded && items.length === 0 && (
-        <Text style={[styles.tapHint, { color: config.color.primary }]}>
-          Tap to add
-        </Text>
+        <Text style={[styles.tapHint, { color: config.color.primary }]}>Tap to add</Text>
       )}
     </TouchableOpacity>
   );

@@ -40,21 +40,12 @@ const fontSizeOptions: { label: string; value: FontSize }[] = [
  * - Reduced Motion toggle
  */
 const AppearanceScreen = (_props: Props) => {
-  const {
-    theme,
-    fontSize,
-    reducedMotion,
-    setTheme,
-    setFontSize,
-    setReducedMotion,
-  } = useSettingsStore();
+  const { theme, fontSize, reducedMotion, setTheme, setFontSize, setReducedMotion } =
+    useSettingsStore();
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <SettingsSection title="Theme">
           <SettingsPicker<Theme>
             label="App Theme"

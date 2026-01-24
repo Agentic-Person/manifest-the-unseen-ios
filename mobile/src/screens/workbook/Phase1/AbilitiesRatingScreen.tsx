@@ -12,13 +12,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Text, Pressable, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
 import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
@@ -53,7 +47,11 @@ const SKILL_CATEGORIES = [
     color: DESIGN_COLORS.accentTeal,
     skills: [
       { key: 'speaking', label: 'Public Speaking', description: 'Presenting ideas to groups' },
-      { key: 'writing', label: 'Written Communication', description: 'Expressing ideas in writing' },
+      {
+        key: 'writing',
+        label: 'Written Communication',
+        description: 'Expressing ideas in writing',
+      },
       { key: 'listening', label: 'Active Listening', description: 'Understanding others deeply' },
     ],
   },
@@ -62,9 +60,21 @@ const SKILL_CATEGORIES = [
     emoji: '👑',
     color: DESIGN_COLORS.accentGold,
     skills: [
-      { key: 'decisionMaking', label: 'Decision Making', description: 'Making sound choices under pressure' },
-      { key: 'teamwork', label: 'Team Collaboration', description: 'Working effectively with others' },
-      { key: 'influence', label: 'Influence & Persuasion', description: 'Inspiring others to action' },
+      {
+        key: 'decisionMaking',
+        label: 'Decision Making',
+        description: 'Making sound choices under pressure',
+      },
+      {
+        key: 'teamwork',
+        label: 'Team Collaboration',
+        description: 'Working effectively with others',
+      },
+      {
+        key: 'influence',
+        label: 'Influence & Persuasion',
+        description: 'Inspiring others to action',
+      },
     ],
   },
   {
@@ -72,8 +82,16 @@ const SKILL_CATEGORIES = [
     emoji: '🧘',
     color: DESIGN_COLORS.accentPurple,
     skills: [
-      { key: 'selfDiscipline', label: 'Self-Discipline', description: 'Following through on commitments' },
-      { key: 'emotionalIntelligence', label: 'Emotional Intelligence', description: 'Managing emotions wisely' },
+      {
+        key: 'selfDiscipline',
+        label: 'Self-Discipline',
+        description: 'Following through on commitments',
+      },
+      {
+        key: 'emotionalIntelligence',
+        label: 'Emotional Intelligence',
+        description: 'Managing emotions wisely',
+      },
       { key: 'adaptability', label: 'Adaptability', description: 'Adjusting to new situations' },
     ],
   },
@@ -82,7 +100,11 @@ const SKILL_CATEGORIES = [
     emoji: '🛠️',
     color: DESIGN_COLORS.accentAmber,
     skills: [
-      { key: 'problemSolving', label: 'Problem Solving', description: 'Finding solutions to challenges' },
+      {
+        key: 'problemSolving',
+        label: 'Problem Solving',
+        description: 'Finding solutions to challenges',
+      },
       { key: 'timeManagement', label: 'Time Management', description: 'Using time effectively' },
       { key: 'creativity', label: 'Creativity', description: 'Generating original ideas' },
     ],
@@ -120,10 +142,18 @@ type Props = WorkbookStackScreenProps<'AbilitiesRating'>;
  * Get rating level text
  */
 const getRatingLevel = (value: number): { text: string; color: string } => {
-  if (value >= 9) return { text: 'Expert', color: DESIGN_COLORS.accentGold };
-  if (value >= 7) return { text: 'Strong', color: DESIGN_COLORS.accentGreen };
-  if (value >= 5) return { text: 'Average', color: DESIGN_COLORS.textSecondary };
-  if (value >= 3) return { text: 'Developing', color: DESIGN_COLORS.accentAmber };
+  if (value >= 9) {
+    return { text: 'Expert', color: DESIGN_COLORS.accentGold };
+  }
+  if (value >= 7) {
+    return { text: 'Strong', color: DESIGN_COLORS.accentGreen };
+  }
+  if (value >= 5) {
+    return { text: 'Average', color: DESIGN_COLORS.textSecondary };
+  }
+  if (value >= 3) {
+    return { text: 'Developing', color: DESIGN_COLORS.accentAmber };
+  }
   return { text: 'Beginner', color: DESIGN_COLORS.accentRose };
 };
 
@@ -139,13 +169,14 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.ABILITIES_RATING);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: data as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.ABILITIES_RATING,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: data as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.ABILITIES_RATING,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -253,9 +284,7 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statBox}>
-            <Text style={[styles.statValue, { color: DESIGN_COLORS.accentRose }]}>
-              {stats.min}
-            </Text>
+            <Text style={[styles.statValue, { color: DESIGN_COLORS.accentRose }]}>{stats.min}</Text>
             <Text style={styles.statLabel}>Lowest</Text>
           </View>
         </View>
@@ -277,10 +306,9 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.categoriesSection}>
         {SKILL_CATEGORIES.map((category) => {
           const isExpanded = expandedCategory === category.category;
-          const categoryAvg = category.skills.reduce(
-            (sum, skill) => sum + data.ratings[skill.key as SkillKey],
-            0
-          ) / category.skills.length;
+          const categoryAvg =
+            category.skills.reduce((sum, skill) => sum + data.ratings[skill.key as SkillKey], 0) /
+            category.skills.length;
 
           return (
             <View key={category.category} style={styles.categoryCard}>
@@ -347,10 +375,9 @@ const AbilitiesRatingScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.tipsCard}>
         <Text style={styles.tipsTitle}>💡 Rating Tips</Text>
         <Text style={styles.tipsText}>
-          • Be honest - this is for your eyes only{'\n'}
-          • Rate where you are NOW, not where you want to be{'\n'}
-          • Consider recent examples when deciding{'\n'}
-          • 5 = Average for most people, not below average
+          • Be honest - this is for your eyes only{'\n'}• Rate where you are NOW, not where you want
+          to be{'\n'}• Consider recent examples when deciding{'\n'}• 5 = Average for most people,
+          not below average
         </Text>
       </View>
 

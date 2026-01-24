@@ -59,9 +59,7 @@ export function TypingIndicator() {
   return (
     <View style={styles.container}>
       <View style={styles.bubble}>
-        <Text style={styles.monkLabel}>
-          Wisdom Monk
-        </Text>
+        <Text style={styles.monkLabel}>Wisdom Monk</Text>
         <View style={styles.dotsContainer}>
           <Animated.View style={[dotStyle(dot1), styles.dot]} />
           <Animated.View style={[dotStyle(dot2), styles.dot]} />

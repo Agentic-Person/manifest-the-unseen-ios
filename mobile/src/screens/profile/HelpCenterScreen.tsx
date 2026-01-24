@@ -74,13 +74,9 @@ const HelpCenterScreen = (_props: Props) => {
       const isAvailable = await MailComposer.isAvailableAsync();
 
       if (!isAvailable) {
-        Alert.alert(
-          'Email Not Available',
-          `Please email us directly at ${SUPPORT_EMAIL}`,
-          [
-            { text: 'OK' },
-          ]
-        );
+        Alert.alert('Email Not Available', `Please email us directly at ${SUPPORT_EMAIL}`, [
+          { text: 'OK' },
+        ]);
         setIsSending(false);
         return;
       }
@@ -108,10 +104,7 @@ Crash Reporting: ${diagnostics.crashReportingEnabled}`;
       setMessage('');
     } catch (error) {
       console.error('Error opening mail composer:', error);
-      Alert.alert(
-        'Error',
-        'Could not open email. Please try again or email us directly.'
-      );
+      Alert.alert('Error', 'Could not open email. Please try again or email us directly.');
     } finally {
       setIsSending(false);
     }
@@ -151,9 +144,7 @@ Crash Reporting: ${diagnostics.crashReportingEnabled}`;
                   selectedSubject === option.value && styles.radioOuterSelected,
                 ]}
               >
-                {selectedSubject === option.value && (
-                  <View style={styles.radioInner} />
-                )}
+                {selectedSubject === option.value && <View style={styles.radioInner} />}
               </View>
             </TouchableOpacity>
           ))}

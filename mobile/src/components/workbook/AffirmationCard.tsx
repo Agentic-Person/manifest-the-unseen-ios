@@ -8,14 +8,7 @@
  */
 
 import React, { useCallback, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors from APP-DESIGN.md
@@ -248,11 +241,7 @@ const AffirmationCard: React.FC<AffirmationCardProps> = ({
           style={styles.favoriteButton}
           onPress={handleFavoriteToggle}
           accessibilityRole="button"
-          accessibilityLabel={
-            affirmation.isFavorite
-              ? 'Remove from favorites'
-              : 'Add to favorites'
-          }
+          accessibilityLabel={affirmation.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           accessibilityState={{ selected: affirmation.isFavorite }}
           testID={`favorite-button-${affirmation.id}`}
         >

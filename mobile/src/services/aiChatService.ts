@@ -82,7 +82,14 @@ export const aiChatService = {
     }
 
     // Transform to list items with last message preview
-    return ((data || []) as Array<{ id: string; title: string; messages: Array<{ content: string }>; updated_at: string }>).map((conv) => ({
+    return (
+      (data || []) as Array<{
+        id: string;
+        title: string;
+        messages: Array<{ content: string }>;
+        updated_at: string;
+      }>
+    ).map((conv) => ({
       id: conv.id,
       title: conv.title,
       lastMessage:
@@ -98,10 +105,7 @@ export const aiChatService = {
    * (For future implementation)
    */
   async deleteConversation(conversationId: string): Promise<void> {
-    const { error } = await supabase
-      .from('ai_conversations')
-      .delete()
-      .eq('id', conversationId);
+    const { error } = await supabase.from('ai_conversations').delete().eq('id', conversationId);
 
     if (error) {
       console.error('[aiChatService] Error deleting conversation:', error);

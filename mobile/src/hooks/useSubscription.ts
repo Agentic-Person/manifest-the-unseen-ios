@@ -184,22 +184,26 @@ export function useSubscriptionSummary() {
       statusLabel = 'TestFlight Access';
     } else if (isInTrialPeriod && !isSubscribed) {
       // User is in local trial period (not a paid subscription)
-      statusLabel = trialDaysRemaining === 1
-        ? 'Trial - 1 day left'
-        : `Trial - ${trialDaysRemaining} days left`;
+      statusLabel =
+        trialDaysRemaining === 1 ? 'Trial - 1 day left' : `Trial - ${trialDaysRemaining} days left`;
       displayTierName = 'Free Trial';
     } else if (isInTrial && isSubscribed) {
       // User has started a subscription trial (from RevenueCat)
       if (trialEndDate) {
-        const daysLeft = Math.ceil((new Date(trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-        statusLabel = daysLeft === 1
-          ? 'Trial - 1 day left'
-          : `Trial - ${daysLeft} days left`;
+        const daysLeft = Math.ceil(
+          (new Date(trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+        );
+        statusLabel = daysLeft === 1 ? 'Trial - 1 day left' : `Trial - ${daysLeft} days left`;
       } else {
         statusLabel = 'Trial';
       }
     } else if (status === 'active') {
-      statusLabel = period === 'monthly' ? 'Active - Monthly' : period === 'yearly' ? 'Active - Annual' : 'Active';
+      statusLabel =
+        period === 'monthly'
+          ? 'Active - Monthly'
+          : period === 'yearly'
+            ? 'Active - Annual'
+            : 'Active';
     } else if (status === 'cancelled') {
       if (expirationDate) {
         const expDate = new Date(expirationDate);
@@ -227,13 +231,32 @@ export function useSubscriptionSummary() {
       isInTrialPeriod, // Local trial (first 7 days of app use)
       trialDaysRemaining,
       period,
-      periodLabel: period === 'monthly' ? 'Monthly' : period === 'yearly' ? 'Annual' : period === 'lifetime' ? 'Lifetime' : null,
+      periodLabel:
+        period === 'monthly'
+          ? 'Monthly'
+          : period === 'yearly'
+            ? 'Annual'
+            : period === 'lifetime'
+              ? 'Lifetime'
+              : null,
       trialEndDate,
       expirationDate,
       willRenew,
       isTestEnvironment,
     };
-  }, [tier, status, isSubscribed, isInTrial, period, trialEndDate, expirationDate, willRenew, isInTrialPeriod, trialDaysRemaining, testModeEnabled]);
+  }, [
+    tier,
+    status,
+    isSubscribed,
+    isInTrial,
+    period,
+    trialEndDate,
+    expirationDate,
+    willRenew,
+    isInTrialPeriod,
+    trialDaysRemaining,
+    testModeEnabled,
+  ]);
 }
 
 /**
@@ -243,9 +266,7 @@ export function useSubscriptionSummary() {
  * - Novice -> Awakening (for guided meditations, Guru analysis)
  * - Awakening -> Enlightenment (for Coming Soon features)
  */
-export function useUpgradeTierRecommendation(
-  feature: string
-): SubscriptionTier | null {
+export function useUpgradeTierRecommendation(feature: string): SubscriptionTier | null {
   const currentTier = useSubscriptionStore((state) => state.tier);
 
   return useMemo(() => {
@@ -255,12 +276,21 @@ export function useUpgradeTierRecommendation(
     }
 
     // Enlightenment-only features (Coming Soon)
-    if (feature === 'full_guru_chat' || feature === 'journaling' || feature === 'all_meditation_tracks') {
+    if (
+      feature === 'full_guru_chat' ||
+      feature === 'journaling' ||
+      feature === 'all_meditation_tracks'
+    ) {
       return 'enlightenment';
     }
 
     // Awakening+ features
-    if (feature === 'guided_meditations' || feature === 'guru' || feature === 'guru_analysis' || feature === 'advanced_analytics') {
+    if (
+      feature === 'guided_meditations' ||
+      feature === 'guru' ||
+      feature === 'guru_analysis' ||
+      feature === 'advanced_analytics'
+    ) {
       if (currentTier === 'awakening') {
         return null; // Already has access
       }

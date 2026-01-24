@@ -21,14 +21,7 @@
  */
 
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Modal,
-  Pressable,
-} from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Modal, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { TimelineChart } from '../../../components/workbook/TimelineChart';
@@ -56,11 +49,11 @@ const DESIGN_COLORS = {
 
 // Category colors for timeline bars
 export const CATEGORY_COLORS: Record<string, string> = {
-  Personal: '#4a1a6b',      // Purple
-  Professional: '#1a4a6b',  // Blue
-  Health: '#2d5a4a',        // Green
-  Financial: '#6b5a1a',     // Gold
-  Relationship: '#6b1a4a',  // Rose
+  Personal: '#4a1a6b', // Purple
+  Professional: '#1a4a6b', // Blue
+  Health: '#2d5a4a', // Green
+  Financial: '#6b5a1a', // Gold
+  Relationship: '#6b1a4a', // Rose
 };
 
 /**
@@ -176,13 +169,17 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
   const [goals, setGoals] = useState<TimelineGoal[]>(MOCK_GOALS);
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: { goals, selectedView, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
-    phaseNumber: 3,
-    worksheetId: WORKSHEET_IDS.TIMELINE,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: { goals, selectedView, updatedAt: new Date().toISOString() } as unknown as Record<
+        string,
+        unknown
+      >,
+      phaseNumber: 3,
+      worksheetId: WORKSHEET_IDS.TIMELINE,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   const hasLoadedInitialData = useRef(false);
 
@@ -191,7 +188,9 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as TimelineData;
-      if (Array.isArray(data.goals)) setGoals(data.goals);
+      if (Array.isArray(data.goals)) {
+        setGoals(data.goals);
+      }
       if (data.selectedView && ['week', 'month', 'quarter'].includes(data.selectedView)) {
         setSelectedView(data.selectedView);
       }
@@ -271,11 +270,16 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
           title="Goal Timeline"
           subtitle="Visualize your journey toward achieving your goals"
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
 
         {/* View Toggle */}
         <View style={styles.viewToggleContainer}>
@@ -318,18 +322,14 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Timeline Chart */}
         {validGoals.length > 0 ? (
-          <TimelineChart
-            goals={validGoals}
-            viewType={selectedView}
-            onGoalPress={handleGoalPress}
-          />
+          <TimelineChart goals={validGoals} viewType={selectedView} onGoalPress={handleGoalPress} />
         ) : (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateIcon}>📅</Text>
             <Text style={styles.emptyStateTitle}>No Goals With Deadlines</Text>
             <Text style={styles.emptyStateText}>
-              Add goals with start dates and deadlines in the SMART Goals screen
-              to see them visualized here.
+              Add goals with start dates and deadlines in the SMART Goals screen to see them
+              visualized here.
             </Text>
           </View>
         )}
@@ -337,15 +337,9 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
         {/* Tips Card */}
         <View style={styles.tipsCard}>
           <Text style={styles.tipsTitle}>Timeline Tips</Text>
-          <Text style={styles.tipItem}>
-            - Scroll horizontally to view different time periods
-          </Text>
-          <Text style={styles.tipItem}>
-            - The gold line indicates today's date
-          </Text>
-          <Text style={styles.tipItem}>
-            - Tap a goal bar to see detailed information
-          </Text>
+          <Text style={styles.tipItem}>- Scroll horizontally to view different time periods</Text>
+          <Text style={styles.tipItem}>- The gold line indicates today's date</Text>
+          <Text style={styles.tipItem}>- Tap a goal bar to see detailed information</Text>
           <Text style={styles.tipItem}>
             - Switch views to see week, month, or quarter perspective
           </Text>
@@ -360,23 +354,15 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
         onRequestClose={handleCloseModal}
       >
         <Pressable style={styles.modalOverlay} onPress={handleCloseModal}>
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             {selectedGoal && (
               <>
                 {/* Goal Header */}
                 <View style={styles.modalHeader}>
                   <View
-                    style={[
-                      styles.modalCategoryBadge,
-                      { backgroundColor: selectedGoal.color },
-                    ]}
+                    style={[styles.modalCategoryBadge, { backgroundColor: selectedGoal.color }]}
                   >
-                    <Text style={styles.modalCategoryText}>
-                      {selectedGoal.category}
-                    </Text>
+                    <Text style={styles.modalCategoryText}>{selectedGoal.category}</Text>
                   </View>
                   <TouchableOpacity
                     onPress={handleCloseModal}
@@ -392,27 +378,21 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
 
                 {/* Description */}
                 {selectedGoal.description && (
-                  <Text style={styles.modalDescription}>
-                    {selectedGoal.description}
-                  </Text>
+                  <Text style={styles.modalDescription}>{selectedGoal.description}</Text>
                 )}
 
                 {/* Date Range */}
                 <View style={styles.modalDates}>
                   <View style={styles.modalDateItem}>
                     <Text style={styles.modalDateLabel}>Start Date</Text>
-                    <Text style={styles.modalDateValue}>
-                      {formatDate(selectedGoal.startDate)}
-                    </Text>
+                    <Text style={styles.modalDateValue}>{formatDate(selectedGoal.startDate)}</Text>
                   </View>
                   <View style={styles.modalDateSeparator}>
                     <Text style={styles.modalDateArrow}>→</Text>
                   </View>
                   <View style={styles.modalDateItem}>
                     <Text style={styles.modalDateLabel}>Deadline</Text>
-                    <Text style={styles.modalDateValue}>
-                      {formatDate(selectedGoal.endDate)}
-                    </Text>
+                    <Text style={styles.modalDateValue}>{formatDate(selectedGoal.endDate)}</Text>
                   </View>
                 </View>
 
@@ -422,8 +402,7 @@ const TimelineScreen: React.FC<Props> = ({ navigation }) => {
                     style={[
                       styles.statusBadge,
                       {
-                        backgroundColor:
-                          getStatusStyle(selectedGoal.status).bg,
+                        backgroundColor: getStatusStyle(selectedGoal.status).bg,
                       },
                     ]}
                   >

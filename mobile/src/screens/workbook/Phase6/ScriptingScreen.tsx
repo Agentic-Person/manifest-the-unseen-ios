@@ -68,7 +68,10 @@ const generateId = (): string => {
  * Count words in text
  */
 const countWords = (text: string): number => {
-  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
 };
 
 type Props = WorkbookStackScreenProps<'Scripting'>;
@@ -99,27 +102,36 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Supabase hooks
-  const { data: savedProgress, isLoading: _isLoading } = useWorkbookProgress(6, WORKSHEET_IDS.SCRIPTING);
+  const { data: savedProgress, isLoading: _isLoading } = useWorkbookProgress(
+    6,
+    WORKSHEET_IDS.SCRIPTING
+  );
 
   // Prepare form data for auto-save
-  const formData: ScriptingFormData = useMemo(() => ({
-    scripts,
-  }), [scripts]);
+  const formData: ScriptingFormData = useMemo(
+    () => ({
+      scripts,
+    }),
+    [scripts]
+  );
 
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: formData as unknown as Record<string, unknown>,
-    phaseNumber: 6,
-    worksheetId: WORKSHEET_IDS.SCRIPTING,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: formData as unknown as Record<string, unknown>,
+      phaseNumber: 6,
+      worksheetId: WORKSHEET_IDS.SCRIPTING,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as ScriptingFormData;
-      if (Array.isArray(data.scripts)) setScripts(data.scripts);
+      if (Array.isArray(data.scripts)) {
+        setScripts(data.scripts);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -147,7 +159,9 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
    * Handle save script
    */
   const handleSaveScript = useCallback(() => {
-    if (!currentScript.trim() || !selectedTemplate) return;
+    if (!currentScript.trim() || !selectedTemplate) {
+      return;
+    }
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
@@ -156,17 +170,19 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
 
     if (editingScriptId) {
       // Update existing script
-      setScripts(prev => prev.map(s =>
-        s.id === editingScriptId
-          ? {
-              ...s,
-              title: scriptTitle || `My ${selectedTemplate.title}`,
-              content: currentScript,
-              wordCount,
-              updatedAt: now,
-            }
-          : s
-      ));
+      setScripts((prev) =>
+        prev.map((s) =>
+          s.id === editingScriptId
+            ? {
+                ...s,
+                title: scriptTitle || `My ${selectedTemplate.title}`,
+                content: currentScript,
+                wordCount,
+                updatedAt: now,
+              }
+            : s
+        )
+      );
     } else {
       // Create new script
       const newScript: SavedScript = {
@@ -178,7 +194,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
         createdAt: now,
         updatedAt: now,
       };
-      setScripts(prev => [newScript, ...prev]);
+      setScripts((prev) => [newScript, ...prev]);
     }
 
     setShowEditor(false);
@@ -192,7 +208,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
    * Handle edit saved script
    */
   const handleEditScript = useCallback((script: SavedScript) => {
-    const template = SCRIPT_TEMPLATES.find(t => t.id === script.templateId);
+    const template = SCRIPT_TEMPLATES.find((t) => t.id === script.templateId);
     if (template) {
       setSelectedTemplate(template);
       setCurrentScript(script.content);
@@ -207,21 +223,17 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
    * Handle delete script
    */
   const handleDeleteScript = useCallback((scriptId: string) => {
-    Alert.alert(
-      'Delete Script',
-      'Are you sure you want to delete this script?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            setScripts(prev => prev.filter(s => s.id !== scriptId));
-          },
+    Alert.alert('Delete Script', 'Are you sure you want to delete this script?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          setScripts((prev) => prev.filter((s) => s.id !== scriptId));
         },
-      ]
-    );
+      },
+    ]);
   }, []);
 
   /**
@@ -229,20 +241,20 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleCloseEditor = useCallback(() => {
     if (currentScript.trim() && currentScript !== selectedTemplate?.exampleOpening) {
-      Alert.alert(
-        'Unsaved Changes',
-        'You have unsaved changes. Save before closing?',
-        [
-          { text: 'Discard', style: 'destructive', onPress: () => {
+      Alert.alert('Unsaved Changes', 'You have unsaved changes. Save before closing?', [
+        {
+          text: 'Discard',
+          style: 'destructive',
+          onPress: () => {
             setShowEditor(false);
             setCurrentScript('');
             setScriptTitle('');
             setSelectedTemplate(null);
             setEditingScriptId(null);
-          }},
-          { text: 'Save', onPress: handleSaveScript },
-        ]
-      );
+          },
+        },
+        { text: 'Save', onPress: handleSaveScript },
+      ]);
     } else {
       setShowEditor(false);
       setCurrentScript('');
@@ -286,9 +298,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
             testID="saved-scripts-button"
           >
             <Text style={styles.savedScriptsIcon}>{'\uD83D\uDCDD'}</Text>
-            <Text style={styles.savedScriptsText}>
-              My Scripts ({scripts.length})
-            </Text>
+            <Text style={styles.savedScriptsText}>My Scripts ({scripts.length})</Text>
             <Text style={styles.chevron}>{'\u203A'}</Text>
           </TouchableOpacity>
         )}
@@ -308,15 +318,13 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.tipsHeader}>
               <Text style={styles.tipsIcon}>{'\uD83D\uDCA1'}</Text>
               <Text style={styles.tipsTitle}>Scripting Tips</Text>
-              <Text style={styles.expandIcon}>
-                {showTips ? '\u25B2' : '\u25BC'}
-              </Text>
+              <Text style={styles.expandIcon}>{showTips ? '\u25B2' : '\u25BC'}</Text>
             </View>
 
             {showTips && (
               <View style={styles.tipsContent}>
                 {[
-                  { tip: 'Write in present tense', desc: 'As if it\'s happening now' },
+                  { tip: 'Write in present tense', desc: "As if it's happening now" },
                   { tip: 'Use "I am" statements', desc: 'Claim your reality' },
                   { tip: 'Include emotions', desc: 'How does it feel?' },
                   { tip: 'Be specific', desc: 'Details make it real' },
@@ -342,7 +350,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
         </Text>
 
         <View style={styles.templatesContainer}>
-          {SCRIPT_TEMPLATES.map(template => (
+          {SCRIPT_TEMPLATES.map((template) => (
             <ScriptTemplate
               key={template.id}
               template={template}
@@ -357,13 +365,18 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
         {/* Inspirational Quote */}
         <View style={styles.quoteContainer}>
           <Text style={styles.quoteText}>
-            "The pen is mightier than the sword, but the pen that scripts your
-            destiny is mightier still."
+            "The pen is mightier than the sword, but the pen that scripts your destiny is mightier
+            still."
           </Text>
         </View>
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
       </ExerciseScreenLayout>
 
       {/* Editor Modal */}
@@ -407,10 +420,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
               accessibilityState={{ disabled: !currentScript.trim() }}
               testID="editor-save"
             >
-              <Text style={[
-                styles.saveButton,
-                !currentScript.trim() && styles.saveButtonDisabled,
-              ]}>
+              <Text style={[styles.saveButton, !currentScript.trim() && styles.saveButtonDisabled]}>
                 Save
               </Text>
             </TouchableOpacity>
@@ -418,16 +428,16 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
 
           {/* Template Info */}
           {selectedTemplate && (
-            <View style={[
-              styles.templateInfo,
-              { borderLeftColor: CATEGORY_COLORS[selectedTemplate.category] },
-            ]}>
+            <View
+              style={[
+                styles.templateInfo,
+                { borderLeftColor: CATEGORY_COLORS[selectedTemplate.category] },
+              ]}
+            >
               <Text style={styles.templateInfoTitle}>
                 {selectedTemplate.icon} {selectedTemplate.title}
               </Text>
-              <Text style={styles.templateInfoDesc}>
-                {selectedTemplate.description}
-              </Text>
+              <Text style={styles.templateInfoDesc}>{selectedTemplate.description}</Text>
             </View>
           )}
 
@@ -468,9 +478,7 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.wordCount}>
               {wordCount} {wordCount === 1 ? 'word' : 'words'}
             </Text>
-            <Text style={styles.autoSaveHint}>
-              {'\u2022'} Auto-saving enabled
-            </Text>
+            <Text style={styles.autoSaveHint}>{'\u2022'} Auto-saving enabled</Text>
           </View>
         </KeyboardAvoidingView>
       </Modal>
@@ -496,8 +504,8 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
           </View>
 
           <ScrollView style={styles.scriptsList}>
-            {scripts.map(script => {
-              const template = SCRIPT_TEMPLATES.find(t => t.id === script.templateId);
+            {scripts.map((script) => {
+              const template = SCRIPT_TEMPLATES.find((t) => t.id === script.templateId);
               return (
                 <TouchableOpacity
                   key={script.id}
@@ -509,13 +517,12 @@ const ScriptingScreen: React.FC<Props> = ({ navigation }) => {
                   accessibilityHint="Tap to edit, long press to delete"
                 >
                   <View style={styles.scriptCardHeader}>
-                    <Text style={styles.scriptCardIcon}>
-                      {template?.icon || '\uD83D\uDCDD'}
-                    </Text>
+                    <Text style={styles.scriptCardIcon}>{template?.icon || '\uD83D\uDCDD'}</Text>
                     <View style={styles.scriptCardInfo}>
                       <Text style={styles.scriptCardTitle}>{script.title}</Text>
                       <Text style={styles.scriptCardMeta}>
-                        {script.wordCount} words {'\u2022'} {new Date(script.updatedAt).toLocaleDateString()}
+                        {script.wordCount} words {'\u2022'}{' '}
+                        {new Date(script.updatedAt).toLocaleDateString()}
                       </Text>
                     </View>
                   </View>

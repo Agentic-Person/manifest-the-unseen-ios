@@ -32,9 +32,18 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
-import { EnvyCard, ENVY_CATEGORIES, EnvyItem, EnvyCategory } from '../../../components/workbook/EnvyCard';
+import {
+  EnvyCard,
+  ENVY_CATEGORIES,
+  EnvyItem,
+  EnvyCategory,
+} from '../../../components/workbook/EnvyCard';
 import { IntensitySlider } from '../../../components/workbook/IntensitySlider';
-import { SaveIndicator, ExerciseHeader, StickyCompletionButton } from '../../../components/workbook';
+import {
+  SaveIndicator,
+  ExerciseHeader,
+  StickyCompletionButton,
+} from '../../../components/workbook';
 import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -64,10 +73,7 @@ const PHASE_NUMBER = 8;
 const EnvyInventoryScreen: React.FC<Props> = () => {
   // Supabase data fetching
 
-  const { data: savedProgress } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.ENVY_INVENTORY
-  );
+  const { data: savedProgress } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.ENVY_INVENTORY);
 
   // State
   const [envyItems, setEnvyItems] = useState<EnvyItem[]>([]);
@@ -78,13 +84,14 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
 
   // Auto-save hook
   const formData: EnvyInventoryData = useMemo(() => ({ envyItems }), [envyItems]);
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: formData as unknown as Record<string, unknown>,
-    phaseNumber: PHASE_NUMBER,
-    worksheetId: WORKSHEET_IDS.ENVY_INVENTORY,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: formData as unknown as Record<string, unknown>,
+      phaseNumber: PHASE_NUMBER,
+      worksheetId: WORKSHEET_IDS.ENVY_INVENTORY,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -214,9 +221,7 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
   const handleIntensityChange = useCallback((id: string, intensity: number) => {
     setEnvyItems((prev) =>
       prev.map((item) =>
-        item.id === id
-          ? { ...item, intensity, updatedAt: new Date().toISOString() }
-          : item
+        item.id === id ? { ...item, intensity, updatedAt: new Date().toISOString() } : item
       )
     );
   }, []);
@@ -229,10 +234,7 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
     return (
       <TouchableOpacity
         key={key}
-        style={[
-          styles.categoryChip,
-          isSelected && { backgroundColor: color, borderColor: color },
-        ]}
+        style={[styles.categoryChip, isSelected && { backgroundColor: color, borderColor: color }]}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           setSelectedCategory(key);
@@ -289,7 +291,12 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
       />
 
       <View style={styles.headerInfo}>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
       </View>
 
       {/* Category Filters */}
@@ -350,9 +357,7 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
               >
                 <Text style={styles.modalCancel}>Cancel</Text>
               </TouchableOpacity>
-              <Text style={styles.modalTitle}>
-                {editingItem ? 'Edit Entry' : 'New Entry'}
-              </Text>
+              <Text style={styles.modalTitle}>{editingItem ? 'Edit Entry' : 'New Entry'}</Text>
               <TouchableOpacity onPress={handleSave} testID="modal-save">
                 <Text style={styles.modalSave}>Save</Text>
               </TouchableOpacity>

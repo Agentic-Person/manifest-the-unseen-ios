@@ -18,20 +18,8 @@
  */
 
 import React, { useMemo } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  Dimensions,
-} from 'react-native';
-import Svg, {
-  Polygon,
-  Circle,
-  Line,
-  Text as SvgText,
-  G,
-} from 'react-native-svg';
+import { View, StyleSheet, Text, Pressable, Dimensions } from 'react-native';
+import Svg, { Polygon, Circle, Line, Text as SvgText, G } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors from APP-DESIGN.md
@@ -51,12 +39,7 @@ const DESIGN_COLORS = {
 /**
  * Trust Dimension Configuration
  */
-export type TrustDimension =
-  | 'self'
-  | 'others'
-  | 'universe'
-  | 'process'
-  | 'timing';
+export type TrustDimension = 'self' | 'others' | 'universe' | 'process' | 'timing';
 
 export interface TrustDimensionConfig {
   key: TrustDimension;
@@ -204,9 +187,15 @@ export const TrustRadar: React.FC<TrustRadarProps> = ({
    * Get trust level message
    */
   const getTrustLevelMessage = (avg: number): string => {
-    if (avg >= 8) return 'Strong Foundation of Trust';
-    if (avg >= 6) return 'Growing Trust';
-    if (avg >= 4) return 'Building Trust';
+    if (avg >= 8) {
+      return 'Strong Foundation of Trust';
+    }
+    if (avg >= 6) {
+      return 'Growing Trust';
+    }
+    if (avg >= 4) {
+      return 'Building Trust';
+    }
     return 'Room for Growth';
   };
 
@@ -224,9 +213,7 @@ export const TrustRadar: React.FC<TrustRadarProps> = ({
         <Text style={styles.scoreValue}>{averageScore}</Text>
         <Text style={styles.scoreMax}>/10</Text>
       </View>
-      <Text style={styles.trustLevel}>
-        {getTrustLevelMessage(parseFloat(averageScore))}
-      </Text>
+      <Text style={styles.trustLevel}>{getTrustLevelMessage(parseFloat(averageScore))}</Text>
 
       {/* SVG Radar Chart */}
       <View
@@ -317,8 +304,11 @@ export const TrustRadar: React.FC<TrustRadarProps> = ({
 
               // Adjust text anchor based on position
               let textAnchor: 'start' | 'middle' | 'end' = 'middle';
-              if (x < centerX - 20) textAnchor = 'end';
-              else if (x > centerX + 20) textAnchor = 'start';
+              if (x < centerX - 20) {
+                textAnchor = 'end';
+              } else if (x > centerX + 20) {
+                textAnchor = 'start';
+              }
 
               return (
                 <SvgText
@@ -336,12 +326,7 @@ export const TrustRadar: React.FC<TrustRadarProps> = ({
             })}
 
           {/* Center Point */}
-          <Circle
-            cx={centerX}
-            cy={centerY}
-            r={4}
-            fill={DESIGN_COLORS.accentPurple}
-          />
+          <Circle cx={centerX} cy={centerY} r={4} fill={DESIGN_COLORS.accentPurple} />
         </Svg>
       </View>
 
@@ -352,10 +337,7 @@ export const TrustRadar: React.FC<TrustRadarProps> = ({
           return (
             <Pressable
               key={dim.key}
-              style={({ pressed }) => [
-                styles.legendItem,
-                pressed && styles.legendItemPressed,
-              ]}
+              style={({ pressed }) => [styles.legendItem, pressed && styles.legendItemPressed]}
               onPress={() => handleDimensionTap(dim.key)}
               accessibilityRole="button"
               accessibilityLabel={`${dim.label}: ${value} out of 10. ${dim.description}`}

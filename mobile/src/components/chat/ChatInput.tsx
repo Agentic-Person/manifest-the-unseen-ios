@@ -90,12 +90,7 @@ export function ChatInput({
         {/* Character count warning */}
         {message.length > 1800 && (
           <View style={styles.charCountContainer}>
-            <Text
-              style={[
-                styles.charCount,
-                message.length >= 2000 && styles.charCountLimit,
-              ]}
-            >
+            <Text style={[styles.charCount, message.length >= 2000 && styles.charCountLimit]}>
               {message.length}/2000
             </Text>
           </View>

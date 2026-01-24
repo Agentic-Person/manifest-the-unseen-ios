@@ -74,17 +74,12 @@ export const useWorkbookStore = create<WorkbookState>((set) => ({
 /**
  * Selector hooks for optimized re-renders
  */
-export const useCurrentPhase = () =>
-  useWorkbookStore((state) => state.currentPhase);
+export const useCurrentPhase = () => useWorkbookStore((state) => state.currentPhase);
 
-export const useCurrentWorksheet = () =>
-  useWorkbookStore((state) => state.currentWorksheet);
+export const useCurrentWorksheet = () => useWorkbookStore((state) => state.currentWorksheet);
 
-export const useSaveStatus = () =>
-  useWorkbookStore((state) => state.saveStatus);
+export const useSaveStatus = () => useWorkbookStore((state) => state.saveStatus);
 
-export const useLastSavedAt = () =>
-  useWorkbookStore((state) => state.lastSavedAt);
+export const useLastSavedAt = () => useWorkbookStore((state) => state.lastSavedAt);
 
-export const useSaveError = () =>
-  useWorkbookStore((state) => state.saveError);
+export const useSaveError = () => useWorkbookStore((state) => state.saveError);

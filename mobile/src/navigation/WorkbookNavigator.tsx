@@ -28,11 +28,26 @@ import KnowYourselfScreen from '../screens/workbook/Phase1/KnowYourselfScreen';
 import AbilitiesRatingScreen from '../screens/workbook/Phase1/AbilitiesRatingScreen';
 import ThoughtAwarenessScreen from '../screens/workbook/Phase1/ThoughtAwarenessScreen';
 // Phase 2: Values & Vision screens
-import { Phase2Dashboard, VisionBoardScreen, LifeMissionScreen, PurposeStatementScreen } from '../screens/workbook/Phase2';
+import {
+  Phase2Dashboard,
+  VisionBoardScreen,
+  LifeMissionScreen,
+  PurposeStatementScreen,
+} from '../screens/workbook/Phase2';
 // Phase 3: Goal Setting screens
-import { Phase3Dashboard, SMARTGoalsScreen, TimelineScreen, ActionPlanScreen } from '../screens/workbook/Phase3';
+import {
+  Phase3Dashboard,
+  SMARTGoalsScreen,
+  TimelineScreen,
+  ActionPlanScreen,
+} from '../screens/workbook/Phase3';
 // Phase 4: Facing Fears & Limiting Beliefs screens
-import { Phase4Dashboard, FearInventoryScreen, LimitingBeliefsScreen, FearFacingPlanScreen } from '../screens/workbook/Phase4';
+import {
+  Phase4Dashboard,
+  FearInventoryScreen,
+  LimitingBeliefsScreen,
+  FearFacingPlanScreen,
+} from '../screens/workbook/Phase4';
 // Phase 5: Cultivating Self-Love & Self-Care screens
 import {
   Phase5Dashboard,
@@ -41,15 +56,40 @@ import {
   InnerChildScreen,
 } from '../screens/workbook/Phase5';
 // Phase 6: Manifestation Techniques screens
-import { Phase6Dashboard, ThreeSixNineScreen, ScriptingScreen, WOOPScreen } from '../screens/workbook/Phase6';
+import {
+  Phase6Dashboard,
+  ThreeSixNineScreen,
+  ScriptingScreen,
+  WOOPScreen,
+} from '../screens/workbook/Phase6';
 // Phase 7: Practicing Gratitude screens
-import { Phase7Dashboard, GratitudeJournalScreen, GratitudeLettersScreen, GratitudeMeditationScreen } from '../screens/workbook/Phase7';
+import {
+  Phase7Dashboard,
+  GratitudeJournalScreen,
+  GratitudeLettersScreen,
+  GratitudeMeditationScreen,
+} from '../screens/workbook/Phase7';
 // Phase 8: Turning Envy Into Inspiration screens
-import { Phase8Dashboard, EnvyInventoryScreen, InspirationReframeScreen, RoleModelsScreen } from '../screens/workbook/Phase8';
+import {
+  Phase8Dashboard,
+  EnvyInventoryScreen,
+  InspirationReframeScreen,
+  RoleModelsScreen,
+} from '../screens/workbook/Phase8';
 // Phase 9: Trust & Surrender screens
-import { Phase9Dashboard, TrustAssessmentScreen, SurrenderPracticeScreen, SignsScreen } from '../screens/workbook/Phase9';
+import {
+  Phase9Dashboard,
+  TrustAssessmentScreen,
+  SurrenderPracticeScreen,
+  SignsScreen,
+} from '../screens/workbook/Phase9';
 // Phase 10: Trust & Letting Go screens
-import { Phase10Dashboard, JourneyReviewScreen, FutureLetterScreen, GraduationScreen } from '../screens/workbook/Phase10';
+import {
+  Phase10Dashboard,
+  JourneyReviewScreen,
+  FutureLetterScreen,
+  GraduationScreen,
+} from '../screens/workbook/Phase10';
 
 const Stack = createNativeStackNavigator<WorkbookStackParamList>();
 
@@ -264,6 +304,7 @@ export const WorkbookNavigator = () => {
         }}
       />
       <Stack.Screen
+        // @ts-ignore React Navigation type inference limitation with large navigators
         name="PurposeStatement"
         component={PurposeStatementScreen}
         options={{

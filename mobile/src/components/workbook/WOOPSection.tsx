@@ -24,14 +24,7 @@
  */
 
 import React, { useCallback, useRef, useEffect } from 'react';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  ViewStyle,
-} from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Animated, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
@@ -158,11 +151,14 @@ export const WOOPSection: React.FC<WOOPSectionProps> = ({
     onPress?.();
   }, [onPress]);
 
-  const handleChangeText = useCallback((text: string) => {
-    if (text.length <= maxLength) {
-      onChange(text);
-    }
-  }, [maxLength, onChange]);
+  const handleChangeText = useCallback(
+    (text: string) => {
+      if (text.length <= maxLength) {
+        onChange(text);
+      }
+    },
+    [maxLength, onChange]
+  );
 
   const isComplete = value.trim().length > 10;
   const charCount = value.length;
@@ -227,9 +223,7 @@ export const WOOPSection: React.FC<WOOPSectionProps> = ({
                 {value}
               </Text>
             )}
-            {!isActive && !value && (
-              <Text style={styles.emptyHint}>Tap to add...</Text>
-            )}
+            {!isActive && !value && <Text style={styles.emptyHint}>Tap to add...</Text>}
           </View>
 
           {/* Status Icon */}
@@ -271,10 +265,7 @@ export const WOOPSection: React.FC<WOOPSectionProps> = ({
             numberOfLines={4}
             maxLength={maxLength}
             editable={!disabled}
-            style={[
-              styles.input,
-              { borderColor: `${config.color}40` },
-            ]}
+            style={[styles.input, { borderColor: `${config.color}40` }]}
             accessibilityLabel={`${config.title} input`}
             testID={testID ? `${testID}-input` : undefined}
           />

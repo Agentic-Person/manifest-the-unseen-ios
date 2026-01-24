@@ -76,7 +76,9 @@ export const TagInput: React.FC<TagInputProps> = ({
   const handleAddTag = () => {
     const trimmedValue = inputValue.trim();
 
-    if (!trimmedValue || disabled || atMaxTags) return;
+    if (!trimmedValue || disabled || atMaxTags) {
+      return;
+    }
 
     // Check for duplicate
     if (tags.includes(trimmedValue)) {
@@ -93,7 +95,9 @@ export const TagInput: React.FC<TagInputProps> = ({
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
 
     if (enableHaptic) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

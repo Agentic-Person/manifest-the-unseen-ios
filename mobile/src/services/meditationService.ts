@@ -47,8 +47,8 @@ export async function getMeditations(
   try {
     const response = await fetch(url, {
       headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
       },
     });
@@ -60,7 +60,9 @@ export async function getMeditations(
     }
 
     const data = await response.json();
-    logger.debug('[getMeditations] Query complete in', Date.now() - startTime, 'ms', { dataCount: data?.length });
+    logger.debug('[getMeditations] Query complete in', Date.now() - startTime, 'ms', {
+      dataCount: data?.length,
+    });
 
     return (data as Meditation[]) || [];
   } catch (err) {
@@ -73,7 +75,9 @@ export async function getMeditations(
  * Get a single meditation by ID
  */
 export async function getMeditationById(id: string): Promise<Meditation | null> {
-  if (!id) return null;
+  if (!id) {
+    return null;
+  }
 
   logger.debug('[getMeditationById] Fetching meditation:', id);
 
@@ -86,10 +90,10 @@ export async function getMeditationById(id: string): Promise<Meditation | null> 
   try {
     const response = await fetch(url, {
       headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/vnd.pgrst.object+json', // Return single object instead of array
+        Accept: 'application/vnd.pgrst.object+json', // Return single object instead of array
       },
     });
 
@@ -117,18 +121,14 @@ export async function getMeditationById(id: string): Promise<Meditation | null> 
 /**
  * Get meditations by type (convenience function)
  */
-export async function getMeditationsByType(
-  type: MeditationType
-): Promise<Meditation[]> {
+export async function getMeditationsByType(type: MeditationType): Promise<Meditation[]> {
   return getMeditations(type);
 }
 
 /**
  * Get guided meditations filtered by narrator preference
  */
-export async function getGuidedMeditations(
-  narrator?: NarratorGender
-): Promise<Meditation[]> {
+export async function getGuidedMeditations(narrator?: NarratorGender): Promise<Meditation[]> {
   return getMeditations('guided', narrator);
 }
 
@@ -171,12 +171,8 @@ export function getMeditationAudioUrl(audioPath: string): string {
 /**
  * Create a new meditation session (called when user starts playing)
  */
-export async function createSession(
-  session: CreateMeditationSession
-): Promise<MeditationSession> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase
-    .from('meditation_sessions') as any)
+export async function createSession(session: CreateMeditationSession): Promise<MeditationSession> {
+  const { data, error } = await (supabase.from('meditation_sessions') as any)
     .insert({
       user_id: session.user_id,
       meditation_id: session.meditation_id,
@@ -187,7 +183,9 @@ export async function createSession(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data as MeditationSession;
 }
 
@@ -198,9 +196,7 @@ export async function completeSession(
   sessionId: string,
   durationSeconds: number
 ): Promise<MeditationSession> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase
-    .from('meditation_sessions') as any)
+  const { data, error } = await (supabase.from('meditation_sessions') as any)
     .update({
       completed: true,
       duration_seconds: durationSeconds,
@@ -210,7 +206,9 @@ export async function completeSession(
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data as MeditationSession;
 }
 
@@ -228,16 +226,16 @@ export async function getUserSessions(
     .order('created_at', { ascending: false })
     .limit(limit);
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return (data as MeditationSession[]) || [];
 }
 
 /**
  * Get completed sessions for a user
  */
-export async function getCompletedSessions(
-  userId: string
-): Promise<MeditationSession[]> {
+export async function getCompletedSessions(userId: string): Promise<MeditationSession[]> {
   const { data, error } = await supabase
     .from('meditation_sessions')
     .select('*')
@@ -245,7 +243,9 @@ export async function getCompletedSessions(
     .eq('completed', true)
     .order('completed_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return (data as MeditationSession[]) || [];
 }
 
@@ -302,9 +302,7 @@ function calculateStreaks(sessions: MeditationSession[]): {
     } else {
       const currentDate = new Date(sortedDates[i]);
       const prevDate = new Date(sortedDates[i - 1]);
-      const dayDiff = Math.round(
-        (prevDate.getTime() - currentDate.getTime()) / 86400000
-      );
+      const dayDiff = Math.round((prevDate.getTime() - currentDate.getTime()) / 86400000);
 
       if (dayDiff === 1) {
         // Consecutive day
@@ -327,9 +325,7 @@ function calculateStreaks(sessions: MeditationSession[]): {
     for (let i = 1; i < sortedDates.length; i++) {
       const currentDate = new Date(sortedDates[i]);
       const prevDate = new Date(sortedDates[i - 1]);
-      const dayDiff = Math.round(
-        (prevDate.getTime() - currentDate.getTime()) / 86400000
-      );
+      const dayDiff = Math.round((prevDate.getTime() - currentDate.getTime()) / 86400000);
 
       if (dayDiff === 1) {
         currentStreak++;
@@ -359,10 +355,7 @@ export async function getSessionStats(userId: string): Promise<SessionStats> {
   }
 
   // Calculate total minutes
-  const totalSeconds = sessions.reduce(
-    (sum, session) => sum + (session.duration_seconds || 0),
-    0
-  );
+  const totalSeconds = sessions.reduce((sum, session) => sum + (session.duration_seconds || 0), 0);
   const totalMinutes = Math.round(totalSeconds / 60);
 
   // Calculate session count

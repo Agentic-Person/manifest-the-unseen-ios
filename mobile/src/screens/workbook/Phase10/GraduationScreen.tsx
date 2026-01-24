@@ -33,7 +33,10 @@ import {
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { CertificateView } from '../../../components/workbook/CertificateView';
-import { ConfettiCelebration, ConfettiBurst } from '../../../components/workbook/ConfettiCelebration';
+import {
+  ConfettiCelebration,
+  ConfettiBurst,
+} from '../../../components/workbook/ConfettiCelebration';
 import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase10ExerciseImages } from '../../../assets';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -68,7 +71,7 @@ const DAILY_PRACTICES: DailyPractice[] = [
   {
     id: 'gratitude',
     name: 'Gratitude Journal',
-    description: 'Write 3 things you\'re grateful for',
+    description: "Write 3 things you're grateful for",
     duration: '5 min',
     icon: '\u2618',
   },
@@ -134,10 +137,12 @@ const PHASE_NUMBER = 10;
 const GraduationScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
 
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.GRADUATION
-  );
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.GRADUATION);
 
   const [showCelebration, setShowCelebration] = useState(false);
   const [showBurst, setShowBurst] = useState(false);
@@ -154,14 +159,24 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   // Auto-save hook
-  const formData: GraduationData = useMemo(() => ({
-    commitmentStatement,
-    selectedPractices,
-    hasGraduated,
-    graduatedAt: hasGraduated ? new Date().toISOString() : undefined,
-  }), [commitmentStatement, selectedPractices, hasGraduated]);
+  const formData: GraduationData = useMemo(
+    () => ({
+      commitmentStatement,
+      selectedPractices,
+      hasGraduated,
+      graduatedAt: hasGraduated ? new Date().toISOString() : undefined,
+    }),
+    [commitmentStatement, selectedPractices, hasGraduated]
+  );
 
-  const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete: markCompleteFromAutoSave } = useAutoSave({
+  const {
+    isSaving,
+    lastSaved,
+    saveNow,
+    isAutoCompleted,
+    canComplete,
+    markComplete: markCompleteFromAutoSave,
+  } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: PHASE_NUMBER,
     worksheetId: WORKSHEET_IDS.GRADUATION,
@@ -201,9 +216,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
   const handleTogglePractice = (practiceId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedPractices((prev) =>
-      prev.includes(practiceId)
-        ? prev.filter((id) => id !== practiceId)
-        : [...prev, practiceId]
+      prev.includes(practiceId) ? prev.filter((id) => id !== practiceId) : [...prev, practiceId]
     );
   };
 
@@ -221,17 +234,15 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     if (selectedPractices.length === 0) {
-      Alert.alert(
-        'Select Practices',
-        'Please select at least one daily practice to continue.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Select Practices', 'Please select at least one daily practice to continue.', [
+        { text: 'OK' },
+      ]);
       return;
     }
 
     Alert.alert(
       'Complete Your Journey',
-      'Congratulations on reaching this milestone! You\'re about to officially complete your 10-phase transformation journey.\n\nAre you ready to graduate?',
+      "Congratulations on reaching this milestone! You're about to officially complete your 10-phase transformation journey.\n\nAre you ready to graduate?",
       [
         { text: 'Not Yet', style: 'cancel' },
         {
@@ -319,11 +330,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         particleCount={150}
         onComplete={handleCelebrationComplete}
       />
-      <ConfettiBurst
-        isActive={showBurst}
-        particleCount={60}
-        onComplete={handleBurstComplete}
-      />
+      <ConfettiBurst isActive={showBurst} particleCount={60} onComplete={handleBurstComplete} />
 
       <ExerciseScreenLayout
         style={styles.container}
@@ -341,9 +348,11 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         <ExerciseHeader
           image={Phase10ExerciseImages.graduation}
           title={hasGraduated ? 'Congratulations!' : 'Graduation & Commitment'}
-          subtitle={hasGraduated
-            ? "You've completed your transformation journey. Your new life awaits."
-            : 'Make a commitment to yourself and celebrate your transformation.'}
+          subtitle={
+            hasGraduated
+              ? "You've completed your transformation journey. Your new life awaits."
+              : 'Make a commitment to yourself and celebrate your transformation.'
+          }
           progress={savedProgress?.progress || 0}
           isCompleted={savedProgress?.completed || false}
         />
@@ -369,14 +378,11 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.celebrationIcon}>✨</Text>
             <Text style={styles.celebrationTitle}>Journey Complete!</Text>
             <Text style={styles.celebrationText}>
-              You've transformed through {journeyDuration} days of dedication.
-              This is not an ending - it's your new beginning.
+              You've transformed through {journeyDuration} days of dedication. This is not an ending
+              - it's your new beginning.
             </Text>
             <Pressable
-              style={({ pressed }) => [
-                styles.viewCertButton,
-                pressed && styles.buttonPressed,
-              ]}
+              style={({ pressed }) => [styles.viewCertButton, pressed && styles.buttonPressed]}
               onPress={handleViewCertificate}
               accessibilityRole="button"
               accessibilityLabel="View certificate"
@@ -389,9 +395,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         {/* Commitment Statement */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>My Manifestation Commitment</Text>
-          <Text style={styles.sectionSubtitle}>
-            What do you promise yourself going forward?
-          </Text>
+          <Text style={styles.sectionSubtitle}>What do you promise yourself going forward?</Text>
 
           <View style={styles.commitmentCard}>
             <Text style={styles.commitmentPrompt}>I, {userName}, commit to...</Text>
@@ -417,9 +421,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         {/* Daily Practice Selection */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>My Daily Practices</Text>
-          <Text style={styles.sectionSubtitle}>
-            Select the exercises you'll continue daily
-          </Text>
+          <Text style={styles.sectionSubtitle}>Select the exercises you'll continue daily</Text>
 
           <View style={styles.practicesGrid}>
             {DAILY_PRACTICES.map((practice) => {
@@ -468,7 +470,12 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         {/* Save Indicator */}
         {!hasGraduated && (
           <View style={{ alignItems: 'center', marginVertical: 16 }}>
-            <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+            <SaveIndicator
+              isSaving={isSaving}
+              lastSaved={lastSaved}
+              isError={isLoadError}
+              onRetry={saveNow}
+            />
           </View>
         )}
 
@@ -476,10 +483,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
         {hasGraduated ? (
           <View style={styles.buttonsContainer}>
             <Pressable
-              style={({ pressed }) => [
-                styles.shareButton,
-                pressed && styles.buttonPressed,
-              ]}
+              style={({ pressed }) => [styles.shareButton, pressed && styles.buttonPressed]}
               onPress={handleShare}
               accessibilityRole="button"
               accessibilityLabel="Share achievement"
@@ -488,10 +492,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
             </Pressable>
 
             <Pressable
-              style={({ pressed }) => [
-                styles.finishButton,
-                pressed && styles.buttonPressed,
-              ]}
+              style={({ pressed }) => [styles.finishButton, pressed && styles.buttonPressed]}
               onPress={handleFinish}
               accessibilityRole="button"
               accessibilityLabel="Return to workbook"
@@ -501,10 +502,7 @@ const GraduationScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         ) : (
           <Pressable
-            style={({ pressed }) => [
-              styles.graduateButton,
-              pressed && styles.buttonPressed,
-            ]}
+            style={({ pressed }) => [styles.graduateButton, pressed && styles.buttonPressed]}
             onPress={handleGraduate}
             accessibilityRole="button"
             accessibilityLabel="Complete graduation"

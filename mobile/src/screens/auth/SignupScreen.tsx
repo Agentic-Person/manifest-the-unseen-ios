@@ -140,13 +140,19 @@ export const SignupScreen: React.FC = () => {
       }
 
       // If no confirmation required, user is signed in automatically
-      if (result.user) setUser(result.user);
-      if (result.session) setSession(result.session);
+      if (result.user) {
+        setUser(result.user);
+      }
+      if (result.session) {
+        setSession(result.session);
+      }
 
       // Fetch profile (created by trigger)
       if (result.user) {
         const profile = await authService.fetchUserProfile(result.user.id);
-        if (profile) setProfile(profile);
+        if (profile) {
+          setProfile(profile);
+        }
       }
 
       setLoading(false);
@@ -187,9 +193,15 @@ export const SignupScreen: React.FC = () => {
       }
 
       // Update auth store
-      if (result.user) setUser(result.user);
-      if (result.session) setSession(result.session);
-      if (result.profile) setProfile(result.profile);
+      if (result.user) {
+        setUser(result.user);
+      }
+      if (result.session) {
+        setSession(result.session);
+      }
+      if (result.profile) {
+        setProfile(result.profile);
+      }
 
       setLoading(false);
       setError(null);
@@ -225,10 +237,7 @@ export const SignupScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         {/* Header */}
         <View style={styles.header}>
           <Text variant="h1" style={styles.title}>

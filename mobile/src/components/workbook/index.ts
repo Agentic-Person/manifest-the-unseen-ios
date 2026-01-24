@@ -88,7 +88,11 @@ export type { MeditationTimerProps, TimerState } from './MeditationTimer';
 export { RepetitionTracker, PERIOD_CONFIG } from './RepetitionTracker';
 export type { RepetitionTrackerProps, RepetitionPeriod, PeriodConfig } from './RepetitionTracker';
 
-export { ScriptTemplate, SCRIPT_TEMPLATES, CATEGORY_COLORS as SCRIPT_CATEGORY_COLORS } from './ScriptTemplate';
+export {
+  ScriptTemplate,
+  SCRIPT_TEMPLATES,
+  CATEGORY_COLORS as SCRIPT_CATEGORY_COLORS,
+} from './ScriptTemplate';
 export type { ScriptTemplateProps, ScriptTemplateData } from './ScriptTemplate';
 
 export { WOOPSection, WOOP_CONFIG } from './WOOPSection';
@@ -106,7 +110,12 @@ export type { RoleModelCardProps, RoleModel, RoleModelCategory } from './RoleMod
 
 // Phase 9: Trust & Surrender Components
 export { TrustRadar, TRUST_DIMENSIONS } from './TrustRadar';
-export type { TrustRadarProps, TrustValues, TrustDimension, TrustDimensionConfig } from './TrustRadar';
+export type {
+  TrustRadarProps,
+  TrustValues,
+  TrustDimension,
+  TrustDimensionConfig,
+} from './TrustRadar';
 
 export { SurrenderCard, SURRENDER_AFFIRMATIONS } from './SurrenderCard';
 export type { SurrenderCardProps, SurrenderEntryData } from './SurrenderCard';

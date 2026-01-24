@@ -42,14 +42,14 @@ export const spacing = {
 
   // Named scale (semantic)
   none: 0,
-  xs: 4,      // Extra small (1 unit)
-  sm: 8,      // Small (2 units)
-  md: 16,     // Medium (4 units) - default spacing
-  lg: 24,     // Large (6 units)
-  xl: 32,     // Extra large (8 units)
-  '2xl': 48,  // 2x extra large (12 units)
-  '3xl': 64,  // 3x extra large (16 units)
-  '4xl': 96,  // 4x extra large (24 units)
+  xs: 4, // Extra small (1 unit)
+  sm: 8, // Small (2 units)
+  md: 16, // Medium (4 units) - default spacing
+  lg: 24, // Large (6 units)
+  xl: 32, // Extra large (8 units)
+  '2xl': 48, // 2x extra large (12 units)
+  '3xl': 64, // 3x extra large (16 units)
+  '4xl': 96, // 4x extra large (24 units)
 } as const;
 
 /**
@@ -58,46 +58,46 @@ export const spacing = {
 export const componentSpacing = {
   // Screen padding
   screen: {
-    horizontal: spacing.md,  // 16px
-    vertical: spacing.lg,    // 24px
+    horizontal: spacing.md, // 16px
+    vertical: spacing.lg, // 24px
   },
 
   // Card spacing
   card: {
-    padding: spacing.md,     // 16px
-    gap: spacing.sm,         // 8px
+    padding: spacing.md, // 16px
+    gap: spacing.sm, // 8px
   },
 
   // List item spacing
   listItem: {
-    padding: spacing.md,     // 16px
-    gap: spacing.sm,         // 8px
+    padding: spacing.md, // 16px
+    gap: spacing.sm, // 8px
     verticalGap: spacing.xs, // 4px
   },
 
   // Form field spacing
   form: {
-    fieldGap: spacing.md,    // 16px
-    labelGap: spacing.xs,    // 4px
-    sectionGap: spacing.xl,  // 32px
+    fieldGap: spacing.md, // 16px
+    labelGap: spacing.xs, // 4px
+    sectionGap: spacing.xl, // 32px
   },
 
   // Button spacing
   button: {
-    paddingHorizontal: spacing.md,  // 16px
-    paddingVertical: spacing.sm,    // 8px
-    gap: spacing.xs,                // 4px (icon-to-text)
+    paddingHorizontal: spacing.md, // 16px
+    paddingVertical: spacing.sm, // 8px
+    gap: spacing.xs, // 4px (icon-to-text)
   },
 
   // Modal/Dialog spacing
   modal: {
-    padding: spacing.lg,     // 24px
-    gap: spacing.md,         // 16px
+    padding: spacing.lg, // 24px
+    gap: spacing.md, // 16px
   },
 
   // Navigation spacing
   navigation: {
-    tabPadding: spacing.sm,  // 8px
+    tabPadding: spacing.sm, // 8px
     headerPadding: spacing.md, // 16px
   },
 } as const;
@@ -113,7 +113,7 @@ export const borderRadius = {
   xl: 16,
   '2xl': 24,
   '3xl': 32,
-  full: 9999,  // For circular elements
+  full: 9999, // For circular elements
 } as const;
 
 /**
@@ -121,8 +121,8 @@ export const borderRadius = {
  * These are defaults - actual values should come from SafeAreaView
  */
 export const safeAreaInsets = {
-  top: 44,     // Status bar height
-  bottom: 34,  // Home indicator height (iPhone X+)
+  top: 44, // Status bar height
+  bottom: 34, // Home indicator height (iPhone X+)
   left: 0,
   right: 0,
 } as const;

@@ -12,14 +12,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
@@ -57,20 +50,20 @@ const QUESTIONS = [
     id: 'passion',
     category: 'Passion',
     question: 'What activities make you lose track of time?',
-    hint: 'Consider moments when you\'re so engaged that hours feel like minutes.',
+    hint: "Consider moments when you're so engaged that hours feel like minutes.",
     emoji: '🔥',
   },
   {
     id: 'childhood',
     category: 'Origins',
-    question: 'What did you love doing as a child that you\'ve stopped doing?',
+    question: "What did you love doing as a child that you've stopped doing?",
     hint: 'Childhood interests often reveal authentic desires before social conditioning.',
     emoji: '🧒',
   },
   {
     id: 'fear',
     category: 'Fear',
-    question: 'What would you do if you knew you couldn\'t fail?',
+    question: "What would you do if you knew you couldn't fail?",
     hint: 'Remove fear from the equation. What dreams emerge?',
     emoji: '🦁',
   },
@@ -141,13 +134,14 @@ const KnowYourselfScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.KNOW_YOURSELF);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: data as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.KNOW_YOURSELF,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: data as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.KNOW_YOURSELF,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -155,11 +149,17 @@ const KnowYourselfScreen: React.FC<Props> = ({ navigation }) => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const savedData = savedProgress.data as unknown as KnowYourselfData;
       setData({
-        responses: savedData.responses && typeof savedData.responses === 'object' ? savedData.responses : DEFAULT_DATA.responses,
-        lastQuestionViewed: typeof savedData.lastQuestionViewed === 'number' ? savedData.lastQuestionViewed : 0,
+        responses:
+          savedData.responses && typeof savedData.responses === 'object'
+            ? savedData.responses
+            : DEFAULT_DATA.responses,
+        lastQuestionViewed:
+          typeof savedData.lastQuestionViewed === 'number' ? savedData.lastQuestionViewed : 0,
         updatedAt: savedData.updatedAt || new Date().toISOString(),
       });
-      setCurrentQuestion(typeof savedData.lastQuestionViewed === 'number' ? savedData.lastQuestionViewed : 0);
+      setCurrentQuestion(
+        typeof savedData.lastQuestionViewed === 'number' ? savedData.lastQuestionViewed : 0
+      );
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -310,17 +310,13 @@ const KnowYourselfScreen: React.FC<Props> = ({ navigation }) => {
         {/* Navigation Buttons */}
         <View style={styles.navButtons}>
           <Pressable
-            style={[
-              styles.navButton,
-              currentQuestion === 0 && styles.navButtonDisabled,
-            ]}
+            style={[styles.navButton, currentQuestion === 0 && styles.navButtonDisabled]}
             onPress={handlePreviousQuestion}
             disabled={currentQuestion === 0}
           >
-            <Text style={[
-              styles.navButtonText,
-              currentQuestion === 0 && styles.navButtonTextDisabled,
-            ]}>
+            <Text
+              style={[styles.navButtonText, currentQuestion === 0 && styles.navButtonTextDisabled]}
+            >
               ← Previous
             </Text>
           </Pressable>
@@ -334,10 +330,12 @@ const KnowYourselfScreen: React.FC<Props> = ({ navigation }) => {
             onPress={handleNextQuestion}
             disabled={currentQuestion === QUESTIONS.length - 1}
           >
-            <Text style={[
-              styles.navButtonText,
-              currentQuestion === QUESTIONS.length - 1 && styles.navButtonTextDisabled,
-            ]}>
+            <Text
+              style={[
+                styles.navButtonText,
+                currentQuestion === QUESTIONS.length - 1 && styles.navButtonTextDisabled,
+              ]}
+            >
               Next →
             </Text>
           </Pressable>
@@ -354,10 +352,7 @@ const KnowYourselfScreen: React.FC<Props> = ({ navigation }) => {
           return (
             <Pressable
               key={q.id}
-              style={[
-                styles.questionPreviewCard,
-                isCurrent && styles.questionPreviewCardActive,
-              ]}
+              style={[styles.questionPreviewCard, isCurrent && styles.questionPreviewCardActive]}
               onPress={() => {
                 setCurrentQuestion(index);
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -370,13 +365,13 @@ const KnowYourselfScreen: React.FC<Props> = ({ navigation }) => {
                   {q.question}
                 </Text>
               </View>
-              <View style={[
-                styles.questionPreviewStatus,
-                isAnswered && styles.questionPreviewStatusAnswered,
-              ]}>
-                <Text style={styles.questionPreviewStatusText}>
-                  {isAnswered ? '✓' : '○'}
-                </Text>
+              <View
+                style={[
+                  styles.questionPreviewStatus,
+                  isAnswered && styles.questionPreviewStatusAnswered,
+                ]}
+              >
+                <Text style={styles.questionPreviewStatusText}>{isAnswered ? '✓' : '○'}</Text>
               </View>
             </Pressable>
           );

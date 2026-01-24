@@ -59,17 +59,16 @@ export function useGuru(): UseGuruReturn {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setUserId(user?.id);
     };
     fetchUser();
   }, []);
 
   // Query for completed phases
-  const {
-    data: workbookProgress,
-    isLoading: isLoadingPhases,
-  } = useQuery({
+  const { data: workbookProgress, isLoading: isLoadingPhases } = useQuery({
     queryKey: ['workbook-progress', userId],
     queryFn: () => getAllWorkbookProgress(userId!),
     enabled: !!userId && hasAccess,
@@ -77,14 +76,24 @@ export function useGuru(): UseGuruReturn {
 
   // Calculate completed phases
   const completedPhases = useMemo(() => {
-    if (!workbookProgress) return [];
+    if (!workbookProgress) {
+      return [];
+    }
 
     const phaseMap = new Map<number, { completed: number; total: number }>();
 
     // Total worksheets per phase (must match Edge Function WORKSHEETS_PER_PHASE)
     const totalPerPhase: Record<number, number> = {
-      1: 11, 2: 3, 3: 3, 4: 3, 5: 3,
-      6: 3, 7: 3, 8: 3, 9: 3, 10: 3,
+      1: 11,
+      2: 3,
+      3: 3,
+      4: 3,
+      5: 3,
+      6: 3,
+      7: 3,
+      8: 3,
+      9: 3,
+      10: 3,
     };
 
     // Count completed worksheets per phase
@@ -136,9 +145,8 @@ export function useGuru(): UseGuruReturn {
       }
 
       // Get worksheet data for the selected phase
-      const phaseWorksheets = workbookProgress?.filter(
-        (p) => p.phase_number === selectedPhase && p.completed
-      ) || [];
+      const phaseWorksheets =
+        workbookProgress?.filter((p) => p.phase_number === selectedPhase && p.completed) || [];
 
       const worksheetData = phaseWorksheets.map((w) => ({
         worksheet_id: w.worksheet_id,
@@ -177,13 +185,10 @@ export function useGuru(): UseGuruReturn {
           timestamp: new Date().toISOString(),
         };
 
-        queryClient.setQueryData(
-          ['guru-conversation', userId, selectedPhase],
-          {
-            ...conversation,
-            messages: [...conversation.messages, optimisticMessage],
-          }
-        );
+        queryClient.setQueryData(['guru-conversation', userId, selectedPhase], {
+          ...conversation,
+          messages: [...conversation.messages, optimisticMessage],
+        });
       }
 
       return { previousConversation };
@@ -225,7 +230,9 @@ export function useGuru(): UseGuruReturn {
 
   // Action: Start new conversation
   const startNewConversation = useCallback(() => {
-    if (!userId || !selectedPhase) return;
+    if (!userId || !selectedPhase) {
+      return;
+    }
 
     // Clear current conversation from cache
     queryClient.removeQueries({

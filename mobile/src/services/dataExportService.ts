@@ -70,7 +70,9 @@ export interface ExportResult {
 export async function fetchUserData(): Promise<ExportedUserData | null> {
   try {
     // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       logger.error('[DataExport] No authenticated user');
       return null;
@@ -97,20 +99,24 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
     // Fetch journal entries (including encryption fields for H6)
     const { data: journalData } = await supabase
       .from('journal_entries')
-      .select('content, encrypted_content, encryption_iv, encryption_tag, tags, mood, created_at, updated_at')
+      .select(
+        'content, encrypted_content, encryption_iv, encryption_tag, tags, mood, created_at, updated_at'
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     // Fetch meditation sessions with meditation titles
     const { data: meditationData } = await supabase
       .from('meditation_sessions')
-      .select(`
+      .select(
+        `
         completed,
         duration_seconds,
         completed_at,
         created_at,
         meditations (title)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
@@ -198,13 +204,15 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
     const exportData: ExportedUserData = {
       exportDate: new Date().toISOString(),
       appVersion: '1.0.0',
-      profile: profile ? {
-        email: profile.email,
-        fullName: profile.full_name,
-        createdAt: profile.created_at,
-        subscriptionTier: profile.subscription_tier,
-        subscriptionStatus: profile.subscription_status,
-      } : null,
+      profile: profile
+        ? {
+            email: profile.email,
+            fullName: profile.full_name,
+            createdAt: profile.created_at,
+            subscriptionTier: profile.subscription_tier,
+            subscriptionStatus: profile.subscription_status,
+          }
+        : null,
       workbookProgress: workbook.map((item) => ({
         phaseNumber: item.phase_number,
         worksheetId: item.worksheet_id,
@@ -238,7 +246,6 @@ export async function fetchUserData(): Promise<ExportedUserData | null> {
 
     logger.debug('[DataExport] Data fetched successfully');
     return exportData;
-
   } catch (error) {
     logger.error('[DataExport] Error fetching data:', error);
     return null;
@@ -296,7 +303,6 @@ export async function exportUserData(): Promise<ExportResult> {
       success: true,
       filePath,
     };
-
   } catch (error) {
     logger.error('[DataExport] Export error:', error);
     return {
@@ -316,16 +322,32 @@ export async function getDataSummary(): Promise<{
   guruSessions: number;
 } | null> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return null;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return null;
+    }
 
     const userId = user.id;
 
     const [workbook, journal, meditation, guru] = await Promise.all([
-      supabase.from('workbook_progress').select('id', { count: 'exact', head: true }).eq('user_id', userId),
-      supabase.from('journal_entries').select('id', { count: 'exact', head: true }).eq('user_id', userId),
-      supabase.from('meditation_sessions').select('id', { count: 'exact', head: true }).eq('user_id', userId),
-      supabase.from('guru_sessions').select('id', { count: 'exact', head: true }).eq('user_id', userId),
+      supabase
+        .from('workbook_progress')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId),
+      supabase
+        .from('journal_entries')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId),
+      supabase
+        .from('meditation_sessions')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId),
+      supabase
+        .from('guru_sessions')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId),
     ]);
 
     return {

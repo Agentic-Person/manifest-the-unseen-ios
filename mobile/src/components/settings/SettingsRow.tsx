@@ -51,40 +51,35 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({
   const Container = onPress ? TouchableOpacity : View;
   const { scaleFont } = useFontSizeContext();
 
-  const scaledStyles = useMemo(() => ({
-    label: {
-      ...styles.label,
-      fontSize: scaleFont(16),
-    } as TextStyle,
-    description: {
-      ...styles.description,
-      fontSize: scaleFont(13),
-    } as TextStyle,
-    value: {
-      ...styles.value,
-      fontSize: scaleFont(15),
-    } as TextStyle,
-  }), [scaleFont]);
+  const scaledStyles = useMemo(
+    () => ({
+      label: {
+        ...styles.label,
+        fontSize: scaleFont(16),
+      } as TextStyle,
+      description: {
+        ...styles.description,
+        fontSize: scaleFont(13),
+      } as TextStyle,
+      value: {
+        ...styles.value,
+        fontSize: scaleFont(15),
+      } as TextStyle,
+    }),
+    [scaleFont]
+  );
 
   return (
     <Container
-      style={[
-        styles.container,
-        !isLast && styles.borderBottom,
-        disabled && styles.disabled,
-      ]}
+      style={[styles.container, !isLast && styles.borderBottom, disabled && styles.disabled]}
       onPress={disabled ? undefined : onPress}
       activeOpacity={0.7}
     >
       {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
 
       <View style={styles.content}>
-        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>
-          {label}
-        </Text>
-        {description && (
-          <Text style={scaledStyles.description}>{description}</Text>
-        )}
+        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>{label}</Text>
+        {description && <Text style={scaledStyles.description}>{description}</Text>}
       </View>
 
       <View style={styles.rightContainer}>

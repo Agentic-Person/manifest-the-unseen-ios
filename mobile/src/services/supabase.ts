@@ -16,7 +16,9 @@ import { logger } from '../utils/logger';
  * Expo loads EXPO_PUBLIC_* vars automatically from .env files
  */
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'http://127.0.0.1:54321';
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+const SUPABASE_ANON_KEY =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
 
 // H3 Security Fix: Debug logs only in development (logger handles __DEV__ check)
 logger.debug('[Supabase] URL:', { url: SUPABASE_URL });
@@ -142,7 +144,9 @@ export const signInWithEmail = async (email: string, password: string) => {
     password,
   });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data;
 };
 
@@ -155,7 +159,9 @@ export const signUpWithEmail = async (email: string, password: string) => {
     password,
   });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data;
 };
 
@@ -167,7 +173,9 @@ export const signInWithApple = async () => {
     provider: 'apple',
   });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data;
 };
 
@@ -176,7 +184,9 @@ export const signInWithApple = async () => {
  */
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 };
 
 /**
@@ -184,7 +194,9 @@ export const signOut = async () => {
  */
 export const getSession = async () => {
   const { data, error } = await supabase.auth.getSession();
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data.session;
 };
 
@@ -193,7 +205,9 @@ export const getSession = async () => {
  */
 export const getCurrentUser = async () => {
   const { data, error } = await supabase.auth.getUser();
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data.user;
 };
 
@@ -205,7 +219,9 @@ export const resetPassword = async (email: string) => {
     redirectTo: 'manifesttheunseen://reset-password',
   });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data;
 };
 
@@ -217,7 +233,9 @@ export const updatePassword = async (newPassword: string) => {
     password: newPassword,
   });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data;
 };
 
@@ -234,13 +252,11 @@ type UserRow = Database['public']['Tables']['users']['Row'];
  * Get User Profile
  */
 export const getUserProfile = async (userId: string): Promise<UserRow> => {
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', userId)
-    .single();
+  const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data as UserRow;
 };
 
@@ -251,15 +267,15 @@ export const updateUserProfile = async (
   userId: string,
   updates: Database['public']['Tables']['users']['Update']
 ): Promise<UserRow> => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase
-    .from('users') as any)
+  const { data, error } = await (supabase.from('users') as any)
     .update(updates)
     .eq('id', userId)
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data as UserRow;
 };
 
@@ -270,14 +286,12 @@ export const updateUserProfile = async (
 /**
  * Upload File to Storage
  */
-export const uploadFile = async (
-  bucket: string,
-  path: string,
-  file: File | Blob
-) => {
+export const uploadFile = async (bucket: string, path: string, file: File | Blob) => {
   const { data, error } = await supabase.storage.from(bucket).upload(path, file);
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data;
 };
 
@@ -295,7 +309,9 @@ export const getPublicUrl = (bucket: string, path: string) => {
 export const deleteFile = async (bucket: string, path: string) => {
   const { data, error } = await supabase.storage.from(bucket).remove([path]);
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data;
 };
 
@@ -306,10 +322,7 @@ export const deleteFile = async (bucket: string, path: string) => {
 /**
  * Subscribe to Table Changes
  */
-export const subscribeToTable = (
-  table: string,
-  callback: (payload: any) => void
-) => {
+export const subscribeToTable = (table: string, callback: (payload: any) => void) => {
   const subscription = supabase
     .channel(`${table}_changes`)
     .on(
@@ -317,7 +330,7 @@ export const subscribeToTable = (
       {
         event: '*',
         schema: 'public',
-        table: table,
+        table,
       },
       callback
     )

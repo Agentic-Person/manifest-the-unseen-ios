@@ -52,17 +52,12 @@ export interface ExerciseWithProgress extends ExerciseConfig {
  * } = usePhaseExercises(1, PHASE1_EXERCISES);
  * ```
  */
-export function usePhaseExercises(
-  phaseNumber: number,
-  exercises: ExerciseConfig[]
-) {
+export function usePhaseExercises(phaseNumber: number, exercises: ExerciseConfig[]) {
   const { data: phaseProgress, isLoading, isError, error, refetch } = usePhaseProgress(phaseNumber);
 
   const exercisesWithProgress = useMemo<ExerciseWithProgress[]>(() => {
     return exercises.map((exercise) => {
-      const saved = phaseProgress?.worksheets?.find(
-        (w) => w.worksheet_id === exercise.id
-      );
+      const saved = phaseProgress?.worksheets?.find((w) => w.worksheet_id === exercise.id);
 
       // Determine if the worksheet is actually complete by:
       // 1. First check the database boolean (fast path)
@@ -78,7 +73,9 @@ export function usePhaseExercises(
               config.completionCriteria
             );
             if (isActuallyComplete) {
-              logger.debug(`[usePhaseExercises] Exercise ${exercise.id} detected as complete via criteria (not marked in DB)`);
+              logger.debug(
+                `[usePhaseExercises] Exercise ${exercise.id} detected as complete via criteria (not marked in DB)`
+              );
             }
           }
         } catch (err) {
@@ -94,7 +91,11 @@ export function usePhaseExercises(
       let progress = 0;
       if (isActuallyComplete) {
         progress = 100;
-      } else if (saved?.data && typeof saved.data === 'object' && Object.keys(saved.data).length > 0) {
+      } else if (
+        saved?.data &&
+        typeof saved.data === 'object' &&
+        Object.keys(saved.data).length > 0
+      ) {
         progress = 50;
       }
 
@@ -114,11 +115,7 @@ export function usePhaseExercises(
   const totalCount = exercises.length;
 
   const overallProgress = useMemo(
-    () =>
-      Math.round(
-        exercisesWithProgress.reduce((sum, e) => sum + e.progress, 0) /
-          totalCount
-      ),
+    () => Math.round(exercisesWithProgress.reduce((sum, e) => sum + e.progress, 0) / totalCount),
     [exercisesWithProgress, totalCount]
   );
 

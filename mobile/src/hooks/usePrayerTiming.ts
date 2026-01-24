@@ -68,10 +68,7 @@ const AUDIO_OFFSET_MS = 5000; // 5 seconds - only used for calculated timing fal
  * @param audioDurationMs - Total audio duration in milliseconds
  * @returns Array of PrayerLine objects with timing data
  */
-export function calculateLineTiming(
-  prayerContent: string,
-  audioDurationMs: number
-): PrayerLine[] {
+export function calculateLineTiming(prayerContent: string, audioDurationMs: number): PrayerLine[] {
   // Split content into lines, trim whitespace, filter empty lines
   const lines = prayerContent
     .split('\n')
@@ -131,15 +128,10 @@ export function calculateLineTiming(
  * @param positionMs - Current playback position in milliseconds
  * @returns The current line or null if position is outside all lines
  */
-function findCurrentLine(
-  lines: PrayerLine[],
-  positionMs: number
-): PrayerLine | null {
+function findCurrentLine(lines: PrayerLine[], positionMs: number): PrayerLine | null {
   // Find line where position falls within start and end time
   return (
-    lines.find(
-      (line) => positionMs >= line.startTimeMs && positionMs < line.endTimeMs
-    ) || null
+    lines.find((line) => positionMs >= line.startTimeMs && positionMs < line.endTimeMs) || null
   );
 }
 
@@ -176,7 +168,11 @@ export function useCurrentPrayerLine(
 ): CurrentPrayerLineResult {
   // Parse content lines (source of truth for display text)
   const contentLines = useMemo(
-    () => prayerContent.split('\n').map((l) => l.trim()).filter((l) => l.length > 0),
+    () =>
+      prayerContent
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0),
     [prayerContent]
   );
 
@@ -184,12 +180,23 @@ export function useCurrentPrayerLine(
   const lines = useMemo(() => {
     if (lineTimings && lineTimings.length > 0) {
       logger.debug('[usePrayerTiming] Using Whisper timings for timing, content for text');
-      logger.debug('[usePrayerTiming] Timings:', lineTimings.length, 'lines, Content:', contentLines.length, 'lines');
+      logger.debug(
+        '[usePrayerTiming] Timings:',
+        lineTimings.length,
+        'lines, Content:',
+        contentLines.length,
+        'lines'
+      );
 
       // Use content lines for text, line_timings for timing
       // If counts don't match, fall back to calculated timing
       if (contentLines.length !== lineTimings.length) {
-        logger.warn('[usePrayerTiming] Line count mismatch! Content:', contentLines.length, 'Timings:', lineTimings.length);
+        logger.warn(
+          '[usePrayerTiming] Line count mismatch! Content:',
+          contentLines.length,
+          'Timings:',
+          lineTimings.length
+        );
         logger.debug('[usePrayerTiming] Falling back to calculated timing');
         return calculateLineTiming(prayerContent, audioDurationMs);
       }
@@ -198,7 +205,8 @@ export function useCurrentPrayerLine(
       return lineTimings.map((timing, idx) => ({
         index: timing.line,
         text: contentLines[idx] || timing.text, // Prefer content, fallback to timing text
-        wordCount: (contentLines[idx] || timing.text).split(/\s+/).filter((w) => w.length > 0).length,
+        wordCount: (contentLines[idx] || timing.text).split(/\s+/).filter((w) => w.length > 0)
+          .length,
         startTimeMs: timing.startMs, // Use Whisper timestamp as-is
         endTimeMs: timing.endMs, // Use Whisper timestamp as-is
       }));
@@ -212,9 +220,7 @@ export function useCurrentPrayerLine(
   const currentLine = findCurrentLine(lines, currentPositionMs);
 
   // Find next line (for preparation/preview if needed)
-  const nextLine = currentLine
-    ? lines[currentLine.index + 1] || null
-    : lines[0] || null;
+  const nextLine = currentLine ? lines[currentLine.index + 1] || null : lines[0] || null;
 
   // Calculate progress within current line (0-1)
   const lineProgress = currentLine

@@ -30,8 +30,7 @@ import { logger } from '../utils/logger';
  * TODO: Add your RevenueCat API keys to .env file
  */
 const REVENUECAT_API_KEY_IOS = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY || '';
-const REVENUECAT_API_KEY_ANDROID =
-  process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '';
+const REVENUECAT_API_KEY_ANDROID = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY || '';
 
 /**
  * Debug State - tracks RevenueCat SDK status for debugging
@@ -57,7 +56,7 @@ interface RevenueCatDebugState {
   } | null;
 }
 
-let debugState: RevenueCatDebugState = {
+const debugState: RevenueCatDebugState = {
   sdkConfigured: false,
   configureAttempted: false,
   configureError: null,
@@ -89,7 +88,9 @@ export async function configurePurchases(userId?: string): Promise<void> {
   logger.debug('[RC Debug] configurePurchases() called');
   logger.debug('[RC Debug] Platform:', { platform: Platform.OS });
   logger.debug('[RC Debug] __DEV__:', { isDev: __DEV__ });
-  logger.debug('[RC Debug] TESTFLIGHT_FULL_ACCESS:', { testFlightAccess: process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS });
+  logger.debug('[RC Debug] TESTFLIGHT_FULL_ACCESS:', {
+    testFlightAccess: process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS,
+  });
 
   // Mark that configuration was attempted
   debugState.configureAttempted = true;
@@ -115,13 +116,14 @@ export async function configurePurchases(userId?: string): Promise<void> {
   }
 
   try {
-    const apiKey =
-      Platform.OS === 'ios' ? REVENUECAT_API_KEY_IOS : REVENUECAT_API_KEY_ANDROID;
+    const apiKey = Platform.OS === 'ios' ? REVENUECAT_API_KEY_IOS : REVENUECAT_API_KEY_ANDROID;
 
     debugState.apiKeyPresent = !!apiKey;
-    debugState.apiKeyPrefix = apiKey ? apiKey.substring(0, 15) + '...' : 'MISSING';
+    debugState.apiKeyPrefix = apiKey ? `${apiKey.substring(0, 15)}...` : 'MISSING';
 
-    logger.debug('[RC Debug] API Key prefix:', { prefix: apiKey ? apiKey.substring(0, 10) + '...' : 'MISSING' });
+    logger.debug('[RC Debug] API Key prefix:', {
+      prefix: apiKey ? `${apiKey.substring(0, 10)}...` : 'MISSING',
+    });
 
     if (!apiKey) {
       logger.error('[RC Debug] No API key found!');
@@ -210,7 +212,9 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
 
   // Return mock offerings for web mode or TestFlight (RevenueCat SDK is skipped in these modes)
   if (Platform.OS === 'web' || isTestFlight) {
-    logger.debug(`[Subscription] ${Platform.OS === 'web' ? 'Web' : 'TestFlight'} mode - returning mock offerings for UI testing`);
+    logger.debug(
+      `[Subscription] ${Platform.OS === 'web' ? 'Web' : 'TestFlight'} mode - returning mock offerings for UI testing`
+    );
     return {
       novice_monthly: {
         id: 'mock_novice_monthly',
@@ -288,7 +292,7 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
     // Check if SDK was configured before calling
     if (!debugState.sdkConfigured) {
       const errorMsg = `SDK not configured. Config attempted: ${debugState.configureAttempted}, Error: ${debugState.configureError}`;
-      logger.error('[RC Debug] ' + errorMsg);
+      logger.error(`[RC Debug] ${errorMsg}`);
       debugState.lastOfferingsError = errorMsg;
       return null;
     }
@@ -309,12 +313,13 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
       hasCurrent: !!offerings.current,
       currentId: offerings.current?.identifier || null,
       packageCount: offerings.current?.availablePackages?.length || 0,
-      packageIds: offerings.current?.availablePackages?.map(p => p.identifier) || [],
+      packageIds: offerings.current?.availablePackages?.map((p) => p.identifier) || [],
     };
 
     if (!offerings.current) {
-      const errorMsg = 'No current offering! Check RevenueCat dashboard - must set one offering as "current"';
-      logger.error('[RC Debug] ' + errorMsg);
+      const errorMsg =
+        'No current offering! Check RevenueCat dashboard - must set one offering as "current"';
+      logger.error(`[RC Debug] ${errorMsg}`);
       debugState.lastOfferingsError = errorMsg;
       return null;
     }
@@ -325,7 +330,7 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
     logger.debug('[RC Debug] Current offering details:', {
       identifier: currentOffering.identifier,
       packageCount: packages.length,
-      packages: packages.map(p => ({
+      packages: packages.map((p) => ({
         id: p.identifier,
         productId: p.product.identifier,
         price: p.product.priceString,
@@ -334,7 +339,9 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
 
     // Log what we're looking for vs what we have
     logger.debug('[RC Debug] Looking for package IDs:', { packageIds: PACKAGE_IDS });
-    logger.debug('[RC Debug] Available package IDs:', { availableIds: packages.map(p => p.identifier) });
+    logger.debug('[RC Debug] Available package IDs:', {
+      availableIds: packages.map((p) => p.identifier),
+    });
 
     // Production: Three-tier model with monthly/annual options
     // Packages are found by their RevenueCat package identifier
@@ -343,20 +350,50 @@ export async function getOfferings(): Promise<SubscriptionOffering | null> {
       novice_monthly: findPackageById(packages, PACKAGE_IDS.NOVICE_MONTHLY, 'novice', 'monthly'),
       novice_annual: findPackageById(packages, PACKAGE_IDS.NOVICE_ANNUAL, 'novice', 'yearly'),
       // Awakening tier
-      awakening_monthly: findPackageById(packages, PACKAGE_IDS.AWAKENING_MONTHLY, 'awakening', 'monthly'),
-      awakening_annual: findPackageById(packages, PACKAGE_IDS.AWAKENING_ANNUAL, 'awakening', 'yearly'),
+      awakening_monthly: findPackageById(
+        packages,
+        PACKAGE_IDS.AWAKENING_MONTHLY,
+        'awakening',
+        'monthly'
+      ),
+      awakening_annual: findPackageById(
+        packages,
+        PACKAGE_IDS.AWAKENING_ANNUAL,
+        'awakening',
+        'yearly'
+      ),
       // Enlightenment tier
-      enlightenment_monthly: findPackageById(packages, PACKAGE_IDS.ENLIGHTENMENT_MONTHLY, 'enlightenment', 'monthly'),
-      enlightenment_annual: findPackageById(packages, PACKAGE_IDS.ENLIGHTENMENT_ANNUAL, 'enlightenment', 'yearly'),
+      enlightenment_monthly: findPackageById(
+        packages,
+        PACKAGE_IDS.ENLIGHTENMENT_MONTHLY,
+        'enlightenment',
+        'monthly'
+      ),
+      enlightenment_annual: findPackageById(
+        packages,
+        PACKAGE_IDS.ENLIGHTENMENT_ANNUAL,
+        'enlightenment',
+        'yearly'
+      ),
     };
 
     logger.debug('[RC Debug] Parsed offerings result:', {
-      novice_monthly: offering.novice_monthly ? 'found ' + offering.novice_monthly.price : 'NOT FOUND',
-      novice_annual: offering.novice_annual ? 'found ' + offering.novice_annual.price : 'NOT FOUND',
-      awakening_monthly: offering.awakening_monthly ? 'found ' + offering.awakening_monthly.price : 'NOT FOUND',
-      awakening_annual: offering.awakening_annual ? 'found ' + offering.awakening_annual.price : 'NOT FOUND',
-      enlightenment_monthly: offering.enlightenment_monthly ? 'found ' + offering.enlightenment_monthly.price : 'NOT FOUND',
-      enlightenment_annual: offering.enlightenment_annual ? 'found ' + offering.enlightenment_annual.price : 'NOT FOUND',
+      novice_monthly: offering.novice_monthly
+        ? `found ${offering.novice_monthly.price}`
+        : 'NOT FOUND',
+      novice_annual: offering.novice_annual ? `found ${offering.novice_annual.price}` : 'NOT FOUND',
+      awakening_monthly: offering.awakening_monthly
+        ? `found ${offering.awakening_monthly.price}`
+        : 'NOT FOUND',
+      awakening_annual: offering.awakening_annual
+        ? `found ${offering.awakening_annual.price}`
+        : 'NOT FOUND',
+      enlightenment_monthly: offering.enlightenment_monthly
+        ? `found ${offering.enlightenment_monthly.price}`
+        : 'NOT FOUND',
+      enlightenment_annual: offering.enlightenment_annual
+        ? `found ${offering.enlightenment_annual.price}`
+        : 'NOT FOUND',
     });
 
     debugState.lastOfferingsError = null;
@@ -442,7 +479,9 @@ export async function purchasePackage(
   // In TestFlight mode, RevenueCat SDK is not configured, so real purchases won't work
   const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
   if (isTestFlight || __DEV__) {
-    logger.debug('[Subscription] TestFlight/DEV mode - simulating purchase success for:', { packageId: subscriptionPackage.id });
+    logger.debug('[Subscription] TestFlight/DEV mode - simulating purchase success for:', {
+      packageId: subscriptionPackage.id,
+    });
     // Return success with the purchased tier info (no customerInfo since SDK not configured)
     // Using Object.assign to add extra properties while maintaining PurchaseResult type
     const result: PurchaseResult = {
@@ -456,8 +495,9 @@ export async function purchasePackage(
   }
 
   try {
-    const { customerInfo, productIdentifier } =
-      await Purchases.purchasePackage(subscriptionPackage.rcPackage);
+    const { customerInfo, productIdentifier } = await Purchases.purchasePackage(
+      subscriptionPackage.rcPackage
+    );
 
     logger.info('Purchase successful:', { productIdentifier });
 
@@ -542,9 +582,7 @@ export async function getCustomerInfo(): Promise<CustomerInfo | null> {
  * @param entitlementId - Entitlement identifier from RevenueCat
  * @returns True if user has active entitlement
  */
-export async function checkEntitlement(
-  entitlementId: string
-): Promise<boolean> {
+export async function checkEntitlement(entitlementId: string): Promise<boolean> {
   try {
     const customerInfo = await getCustomerInfo();
 
@@ -569,9 +607,7 @@ export async function checkEntitlement(
  * - Awakening: + Guided meditations + Guru workbook analysis + Analytics
  * - Novice: Workbook + music meditations + progress tracking
  */
-export function getTierFromCustomerInfo(
-  customerInfo: CustomerInfo | null
-): SubscriptionTier {
+export function getTierFromCustomerInfo(customerInfo: CustomerInfo | null): SubscriptionTier {
   if (!customerInfo) {
     return 'free';
   }
@@ -688,7 +724,9 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
   // DEV/TestFlight/Web mode: return enlightenment tier without calling RevenueCat
   const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
   if (__DEV__ || isTestFlight || Platform.OS === 'web') {
-    logger.debug('[Subscription] DEV/TestFlight/Web mode - returning mock enlightenment subscription');
+    logger.debug(
+      '[Subscription] DEV/TestFlight/Web mode - returning mock enlightenment subscription'
+    );
     return {
       tier: 'enlightenment',
       status: 'active',

@@ -12,13 +12,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Text, Pressable, ActivityIndicator } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
@@ -95,13 +89,14 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.FEEL_WHEEL);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: values as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.FEEL_WHEEL,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: values as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.FEEL_WHEEL,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -130,7 +125,7 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
     const entries = Object.entries(values) as [EmotionKey, number][];
     const sorted = entries.sort((a, b) => b[1] - a[1]);
     const highest = sorted[0];
-    const emotion = EMOTIONS.find(e => e.key === highest[0]);
+    const emotion = EMOTIONS.find((e) => e.key === highest[0]);
     return emotion;
   };
 
@@ -142,12 +137,22 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
     const challengingEmotions = values.fear + values.sadness + values.disgust + values.anger;
 
     if (positiveEmotions > challengingEmotions + 10) {
-      return { message: 'You\'re experiencing predominantly positive emotions. Wonderful!', type: 'positive' };
+      return {
+        message: "You're experiencing predominantly positive emotions. Wonderful!",
+        type: 'positive',
+      };
     }
     if (challengingEmotions > positiveEmotions + 10) {
-      return { message: 'You\'re experiencing some challenging emotions. That\'s okay—awareness is the first step.', type: 'challenging' };
+      return {
+        message:
+          "You're experiencing some challenging emotions. That's okay—awareness is the first step.",
+        type: 'challenging',
+      };
     }
-    return { message: 'Your emotions are balanced. You\'re aware of the full spectrum of your feelings.', type: 'balanced' };
+    return {
+      message: "Your emotions are balanced. You're aware of the full spectrum of your feelings.",
+      type: 'balanced',
+    };
   };
 
   const dominantEmotion = getDominantEmotion();
@@ -198,12 +203,14 @@ const FeelWheelScreen: React.FC<Props> = ({ navigation }) => {
       )}
 
       {/* Insight Card */}
-      <View style={[
-        styles.insightCard,
-        insight.type === 'positive' && styles.insightPositive,
-        insight.type === 'challenging' && styles.insightChallenging,
-        insight.type === 'balanced' && styles.insightBalanced,
-      ]}>
+      <View
+        style={[
+          styles.insightCard,
+          insight.type === 'positive' && styles.insightPositive,
+          insight.type === 'challenging' && styles.insightChallenging,
+          insight.type === 'balanced' && styles.insightBalanced,
+        ]}
+      >
         <Text style={styles.insightText}>{insight.message}</Text>
       </View>
 

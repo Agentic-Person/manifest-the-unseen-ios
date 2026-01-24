@@ -25,13 +25,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Pressable,
-  StyleSheet,
-  ViewStyle,
-  PressableStateCallbackType,
-} from 'react-native';
+import { View, Pressable, StyleSheet, ViewStyle, PressableStateCallbackType } from 'react-native';
 import { colors, spacing } from '../theme';
 
 export type CardElevation = 'flat' | 'raised' | 'lifted';
@@ -75,11 +69,10 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const paddingValue = typeof padding === 'number' ? padding : spacing[padding];
 
-  const getContainerStyle = ({ pressed }: PressableStateCallbackType = { pressed: false }): ViewStyle[] => {
-    const baseStyles: ViewStyle[] = [
-      styles.base,
-      { padding: paddingValue },
-    ];
+  const getContainerStyle = (
+    { pressed }: PressableStateCallbackType = { pressed: false }
+  ): ViewStyle[] => {
+    const baseStyles: ViewStyle[] = [styles.base, { padding: paddingValue }];
 
     // Variant styles
     if (variant === 'elevated') {
@@ -93,10 +86,14 @@ export const Card: React.FC<CardProps> = ({
       baseStyles.push(styles.flat);
     } else if (elevation === 'raised') {
       baseStyles.push(styles.raised);
-      if (pressed) baseStyles.push(styles.pressed);
+      if (pressed) {
+        baseStyles.push(styles.pressed);
+      }
     } else if (elevation === 'lifted') {
       baseStyles.push(styles.lifted);
-      if (pressed) baseStyles.push(styles.pressed);
+      if (pressed) {
+        baseStyles.push(styles.pressed);
+      }
     }
 
     // Custom style

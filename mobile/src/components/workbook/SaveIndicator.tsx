@@ -6,13 +6,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { colors } from '../../theme/colors';
 
 // Maximum time to show "Saving..." before considering it stuck (15 seconds)
@@ -131,9 +125,7 @@ export const SaveIndicator: React.FC<SaveIndicatorProps> = ({
         activeOpacity={0.7}
       >
         <Text style={styles.warningIcon}>⏳</Text>
-        <Text style={[styles.text, styles.warningText]}>
-          Save may have failed. Tap to retry.
-        </Text>
+        <Text style={[styles.text, styles.warningText]}>Save may have failed. Tap to retry.</Text>
       </TouchableOpacity>
     );
   }
@@ -142,11 +134,7 @@ export const SaveIndicator: React.FC<SaveIndicatorProps> = ({
   if (isSaving) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator
-          size="small"
-          color={colors.dark.textSecondary}
-          style={styles.icon}
-        />
+        <ActivityIndicator size="small" color={colors.dark.textSecondary} style={styles.icon} />
         <Text style={styles.text}>Saving...</Text>
       </View>
     );
@@ -161,9 +149,7 @@ export const SaveIndicator: React.FC<SaveIndicatorProps> = ({
         activeOpacity={0.7}
       >
         <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={[styles.text, styles.errorText]}>
-          Error saving. Tap to retry.
-        </Text>
+        <Text style={[styles.text, styles.errorText]}>Error saving. Tap to retry.</Text>
       </TouchableOpacity>
     );
   }

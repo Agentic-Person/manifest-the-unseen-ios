@@ -13,13 +13,7 @@
  */
 
 import React, { useMemo, useRef, useEffect } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Text,
-  Dimensions,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, Text, Dimensions } from 'react-native';
 import { TimelineBar } from './TimelineBar';
 import type { TimelineGoal, TimelineView } from '../../screens/workbook/Phase3/TimelineScreen';
 
@@ -73,8 +67,12 @@ const calculateTimelineBounds = (
     const startDate = new Date(goal.startDate);
     const endDate = new Date(goal.endDate);
 
-    if (startDate < minDate) minDate = new Date(startDate);
-    if (endDate > maxDate) maxDate = new Date(endDate);
+    if (startDate < minDate) {
+      minDate = new Date(startDate);
+    }
+    if (endDate > maxDate) {
+      maxDate = new Date(endDate);
+    }
   });
 
   // Add padding based on view type
@@ -84,9 +82,7 @@ const calculateTimelineBounds = (
   maxDate.setDate(maxDate.getDate() + paddingDays);
 
   // Calculate total days
-  const days = Math.ceil(
-    (maxDate.getTime() - minDate.getTime()) / (1000 * 60 * 60 * 24)
-  );
+  const days = Math.ceil((maxDate.getTime() - minDate.getTime()) / (1000 * 60 * 60 * 24));
 
   return { start: minDate, end: maxDate, days: Math.max(days, 30) };
 };
@@ -126,25 +122,15 @@ const generateTimeLabels = (
 /**
  * Get position for a date on the timeline
  */
-const getDatePosition = (
-  date: Date,
-  startDate: Date,
-  dayWidth: number
-): number => {
-  const diffDays = Math.floor(
-    (date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-  );
+const getDatePosition = (date: Date, startDate: Date, dayWidth: number): number => {
+  const diffDays = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   return diffDays * dayWidth;
 };
 
 /**
  * TimelineChart Component
  */
-export const TimelineChart: React.FC<TimelineChartProps> = ({
-  goals,
-  viewType,
-  onGoalPress,
-}) => {
+export const TimelineChart: React.FC<TimelineChartProps> = ({ goals, viewType, onGoalPress }) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const dayWidth = CONFIG.dayWidth[viewType];
 
@@ -173,10 +159,7 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
   useEffect(() => {
     if (scrollViewRef.current && todayPosition > 0) {
       const screenWidth = Dimensions.get('window').width;
-      const scrollTo = Math.max(
-        0,
-        todayPosition + CONFIG.labelWidth - screenWidth / 2
-      );
+      const scrollTo = Math.max(0, todayPosition + CONFIG.labelWidth - screenWidth / 2);
       setTimeout(() => {
         scrollViewRef.current?.scrollTo({ x: scrollTo, animated: true });
       }, 300);
@@ -207,7 +190,11 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
               {timeLabels.map((item, index) => {
                 const position = getDatePosition(item.date, timelineStart, dayWidth);
                 const intervalWidth =
-                  viewType === 'week' ? dayWidth : viewType === 'month' ? dayWidth * 7 : dayWidth * 14;
+                  viewType === 'week'
+                    ? dayWidth
+                    : viewType === 'month'
+                      ? dayWidth * 7
+                      : dayWidth * 14;
 
                 return (
                   <View
@@ -255,16 +242,8 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
           {/* Goal Rows */}
           {goals.map((goal, index) => {
             const rowTop = CONFIG.headerHeight + index * CONFIG.rowHeight;
-            const startPos = getDatePosition(
-              new Date(goal.startDate),
-              timelineStart,
-              dayWidth
-            );
-            const endPos = getDatePosition(
-              new Date(goal.endDate),
-              timelineStart,
-              dayWidth
-            );
+            const startPos = getDatePosition(new Date(goal.startDate), timelineStart, dayWidth);
+            const endPos = getDatePosition(new Date(goal.endDate), timelineStart, dayWidth);
             const barWidth = Math.max(endPos - startPos, dayWidth);
 
             return (

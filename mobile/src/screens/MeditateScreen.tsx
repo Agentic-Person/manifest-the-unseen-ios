@@ -34,11 +34,7 @@ import { MeditationCard } from '../components/meditation/MeditationCard';
 import { Loading } from '../components/Loading';
 import type { Meditation } from '../types/meditation';
 import { useSettingsStore } from '../stores/settingsStore';
-import {
-  GuidedMeditationImages,
-  BreathingImages,
-  InstrumentalImages,
-} from '../assets';
+import { GuidedMeditationImages, BreathingImages, InstrumentalImages } from '../assets';
 import { useEffectiveAccess } from '../hooks/useSubscription';
 import { UpgradePrompt } from '../components/UpgradePrompt';
 import { TIER_PRICING } from '../types/subscription';
@@ -79,10 +75,10 @@ const GUIDED_IMAGE_MAP: Record<string, any> = {
 
 // Breathing exercise images (ordered to match database order_index 1-4)
 const BREATHING_IMAGES = [
-  BreathingImages.boxBreathing,        // 1: Box Breathing - Basic
-  BreathingImages.deepCalm,            // 2: Deep Calm and Relax
-  BreathingImages.energyBoost,         // 3: The Currents of Heaven and Earth
-  BreathingImages.hemisphereBalance,   // 4: Hemisphere Balance
+  BreathingImages.boxBreathing, // 1: Box Breathing - Basic
+  BreathingImages.deepCalm, // 2: Deep Calm and Relax
+  BreathingImages.energyBoost, // 3: The Currents of Heaven and Earth
+  BreathingImages.hemisphereBalance, // 4: Hemisphere Balance
 ];
 
 const INSTRUMENTAL_IMAGES = [
@@ -133,8 +129,6 @@ const getMeditationImage = (
  * Meditate Screen Component
  */
 const MeditateScreen = () => {
-  console.log('[MeditateScreen] Rendering...');
-
   const navigation = useNavigation<MeditateNavProp>();
   const [activeTab, setActiveTab] = useState<TabType>('guided');
   const [refreshing, setRefreshing] = useState(false);
@@ -175,15 +169,6 @@ const MeditateScreen = () => {
   // User stats
   const { data: stats } = useMeditationStats();
 
-  console.log('[MeditateScreen] Hooks called', {
-    isLoadingGuided,
-    isLoadingBreathing,
-    isLoadingMusic,
-    isLoadingPrayers,
-    guidedCount: guidedMeditations?.length,
-    prayersCount: prayers?.length,
-  });
-
   /**
    * Handle refresh
    */
@@ -197,26 +182,22 @@ const MeditateScreen = () => {
    * Check if meditation is accessible based on subscription
    * Trial users and any subscriber have access to meditations
    */
-  const isMeditationAccessible = useCallback(
-    (): boolean => {
-      // Trial users have full access
-      if (isTrialUser) return true;
-      // Paid subscribers have access based on tier
-      return effectiveTier !== 'free';
-    },
-    [effectiveTier, isTrialUser]
-  );
+  const isMeditationAccessible = useCallback((): boolean => {
+    // Trial users have full access
+    if (isTrialUser) {
+      return true;
+    }
+    // Paid subscribers have access based on tier
+    return effectiveTier !== 'free';
+  }, [effectiveTier, isTrialUser]);
 
   /**
    * Get required tier for locked meditation
    * Simplified: All meditations unlocked with Novice
    */
-  const getRequiredTier = useCallback(
-    (): 'novice' | 'enlightenment' => {
-      return 'novice';
-    },
-    []
-  );
+  const getRequiredTier = useCallback((): 'novice' | 'enlightenment' => {
+    return 'novice';
+  }, []);
 
   /**
    * Handle meditation press
@@ -328,9 +309,7 @@ const MeditateScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Meditate</Text>
-        <Text style={styles.subtitle}>
-          Find peace and clarity through practice
-        </Text>
+        <Text style={styles.subtitle}>Find peace and clarity through practice</Text>
       </View>
 
       {/* Stats Banner */}
@@ -361,10 +340,7 @@ const MeditateScreen = () => {
         {TABS.map((tab) => (
           <Pressable
             key={tab.key}
-            style={[
-              styles.tab,
-              activeTab === tab.key && styles.tabActive,
-            ]}
+            style={[styles.tab, activeTab === tab.key && styles.tabActive]}
             onPress={() => setActiveTab(tab.key)}
             accessibilityRole="tab"
             accessibilityState={{ selected: activeTab === tab.key }}
@@ -374,12 +350,7 @@ const MeditateScreen = () => {
               size={20}
               color={activeTab === tab.key ? colors.dark.accentGold : colors.text.tertiary}
             />
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === tab.key && styles.tabTextActive,
-              ]}
-            >
+            <Text style={[styles.tabText, activeTab === tab.key && styles.tabTextActive]}>
               {tab.label}
             </Text>
           </Pressable>

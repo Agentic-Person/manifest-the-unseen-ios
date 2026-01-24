@@ -13,9 +13,7 @@ interface SaleBadgeProps {
   discountPercentage?: number;
 }
 
-export const SaleBadge: React.FC<SaleBadgeProps> = ({
-  discountPercentage = 50,
-}) => {
+export const SaleBadge: React.FC<SaleBadgeProps> = ({ discountPercentage = 50 }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{discountPercentage}% OFF</Text>

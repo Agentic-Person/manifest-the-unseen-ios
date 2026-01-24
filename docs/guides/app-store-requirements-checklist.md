@@ -8,15 +8,145 @@ Based on 4 submission attempts for Manifest the Unseen (January 2026), this docu
 
 ## Table of Contents
 
-1. [Legal Requirements (Guideline 5.1.1)](#legal-requirements)
-2. [Health & Wellness Disclaimers (Guideline 5.1.1(ix))](#health-wellness-disclaimers)
-3. [In-App Purchases & Subscriptions (Guideline 3.1)](#in-app-purchases-subscriptions)
-4. [Privacy Requirements (iOS 17+)](#privacy-requirements)
-5. [Sign in with Apple (Guideline 4.8)](#sign-in-with-apple)
-6. [App Privacy Questionnaire](#app-privacy-questionnaire)
-7. [App Store Connect Configuration](#app-store-connect-configuration)
-8. [Pre-Submission Testing](#pre-submission-testing)
-9. [Common Rejection Reasons](#common-rejection-reasons)
+1. [API Keys & Secrets Management](#api-keys--secrets-management)
+2. [Legal Requirements (Guideline 5.1.1)](#legal-requirements)
+3. [Health & Wellness Disclaimers (Guideline 5.1.1(ix))](#health-wellness-disclaimers)
+4. [In-App Purchases & Subscriptions (Guideline 3.1)](#in-app-purchases-subscriptions)
+5. [Privacy Requirements (iOS 17+)](#privacy-requirements)
+6. [Sign in with Apple (Guideline 4.8)](#sign-in-with-apple)
+7. [App Privacy Questionnaire](#app-privacy-questionnaire)
+8. [App Store Connect Configuration](#app-store-connect-configuration)
+9. [Pre-Submission Testing](#pre-submission-testing)
+10. [Common Rejection Reasons](#common-rejection-reasons)
+
+---
+
+## API Keys & Secrets Management
+
+### Understanding Public vs Secret Keys
+
+**CRITICAL**: Not all API keys are created equal. Understanding the difference prevents security issues AND confusion.
+
+### Types of Keys:
+
+| Key Type | Example | Safe in Client App? | Safe in Git? |
+|----------|---------|---------------------|--------------|
+| **Public/Client Keys** | Supabase Anon Key, RevenueCat Public Key | ✅ YES | ⚠️ Only in private repos |
+| **Secret/Server Keys** | Supabase Service Role, Anthropic API Key | ❌ NEVER | ❌ NEVER |
+
+### ✅ Keys That ARE Safe for Client Apps:
+
+These keys are **designed** to be embedded in mobile apps:
+
+1. **Supabase Anon Key** (`EXPO_PUBLIC_SUPABASE_ANON_KEY`)
+   - Protected by Row Level Security (RLS)
+   - Users can only access their own data
+   - Even if exposed, RLS policies protect data
+
+2. **Supabase URL** (`EXPO_PUBLIC_SUPABASE_URL`)
+   - Just your project's endpoint
+   - Not a secret
+
+3. **RevenueCat Public Key** (`EXPO_PUBLIC_REVENUECAT_IOS_KEY`)
+   - Literally called "public" key
+   - RevenueCat has separate secret keys for server operations
+
+4. **Sentry DSN** (`EXPO_PUBLIC_SENTRY_DSN`)
+   - Just tells Sentry where to send crash reports
+   - Not sensitive
+
+### ❌ Keys That Must NEVER Be in Client Apps:
+
+These keys bypass security and must stay server-side only:
+
+1. **Supabase Service Role Key**
+   - Bypasses ALL Row Level Security
+   - Full admin access to database
+   - Keep in Edge Functions only
+
+2. **Anthropic/OpenAI API Keys**
+   - Billed per use
+   - Anyone with the key can run up charges
+   - Keep in Edge Functions only
+
+3. **RevenueCat Secret Key**
+   - Server-side operations only
+   - Keep on backend
+
+### ⚠️ The eas.json Trap
+
+**Problem**: It's tempting to put environment variables directly in `eas.json`:
+
+```json
+// ❌ BAD - Keys visible in git history
+{
+  "build": {
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://xxx.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGc..."
+      }
+    }
+  }
+}
+```
+
+**Why it's problematic**:
+- If your repo is public, anyone can see these keys
+- Even if keys are "public," it looks unprofessional
+- Makes key rotation harder (have to update code)
+- Git history preserves keys forever
+
+### ✅ Better Approach: EAS Secrets
+
+Store keys on Expo's servers instead:
+
+```bash
+# Run these commands once
+cd mobile
+eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL --value "https://xxx.supabase.co"
+eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "your-key"
+eas secret:create --scope project --name EXPO_PUBLIC_REVENUECAT_IOS_KEY --value "your-key"
+eas secret:create --scope project --name EXPO_PUBLIC_SENTRY_DSN --value "your-dsn"
+```
+
+Then your `eas.json` is clean:
+```json
+// ✅ GOOD - No keys in code
+{
+  "build": {
+    "production": {
+      "env": {
+        // Keys come from EAS Secrets automatically
+      }
+    }
+  }
+}
+```
+
+### 📝 Best Practices Checklist:
+
+- [ ] **Make your GitHub repo PRIVATE** if it contains any configuration
+- [ ] **Use EAS Secrets** for all environment variables in builds
+- [ ] **Keep server keys in Edge Functions** (Supabase service role, AI API keys)
+- [ ] **Never commit .env files** (should be in .gitignore)
+- [ ] **Rotate keys** if you accidentally committed them to a public repo
+
+### When Keys in eas.json Are "Acceptable":
+
+If ALL of the following are true:
+1. Your GitHub repo is **private**
+2. Keys are all **public/client** keys (anon key, not service role)
+3. Your Supabase has **proper RLS policies**
+
+Then having keys in eas.json is *technically* fine, but EAS Secrets is still cleaner.
+
+### If You Accidentally Exposed Keys:
+
+1. **Rotate immediately** - Generate new keys in Supabase/RevenueCat dashboards
+2. **Update EAS Secrets** with new keys
+3. **Consider** cleaning git history (if truly sensitive keys were exposed)
+4. **Make repo private** if it isn't already
 
 ---
 
@@ -841,7 +971,7 @@ Print this and check before EVERY submission:
 
 ---
 
-**Last Updated**: January 14, 2026
+**Last Updated**: January 23, 2026
 **Project**: Manifest the Unseen iOS App
 **Submission Attempts**: 4 (final submission pending)
 **Rejection Reasons Conquered**: 6 critical issues

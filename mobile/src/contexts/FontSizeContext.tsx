@@ -65,11 +65,7 @@ export const FontSizeProvider: React.FC<FontSizeProviderProps> = ({ children }) 
     [scale, fontSize, scaleFont]
   );
 
-  return (
-    <FontSizeContext.Provider value={value}>
-      {children}
-    </FontSizeContext.Provider>
-  );
+  return <FontSizeContext.Provider value={value}>{children}</FontSizeContext.Provider>;
 };
 
 /**

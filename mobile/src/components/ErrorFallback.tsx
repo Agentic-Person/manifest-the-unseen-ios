@@ -41,11 +41,9 @@ const ErrorFallback: React.FC<Props> = ({ error, onReset }) => {
       const isAvailable = await MailComposer.isAvailableAsync();
 
       if (!isAvailable) {
-        Alert.alert(
-          'Email Not Available',
-          `Please email us directly at ${SUPPORT_EMAIL}`,
-          [{ text: 'OK' }]
-        );
+        Alert.alert('Email Not Available', `Please email us directly at ${SUPPORT_EMAIL}`, [
+          { text: 'OK' },
+        ]);
         return;
       }
 
@@ -72,19 +70,13 @@ ${__DEV__ && error?.stack ? `\nStack Trace:\n${error.stack}` : ''}`;
         body,
       });
     } catch (emailError) {
-      Alert.alert(
-        'Error',
-        'Could not open email. Please try again or email us directly.'
-      );
+      Alert.alert('Error', 'Could not open email. Please try again or email us directly.');
     }
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Icon */}
         <View style={styles.iconContainer}>
           <Text style={styles.icon}>!</Text>
@@ -95,8 +87,7 @@ ${__DEV__ && error?.stack ? `\nStack Trace:\n${error.stack}` : ''}`;
 
         {/* Description */}
         <Text style={styles.description}>
-          We're sorry, but something unexpected happened. Don't worry - your
-          data is safe.
+          We're sorry, but something unexpected happened. Don't worry - your data is safe.
         </Text>
 
         {/* Error details (development only) */}
@@ -110,11 +101,7 @@ ${__DEV__ && error?.stack ? `\nStack Trace:\n${error.stack}` : ''}`;
         {/* Actions */}
         <View style={styles.actions}>
           {onReset && (
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={onReset}
-              activeOpacity={0.8}
-            >
+            <TouchableOpacity style={styles.primaryButton} onPress={onReset} activeOpacity={0.8}>
               <Text style={styles.primaryButtonText}>Try Again</Text>
             </TouchableOpacity>
           )}
@@ -155,7 +142,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.error[500] + '20', // 20% opacity
+    backgroundColor: `${colors.error[500]}20`, // 20% opacity
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.lg,

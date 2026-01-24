@@ -12,14 +12,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
@@ -101,10 +94,12 @@ const ItemCard: React.FC<{
               onPress={() => onImportanceChange(star)}
               style={styles.starButton}
             >
-              <Text style={[
-                styles.star,
-                star <= item.importance && { color: DESIGN_COLORS.accentGold }
-              ]}>
+              <Text
+                style={[
+                  styles.star,
+                  star <= item.importance && { color: DESIGN_COLORS.accentGold },
+                ]}
+              >
                 ★
               </Text>
             </Pressable>
@@ -126,16 +121,20 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Load saved data from Supabase
-  const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.STRENGTHS_WEAKNESSES);
+  const { data: savedProgress, isLoading } = useWorkbookProgress(
+    1,
+    WORKSHEET_IDS.STRENGTHS_WEAKNESSES
+  );
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: data as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.STRENGTHS_WEAKNESSES,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: data as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.STRENGTHS_WEAKNESSES,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -174,37 +173,31 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Update item text
    */
-  const handleUpdateText = useCallback((
-    type: 'strengths' | 'weaknesses',
-    itemId: string,
-    text: string
-  ) => {
-    setData((prev) => ({
-      ...prev,
-      [type]: prev[type].map((item) =>
-        item.id === itemId ? { ...item, text } : item
-      ),
-      updatedAt: new Date().toISOString(),
-    }));
-  }, []);
+  const handleUpdateText = useCallback(
+    (type: 'strengths' | 'weaknesses', itemId: string, text: string) => {
+      setData((prev) => ({
+        ...prev,
+        [type]: prev[type].map((item) => (item.id === itemId ? { ...item, text } : item)),
+        updatedAt: new Date().toISOString(),
+      }));
+    },
+    []
+  );
 
   /**
    * Update item importance
    */
-  const handleUpdateImportance = useCallback((
-    type: 'strengths' | 'weaknesses',
-    itemId: string,
-    importance: number
-  ) => {
-    setData((prev) => ({
-      ...prev,
-      [type]: prev[type].map((item) =>
-        item.id === itemId ? { ...item, importance } : item
-      ),
-      updatedAt: new Date().toISOString(),
-    }));
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, []);
+  const handleUpdateImportance = useCallback(
+    (type: 'strengths' | 'weaknesses', itemId: string, importance: number) => {
+      setData((prev) => ({
+        ...prev,
+        [type]: prev[type].map((item) => (item.id === itemId ? { ...item, importance } : item)),
+        updatedAt: new Date().toISOString(),
+      }));
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    },
+    []
+  );
 
   /**
    * Delete an item
@@ -241,14 +234,25 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     if (totalStrengths > totalWeaknesses * 2) {
-      return { message: 'You have many strengths identified! Consider if there are weaknesses you might be overlooking.', type: 'strength' };
+      return {
+        message:
+          'You have many strengths identified! Consider if there are weaknesses you might be overlooking.',
+        type: 'strength',
+      };
     }
 
     if (totalWeaknesses > totalStrengths * 2) {
-      return { message: 'You\'ve identified many areas for growth. Remember to also acknowledge your strengths!', type: 'weakness' };
+      return {
+        message:
+          "You've identified many areas for growth. Remember to also acknowledge your strengths!",
+        type: 'weakness',
+      };
     }
 
-    return { message: 'Good balance! Self-awareness is the foundation of growth.', type: 'balanced' };
+    return {
+      message: 'Good balance! Self-awareness is the foundation of growth.',
+      type: 'balanced',
+    };
   };
 
   const insights = getInsights();
@@ -285,13 +289,15 @@ const StrengthsWeaknessesScreen: React.FC<Props> = ({ navigation }) => {
       />
 
       {/* Insights Card */}
-      <View style={[
-        styles.insightCard,
-        insights.type === 'strength' && styles.insightStrength,
-        insights.type === 'weakness' && styles.insightWeakness,
-        insights.type === 'balanced' && styles.insightBalanced,
-        insights.type === 'neutral' && styles.insightNeutral,
-      ]}>
+      <View
+        style={[
+          styles.insightCard,
+          insights.type === 'strength' && styles.insightStrength,
+          insights.type === 'weakness' && styles.insightWeakness,
+          insights.type === 'balanced' && styles.insightBalanced,
+          insights.type === 'neutral' && styles.insightNeutral,
+        ]}
+      >
         <Text style={styles.insightText}>{insights.message}</Text>
       </View>
 

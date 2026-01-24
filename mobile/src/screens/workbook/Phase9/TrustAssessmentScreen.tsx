@@ -20,13 +20,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Text, Pressable, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Slider from '@react-native-community/slider';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -110,7 +104,7 @@ const JOURNAL_PROMPTS: Record<TrustDimension, string[]> = {
   process: [
     'What is something valuable you learned from a struggle or failure?',
     'How can you find more joy in the journey rather than focusing only on results?',
-    'What small progress have you made that you haven\'t acknowledged?',
+    "What small progress have you made that you haven't acknowledged?",
   ],
   timing: [
     'When has waiting for something led to a better outcome than you expected?',
@@ -134,10 +128,12 @@ const PHASE_NUMBER = 9;
 const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
 
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.TRUST_ASSESSMENT
-  );
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.TRUST_ASSESSMENT);
 
   const [trustValues, setTrustValues] = useState<TrustValues>({
     self: 5,
@@ -171,7 +167,9 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as TrustAssessmentData;
@@ -275,10 +273,7 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
           return (
             <View
               key={dim.key}
-              style={[
-                styles.sliderCard,
-                isSelected && styles.sliderCardSelected,
-              ]}
+              style={[styles.sliderCard, isSelected && styles.sliderCardSelected]}
             >
               <View style={styles.sliderHeader}>
                 <Text style={styles.sliderLabel}>{dim.label}</Text>
@@ -334,7 +329,9 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
       >
         <Text style={styles.insightsToggleIcon}>{showInsights ? '\u25bc' : '\u25b6'}</Text>
         <Text style={styles.insightsToggleText}>
-          {showInsights ? 'Hide Personalized Insights' : 'View Personalized Insights & Journal Prompts'}
+          {showInsights
+            ? 'Hide Personalized Insights'
+            : 'View Personalized Insights & Journal Prompts'}
         </Text>
       </Pressable>
 
@@ -348,7 +345,9 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
 
           {lowestDimensions.map((dim) => {
             const dimension = TRUST_DIMENSIONS.find((d) => d.key === dim);
-            if (!dimension) return null;
+            if (!dimension) {
+              return null;
+            }
 
             return (
               <View key={dim} style={styles.insightCard}>
@@ -373,7 +372,12 @@ const TrustAssessmentScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Save Status */}
       <View style={styles.saveStatusContainer}>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </View>
     </ExerciseScreenLayout>
   );

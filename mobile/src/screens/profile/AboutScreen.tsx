@@ -30,10 +30,7 @@ const AboutScreen = ({ navigation }: Props) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* App Info Header */}
         <View style={styles.header}>
           <View style={styles.appIconContainer}>
@@ -48,10 +45,9 @@ const AboutScreen = ({ navigation }: Props) => {
         {/* Description */}
         <View style={styles.descriptionContainer}>
           <Text style={styles.description}>
-            Transform your life through the ancient art of manifestation.
-            Manifest the Unseen combines structured workbook exercises,
-            AI-guided wisdom, and meditation practices to help you achieve
-            your deepest desires.
+            Transform your life through the ancient art of manifestation. Manifest the Unseen
+            combines structured workbook exercises, AI-guided wisdom, and meditation practices to
+            help you achieve your deepest desires.
           </Text>
         </View>
 
@@ -72,9 +68,7 @@ const AboutScreen = ({ navigation }: Props) => {
 
         {/* Credits */}
         <View style={styles.credits}>
-          <Text style={styles.creditsText}>
-            Created by Agentic Personnel LLC
-          </Text>
+          <Text style={styles.creditsText}>Created by Agentic Personnel LLC</Text>
           <Text style={styles.copyrightText}>
             {'\u00A9'} {new Date().getFullYear()} Agentic Personnel LLC. All rights reserved.
           </Text>

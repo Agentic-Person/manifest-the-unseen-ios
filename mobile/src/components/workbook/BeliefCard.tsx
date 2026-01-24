@@ -23,12 +23,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
@@ -66,12 +61,7 @@ export interface BeliefCardProps {
 /**
  * BeliefCard Component
  */
-export const BeliefCard: React.FC<BeliefCardProps> = ({
-  belief,
-  onEdit,
-  onDelete,
-  testID,
-}) => {
+export const BeliefCard: React.FC<BeliefCardProps> = ({ belief, onEdit, onDelete, testID }) => {
   const isComplete = Boolean(belief.limitingBelief && belief.evidenceAgainst && belief.newBelief);
 
   /**
@@ -87,21 +77,17 @@ export const BeliefCard: React.FC<BeliefCardProps> = ({
    */
   const handleDelete = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      'Delete Belief',
-      'Are you sure you want to remove this belief restructuring?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            onDelete();
-          },
+    Alert.alert('Delete Belief', 'Are you sure you want to remove this belief restructuring?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          onDelete();
         },
-      ]
-    );
+      },
+    ]);
   }, [onDelete]);
 
   return (
@@ -118,14 +104,15 @@ export const BeliefCard: React.FC<BeliefCardProps> = ({
       {/* Header Row */}
       <View style={styles.header}>
         {/* Completion Badge */}
-        <View style={[
-          styles.statusBadge,
-          isComplete ? styles.statusComplete : styles.statusIncomplete,
-        ]}>
-          <Text style={[
-            styles.statusText,
-            isComplete ? styles.statusTextComplete : styles.statusTextIncomplete,
-          ]}>
+        <View
+          style={[styles.statusBadge, isComplete ? styles.statusComplete : styles.statusIncomplete]}
+        >
+          <Text
+            style={[
+              styles.statusText,
+              isComplete ? styles.statusTextComplete : styles.statusTextIncomplete,
+            ]}
+          >
             {isComplete ? '\u2713 Restructured' : 'In Progress'}
           </Text>
         </View>
@@ -195,18 +182,16 @@ export const BeliefCard: React.FC<BeliefCardProps> = ({
             style={[
               styles.progressFill,
               {
-                width: `${(
+                width: `${
                   (belief.limitingBelief ? 33 : 0) +
                   (belief.evidenceAgainst ? 33 : 0) +
                   (belief.newBelief ? 34 : 0)
-                )}%`,
+                }%`,
               },
             ]}
           />
         </View>
-        <Text style={styles.progressLabel}>
-          Transformation Progress
-        </Text>
+        <Text style={styles.progressLabel}>Transformation Progress</Text>
       </View>
     </TouchableOpacity>
   );

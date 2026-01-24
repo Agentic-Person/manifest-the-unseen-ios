@@ -131,9 +131,7 @@ export const GuruLoadingState: React.FC<GuruLoadingStateProps> = ({
       </View>
 
       {/* Subtle hint */}
-      <Text style={styles.hint}>
-        Your Guru is reviewing your unique journey
-      </Text>
+      <Text style={styles.hint}>Your Guru is reviewing your unique journey</Text>
     </View>
   );
 };

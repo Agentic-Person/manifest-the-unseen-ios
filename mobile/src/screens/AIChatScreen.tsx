@@ -7,13 +7,7 @@
  */
 
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  FlatList,
-  ActivityIndicator,
-  Text,
-  StyleSheet,
-} from 'react-native';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAIChat } from '../hooks/useAIChat';
 import { MessageBubble } from '../components/chat/MessageBubble';
@@ -25,13 +19,7 @@ import type { AIMessage } from '../types/aiChat';
 
 export function AIChatScreen() {
   const flatListRef = useRef<FlatList>(null);
-  const {
-    messages,
-    isLoading,
-    isSending,
-    error,
-    sendMessage,
-  } = useAIChat();
+  const { messages, isLoading, isSending, error, sendMessage } = useAIChat();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -46,18 +34,14 @@ export function AIChatScreen() {
     sendMessage(message);
   };
 
-  const renderMessage = ({ item }: { item: AIMessage }) => (
-    <MessageBubble message={item} />
-  );
+  const renderMessage = ({ item }: { item: AIMessage }) => <MessageBubble message={item} />;
 
   const renderEmptyState = () => {
     if (isLoading) {
       return (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.brand.gold} />
-          <Text style={styles.loadingText}>
-            Loading conversation...
-          </Text>
+          <Text style={styles.loadingText}>Loading conversation...</Text>
         </View>
       );
     }
@@ -66,13 +50,13 @@ export function AIChatScreen() {
   };
 
   const renderError = () => {
-    if (!error) return null;
+    if (!error) {
+      return null;
+    }
 
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>
-          Error
-        </Text>
+        <Text style={styles.errorTitle}>Error</Text>
         <Text style={styles.errorMessage}>
           {error instanceof Error ? error.message : 'Something went wrong'}
         </Text>

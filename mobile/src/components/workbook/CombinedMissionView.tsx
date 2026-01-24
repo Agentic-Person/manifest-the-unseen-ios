@@ -19,13 +19,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
 
@@ -71,12 +65,7 @@ interface MissionCardProps {
   content: string;
 }
 
-const MissionCard: React.FC<MissionCardProps> = ({
-  title,
-  icon,
-  color,
-  content,
-}) => {
+const MissionCard: React.FC<MissionCardProps> = ({ title, icon, color, content }) => {
   if (!content || content.trim().length === 0) {
     return (
       <View style={[styles.missionCard, styles.emptyCard]}>
@@ -120,7 +109,7 @@ export const CombinedMissionView: React.FC<CombinedMissionViewProps> = ({
     { text: legacyMission, name: 'Legacy' },
   ];
 
-  const completedCount = sections.filter(s => s.text && s.text.trim().length > 0).length;
+  const completedCount = sections.filter((s) => s.text && s.text.trim().length > 0).length;
   const allComplete = completedCount === 4;
 
   return (
@@ -155,7 +144,7 @@ export const CombinedMissionView: React.FC<CombinedMissionViewProps> = ({
 
           {/* Decorative element */}
           <View style={styles.mandalaDecor}>
-            <Text style={styles.mandalaIcon}></Text>
+            <Text style={styles.mandalaIcon} />
           </View>
         </View>
 
@@ -254,8 +243,8 @@ export const CombinedMissionView: React.FC<CombinedMissionViewProps> = ({
           {/* Inspirational Quote */}
           <View style={styles.quoteContainer}>
             <Text style={styles.quoteText}>
-              "The two most important days in your life are the day you are born
-              and the day you find out why."
+              "The two most important days in your life are the day you are born and the day you
+              find out why."
             </Text>
             <Text style={styles.quoteAuthor}>- Mark Twain</Text>
           </View>

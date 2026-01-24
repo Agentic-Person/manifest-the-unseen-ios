@@ -23,12 +23,7 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
@@ -102,24 +97,32 @@ export const ReframeCard: React.FC<ReframeCardProps> = ({
   /**
    * Handle value change with debounce
    */
-  const handleValueChange = useCallback((text: string) => {
-    setLocalValue(text);
-    onValueChange(text);
-  }, [onValueChange]);
+  const handleValueChange = useCallback(
+    (text: string) => {
+      setLocalValue(text);
+      onValueChange(text);
+    },
+    [onValueChange]
+  );
 
   /**
    * Handle action change with debounce
    */
-  const handleActionChange = useCallback((text: string) => {
-    setLocalAction(text);
-    onActionChange(text);
-  }, [onActionChange]);
+  const handleActionChange = useCallback(
+    (text: string) => {
+      setLocalAction(text);
+      onActionChange(text);
+    },
+    [onActionChange]
+  );
 
   /**
    * Handle completion with celebration
    */
   const handleComplete = useCallback(() => {
-    if (!canComplete) return;
+    if (!canComplete) {
+      return;
+    }
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onComplete();
@@ -182,9 +185,7 @@ export const ReframeCard: React.FC<ReframeCardProps> = ({
               testID={`${testID}-value-input`}
             />
           ) : (
-            <Text style={styles.filledText}>
-              {localValue || 'Not yet discovered'}
-            </Text>
+            <Text style={styles.filledText}>{localValue || 'Not yet discovered'}</Text>
           )}
         </View>
       </View>
@@ -213,9 +214,7 @@ export const ReframeCard: React.FC<ReframeCardProps> = ({
               testID={`${testID}-action-input`}
             />
           ) : (
-            <Text style={styles.filledText}>
-              {localAction || 'Action plan pending'}
-            </Text>
+            <Text style={styles.filledText}>{localAction || 'Action plan pending'}</Text>
           )}
         </View>
       </View>
@@ -223,10 +222,7 @@ export const ReframeCard: React.FC<ReframeCardProps> = ({
       {/* Complete Button */}
       {!reframe.isComplete && (
         <TouchableOpacity
-          style={[
-            styles.completeButton,
-            !canComplete && styles.completeButtonDisabled,
-          ]}
+          style={[styles.completeButton, !canComplete && styles.completeButtonDisabled]}
           onPress={handleComplete}
           disabled={!canComplete}
           accessibilityRole="button"
@@ -234,9 +230,7 @@ export const ReframeCard: React.FC<ReframeCardProps> = ({
           accessibilityState={{ disabled: !canComplete }}
           testID={`${testID}-complete`}
         >
-          <Text style={styles.completeButtonText}>
-            {'\u{1F31F}'} Complete Transformation
-          </Text>
+          <Text style={styles.completeButtonText}>{'\u{1F31F}'} Complete Transformation</Text>
         </TouchableOpacity>
       )}
     </View>

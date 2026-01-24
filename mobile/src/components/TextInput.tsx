@@ -82,11 +82,7 @@ export const TextInput: React.FC<TextInputProps> = ({
     <View style={[styles.container, containerStyle]}>
       {/* Label */}
       {label && (
-        <Text
-          style={styles.label}
-          accessible
-          accessibilityRole="text"
-        >
+        <Text style={styles.label} accessible accessibilityRole="text">
           {label}
         </Text>
       )}

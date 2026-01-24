@@ -184,15 +184,7 @@ export const WheelChart: React.FC<WheelChartProps> = ({
       <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         <Defs>
           {/* Radial gradient for center glow */}
-          <RadialGradient
-            id="centerGlow"
-            cx="50%"
-            cy="50%"
-            rx="50%"
-            ry="50%"
-            fx="50%"
-            fy="50%"
-          >
+          <RadialGradient id="centerGlow" cx="50%" cy="50%" rx="50%" ry="50%" fx="50%" fy="50%">
             <Stop offset="0%" stopColor={DESIGN_COLORS.accentPurple} stopOpacity="0.3" />
             <Stop offset="100%" stopColor={DESIGN_COLORS.bgPrimary} stopOpacity="0" />
           </RadialGradient>
@@ -205,12 +197,7 @@ export const WheelChart: React.FC<WheelChartProps> = ({
         </Defs>
 
         {/* Background circle with subtle glow */}
-        <Circle
-          cx={center}
-          cy={center}
-          r={maxRadius + 5}
-          fill="url(#centerGlow)"
-        />
+        <Circle cx={center} cy={center} r={maxRadius + 5} fill="url(#centerGlow)" />
 
         {/* Concentric rings (1-10) */}
         {Array.from({ length: ringCount }, (_, i) => i + 1).map((level) => {
@@ -263,13 +250,7 @@ export const WheelChart: React.FC<WheelChartProps> = ({
           valueDots.map((dot) => (
             <G key={`dot-${dot.area.key}`}>
               {/* Outer glow */}
-              <Circle
-                cx={dot.x}
-                cy={dot.y}
-                r={10}
-                fill={DESIGN_COLORS.accentGold}
-                opacity={0.3}
-              />
+              <Circle cx={dot.x} cy={dot.y} r={10} fill={DESIGN_COLORS.accentGold} opacity={0.3} />
               {/* Main dot */}
               <Circle
                 cx={dot.x}
@@ -299,8 +280,12 @@ export const WheelChart: React.FC<WheelChartProps> = ({
           labelPositions.map((pos) => {
             // Adjust text anchor based on position
             let textAnchor: 'start' | 'middle' | 'end' = 'middle';
-            if (pos.angle > 45 && pos.angle < 135) textAnchor = 'start';
-            if (pos.angle > 225 && pos.angle < 315) textAnchor = 'end';
+            if (pos.angle > 45 && pos.angle < 135) {
+              textAnchor = 'start';
+            }
+            if (pos.angle > 225 && pos.angle < 315) {
+              textAnchor = 'end';
+            }
 
             return (
               <SvgText
@@ -337,8 +322,7 @@ export const WheelChart: React.FC<WheelChartProps> = ({
             textAnchor="middle"
           >
             {(
-              Object.values(values).reduce((a, b) => a + b, 0) /
-              Object.values(values).length
+              Object.values(values).reduce((a, b) => a + b, 0) / Object.values(values).length
             ).toFixed(1)}
           </SvgText>
           <SvgText

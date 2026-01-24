@@ -81,10 +81,14 @@ export const useGuruRateLimitStore = create<GuruRateLimitState>((set, get) => ({
    */
   canMakeRequest: (): boolean => {
     const { usage } = get();
-    if (!usage) return true; // Allow if not loaded yet
+    if (!usage) {
+      return true;
+    } // Allow if not loaded yet
 
     const today = getTodayDate();
-    if (usage.date !== today) return true; // New day, reset
+    if (usage.date !== today) {
+      return true;
+    } // New day, reset
 
     return usage.count < DAILY_LIMIT;
   },
@@ -120,10 +124,14 @@ export const useGuruRateLimitStore = create<GuruRateLimitState>((set, get) => ({
    */
   getRemainingRequests: (): number => {
     const { usage } = get();
-    if (!usage) return DAILY_LIMIT;
+    if (!usage) {
+      return DAILY_LIMIT;
+    }
 
     const today = getTodayDate();
-    if (usage.date !== today) return DAILY_LIMIT;
+    if (usage.date !== today) {
+      return DAILY_LIMIT;
+    }
 
     return Math.max(0, DAILY_LIMIT - usage.count);
   },

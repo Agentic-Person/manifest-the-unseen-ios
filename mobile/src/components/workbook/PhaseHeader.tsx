@@ -34,10 +34,7 @@ export const PhaseHeader: React.FC<PhaseHeaderProps> = ({
           onError={(e) => console.warn('PhaseHeader image failed to load:', e.nativeEvent.error)}
           onLoad={() => console.log('PhaseHeader image loaded successfully')}
         />
-        <LinearGradient
-          colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
-          style={styles.gradient}
-        />
+        <LinearGradient colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']} style={styles.gradient} />
       </View>
 
       {/* Text Overlay */}

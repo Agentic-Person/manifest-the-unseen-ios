@@ -99,12 +99,24 @@ export const useUpdateUserProfile = () => {
       }
       // Transform camelCase UserProfile to snake_case database fields
       const dbUpdates: Database['public']['Tables']['users']['Update'] = {};
-      if (updates.fullName !== undefined) dbUpdates.full_name = updates.fullName;
-      if (updates.avatarUrl !== undefined) dbUpdates.avatar_url = updates.avatarUrl;
-      if (updates.subscriptionTier !== undefined) dbUpdates.subscription_tier = updates.subscriptionTier;
-      if (updates.subscriptionStatus !== undefined) dbUpdates.subscription_status = updates.subscriptionStatus;
-      if (updates.trialEndsAt !== undefined) dbUpdates.trial_ends_at = updates.trialEndsAt;
-      if (updates.currentPhase !== undefined) dbUpdates.current_phase = updates.currentPhase;
+      if (updates.fullName !== undefined) {
+        dbUpdates.full_name = updates.fullName;
+      }
+      if (updates.avatarUrl !== undefined) {
+        dbUpdates.avatar_url = updates.avatarUrl;
+      }
+      if (updates.subscriptionTier !== undefined) {
+        dbUpdates.subscription_tier = updates.subscriptionTier;
+      }
+      if (updates.subscriptionStatus !== undefined) {
+        dbUpdates.subscription_status = updates.subscriptionStatus;
+      }
+      if (updates.trialEndsAt !== undefined) {
+        dbUpdates.trial_ends_at = updates.trialEndsAt;
+      }
+      if (updates.currentPhase !== undefined) {
+        dbUpdates.current_phase = updates.currentPhase;
+      }
 
       const data = await updateUserProfile(user.id, dbUpdates);
       // Transform response back to UserProfile

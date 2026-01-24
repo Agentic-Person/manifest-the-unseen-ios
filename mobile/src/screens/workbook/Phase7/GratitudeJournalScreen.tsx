@@ -20,19 +20,10 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Text, Pressable, Alert, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
-import {
-  GratitudeItem,
-} from '../../../components/workbook/GratitudeItem';
+import { GratitudeItem } from '../../../components/workbook/GratitudeItem';
 import { StreakDisplay } from '../../../components/workbook/StreakDisplay';
 import type {
   GratitudeItemData,
@@ -74,7 +65,7 @@ const getTodayKey = (): string => {
 
 // Format date for display
 const formatDisplayDate = (dateKey: string): string => {
-  const date = new Date(dateKey + 'T00:00:00');
+  const date = new Date(`${dateKey}T00:00:00`);
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
@@ -108,7 +99,12 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Supabase integration hooks
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_JOURNAL);
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_JOURNAL);
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: entries as Record<string, unknown>,
@@ -135,7 +131,9 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data) {
       const loadedEntries = savedProgress.data as Record<string, DailyEntry>;
@@ -229,7 +227,9 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleTextChange = (id: string, text: string) => {
     setEntries((prev) => {
-      if (!prev[selectedDate]) return prev;
+      if (!prev[selectedDate]) {
+        return prev;
+      }
       return {
         ...prev,
         [selectedDate]: {
@@ -248,7 +248,9 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleCategoryChange = (id: string, category: GratitudeCategory) => {
     setEntries((prev) => {
-      if (!prev[selectedDate]) return prev;
+      if (!prev[selectedDate]) {
+        return prev;
+      }
       return {
         ...prev,
         [selectedDate]: {
@@ -267,7 +269,9 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handlePhotoChange = (id: string, photoUri: string | undefined) => {
     setEntries((prev) => {
-      if (!prev[selectedDate]) return prev;
+      if (!prev[selectedDate]) {
+        return prev;
+      }
       return {
         ...prev,
         [selectedDate]: {
@@ -286,7 +290,9 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleDelete = (id: string) => {
     setEntries((prev) => {
-      if (!prev[selectedDate]) return prev;
+      if (!prev[selectedDate]) {
+        return prev;
+      }
       return {
         ...prev,
         [selectedDate]: {
@@ -303,17 +309,19 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handlePrevDay = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const current = new Date(selectedDate + 'T00:00:00');
+    const current = new Date(`${selectedDate}T00:00:00`);
     current.setDate(current.getDate() - 1);
     setSelectedDate(current.toISOString().split('T')[0]);
   };
 
   const handleNextDay = () => {
     const todayKey = getTodayKey();
-    if (selectedDate >= todayKey) return;
+    if (selectedDate >= todayKey) {
+      return;
+    }
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const current = new Date(selectedDate + 'T00:00:00');
+    const current = new Date(`${selectedDate}T00:00:00`);
     current.setDate(current.getDate() + 1);
     setSelectedDate(current.toISOString().split('T')[0]);
   };
@@ -386,9 +394,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
           accessibilityHint="Tap to return to today's entry"
         >
           <Text style={styles.dateText}>{formatDisplayDate(selectedDate)}</Text>
-          {!isToday && (
-            <Text style={styles.goToTodayText}>Tap to go to today</Text>
-          )}
+          {!isToday && <Text style={styles.goToTodayText}>Tap to go to today</Text>}
         </Pressable>
 
         <Pressable
@@ -398,12 +404,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
           accessibilityRole="button"
           accessibilityLabel="Next day"
         >
-          <Text
-            style={[
-              styles.navButtonText,
-              isToday && styles.navButtonTextDisabled,
-            ]}
-          >
+          <Text style={[styles.navButtonText, isToday && styles.navButtonTextDisabled]}>
             {'\u2192'}
           </Text>
         </Pressable>
@@ -411,9 +412,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Entry Count */}
       <View style={styles.entryCount}>
-        <Text style={styles.entryCountText}>
-          {currentItems.length} of 5 gratitudes
-        </Text>
+        <Text style={styles.entryCountText}>{currentItems.length} of 5 gratitudes</Text>
         {currentItems.length >= 3 && (
           <View style={styles.completeBadge}>
             <Text style={styles.completeBadgeText}>{'\u2713'} Day Complete</Text>
@@ -458,7 +457,7 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.emptyText}>
               {isToday
                 ? 'What are you grateful for today? Tap the button below to begin.'
-                : 'You didn\'t record any gratitudes on this day.'}
+                : "You didn't record any gratitudes on this day."}
             </Text>
           </View>
         )}
@@ -467,14 +466,21 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
       {/* Tips Card */}
       <View style={styles.tipsCard}>
         <Text style={styles.tipsTitle}>Tips for Gratitude Practice</Text>
-        <Text style={styles.tipItem}>- Be specific: "My warm coffee this morning" not just "coffee"</Text>
+        <Text style={styles.tipItem}>
+          - Be specific: "My warm coffee this morning" not just "coffee"
+        </Text>
         <Text style={styles.tipItem}>- Include why you're grateful for each item</Text>
         <Text style={styles.tipItem}>- Notice small blessings you might overlook</Text>
         <Text style={styles.tipItem}>- Review past entries when feeling down</Text>
       </View>
 
       {/* Save Indicator */}
-      <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+      <SaveIndicator
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        isError={isLoadError}
+        onRetry={saveNow}
+      />
     </ExerciseScreenLayout>
   );
 };

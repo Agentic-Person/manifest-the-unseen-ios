@@ -17,12 +17,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { colors, typography, spacing, fontWeights } from '../../theme';
 
@@ -33,9 +28,15 @@ import { colors, typography, spacing, fontWeights } from '../../theme';
 const getPositiveGradientColor = (value: number, max: number = 10): string => {
   // Normalize to 0-1 range
   const normalized = value / max;
-  if (normalized <= 0.3) return '#dc2626'; // Red - needs improvement
-  if (normalized <= 0.5) return '#c9a227'; // Orange/gold - developing
-  if (normalized <= 0.7) return '#8b6914'; // Yellow/amber - good
+  if (normalized <= 0.3) {
+    return '#dc2626';
+  } // Red - needs improvement
+  if (normalized <= 0.5) {
+    return '#c9a227';
+  } // Orange/gold - developing
+  if (normalized <= 0.7) {
+    return '#8b6914';
+  } // Yellow/amber - good
   return '#2d5a4a'; // Green - excellent
 };
 
@@ -106,11 +107,7 @@ export const SliderInput: React.FC<SliderInputProps> = ({
       {/* Label and value display */}
       <View style={styles.header}>
         <Text style={styles.label}>{label}</Text>
-        {showValue && (
-          <Text style={[styles.valueDisplay, { color: activeColor }]}>
-            {value}
-          </Text>
-        )}
+        {showValue && <Text style={[styles.valueDisplay, { color: activeColor }]}>{value}</Text>}
       </View>
 
       {/* Gradient indicator dots */}

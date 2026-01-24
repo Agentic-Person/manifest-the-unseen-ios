@@ -72,9 +72,7 @@ export async function isModelDownloaded(): Promise<boolean> {
  * });
  * ```
  */
-export async function downloadModel(
-  onProgress?: (progress: number) => void
-): Promise<void> {
+export async function downloadModel(onProgress?: (progress: number) => void): Promise<void> {
   const modelFile = getModelFile();
 
   try {
@@ -109,7 +107,9 @@ export async function downloadModel(
     while (true) {
       const { done, value } = await reader.read();
 
-      if (done) break;
+      if (done) {
+        break;
+      }
 
       chunks.push(value);
       received += value.length;
@@ -219,9 +219,7 @@ export async function transcribe(audioUri: string): Promise<string> {
     return text;
   } catch (error) {
     throw new Error(
-      `Transcription failed: ${
-        error instanceof Error ? error.message : 'Unknown error'
-      }`
+      `Transcription failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -288,9 +286,7 @@ export async function deleteModel(): Promise<void> {
   } catch (error) {
     logger.error('Error deleting model:', error);
     throw new Error(
-      `Failed to delete model: ${
-        error instanceof Error ? error.message : 'Unknown error'
-      }`
+      `Failed to delete model: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

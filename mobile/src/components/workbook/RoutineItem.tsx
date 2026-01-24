@@ -8,13 +8,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors from APP-DESIGN.md
@@ -41,19 +35,19 @@ const DESIGN_COLORS = {
 const ACTIVITY_ICONS: Record<string, string> = {
   meditation: '\u{1F9D8}', // Person in lotus position
   journaling: '\u{1F4DD}', // Memo
-  exercise: '\u{1F3CB}',   // Person lifting weights
-  skincare: '\u{2728}',    // Sparkles
-  reading: '\u{1F4DA}',    // Books
+  exercise: '\u{1F3CB}', // Person lifting weights
+  skincare: '\u{2728}', // Sparkles
+  reading: '\u{1F4DA}', // Books
   stretching: '\u{1F9D8}', // Yoga
-  hydration: '\u{1F4A7}',  // Droplet
-  gratitude: '\u{1F64F}',  // Folded hands
+  hydration: '\u{1F4A7}', // Droplet
+  gratitude: '\u{1F64F}', // Folded hands
   affirmations: '\u{1F4AB}', // Dizzy
-  breathing: '\u{1F32C}',  // Wind face
-  walking: '\u{1F6B6}',    // Person walking
-  sleep: '\u{1F319}',      // Crescent moon
-  tea: '\u{1F375}',        // Teacup
-  music: '\u{1F3B5}',      // Musical note
-  custom: '\u{2B50}',      // Star
+  breathing: '\u{1F32C}', // Wind face
+  walking: '\u{1F6B6}', // Person walking
+  sleep: '\u{1F319}', // Crescent moon
+  tea: '\u{1F375}', // Teacup
+  music: '\u{1F3B5}', // Musical note
+  custom: '\u{2B50}', // Star
 };
 
 /**
@@ -119,9 +113,7 @@ const RoutineItem: React.FC<RoutineItemProps> = ({
    */
   const handleToggle = useCallback(() => {
     Haptics.impactAsync(
-      activity.completed
-        ? Haptics.ImpactFeedbackStyle.Light
-        : Haptics.ImpactFeedbackStyle.Medium
+      activity.completed ? Haptics.ImpactFeedbackStyle.Light : Haptics.ImpactFeedbackStyle.Medium
     );
     onToggleComplete(activity.id);
   }, [activity.id, activity.completed, onToggleComplete]);
@@ -224,12 +216,12 @@ const RoutineItem: React.FC<RoutineItemProps> = ({
           disabled={isFirst}
           accessibilityRole="button"
           accessibilityLabel="Move activity up"
-          accessibilityHint={isFirst ? 'Cannot move first item up' : 'Moves this activity up in the routine'}
+          accessibilityHint={
+            isFirst ? 'Cannot move first item up' : 'Moves this activity up in the routine'
+          }
           testID={`routine-move-up-${activity.id}`}
         >
-          <Text
-            style={[styles.reorderButtonText, isFirst && styles.reorderButtonTextDisabled]}
-          >
+          <Text style={[styles.reorderButtonText, isFirst && styles.reorderButtonTextDisabled]}>
             {'\u2191'}
           </Text>
         </TouchableOpacity>
@@ -239,12 +231,12 @@ const RoutineItem: React.FC<RoutineItemProps> = ({
           disabled={isLast}
           accessibilityRole="button"
           accessibilityLabel="Move activity down"
-          accessibilityHint={isLast ? 'Cannot move last item down' : 'Moves this activity down in the routine'}
+          accessibilityHint={
+            isLast ? 'Cannot move last item down' : 'Moves this activity down in the routine'
+          }
           testID={`routine-move-down-${activity.id}`}
         >
-          <Text
-            style={[styles.reorderButtonText, isLast && styles.reorderButtonTextDisabled]}
-          >
+          <Text style={[styles.reorderButtonText, isLast && styles.reorderButtonTextDisabled]}>
             {'\u2193'}
           </Text>
         </TouchableOpacity>

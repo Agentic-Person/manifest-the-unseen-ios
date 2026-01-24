@@ -31,7 +31,13 @@ import { TIER_PRICING, getSaleConfig, PACKAGE_IDS } from '../../types/subscripti
 import { SaleBanner } from '../../components/subscription/SaleBanner';
 import { SaleBadge } from '../../components/subscription/SaleBadge';
 import { StrikethroughPrice } from '../../components/subscription/StrikethroughPrice';
-import { useSubscriptionStore, useOfferings, usePurchaseState, usePromoCodeState, useTestMode } from '../../stores/subscriptionStore';
+import {
+  useSubscriptionStore,
+  useOfferings,
+  usePurchaseState,
+  usePromoCodeState,
+  useTestMode,
+} from '../../stores/subscriptionStore';
 import { PromoCodeInput } from '../../components/PromoCodeInput';
 import { recordPromoRedemption } from '../../services/promoService';
 import { getRevenueCatDebugState } from '../../services/subscriptionService';
@@ -60,8 +66,8 @@ interface TestPackageCardProps {
   isDisabled?: boolean;
   // Sale props
   isSaleActive?: boolean;
-  originalPrice?: string;  // The App Store price (shown with strikethrough)
-  discountedPrice?: string;  // The calculated discounted price
+  originalPrice?: string; // The App Store price (shown with strikethrough)
+  discountedPrice?: string; // The calculated discounted price
   discountPercentage?: number;
   // Image
   image?: any; // ImageSourcePropType from react-native
@@ -79,8 +85,15 @@ interface DebugOverlayProps {
   onToggleTestMode: () => void;
 }
 
-const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError, testModeEnabled, onToggleTestMode }) => {
-  if (!visible) return null;
+const DebugOverlay: React.FC<DebugOverlayProps> = ({
+  visible,
+  offeringsError,
+  testModeEnabled,
+  onToggleTestMode,
+}) => {
+  if (!visible) {
+    return null;
+  }
 
   const debugState = getRevenueCatDebugState();
 
@@ -95,21 +108,33 @@ const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError, te
 
       <View style={debugStyles.row}>
         <Text style={debugStyles.label}>__DEV__:</Text>
-        <Text style={[debugStyles.value, debugState.isDev ? debugStyles.warning : debugStyles.success]}>
+        <Text
+          style={[debugStyles.value, debugState.isDev ? debugStyles.warning : debugStyles.success]}
+        >
           {String(debugState.isDev)}
         </Text>
       </View>
 
       <View style={debugStyles.row}>
         <Text style={debugStyles.label}>TestFlight Bypass:</Text>
-        <Text style={[debugStyles.value, debugState.isTestFlightBypass ? debugStyles.warning : debugStyles.success]}>
+        <Text
+          style={[
+            debugStyles.value,
+            debugState.isTestFlightBypass ? debugStyles.warning : debugStyles.success,
+          ]}
+        >
           {String(debugState.isTestFlightBypass)}
         </Text>
       </View>
 
       <View style={debugStyles.row}>
         <Text style={debugStyles.label}>API Key Present:</Text>
-        <Text style={[debugStyles.value, debugState.apiKeyPresent ? debugStyles.success : debugStyles.error]}>
+        <Text
+          style={[
+            debugStyles.value,
+            debugState.apiKeyPresent ? debugStyles.success : debugStyles.error,
+          ]}
+        >
           {String(debugState.apiKeyPresent)}
         </Text>
       </View>
@@ -126,7 +151,12 @@ const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError, te
 
       <View style={debugStyles.row}>
         <Text style={debugStyles.label}>SDK Configured:</Text>
-        <Text style={[debugStyles.value, debugState.sdkConfigured ? debugStyles.success : debugStyles.error]}>
+        <Text
+          style={[
+            debugStyles.value,
+            debugState.sdkConfigured ? debugStyles.success : debugStyles.error,
+          ]}
+        >
           {String(debugState.sdkConfigured)}
         </Text>
       </View>
@@ -141,14 +171,18 @@ const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError, te
       {debugState.lastOfferingsAttempt && (
         <View style={debugStyles.row}>
           <Text style={debugStyles.label}>Last Attempt:</Text>
-          <Text style={debugStyles.value}>{new Date(debugState.lastOfferingsAttempt).toLocaleTimeString()}</Text>
+          <Text style={debugStyles.value}>
+            {new Date(debugState.lastOfferingsAttempt).toLocaleTimeString()}
+          </Text>
         </View>
       )}
 
       {debugState.lastOfferingsError && (
         <View style={debugStyles.row}>
           <Text style={debugStyles.label}>Offerings Error:</Text>
-          <Text style={[debugStyles.value, debugStyles.error]}>{debugState.lastOfferingsError}</Text>
+          <Text style={[debugStyles.value, debugStyles.error]}>
+            {debugState.lastOfferingsError}
+          </Text>
         </View>
       )}
 
@@ -156,7 +190,12 @@ const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError, te
         <>
           <View style={debugStyles.row}>
             <Text style={debugStyles.label}>Has Current:</Text>
-            <Text style={[debugStyles.value, debugState.offeringsResponse.hasCurrent ? debugStyles.success : debugStyles.error]}>
+            <Text
+              style={[
+                debugStyles.value,
+                debugState.offeringsResponse.hasCurrent ? debugStyles.success : debugStyles.error,
+              ]}
+            >
               {String(debugState.offeringsResponse.hasCurrent)}
             </Text>
           </View>
@@ -171,7 +210,9 @@ const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError, te
           {debugState.offeringsResponse.packageIds.length > 0 && (
             <View style={debugStyles.row}>
               <Text style={debugStyles.label}>IDs:</Text>
-              <Text style={[debugStyles.value, { flex: 1 }]}>{debugState.offeringsResponse.packageIds.join(', ')}</Text>
+              <Text style={[debugStyles.value, { flex: 1 }]}>
+                {debugState.offeringsResponse.packageIds.join(', ')}
+              </Text>
             </View>
           )}
         </>
@@ -188,7 +229,9 @@ const DebugOverlay: React.FC<DebugOverlayProps> = ({ visible, offeringsError, te
       <View style={debugStyles.testModeSection}>
         <View style={debugStyles.row}>
           <Text style={debugStyles.label}>Test Mode:</Text>
-          <Text style={[debugStyles.value, testModeEnabled ? debugStyles.success : debugStyles.warning]}>
+          <Text
+            style={[debugStyles.value, testModeEnabled ? debugStyles.success : debugStyles.warning]}
+          >
             {testModeEnabled ? 'ON (Free User)' : 'OFF (Auto-Subscribe)'}
           </Text>
         </View>
@@ -332,10 +375,7 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
 
         {/* Price display - strikethrough for sale, normal otherwise */}
         {isSaleActive && originalPrice && discountedPrice ? (
-          <StrikethroughPrice
-            originalPrice={originalPrice}
-            discountedPrice={discountedPrice}
-          />
+          <StrikethroughPrice originalPrice={originalPrice} discountedPrice={discountedPrice} />
         ) : (
           <Text style={styles.packagePrice}>{packageData.price}</Text>
         )}
@@ -354,13 +394,18 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
         accessibilityLabel={`Subscribe to ${label} plan`}
       >
         {isPurchasing ? (
-          <ActivityIndicator size="small" color={isPopular ? colors.background.primary : colors.brand.gold} />
+          <ActivityIndicator
+            size="small"
+            color={isPopular ? colors.background.primary : colors.brand.gold}
+          />
         ) : (
-          <Text style={[
-            styles.purchaseButtonText,
-            isPopular && styles.purchaseButtonTextPopular,
-            isDisabled && styles.purchaseButtonTextDisabled,
-          ]}>
+          <Text
+            style={[
+              styles.purchaseButtonText,
+              isPopular && styles.purchaseButtonTextPopular,
+              isDisabled && styles.purchaseButtonTextDisabled,
+            ]}
+          >
             {isDisabled ? 'Current Plan' : 'Start Free Trial'}
           </Text>
         )}
@@ -369,12 +414,11 @@ const TestPackageCard: React.FC<TestPackageCardProps> = ({
   </View>
 );
 
-export const PaywallScreen: React.FC<PaywallScreenProps> = ({
-  navigation,
-  route,
-}) => {
+export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route }) => {
   const [purchasingPackageId, setPurchasingPackageId] = useState<PackageId | null>(null);
-  const [selectedTier, setSelectedTier] = useState<'novice' | 'awakening' | 'enlightenment'>('awakening');
+  const [selectedTier, setSelectedTier] = useState<'novice' | 'awakening' | 'enlightenment'>(
+    'awakening'
+  );
   const [showDebug, setShowDebug] = useState(false);
   const [titleTapCount, setTitleTapCount] = useState(0);
 
@@ -437,7 +481,6 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
   const handlePurchase = async (packageId: PackageId) => {
     // Prevent concurrent purchase attempts (debouncing)
     if (purchaseInProgressRef.current) {
-      console.log('[Paywall] Purchase already in progress, ignoring tap');
       return;
     }
 
@@ -465,10 +508,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
         if (appliedPromoCode) {
           try {
             await recordPromoRedemption(appliedPromoCode, packageData.tier);
-            console.log('[Paywall] Promo code redemption recorded:', appliedPromoCode);
-          } catch (promoError) {
+          } catch (_promoError) {
             // Don't fail the purchase if promo recording fails
-            console.error('[Paywall] Failed to record promo redemption:', promoError);
           }
           // Clear the promo code after successful purchase
           clearPromo();
@@ -493,7 +534,6 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
         );
       }
     } catch (error: any) {
-      console.error('[Paywall] Purchase error:', error);
       Alert.alert('Error', error.message || 'An unexpected error occurred. Please try again.');
     } finally {
       // Always reset both the ref and state
@@ -510,21 +550,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
       const result = await restorePurchases();
 
       if (result.success) {
-        Alert.alert(
-          'Restored!',
-          'Your previous purchases have been restored.',
-          [
-            {
-              text: 'OK',
-              onPress: () => handleDismiss(),
-            },
-          ]
-        );
+        Alert.alert('Restored!', 'Your previous purchases have been restored.', [
+          {
+            text: 'OK',
+            onPress: () => handleDismiss(),
+          },
+        ]);
       } else {
-        Alert.alert(
-          'No Purchases Found',
-          'We could not find any previous purchases to restore.'
-        );
+        Alert.alert('No Purchases Found', 'We could not find any previous purchases to restore.');
       }
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to restore purchases.');
@@ -654,9 +687,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
             <Pressable onPress={handleTitleTap}>
               <Text style={styles.title}>Choose Your Path</Text>
             </Pressable>
-            <Text style={styles.subtitle}>
-              Start your 7-day free trial. Cancel anytime.
-            </Text>
+            <Text style={styles.subtitle}>Start your 7-day free trial. Cancel anytime.</Text>
           </View>
 
           {/* Debug Overlay - tap title 5x to show */}
@@ -700,7 +731,8 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
             <View style={styles.subscribedContainer}>
               <Text style={styles.subscribedIcon}>✓</Text>
               <Text style={styles.subscribedText}>
-                You're subscribed to {currentTier === 'enlightenment' ? 'Enlightenment Path' : 'Novice Path'}
+                You're subscribed to{' '}
+                {currentTier === 'enlightenment' ? 'Enlightenment Path' : 'Novice Path'}
                 {isInTrial && ' (Trial)'}
               </Text>
             </View>
@@ -708,11 +740,7 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
 
           {/* Promo Code Input */}
           {!isSubscribed && (
-            <PromoCodeInput
-              onApplied={(code, discount) => {
-                console.log(`[Paywall] Promo code applied: ${code} (${discount}% off)`);
-              }}
-            />
+            <PromoCodeInput onApplied={() => {}} />
           )}
 
           {/* Tier Selection Tabs */}
@@ -721,31 +749,56 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
               style={[styles.tierTab, selectedTier === 'novice' && styles.tierTabSelected]}
               onPress={() => setSelectedTier('novice')}
             >
-              <Text style={[styles.tierTabText, selectedTier === 'novice' && styles.tierTabTextSelected]}>
+              <Text
+                style={[
+                  styles.tierTabText,
+                  selectedTier === 'novice' && styles.tierTabTextSelected,
+                ]}
+              >
                 Novice
               </Text>
-              <Text style={styles.tierTabPrice}>{offerings.novice_monthly?.pricePerMonth || '...'}</Text>
+              <Text style={styles.tierTabPrice}>
+                {offerings.novice_monthly?.pricePerMonth || '...'}
+              </Text>
             </Pressable>
             <Pressable
-              style={[styles.tierTab, selectedTier === 'awakening' && styles.tierTabSelected, styles.tierTabPopular]}
+              style={[
+                styles.tierTab,
+                selectedTier === 'awakening' && styles.tierTabSelected,
+                styles.tierTabPopular,
+              ]}
               onPress={() => setSelectedTier('awakening')}
             >
               <View style={styles.popularPill}>
                 <Text style={styles.popularPillText}>POPULAR</Text>
               </View>
-              <Text style={[styles.tierTabText, selectedTier === 'awakening' && styles.tierTabTextSelected]}>
+              <Text
+                style={[
+                  styles.tierTabText,
+                  selectedTier === 'awakening' && styles.tierTabTextSelected,
+                ]}
+              >
                 Awakening
               </Text>
-              <Text style={styles.tierTabPrice}>{offerings.awakening_monthly?.pricePerMonth || '...'}</Text>
+              <Text style={styles.tierTabPrice}>
+                {offerings.awakening_monthly?.pricePerMonth || '...'}
+              </Text>
             </Pressable>
             <Pressable
               style={[styles.tierTab, selectedTier === 'enlightenment' && styles.tierTabSelected]}
               onPress={() => setSelectedTier('enlightenment')}
             >
-              <Text style={[styles.tierTabText, selectedTier === 'enlightenment' && styles.tierTabTextSelected]}>
+              <Text
+                style={[
+                  styles.tierTabText,
+                  selectedTier === 'enlightenment' && styles.tierTabTextSelected,
+                ]}
+              >
                 Enlightenment
               </Text>
-              <Text style={styles.tierTabPrice}>{offerings.enlightenment_monthly?.pricePerMonth || '...'}</Text>
+              <Text style={styles.tierTabPrice}>
+                {offerings.enlightenment_monthly?.pricePerMonth || '...'}
+              </Text>
             </Pressable>
           </View>
 
@@ -797,7 +850,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isDisabled={isSubscribed && currentTier === 'novice'}
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? offerings.novice_annual.price : undefined}
-                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.novice_annual.price, saleConfig.discountPercentage) : undefined}
+                discountedPrice={
+                  saleConfig.isActive
+                    ? getDiscountedPrice(
+                        offerings.novice_annual.price,
+                        saleConfig.discountPercentage
+                      )
+                    : undefined
+                }
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('novice', 'yearly')}
               />
@@ -812,7 +872,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isDisabled={isSubscribed && currentTier === 'novice'}
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? offerings.novice_monthly.price : undefined}
-                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.novice_monthly.price, saleConfig.discountPercentage) : undefined}
+                discountedPrice={
+                  saleConfig.isActive
+                    ? getDiscountedPrice(
+                        offerings.novice_monthly.price,
+                        saleConfig.discountPercentage
+                      )
+                    : undefined
+                }
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('novice', 'monthly')}
               />
@@ -829,7 +896,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isDisabled={isSubscribed && currentTier === 'awakening'}
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? offerings.awakening_annual.price : undefined}
-                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.awakening_annual.price, saleConfig.discountPercentage) : undefined}
+                discountedPrice={
+                  saleConfig.isActive
+                    ? getDiscountedPrice(
+                        offerings.awakening_annual.price,
+                        saleConfig.discountPercentage
+                      )
+                    : undefined
+                }
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('awakening', 'yearly')}
               />
@@ -844,7 +918,14 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isDisabled={isSubscribed && currentTier === 'awakening'}
                 isSaleActive={saleConfig.isActive}
                 originalPrice={saleConfig.isActive ? offerings.awakening_monthly.price : undefined}
-                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.awakening_monthly.price, saleConfig.discountPercentage) : undefined}
+                discountedPrice={
+                  saleConfig.isActive
+                    ? getDiscountedPrice(
+                        offerings.awakening_monthly.price,
+                        saleConfig.discountPercentage
+                      )
+                    : undefined
+                }
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('awakening', 'monthly')}
               />
@@ -860,8 +941,17 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isPurchasing={purchasingPackageId === PACKAGE_IDS.ENLIGHTENMENT_ANNUAL}
                 isDisabled={isSubscribed && currentTier === 'enlightenment'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? offerings.enlightenment_annual.price : undefined}
-                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.enlightenment_annual.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={
+                  saleConfig.isActive ? offerings.enlightenment_annual.price : undefined
+                }
+                discountedPrice={
+                  saleConfig.isActive
+                    ? getDiscountedPrice(
+                        offerings.enlightenment_annual.price,
+                        saleConfig.discountPercentage
+                      )
+                    : undefined
+                }
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('enlightenment', 'yearly')}
               />
@@ -875,8 +965,17 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
                 isPurchasing={purchasingPackageId === PACKAGE_IDS.ENLIGHTENMENT_MONTHLY}
                 isDisabled={isSubscribed && currentTier === 'enlightenment'}
                 isSaleActive={saleConfig.isActive}
-                originalPrice={saleConfig.isActive ? offerings.enlightenment_monthly.price : undefined}
-                discountedPrice={saleConfig.isActive ? getDiscountedPrice(offerings.enlightenment_monthly.price, saleConfig.discountPercentage) : undefined}
+                originalPrice={
+                  saleConfig.isActive ? offerings.enlightenment_monthly.price : undefined
+                }
+                discountedPrice={
+                  saleConfig.isActive
+                    ? getDiscountedPrice(
+                        offerings.enlightenment_monthly.price,
+                        saleConfig.discountPercentage
+                      )
+                    : undefined
+                }
                 discountPercentage={saleConfig.discountPercentage}
                 image={getSubscriptionImage('enlightenment', 'monthly')}
               />
@@ -912,9 +1011,9 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({
           {/* Terms & Privacy */}
           <View style={styles.legalContainer}>
             <Text style={styles.legalText}>
-              Subscription automatically renews unless auto-renew is turned off at least
-              24 hours before the end of the current period. Payment will be charged to
-              your Apple ID account at confirmation of purchase.
+              Subscription automatically renews unless auto-renew is turned off at least 24 hours
+              before the end of the current period. Payment will be charged to your Apple ID account
+              at confirmation of purchase.
             </Text>
             <View style={styles.legalLinks}>
               <Pressable onPress={() => Linking.openURL('https://manifesttheunseen.app/terms')}>

@@ -38,17 +38,11 @@ export const ExerciseHeader: React.FC<ExerciseHeaderProps> = ({
       {/* Header Image Section */}
       <View style={styles.imageContainer}>
         <Image source={image} style={styles.image} resizeMode="cover" />
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.7)']}
-          style={styles.imageGradient}
-        />
+        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.7)']} style={styles.imageGradient} />
         {/* Completion Badge (Top-Left) */}
         {isCompleted && (
           <View style={styles.completionBadge}>
-            <LinearGradient
-              colors={['#22c55e', '#16a34a']}
-              style={styles.badgeGradient}
-            >
+            <LinearGradient colors={['#22c55e', '#16a34a']} style={styles.badgeGradient}>
               <Text style={styles.badgeText}>✓ Completed</Text>
             </LinearGradient>
           </View>
@@ -62,17 +56,10 @@ export const ExerciseHeader: React.FC<ExerciseHeaderProps> = ({
               end={{ x: 1, y: 0 }}
               style={styles.progressGradient}
             >
-              <View
-                style={[
-                  styles.progressUnfilled,
-                  { width: `${100 - progress}%` },
-                ]}
-              />
+              <View style={[styles.progressUnfilled, { width: `${100 - progress}%` }]} />
             </LinearGradient>
           </View>
-          <Text style={styles.progressText}>
-            {isCompleted ? '✓' : `${progress}%`}
-          </Text>
+          <Text style={styles.progressText}>{isCompleted ? '✓' : `${progress}%`}</Text>
         </View>
       </View>
 

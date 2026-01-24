@@ -151,11 +151,7 @@ export const useAvatarUpload = (): UseAvatarUploadResult => {
       setError(errorMessage);
       logger.error('[useAvatarUpload] Error:', err);
 
-      Alert.alert(
-        'Upload Failed',
-        'Failed to upload avatar. Please try again.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Upload Failed', 'Failed to upload avatar. Please try again.', [{ text: 'OK' }]);
 
       setIsUploading(false);
       return null;

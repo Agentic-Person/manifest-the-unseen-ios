@@ -43,32 +43,25 @@ export const SettingsToggle: React.FC<SettingsToggleProps> = ({
 }) => {
   const { scaleFont } = useFontSizeContext();
 
-  const scaledStyles = useMemo(() => ({
-    label: {
-      ...styles.label,
-      fontSize: scaleFont(16),
-    } as TextStyle,
-    description: {
-      ...styles.description,
-      fontSize: scaleFont(13),
-    } as TextStyle,
-  }), [scaleFont]);
+  const scaledStyles = useMemo(
+    () => ({
+      label: {
+        ...styles.label,
+        fontSize: scaleFont(16),
+      } as TextStyle,
+      description: {
+        ...styles.description,
+        fontSize: scaleFont(13),
+      } as TextStyle,
+    }),
+    [scaleFont]
+  );
 
   return (
-    <View
-      style={[
-        styles.container,
-        !isLast && styles.borderBottom,
-        disabled && styles.disabled,
-      ]}
-    >
+    <View style={[styles.container, !isLast && styles.borderBottom, disabled && styles.disabled]}>
       <View style={styles.content}>
-        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>
-          {label}
-        </Text>
-        {description && (
-          <Text style={scaledStyles.description}>{description}</Text>
-        )}
+        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>{label}</Text>
+        {description && <Text style={scaledStyles.description}>{description}</Text>}
       </View>
 
       <Switch

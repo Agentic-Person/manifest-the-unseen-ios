@@ -24,10 +24,7 @@ import {
   getTierFromCustomerInfo,
 } from '../services/subscriptionService';
 import { supabase } from '../services/supabase';
-import {
-  validatePromoCode,
-  type PromoValidationResult,
-} from '../services/promoService';
+import { validatePromoCode, type PromoValidationResult } from '../services/promoService';
 import type { CustomerInfo } from 'react-native-purchases';
 import { logger } from '../utils/logger';
 
@@ -130,7 +127,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
     // BUT: If testModeEnabled is true, skip the bypass to allow testing purchase flow
     const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
     if ((__DEV__ || isTestFlight) && !testModeEnabled) {
-      logger.debug('[Subscription] DEV/TestFlight mode - granting enlightenment tier access (test mode disabled)');
+      logger.debug(
+        '[Subscription] DEV/TestFlight mode - granting enlightenment tier access (test mode disabled)'
+      );
       set({
         tier: 'enlightenment',
         status: 'active',
@@ -173,10 +172,10 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         setTimeout(() => reject(new Error('Subscription load timeout')), SUBSCRIPTION_TIMEOUT)
       );
 
-      const info = await Promise.race([
+      const info = (await Promise.race([
         getSubscriptionInfo(),
         timeoutPromise,
-      ]) as SubscriptionInfo;
+      ])) as SubscriptionInfo;
 
       set({
         tier: info.tier,
@@ -225,10 +224,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         setTimeout(() => reject(new Error('Offerings load timeout')), OFFERINGS_TIMEOUT)
       );
 
-      const offerings = await Promise.race([
-        getOfferings(),
-        timeoutPromise,
-      ]);
+      const offerings = await Promise.race([getOfferings(), timeoutPromise]);
 
       set({
         offerings,
@@ -261,12 +257,18 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
 
       if (result.success) {
         // Check if this is a simulated purchase (TestFlight/DEV mode)
-        const simulatedResult = result as PurchaseResult & { purchasedTier?: SubscriptionTier; purchasedPeriod?: SubscriptionPeriod };
+        const simulatedResult = result as PurchaseResult & {
+          purchasedTier?: SubscriptionTier;
+          purchasedPeriod?: SubscriptionPeriod;
+        };
         const isTestFlight = process.env.EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS === 'true';
 
         if ((isTestFlight || __DEV__) && simulatedResult.purchasedTier) {
           // TestFlight/DEV mode: directly update state with purchased tier
-          logger.debug('[Subscription] Updating state with simulated purchase:', simulatedResult.purchasedTier);
+          logger.debug(
+            '[Subscription] Updating state with simulated purchase:',
+            simulatedResult.purchasedTier
+          );
           set({
             tier: simulatedResult.purchasedTier,
             status: 'trial', // Simulated purchases start as trial
@@ -282,7 +284,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
           // Real purchase: sync tier to database
           const newTier = getTierFromCustomerInfo(result.customerInfo);
           if (newTier !== 'free') {
-            const { data: { user } } = await supabase.auth.getUser();
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
             if (user) {
               await supabase
                 .from('users')
@@ -336,7 +340,9 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
         // Sync tier to database after successful restore
         const newTier = getTierFromCustomerInfo(result.customerInfo);
         if (newTier !== 'free') {
-          const { data: { user } } = await supabase.auth.getUser();
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
           if (user) {
             await supabase
               .from('users')
@@ -521,8 +527,7 @@ export const useSubscriptionStore = create<SubscriptionState>((set, get) => ({
 /**
  * Get Current Tier
  */
-export const useCurrentTier = () =>
-  useSubscriptionStore((state) => state.tier);
+export const useCurrentTier = () => useSubscriptionStore((state) => state.tier);
 
 /**
  * Get Subscription Status
@@ -556,32 +561,27 @@ export const usePurchaseState = () =>
 /**
  * Check if User is Subscribed
  */
-export const useIsSubscribed = () =>
-  useSubscriptionStore((state) => state.isSubscribed);
+export const useIsSubscribed = () => useSubscriptionStore((state) => state.isSubscribed);
 
 /**
  * Check if User is in Trial
  */
-export const useIsInTrial = () =>
-  useSubscriptionStore((state) => state.isInTrial);
+export const useIsInTrial = () => useSubscriptionStore((state) => state.isInTrial);
 
 /**
  * Get Trial End Date
  */
-export const useTrialEndDate = () =>
-  useSubscriptionStore((state) => state.trialEndDate);
+export const useTrialEndDate = () => useSubscriptionStore((state) => state.trialEndDate);
 
 /**
  * Get Expiration Date
  */
-export const useExpirationDate = () =>
-  useSubscriptionStore((state) => state.expirationDate);
+export const useExpirationDate = () => useSubscriptionStore((state) => state.expirationDate);
 
 /**
  * Get Applied Promo Code
  */
-export const useAppliedPromoCode = () =>
-  useSubscriptionStore((state) => state.appliedPromoCode);
+export const useAppliedPromoCode = () => useSubscriptionStore((state) => state.appliedPromoCode);
 
 /**
  * Get Promo Code State

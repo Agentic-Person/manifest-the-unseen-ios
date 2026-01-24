@@ -34,7 +34,9 @@ interface ClickableHeaderTitleProps {
  * }}
  * ```
  */
-export const ClickableHeaderTitle = ({ title = 'Manifest the Unseen' }: ClickableHeaderTitleProps) => {
+export const ClickableHeaderTitle = ({
+  title = 'Manifest the Unseen',
+}: ClickableHeaderTitleProps) => {
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
 
   /**
@@ -52,10 +54,7 @@ export const ClickableHeaderTitle = ({ title = 'Manifest the Unseen' }: Clickabl
   return (
     <Pressable
       onPress={handlePress}
-      style={({ pressed }) => [
-        styles.container,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
       accessibilityRole="button"
       accessibilityLabel="Go to Home"
       accessibilityHint="Returns to the home screen"

@@ -51,7 +51,4 @@ export {
 } from './workbookStore';
 
 // Trial store - 7-day free trial tracking
-export {
-  useTrialStore,
-  TRIAL_DURATION_DAYS,
-} from './trialStore';
+export { useTrialStore, TRIAL_DURATION_DAYS } from './trialStore';

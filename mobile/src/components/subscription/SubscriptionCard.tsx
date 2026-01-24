@@ -8,7 +8,11 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing } from '../../theme';
-import type { SubscriptionTier, SubscriptionPeriod, SubscriptionPackage } from '../../types/subscription';
+import type {
+  SubscriptionTier,
+  SubscriptionPeriod,
+  SubscriptionPackage,
+} from '../../types/subscription';
 import { TIER_PRICING } from '../../types/subscription';
 import { TrialBadge } from './TrialBadge';
 import { PopularBadge } from './PopularBadge';
@@ -50,26 +54,36 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   isPurchasing = false,
 }) => {
   // Only show pricing for paid tiers
-  const tierData = tier === 'free' ? null : TIER_PRICING[tier as 'novice' | 'awakening' | 'enlightenment'];
+  const tierData =
+    tier === 'free' ? null : TIER_PRICING[tier as 'novice' | 'awakening' | 'enlightenment'];
 
   // Get price - packageData takes priority, fallback to tier pricing for monthly/yearly
   const getPrice = (): string => {
-    if (packageData?.price) return packageData.price;
-    if (!tierData) return '$0';
-    if (period === 'monthly') return `$${tierData.monthly}`;
-    if (period === 'yearly') return `$${tierData.yearly}`;
+    if (packageData?.price) {
+      return packageData.price;
+    }
+    if (!tierData) {
+      return '$0';
+    }
+    if (period === 'monthly') {
+      return `$${tierData.monthly}`;
+    }
+    if (period === 'yearly') {
+      return `$${tierData.yearly}`;
+    }
     return '$0'; // lifetime handled by packageData
   };
 
   const price = getPrice();
-  const pricePerMonth = packageData?.pricePerMonth || (
-    tierData && period === 'yearly' ? `$${(tierData.yearly / 12).toFixed(2)}/mo` : price
-  );
+  const pricePerMonth =
+    packageData?.pricePerMonth ||
+    (tierData && period === 'yearly' ? `$${(tierData.yearly / 12).toFixed(2)}/mo` : price);
 
   // Calculate savings for yearly
-  const savingsPercent = period === 'yearly' && tierData
-    ? Math.round((1 - (tierData.yearly / 12) / tierData.monthly) * 100)
-    : 0;
+  const savingsPercent =
+    period === 'yearly' && tierData
+      ? Math.round((1 - tierData.yearly / 12 / tierData.monthly) * 100)
+      : 0;
 
   return (
     <Pressable
@@ -107,9 +121,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <View style={styles.pricingContainer}>
             <View style={styles.priceRow}>
               <Text style={styles.price}>{price}</Text>
-              <Text style={styles.period}>
-                /{period === 'monthly' ? 'month' : 'year'}
-              </Text>
+              <Text style={styles.period}>/{period === 'monthly' ? 'month' : 'year'}</Text>
             </View>
             {period === 'yearly' && (
               <View style={styles.savingsRow}>
@@ -144,9 +156,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           {/* Current Tier Indicator */}
           {isCurrentTier && (
             <View style={styles.currentIndicator}>
-              <Text style={styles.currentText}>
-                {inTrial ? 'Active Trial' : 'Active Plan'}
-              </Text>
+              <Text style={styles.currentText}>{inTrial ? 'Active Trial' : 'Active Plan'}</Text>
             </View>
           )}
         </View>

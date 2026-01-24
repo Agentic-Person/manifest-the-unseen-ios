@@ -57,10 +57,7 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
   // Always render the new card style (with or without image)
   return (
     <Pressable
-      style={({ pressed }) => [
-        styles.cardContainer,
-        pressed && styles.cardPressed,
-      ]}
+      style={({ pressed }) => [styles.cardContainer, pressed && styles.cardPressed]}
       onPress={() => onPress(meditation)}
       accessibilityRole="button"
       accessibilityLabel={`Play ${meditation.title}, ${formatDuration(meditation.duration_seconds)}`}
@@ -74,16 +71,11 @@ export const MeditationCard: React.FC<MeditationCardProps> = ({
             <Ionicons name={iconName} size={48} color={iconColor} />
           </View>
         )}
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.8)']}
-          style={styles.imageGradient}
-        />
+        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.imageGradient} />
         {/* Duration Badge - Bottom Right */}
         <View style={styles.durationBadge}>
           <Ionicons name="time-outline" size={12} color={colors.white} />
-          <Text style={styles.durationText}>
-            {formatDuration(meditation.duration_seconds)}
-          </Text>
+          <Text style={styles.durationText}>{formatDuration(meditation.duration_seconds)}</Text>
         </View>
       </View>
 

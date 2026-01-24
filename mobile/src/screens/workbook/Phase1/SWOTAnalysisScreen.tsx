@@ -12,11 +12,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Animated,
-} from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 import { Text, Button } from '../../../components';
 import { SWOTQuadrant } from '../../../components/workbook/SWOTQuadrant';
 import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
@@ -77,10 +73,7 @@ const CentralMandala: React.FC<{ totalItems: number }> = ({ totalItems }) => {
   return (
     <View style={mandalaStyles.container}>
       <Animated.View
-        style={[
-          mandalaStyles.outerRing,
-          { transform: [{ rotate: rotateInterpolate }] },
-        ]}
+        style={[mandalaStyles.outerRing, { transform: [{ rotate: rotateInterpolate }] }]}
       >
         {/* Sacred geometry pattern */}
         <View style={mandalaStyles.petal1} />
@@ -118,13 +111,14 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress } = useWorkbookProgress(1, WORKSHEET_IDS.SWOT_ANALYSIS);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: swotData as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.SWOT_ANALYSIS,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: swotData as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.SWOT_ANALYSIS,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -230,8 +224,8 @@ const SWOTAnalysisScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.insightHint}>
         <Text style={styles.insightIcon}>✨</Text>
         <Text style={styles.insightText}>
-          Tap each petal to add your insights. Your strengths can help overcome
-          threats, and opportunities can address weaknesses.
+          Tap each petal to add your insights. Your strengths can help overcome threats, and
+          opportunities can address weaknesses.
         </Text>
       </View>
 
@@ -372,7 +366,6 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.md,
   },
-
 
   flowerContainer: {
     alignItems: 'center',

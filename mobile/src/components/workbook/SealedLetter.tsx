@@ -12,13 +12,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  Animated,
-} from 'react-native';
+import { View, StyleSheet, Text, Pressable, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors
@@ -89,9 +83,12 @@ export const SealedLetter: React.FC<SealedLetterProps> = ({
 
   // Update countdown every hour
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeRemaining(getTimeRemaining(openDate));
-    }, 1000 * 60 * 60); // Update every hour
+    const interval = setInterval(
+      () => {
+        setTimeRemaining(getTimeRemaining(openDate));
+      },
+      1000 * 60 * 60
+    ); // Update every hour
 
     return () => clearInterval(interval);
   }, [openDate]);
@@ -123,7 +120,9 @@ export const SealedLetter: React.FC<SealedLetterProps> = ({
   }, [timeRemaining.canOpen, isSealed, pulseAnimation]);
 
   const handleOpen = () => {
-    if (!timeRemaining.canOpen) return;
+    if (!timeRemaining.canOpen) {
+      return;
+    }
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
@@ -210,12 +209,7 @@ export const SealedLetter: React.FC<SealedLetterProps> = ({
           </View>
 
           {/* Envelope Flap */}
-          <Animated.View
-            style={[
-              styles.envelopeFlap,
-              { transform: [{ rotateX: flapRotate }] },
-            ]}
-          >
+          <Animated.View style={[styles.envelopeFlap, { transform: [{ rotateX: flapRotate }] }]}>
             <View style={styles.flapInner} />
           </Animated.View>
 
@@ -264,9 +258,7 @@ export const SealedLetter: React.FC<SealedLetterProps> = ({
           </View>
         )}
 
-        <Text style={styles.createdOn}>
-          Sealed on {formatDate(createdDate)}
-        </Text>
+        <Text style={styles.createdOn}>Sealed on {formatDate(createdDate)}</Text>
       </View>
     </Animated.View>
   );

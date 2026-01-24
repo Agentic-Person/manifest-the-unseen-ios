@@ -15,10 +15,7 @@ interface SaleBannerProps {
   bannerText?: string;
 }
 
-export const SaleBanner: React.FC<SaleBannerProps> = ({
-  discountPercentage,
-  bannerText,
-}) => {
+export const SaleBanner: React.FC<SaleBannerProps> = ({ discountPercentage, bannerText }) => {
   return (
     <LinearGradient
       colors={['#DC2626', '#B91C1C']}
@@ -28,9 +25,7 @@ export const SaleBanner: React.FC<SaleBannerProps> = ({
     >
       <View style={styles.content}>
         <Text style={styles.discountText}>{discountPercentage}% OFF</Text>
-        <Text style={styles.bannerText}>
-          {bannerText || 'Monthly or Annual - You Choose!'}
-        </Text>
+        <Text style={styles.bannerText}>{bannerText || 'Monthly or Annual - You Choose!'}</Text>
         <View style={styles.urgencyBadge}>
           <Text style={styles.urgencyText}>Limited Time Offer</Text>
         </View>

@@ -26,11 +26,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-} from 'react-native';
+import { View, TextInput, StyleSheet } from 'react-native';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, typography, fontWeights } from '../../theme';
 

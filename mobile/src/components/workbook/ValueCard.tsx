@@ -16,11 +16,7 @@
  */
 
 import React from 'react';
-import {
-  TouchableOpacity,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius } from '../../theme';
 
@@ -28,26 +24,26 @@ import { colors, spacing, borderRadius } from '../../theme';
  * Value icons mapping for visual representation
  */
 const VALUE_ICONS: Record<string, string> = {
-  'Integrity': '🛡️',
-  'Authenticity': '✨',
-  'Growth': '🌱',
-  'Freedom': '🕊️',
-  'Love': '💗',
-  'Family': '👨‍👩‍👧‍👦',
-  'Health': '🍃',
-  'Wealth': '💰',
-  'Creativity': '🎨',
-  'Adventure': '🏔️',
-  'Security': '🏠',
-  'Peace': '☮️',
-  'Knowledge': '📚',
-  'Impact': '🌟',
-  'Joy': '🌈',
-  'Connection': '🤝',
-  'Excellence': '🏆',
-  'Balance': '☯️',
-  'Spirituality': '🧘',
-  'Service': '🙏',
+  Integrity: '🛡️',
+  Authenticity: '✨',
+  Growth: '🌱',
+  Freedom: '🕊️',
+  Love: '💗',
+  Family: '👨‍👩‍👧‍👦',
+  Health: '🍃',
+  Wealth: '💰',
+  Creativity: '🎨',
+  Adventure: '🏔️',
+  Security: '🏠',
+  Peace: '☮️',
+  Knowledge: '📚',
+  Impact: '🌟',
+  Joy: '🌈',
+  Connection: '🤝',
+  Excellence: '🏆',
+  Balance: '☯️',
+  Spirituality: '🧘',
+  Service: '🙏',
 };
 
 /**
@@ -99,23 +95,20 @@ export const ValueCard: React.FC<ValueCardProps> = ({
       accessibilityRole="checkbox"
       accessibilityState={{
         checked: isSelected,
-        disabled: disabled,
+        disabled,
       }}
       accessibilityLabel={`${value}${isSelected ? ', selected' : ''}${selectionOrder ? `, priority ${selectionOrder}` : ''}`}
       accessibilityHint={
         isSelected
           ? 'Double tap to remove from your values'
           : disabled
-          ? 'Maximum 5 values selected'
-          : 'Double tap to add to your values'
+            ? 'Maximum 5 values selected'
+            : 'Double tap to add to your values'
       }
       testID={testID}
     >
       {/* Icon */}
-      <View style={[
-        styles.iconContainer,
-        isSelected && styles.iconContainerSelected,
-      ]}>
+      <View style={[styles.iconContainer, isSelected && styles.iconContainerSelected]}>
         <Text style={styles.icon}>{icon}</Text>
       </View>
 

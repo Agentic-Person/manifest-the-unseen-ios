@@ -11,14 +11,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Dimensions,
-  Text,
-  Pressable,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, Dimensions, Text, Pressable } from 'react-native';
 import type { VisionBoardItem } from './types';
 import VisionItem from './VisionItem';
 
@@ -63,29 +56,38 @@ const VisionCanvas: React.FC<VisionCanvasProps> = ({
   /**
    * Handle item selection
    */
-  const handleSelectItem = useCallback((id: string) => {
-    onSelectItem(id);
-  }, [onSelectItem]);
+  const handleSelectItem = useCallback(
+    (id: string) => {
+      onSelectItem(id);
+    },
+    [onSelectItem]
+  );
 
   /**
    * Handle item deletion
    */
-  const handleDeleteItem = useCallback((id: string) => {
-    onDeleteItem(id);
-    onSelectItem(null);
-  }, [onDeleteItem, onSelectItem]);
+  const handleDeleteItem = useCallback(
+    (id: string) => {
+      onDeleteItem(id);
+      onSelectItem(null);
+    },
+    [onDeleteItem, onSelectItem]
+  );
 
   /**
    * Handle position update
    */
-  const handleUpdatePosition = useCallback((id: string, position: { x: number; y: number }) => {
-    // Clamp position to canvas bounds
-    const clampedPosition = {
-      x: Math.max(0, Math.min(position.x, CANVAS_WIDTH - 50)),
-      y: Math.max(0, Math.min(position.y, CANVAS_HEIGHT - 50)),
-    };
-    onUpdateItemPosition(id, clampedPosition);
-  }, [onUpdateItemPosition]);
+  const handleUpdatePosition = useCallback(
+    (id: string, position: { x: number; y: number }) => {
+      // Clamp position to canvas bounds
+      const clampedPosition = {
+        x: Math.max(0, Math.min(position.x, CANVAS_WIDTH - 50)),
+        y: Math.max(0, Math.min(position.y, CANVAS_HEIGHT - 50)),
+      };
+      onUpdateItemPosition(id, clampedPosition);
+    },
+    [onUpdateItemPosition]
+  );
 
   /**
    * Handle tap on empty canvas area

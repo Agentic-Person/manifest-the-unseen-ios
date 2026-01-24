@@ -44,10 +44,7 @@ export const ClickableHeaderLogo = () => {
   return (
     <Pressable
       onPress={handlePress}
-      style={({ pressed }) => [
-        styles.container,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.container, pressed && styles.pressed]}
       accessibilityRole="button"
       accessibilityLabel="Go to Home"
       accessibilityHint="Returns to the home screen"

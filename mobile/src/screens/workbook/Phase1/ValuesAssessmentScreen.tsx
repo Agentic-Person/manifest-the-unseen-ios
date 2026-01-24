@@ -12,12 +12,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Card, Text } from '../../../components';
 import { ValueCard } from '../../../components/workbook/ValueCard';
@@ -142,7 +137,9 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
    * Move a selected value up in priority
    */
   const moveValueUp = useCallback((index: number) => {
-    if (index <= 0) return;
+    if (index <= 0) {
+      return;
+    }
 
     setSelectedValues((prev) => {
       const newValues = [...prev];
@@ -157,7 +154,9 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
    */
   const moveValueDown = useCallback((index: number) => {
     setSelectedValues((prev) => {
-      if (index >= prev.length - 1) return prev;
+      if (index >= prev.length - 1) {
+        return prev;
+      }
 
       const newValues = [...prev];
       [newValues[index], newValues[index + 1]] = [newValues[index + 1], newValues[index]];
@@ -165,7 +164,6 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
       return newValues;
     });
   }, []);
-
 
   /**
    * Calculate progress percentage
@@ -186,124 +184,121 @@ const ValuesAssessmentScreen: React.FC<Props> = ({ navigation }) => {
     >
       {/* Header */}
       <ExerciseHeader
-          image={Phase1ExerciseImages.personalValues}
-          title="Personal Values"
-          subtitle={`Select your top ${MAX_SELECTIONS} core values that define who you are and what matters most to you.`}
-          progress={savedProgress?.progress || 0}
-          isCompleted={savedProgress?.completed || false}
-        />
+        image={Phase1ExerciseImages.personalValues}
+        title="Personal Values"
+        subtitle={`Select your top ${MAX_SELECTIONS} core values that define who you are and what matters most to you.`}
+        progress={savedProgress?.progress || 0}
+        isCompleted={savedProgress?.completed || false}
+      />
 
-        {/* Progress Card */}
-        <Card elevation="raised" style={styles.progressCard}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>Selection Progress</Text>
-            <Text style={styles.progressCount}>
-              {selectedValues.length}/{MAX_SELECTIONS}
-            </Text>
-          </View>
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${progressPercentage}%` },
-                selectedValues.length === MAX_SELECTIONS && styles.progressFillComplete,
-              ]}
-            />
-          </View>
-          <Text style={styles.progressHint}>
-            {selectedValues.length === 0
-              ? 'Tap a value to select it'
-              : selectedValues.length < MAX_SELECTIONS
+      {/* Progress Card */}
+      <Card elevation="raised" style={styles.progressCard}>
+        <View style={styles.progressHeader}>
+          <Text style={styles.progressTitle}>Selection Progress</Text>
+          <Text style={styles.progressCount}>
+            {selectedValues.length}/{MAX_SELECTIONS}
+          </Text>
+        </View>
+        <View style={styles.progressBar}>
+          <View
+            style={[
+              styles.progressFill,
+              { width: `${progressPercentage}%` },
+              selectedValues.length === MAX_SELECTIONS && styles.progressFillComplete,
+            ]}
+          />
+        </View>
+        <Text style={styles.progressHint}>
+          {selectedValues.length === 0
+            ? 'Tap a value to select it'
+            : selectedValues.length < MAX_SELECTIONS
               ? `Select ${MAX_SELECTIONS - selectedValues.length} more value${MAX_SELECTIONS - selectedValues.length > 1 ? 's' : ''}`
               : 'Selection complete! You can reorder below.'}
-          </Text>
-        </Card>
+        </Text>
+      </Card>
 
-        {/* Selected Values (for reordering) */}
-        {selectedValues.length > 0 && (
-          <View style={styles.selectedSection}>
-            <Text style={styles.sectionTitle}>Your Top Values (Ordered by Priority)</Text>
-            <Text style={styles.sectionHint}>
-              Use the arrows to reorder your values by importance
-            </Text>
-            <View style={styles.selectedList}>
-              {selectedValues.map((value, index) => (
-                <View key={value} style={styles.selectedItem}>
-                  <View style={styles.priorityBadge}>
-                    <Text style={styles.priorityText}>{index + 1}</Text>
-                  </View>
-                  <Text style={styles.selectedValueName}>{value}</Text>
-                  <View style={styles.reorderButtons}>
-                    <TouchableOpacity
+      {/* Selected Values (for reordering) */}
+      {selectedValues.length > 0 && (
+        <View style={styles.selectedSection}>
+          <Text style={styles.sectionTitle}>Your Top Values (Ordered by Priority)</Text>
+          <Text style={styles.sectionHint}>
+            Use the arrows to reorder your values by importance
+          </Text>
+          <View style={styles.selectedList}>
+            {selectedValues.map((value, index) => (
+              <View key={value} style={styles.selectedItem}>
+                <View style={styles.priorityBadge}>
+                  <Text style={styles.priorityText}>{index + 1}</Text>
+                </View>
+                <Text style={styles.selectedValueName}>{value}</Text>
+                <View style={styles.reorderButtons}>
+                  <TouchableOpacity
+                    style={[styles.reorderButton, index === 0 && styles.reorderButtonDisabled]}
+                    onPress={() => moveValueUp(index)}
+                    disabled={index === 0}
+                    accessibilityLabel={`Move ${value} up`}
+                    accessibilityHint="Increases priority of this value"
+                  >
+                    <Text
                       style={[
-                        styles.reorderButton,
-                        index === 0 && styles.reorderButtonDisabled,
-                      ]}
-                      onPress={() => moveValueUp(index)}
-                      disabled={index === 0}
-                      accessibilityLabel={`Move ${value} up`}
-                      accessibilityHint="Increases priority of this value"
-                    >
-                      <Text style={[
                         styles.reorderButtonText,
                         index === 0 && styles.reorderButtonTextDisabled,
-                      ]}>
-                        ▲
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        styles.reorderButton,
-                        index === selectedValues.length - 1 && styles.reorderButtonDisabled,
                       ]}
-                      onPress={() => moveValueDown(index)}
-                      disabled={index === selectedValues.length - 1}
-                      accessibilityLabel={`Move ${value} down`}
-                      accessibilityHint="Decreases priority of this value"
                     >
-                      <Text style={[
+                      ▲
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.reorderButton,
+                      index === selectedValues.length - 1 && styles.reorderButtonDisabled,
+                    ]}
+                    onPress={() => moveValueDown(index)}
+                    disabled={index === selectedValues.length - 1}
+                    accessibilityLabel={`Move ${value} down`}
+                    accessibilityHint="Decreases priority of this value"
+                  >
+                    <Text
+                      style={[
                         styles.reorderButtonText,
                         index === selectedValues.length - 1 && styles.reorderButtonTextDisabled,
-                      ]}>
-                        ▼
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
+                      ]}
+                    >
+                      ▼
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-              ))}
-            </View>
-          </View>
-        )}
-
-        {/* Values Grid */}
-        <View style={styles.valuesSection}>
-          <Text style={styles.sectionTitle}>Core Values</Text>
-          <Text style={styles.sectionHint}>
-            Tap to select values that resonate with you
-          </Text>
-          <View style={styles.valuesGrid}>
-            {CORE_VALUES.map((value) => {
-              const isSelected = selectedValues.includes(value);
-              const selectionOrder = isSelected
-                ? selectedValues.indexOf(value) + 1
-                : undefined;
-              const isDisabled = !isSelected && isMaxReached;
-
-              return (
-                <View key={value} style={styles.valueCardWrapper}>
-                  <ValueCard
-                    value={value}
-                    isSelected={isSelected}
-                    onPress={() => handleValueToggle(value)}
-                    selectionOrder={selectionOrder}
-                    disabled={isDisabled}
-                    testID={`value-card-${value.toLowerCase().replace(/\s+/g, '-')}`}
-                  />
-                </View>
-              );
-            })}
+              </View>
+            ))}
           </View>
         </View>
+      )}
+
+      {/* Values Grid */}
+      <View style={styles.valuesSection}>
+        <Text style={styles.sectionTitle}>Core Values</Text>
+        <Text style={styles.sectionHint}>Tap to select values that resonate with you</Text>
+        <View style={styles.valuesGrid}>
+          {CORE_VALUES.map((value) => {
+            const isSelected = selectedValues.includes(value);
+            const selectionOrder = isSelected ? selectedValues.indexOf(value) + 1 : undefined;
+            const isDisabled = !isSelected && isMaxReached;
+
+            return (
+              <View key={value} style={styles.valueCardWrapper}>
+                <ValueCard
+                  value={value}
+                  isSelected={isSelected}
+                  onPress={() => handleValueToggle(value)}
+                  selectionOrder={selectionOrder}
+                  disabled={isDisabled}
+                  testID={`value-card-${value.toLowerCase().replace(/\s+/g, '-')}`}
+                />
+              </View>
+            );
+          })}
+        </View>
+      </View>
     </ExerciseScreenLayout>
   );
 };

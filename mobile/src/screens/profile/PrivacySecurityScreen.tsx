@@ -35,12 +35,8 @@ type Props = ProfileStackScreenProps<'PrivacySecurity'>;
  * - Crash reporting opt-in/out
  */
 const PrivacySecurityScreen = (_props: Props) => {
-  const {
-    analyticsEnabled,
-    crashReportingEnabled,
-    setAnalytics,
-    setCrashReporting,
-  } = useSettingsStore();
+  const { analyticsEnabled, crashReportingEnabled, setAnalytics, setCrashReporting } =
+    useSettingsStore();
 
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
@@ -60,20 +56,11 @@ const PrivacySecurityScreen = (_props: Props) => {
       setBiometricAvailable(hasHardware && isEnrolled);
 
       if (hasHardware) {
-        const supportedTypes =
-          await LocalAuthentication.supportedAuthenticationTypesAsync();
+        const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
 
-        if (
-          supportedTypes.includes(
-            LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
-          )
-        ) {
+        if (supportedTypes.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
           setBiometricType('Face ID');
-        } else if (
-          supportedTypes.includes(
-            LocalAuthentication.AuthenticationType.FINGERPRINT
-          )
-        ) {
+        } else if (supportedTypes.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
           setBiometricType('Touch ID');
         }
       }
@@ -83,34 +70,37 @@ const PrivacySecurityScreen = (_props: Props) => {
     }
   };
 
-  const handleBiometricToggle = useCallback(async (value: boolean) => {
-    if (value) {
-      // Verify biometrics work before enabling
-      try {
-        const result = await LocalAuthentication.authenticateAsync({
-          promptMessage: `Enable ${biometricType} for Manifest the Unseen`,
-          fallbackLabel: 'Use Passcode',
-          cancelLabel: 'Cancel',
-        });
+  const handleBiometricToggle = useCallback(
+    async (value: boolean) => {
+      if (value) {
+        // Verify biometrics work before enabling
+        try {
+          const result = await LocalAuthentication.authenticateAsync({
+            promptMessage: `Enable ${biometricType} for Manifest the Unseen`,
+            fallbackLabel: 'Use Passcode',
+            cancelLabel: 'Cancel',
+          });
 
-        if (result.success) {
-          setBiometricEnabled(true);
-          // TODO: Store this preference in secure storage
-        } else {
-          Alert.alert(
-            'Authentication Failed',
-            `Could not verify ${biometricType}. Please try again.`
-          );
+          if (result.success) {
+            setBiometricEnabled(true);
+            // TODO: Store this preference in secure storage
+          } else {
+            Alert.alert(
+              'Authentication Failed',
+              `Could not verify ${biometricType}. Please try again.`
+            );
+          }
+        } catch (error) {
+          console.error('Biometric authentication error:', error);
+          Alert.alert('Error', 'An error occurred during authentication.');
         }
-      } catch (error) {
-        console.error('Biometric authentication error:', error);
-        Alert.alert('Error', 'An error occurred during authentication.');
+      } else {
+        setBiometricEnabled(false);
+        // TODO: Remove preference from secure storage
       }
-    } else {
-      setBiometricEnabled(false);
-      // TODO: Remove preference from secure storage
-    }
-  }, [biometricType]);
+    },
+    [biometricType]
+  );
 
   const handleAnalyticsToggle = (value: boolean) => {
     if (!value) {
@@ -170,10 +160,7 @@ const PrivacySecurityScreen = (_props: Props) => {
       }
     } catch (error) {
       console.error('[PrivacySecurity] Export error:', error);
-      Alert.alert(
-        'Export Failed',
-        'An unexpected error occurred. Please try again.'
-      );
+      Alert.alert('Export Failed', 'An unexpected error occurred. Please try again.');
     } finally {
       setIsExporting(false);
     }
@@ -181,10 +168,7 @@ const PrivacySecurityScreen = (_props: Props) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <SettingsSection title="Security">
           <SettingsToggle
             label={`${biometricType} Lock`}
@@ -203,8 +187,8 @@ const PrivacySecurityScreen = (_props: Props) => {
         {!biometricAvailable && (
           <View style={styles.infoBox}>
             <Text style={styles.infoText}>
-              To enable biometric security, make sure {biometricType} is set up
-              in your device settings.
+              To enable biometric security, make sure {biometricType} is set up in your device
+              settings.
             </Text>
           </View>
         )}
@@ -252,9 +236,9 @@ const PrivacySecurityScreen = (_props: Props) => {
         <View style={styles.privacyNote}>
           <Text style={styles.privacyNoteTitle}>Your Privacy Matters</Text>
           <Text style={styles.privacyNoteText}>
-            We never sell your personal data. Journal entries and workbook
-            responses are encrypted and only accessible to you. Analytics
-            data is anonymous and cannot be traced back to you.
+            We never sell your personal data. Journal entries and workbook responses are encrypted
+            and only accessible to you. Analytics data is anonymous and cannot be traced back to
+            you.
           </Text>
         </View>
       </ScrollView>
@@ -293,7 +277,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginTop: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.primary[500] + '40',
+    borderColor: `${colors.primary[500]}40`,
   },
   privacyNoteTitle: {
     fontSize: 15,

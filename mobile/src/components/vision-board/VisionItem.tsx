@@ -103,10 +103,9 @@ const VisionItem: React.FC<VisionItemProps> = ({
         });
         pan.setValue({ x: 0, y: 0 });
       },
-      onPanResponderMove: Animated.event(
-        [null, { dx: pan.x, dy: pan.y }],
-        { useNativeDriver: false }
-      ),
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+        useNativeDriver: false,
+      }),
       onPanResponderRelease: () => {
         isDragging.current = false;
 
@@ -187,9 +186,7 @@ const VisionItem: React.FC<VisionItemProps> = ({
           ]}
           resizeMode="cover"
         />
-        {itemStyle?.hasFrame && (
-          <View style={styles.polaroidBottom} />
-        )}
+        {itemStyle?.hasFrame && <View style={styles.polaroidBottom} />}
       </View>
     );
   };
@@ -224,15 +221,13 @@ const VisionItem: React.FC<VisionItemProps> = ({
       style={[
         ...getContainerStyle(),
         {
-          transform: [
-            { translateX: pan.x },
-            { translateY: pan.y },
-            { scale },
-          ],
+          transform: [{ translateX: pan.x }, { translateY: pan.y }, { scale }],
         },
       ]}
       accessibilityRole="button"
-      accessibilityLabel={type === 'image' ? 'Vision board image - drag to move' : `${content} - drag to move`}
+      accessibilityLabel={
+        type === 'image' ? 'Vision board image - drag to move' : `${content} - drag to move`
+      }
       accessibilityHint="Touch and drag to reposition this item"
     >
       {/* Content */}

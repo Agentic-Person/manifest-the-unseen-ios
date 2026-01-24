@@ -80,7 +80,9 @@ export const Button: React.FC<ButtonProps> = ({
   enableHaptic = true,
 }) => {
   const handlePress = () => {
-    if (disabled || loading) return;
+    if (disabled || loading) {
+      return;
+    }
 
     // Haptic feedback
     if (enableHaptic) {
@@ -96,16 +98,24 @@ export const Button: React.FC<ButtonProps> = ({
     // Variant styles
     if (variant === 'primary') {
       baseStyles.push(styles.primary);
-      if (pressed) baseStyles.push(styles.primaryPressed);
+      if (pressed) {
+        baseStyles.push(styles.primaryPressed);
+      }
     } else if (variant === 'secondary') {
       baseStyles.push(styles.secondary);
-      if (pressed) baseStyles.push(styles.secondaryPressed);
+      if (pressed) {
+        baseStyles.push(styles.secondaryPressed);
+      }
     } else if (variant === 'ghost') {
       baseStyles.push(styles.ghost);
-      if (pressed) baseStyles.push(styles.ghostPressed);
+      if (pressed) {
+        baseStyles.push(styles.ghostPressed);
+      }
     } else if (variant === 'outline') {
       baseStyles.push(styles.outline);
-      if (pressed) baseStyles.push(styles.outlinePressed);
+      if (pressed) {
+        baseStyles.push(styles.outlinePressed);
+      }
     }
 
     // Size styles

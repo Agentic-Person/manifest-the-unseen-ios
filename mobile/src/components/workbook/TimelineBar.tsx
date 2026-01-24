@@ -13,12 +13,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { TimelineGoal } from '../../screens/workbook/Phase3/TimelineScreen';
 
@@ -70,12 +65,7 @@ const getStatusBorderStyle = (status: TimelineGoal['status']) => {
 /**
  * TimelineBar Component
  */
-export const TimelineBar: React.FC<TimelineBarProps> = ({
-  goal,
-  width,
-  height,
-  onPress,
-}) => {
+export const TimelineBar: React.FC<TimelineBarProps> = ({ goal, width, height, onPress }) => {
   const animatedScale = React.useRef(new Animated.Value(1)).current;
 
   /**
@@ -151,12 +141,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({
         {/* Progress indicator for in_progress goals */}
         {goal.status === 'in_progress' && (
           <View style={styles.progressIndicator}>
-            <View
-              style={[
-                styles.progressDot,
-                { backgroundColor: 'rgba(255, 255, 255, 0.8)' },
-              ]}
-            />
+            <View style={[styles.progressDot, { backgroundColor: 'rgba(255, 255, 255, 0.8)' }]} />
           </View>
         )}
       </Animated.View>

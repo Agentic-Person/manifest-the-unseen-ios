@@ -23,12 +23,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as Haptics from 'expo-haptics';
 
@@ -51,9 +46,15 @@ const DESIGN_COLORS = {
  * Red (low/needs work) -> Orange -> Yellow -> Green (high/excellent)
  */
 const getPositiveGradientColor = (value: number): string => {
-  if (value <= 3) return '#dc2626'; // Red - needs improvement
-  if (value <= 5) return '#c9a227'; // Orange/gold - developing
-  if (value <= 7) return '#8b6914'; // Yellow/amber - good
+  if (value <= 3) {
+    return '#dc2626';
+  } // Red - needs improvement
+  if (value <= 5) {
+    return '#c9a227';
+  } // Orange/gold - developing
+  if (value <= 7) {
+    return '#8b6914';
+  } // Yellow/amber - good
   return '#2d5a4a'; // Green - excellent
 };
 
@@ -112,10 +113,18 @@ export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
    * Get rating label based on value
    */
   const getRatingLabel = (val: number): string => {
-    if (val <= 2) return 'Needs Work';
-    if (val <= 4) return 'Developing';
-    if (val <= 6) return 'Moderate';
-    if (val <= 8) return 'Good';
+    if (val <= 2) {
+      return 'Needs Work';
+    }
+    if (val <= 4) {
+      return 'Developing';
+    }
+    if (val <= 6) {
+      return 'Moderate';
+    }
+    if (val <= 8) {
+      return 'Good';
+    }
     return 'Excellent';
   };
 
@@ -143,9 +152,7 @@ export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
       </View>
 
       {/* Description */}
-      {description && (
-        <Text style={styles.description}>{description}</Text>
-      )}
+      {description && <Text style={styles.description}>{description}</Text>}
 
       {/* Slider */}
       <View style={styles.sliderContainer}>
@@ -191,9 +198,7 @@ export const LifeAreaSlider: React.FC<LifeAreaSliderProps> = ({
       {/* Rating Labels */}
       <View style={styles.labelsRow}>
         <Text style={styles.minLabel}>1</Text>
-        <Text style={[styles.ratingLabel, { color: activeColor }]}>
-          {getRatingLabel(value)}
-        </Text>
+        <Text style={[styles.ratingLabel, { color: activeColor }]}>{getRatingLabel(value)}</Text>
         <Text style={styles.maxLabel}>10</Text>
       </View>
     </Pressable>

@@ -44,9 +44,7 @@ export const getGuruConversation = async (
 /**
  * Get all conversations for a user
  */
-export const getAllGuruConversations = async (
-  userId: string
-): Promise<GuruConversation[]> => {
+export const getAllGuruConversations = async (userId: string): Promise<GuruConversation[]> => {
   const { data, error } = await supabase
     .from('ai_conversations')
     .select('*')
@@ -54,7 +52,9 @@ export const getAllGuruConversations = async (
     .eq('conversation_type', 'guru')
     .order('guru_phase', { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return (data as GuruConversation[]) || [];
 };
 
@@ -83,7 +83,9 @@ export const upsertGuruConversation = async (
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data as GuruConversation;
 };
 
@@ -109,7 +111,9 @@ export const sendGuruMessage = async (
   });
 
   // Check auth state before calling (H3 Security Fix: Only log in development)
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (__DEV__) {
     logger.debug('[Guru] Auth session exists:', !!session);
     if (session) {
@@ -158,7 +162,9 @@ export const deleteGuruConversation = async (
     .eq('conversation_type', 'guru')
     .eq('guru_phase', phaseNumber);
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 };
 
 /**
@@ -171,7 +177,9 @@ export const resetAllGuruConversations = async (userId: string): Promise<void> =
     .eq('user_id', userId)
     .eq('conversation_type', 'guru');
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 };
 
 /**
@@ -239,14 +247,13 @@ export const getPhaseDataForAnalysis = async (
       .eq('phase_number', phaseNumber)
       .order('worksheet_id', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return (data as WorkbookProgress[]) || [];
   } catch (error) {
-    console.error(
-      '[guruService] Error getting phase data for analysis:',
-      error
-    );
+    console.error('[guruService] Error getting phase data for analysis:', error);
     throw error;
   }
 };
@@ -255,9 +262,7 @@ export const getPhaseDataForAnalysis = async (
  * Format Phase for AI Prompt
  * Converts worksheet data into a token-optimized string for AI analysis
  */
-export const formatPhaseForPrompt = (
-  phaseData: WorkbookProgress[]
-): string => {
+export const formatPhaseForPrompt = (phaseData: WorkbookProgress[]): string => {
   if (!phaseData || phaseData.length === 0) {
     return 'No worksheet data available for this phase.';
   }

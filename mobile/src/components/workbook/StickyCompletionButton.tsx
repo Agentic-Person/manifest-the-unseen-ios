@@ -130,13 +130,9 @@ export const StickyCompletionButton: React.FC<StickyCompletionButtonProps> = ({
         {/* Status hint above button */}
         {!isCompleted && (
           <View style={styles.hintContainer}>
-            {isReady && (
-              <Text style={styles.hintReady}>✨ Ready to complete! Tap below</Text>
-            )}
+            {isReady && <Text style={styles.hintReady}>✨ Ready to complete! Tap below</Text>}
             {!canComplete && !isSaving && (
-              <Text style={styles.hintDisabled}>
-                📝 Fill in all required fields to complete
-              </Text>
+              <Text style={styles.hintDisabled}>📝 Fill in all required fields to complete</Text>
             )}
             {isSaving && <Text style={styles.hintSaving}>Saving your progress...</Text>}
           </View>

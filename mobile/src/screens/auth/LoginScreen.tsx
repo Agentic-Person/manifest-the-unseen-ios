@@ -88,9 +88,15 @@ export const LoginScreen: React.FC = () => {
       }
 
       // Update auth store
-      if (result.user) setUser(result.user);
-      if (result.session) setSession(result.session);
-      if (result.profile) setProfile(result.profile);
+      if (result.user) {
+        setUser(result.user);
+      }
+      if (result.session) {
+        setSession(result.session);
+      }
+      if (result.profile) {
+        setProfile(result.profile);
+      }
 
       setLoading(false);
       setError(null);
@@ -129,9 +135,15 @@ export const LoginScreen: React.FC = () => {
       }
 
       // Update auth store
-      if (result.user) setUser(result.user);
-      if (result.session) setSession(result.session);
-      if (result.profile) setProfile(result.profile);
+      if (result.user) {
+        setUser(result.user);
+      }
+      if (result.session) {
+        setSession(result.session);
+      }
+      if (result.profile) {
+        setProfile(result.profile);
+      }
 
       setLoading(false);
       setError(null);
@@ -167,10 +179,7 @@ export const LoginScreen: React.FC = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         {/* Header */}
         <View style={styles.header}>
           <Text variant="h1" style={styles.title}>

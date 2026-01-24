@@ -7,13 +7,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 
 import { colors } from '../../theme/colors';
 import { spacing } from '../../theme/spacing';
@@ -86,7 +80,9 @@ export function PrayerTextDisplay({
 
   // Render progress dots
   const renderProgressDots = () => {
-    if (totalLines <= 1) return null;
+    if (totalLines <= 1) {
+      return null;
+    }
 
     return (
       <View style={styles.progressDots}>

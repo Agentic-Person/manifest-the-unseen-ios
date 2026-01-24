@@ -13,13 +13,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { colors, spacing, borderRadius } from '../../theme';
 
 export type SWOTQuadrantType = 'strengths' | 'weaknesses' | 'opportunities' | 'threats';
@@ -115,10 +109,7 @@ export const SWOTTag: React.FC<SWOTTagProps> = ({
       </Text>
 
       {/* Tag text */}
-      <Text
-        style={[styles.text, { color: quadrantStyle.textColor }]}
-        numberOfLines={2}
-      >
+      <Text style={[styles.text, { color: quadrantStyle.textColor }]} numberOfLines={2}>
         {text}
       </Text>
 
@@ -126,17 +117,12 @@ export const SWOTTag: React.FC<SWOTTagProps> = ({
       {removable && onRemove && (
         <TouchableOpacity
           onPress={onRemove}
-          style={[
-            styles.removeButton,
-            { backgroundColor: quadrantStyle.borderColor },
-          ]}
+          style={[styles.removeButton, { backgroundColor: quadrantStyle.borderColor }]}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           accessibilityRole="button"
           accessibilityLabel={`Remove ${text}`}
         >
-          <Text style={[styles.removeIcon, { color: colors.dark.textPrimary }]}>
-            {'\u00D7'}
-          </Text>
+          <Text style={[styles.removeIcon, { color: colors.dark.textPrimary }]}>{'\u00D7'}</Text>
         </TouchableOpacity>
       )}
     </View>

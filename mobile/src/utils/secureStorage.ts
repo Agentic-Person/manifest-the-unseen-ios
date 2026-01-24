@@ -93,7 +93,9 @@ class SecureStorageManager {
       // SecureStore is available on iOS and Android, but not on web
       if (Platform.OS === 'web') {
         this.isAvailable = false;
-        logger.warn('[SecureStorage] SecureStore not available on web, falling back to AsyncStorage');
+        logger.warn(
+          '[SecureStorage] SecureStore not available on web, falling back to AsyncStorage'
+        );
       }
     } catch (error) {
       logger.error('[SecureStorage] Error checking availability:', { error });
@@ -108,11 +110,7 @@ class SecureStorageManager {
    * @param value - Value to store
    * @param options - Storage options
    */
-  async setItem(
-    key: string,
-    value: string,
-    options?: SecureStorageOptions
-  ): Promise<void> {
+  async setItem(key: string, value: string, options?: SecureStorageOptions): Promise<void> {
     try {
       if (!this.isAvailable) {
         // Fallback to AsyncStorage if SecureStore not available
@@ -134,7 +132,9 @@ class SecureStorageManager {
       logger.debug(`[SecureStorage] Successfully stored encrypted value for key: ${key}`);
     } catch (error) {
       logger.error(`[SecureStorage] Failed to store value for key: ${key}`, { error });
-      throw new Error(`Failed to securely store ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to securely store ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -145,10 +145,7 @@ class SecureStorageManager {
    * @param options - Retrieval options
    * @returns The decrypted value, or null if not found
    */
-  async getItem(
-    key: string,
-    options?: SecureStorageOptions
-  ): Promise<string | null> {
+  async getItem(key: string, options?: SecureStorageOptions): Promise<string | null> {
     try {
       if (!this.isAvailable) {
         // Fallback to AsyncStorage if SecureStore not available
@@ -183,7 +180,9 @@ class SecureStorageManager {
         return null;
       }
 
-      throw new Error(`Failed to retrieve ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to retrieve ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -204,7 +203,9 @@ class SecureStorageManager {
       logger.debug(`[SecureStorage] Successfully removed encrypted value for key: ${key}`);
     } catch (error) {
       logger.error(`[SecureStorage] Failed to remove value for key: ${key}`, { error });
-      throw new Error(`Failed to remove ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to remove ${key}: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -217,9 +218,11 @@ class SecureStorageManager {
       const allKeys = Object.values(SecureStorageKeys);
 
       await Promise.all(
-        allKeys.map(key => this.removeItem(key).catch(err => {
-          logger.warn(`[SecureStorage] Failed to remove ${key}:`, { error: err });
-        }))
+        allKeys.map((key) =>
+          this.removeItem(key).catch((err) => {
+            logger.warn(`[SecureStorage] Failed to remove ${key}:`, { error: err });
+          })
+        )
       );
 
       logger.debug('[SecureStorage] Successfully cleared all secure storage');
@@ -409,7 +412,7 @@ export const JournalEncryption = {
       }
     }
 
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
   },
 
   /**

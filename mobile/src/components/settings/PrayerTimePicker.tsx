@@ -5,13 +5,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  TextStyle,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextStyle } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { colors, spacing } from '../../theme';
 import { useFontSizeContext } from '../../contexts/FontSizeContext';
@@ -74,39 +68,48 @@ export const PrayerTimePicker: React.FC<PrayerTimePickerProps> = ({
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { scaleFont } = useFontSizeContext();
 
-  const scaledStyles = useMemo(() => ({
-    timeText: {
-      ...styles.timeText,
-      fontSize: scaleFont(15),
-    } as TextStyle,
-    removeText: {
-      ...styles.removeText,
-      fontSize: scaleFont(18),
-    } as TextStyle,
-    addText: {
-      ...styles.addText,
-      fontSize: scaleFont(14),
-    } as TextStyle,
-    noteText: {
-      ...styles.noteText,
-      fontSize: scaleFont(12),
-    } as TextStyle,
-  }), [scaleFont]);
+  const scaledStyles = useMemo(
+    () => ({
+      timeText: {
+        ...styles.timeText,
+        fontSize: scaleFont(15),
+      } as TextStyle,
+      removeText: {
+        ...styles.removeText,
+        fontSize: scaleFont(18),
+      } as TextStyle,
+      addText: {
+        ...styles.addText,
+        fontSize: scaleFont(14),
+      } as TextStyle,
+      noteText: {
+        ...styles.noteText,
+        fontSize: scaleFont(12),
+      } as TextStyle,
+    }),
+    [scaleFont]
+  );
 
   const handleAddTime = () => {
-    if (times.length >= maxTimes) return;
+    if (times.length >= maxTimes) {
+      return;
+    }
     setEditingIndex(null);
     setShowPicker(true);
   };
 
   const handleEditTime = (index: number) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
     setEditingIndex(index);
     setShowPicker(true);
   };
 
   const handleRemoveTime = (index: number) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
     const newTimes = times.filter((_, i) => i !== index);
     onTimesChange(newTimes);
   };
@@ -142,9 +145,8 @@ export const PrayerTimePicker: React.FC<PrayerTimePickerProps> = ({
     setEditingIndex(null);
   };
 
-  const currentPickerValue = editingIndex !== null
-    ? parseTimeToDate(times[editingIndex])
-    : new Date();
+  const currentPickerValue =
+    editingIndex !== null ? parseTimeToDate(times[editingIndex]) : new Date();
 
   return (
     <View style={[styles.container, disabled && styles.disabled]}>
@@ -157,9 +159,7 @@ export const PrayerTimePicker: React.FC<PrayerTimePickerProps> = ({
             disabled={disabled}
             activeOpacity={0.7}
           >
-            <Text style={scaledStyles.timeText}>
-              {formatTimeDisplay(time)}
-            </Text>
+            <Text style={scaledStyles.timeText}>{formatTimeDisplay(time)}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.removeButton}

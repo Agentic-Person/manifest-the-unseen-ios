@@ -8,12 +8,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 
 // Design system colors from APP-DESIGN.md
 const DESIGN_COLORS = {
@@ -36,18 +31,20 @@ const DESIGN_COLORS = {
  * Streak thresholds for visual feedback
  */
 const STREAK_THRESHOLDS = {
-  starting: 0,      // 0 days
-  building: 3,      // 3+ days
-  growing: 7,       // 7+ days (1 week)
-  strong: 14,       // 14+ days (2 weeks)
-  powerful: 30,     // 30+ days (1 month)
-  legendary: 100,   // 100+ days
+  starting: 0, // 0 days
+  building: 3, // 3+ days
+  growing: 7, // 7+ days (1 week)
+  strong: 14, // 14+ days (2 weeks)
+  powerful: 30, // 30+ days (1 month)
+  legendary: 100, // 100+ days
 };
 
 /**
  * Get streak level and colors based on current streak
  */
-const getStreakLevel = (days: number): {
+const getStreakLevel = (
+  days: number
+): {
   level: string;
   color: string;
   glowColor: string;
@@ -139,7 +136,9 @@ const StreakCounter: React.FC<StreakCounterProps> = ({
    * Pulse animation for flames
    */
   useEffect(() => {
-    if (!animated || currentStreak === 0) return;
+    if (!animated || currentStreak === 0) {
+      return;
+    }
 
     const pulse = Animated.loop(
       Animated.sequence([
@@ -217,11 +216,7 @@ const StreakCounter: React.FC<StreakCounterProps> = ({
   // Render flames based on streak level
   const renderFlames = () => {
     if (streakInfo.flameCount === 0) {
-      return (
-        <Text style={[styles.flameEmpty, { fontSize: config.flameSize }]}>
-          {'\u{1F525}'}
-        </Text>
-      );
+      return <Text style={[styles.flameEmpty, { fontSize: config.flameSize }]}>{'\u{1F525}'}</Text>;
     }
 
     return (
@@ -248,10 +243,7 @@ const StreakCounter: React.FC<StreakCounterProps> = ({
 
   return (
     <View
-      style={[
-        styles.container,
-        { padding: config.containerPadding },
-      ]}
+      style={[styles.container, { padding: config.containerPadding }]}
       testID="streak-counter"
       accessibilityRole="text"
       accessibilityLabel={`${routineLabel[routineType]}: ${currentStreak} day streak, ${streakInfo.level} level. ${streakInfo.message}`}
@@ -282,10 +274,7 @@ const StreakCounter: React.FC<StreakCounterProps> = ({
         {/* Streak Number */}
         <View style={styles.numberContainer}>
           <Text
-            style={[
-              styles.streakNumber,
-              { fontSize: config.numberSize, color: streakInfo.color },
-            ]}
+            style={[styles.streakNumber, { fontSize: config.numberSize, color: streakInfo.color }]}
           >
             {currentStreak}
           </Text>
@@ -300,15 +289,11 @@ const StreakCounter: React.FC<StreakCounterProps> = ({
         style={[styles.levelBadge, { borderColor: streakInfo.color }]}
         accessibilityLabel={`Level: ${streakInfo.level}`}
       >
-        <Text style={[styles.levelText, { color: streakInfo.color }]}>
-          {streakInfo.level}
-        </Text>
+        <Text style={[styles.levelText, { color: streakInfo.color }]}>{streakInfo.level}</Text>
       </View>
 
       {/* Motivational Message */}
-      <Text style={[styles.message, { fontSize: config.messageSize }]}>
-        {streakInfo.message}
-      </Text>
+      <Text style={[styles.message, { fontSize: config.messageSize }]}>{streakInfo.message}</Text>
 
       {/* Best Streak */}
       {showBestStreak && (

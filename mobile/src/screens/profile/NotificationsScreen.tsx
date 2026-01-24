@@ -5,14 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Alert,
-  Linking,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import type { ProfileStackScreenProps } from '../../types/navigation';
@@ -87,7 +80,9 @@ const NotificationsScreen = (_props: Props) => {
 
   // Format time for display
   const formatTimeDisplay = (timeString?: string): string => {
-    if (!timeString) return 'Not set';
+    if (!timeString) {
+      return 'Not set';
+    }
     const [hours, minutes] = timeString.split(':').map(Number);
     const period = hours >= 12 ? 'PM' : 'AM';
     const displayHours = hours % 12 || 12;
@@ -198,10 +193,7 @@ const NotificationsScreen = (_props: Props) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <SettingsSection title="Push Notifications">
           <SettingsToggle
             label="Enable Notifications"

@@ -89,13 +89,14 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.ABC_MODEL);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: data as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.ABC_MODEL,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: data as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.ABC_MODEL,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -135,11 +136,7 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Update an entry field
    */
-  const handleUpdateEntry = useCallback((
-    entryId: string,
-    field: keyof ABCEntry,
-    value: string
-  ) => {
+  const handleUpdateEntry = useCallback((entryId: string, field: keyof ABCEntry, value: string) => {
     setData((prev) => ({
       ...prev,
       entries: prev.entries.map((entry) =>
@@ -153,25 +150,21 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
    * Delete an entry
    */
   const handleDeleteEntry = useCallback((entryId: string) => {
-    Alert.alert(
-      'Delete Entry',
-      'Are you sure you want to delete this ABC analysis?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            setData((prev) => ({
-              ...prev,
-              entries: prev.entries.filter((entry) => entry.id !== entryId),
-              updatedAt: new Date().toISOString(),
-            }));
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          },
+    Alert.alert('Delete Entry', 'Are you sure you want to delete this ABC analysis?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          setData((prev) => ({
+            ...prev,
+            entries: prev.entries.filter((entry) => entry.id !== entryId),
+            updatedAt: new Date().toISOString(),
+          }));
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         },
-      ]
-    );
+      },
+    ]);
   }, []);
 
   if (isLoading) {
@@ -249,7 +242,8 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.emptyState}>
             <Text style={styles.emptyEmoji}>🔍</Text>
             <Text style={styles.emptyText}>
-              No analyses yet. Add your first ABC entry to start understanding your thought patterns.
+              No analyses yet. Add your first ABC entry to start understanding your thought
+              patterns.
             </Text>
           </View>
         ) : (
@@ -257,17 +251,13 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
             <View key={entry.id} style={styles.entryCard}>
               <Pressable
                 style={styles.entryHeader}
-                onPress={() => setExpandedEntry(
-                  expandedEntry === entry.id ? null : entry.id
-                )}
+                onPress={() => setExpandedEntry(expandedEntry === entry.id ? null : entry.id)}
               >
                 <Text style={styles.entryNumber}>#{index + 1}</Text>
                 <Text style={styles.entryPreview} numberOfLines={1}>
                   {entry.activatingEvent || 'New entry...'}
                 </Text>
-                <Text style={styles.expandIcon}>
-                  {expandedEntry === entry.id ? '▼' : '▶'}
-                </Text>
+                <Text style={styles.expandIcon}>{expandedEntry === entry.id ? '▼' : '▶'}</Text>
               </Pressable>
 
               {expandedEntry === entry.id && (
@@ -275,7 +265,9 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
                   {/* Activating Event */}
                   <View style={styles.fieldContainer}>
                     <View style={styles.fieldHeader}>
-                      <View style={[styles.fieldBadge, { backgroundColor: DESIGN_COLORS.accentTeal }]}>
+                      <View
+                        style={[styles.fieldBadge, { backgroundColor: DESIGN_COLORS.accentTeal }]}
+                      >
                         <Text style={styles.fieldBadgeText}>A</Text>
                       </View>
                       <Text style={styles.fieldLabel}>Activating Event</Text>
@@ -294,7 +286,9 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
                   {/* Belief */}
                   <View style={styles.fieldContainer}>
                     <View style={styles.fieldHeader}>
-                      <View style={[styles.fieldBadge, { backgroundColor: DESIGN_COLORS.accentPurple }]}>
+                      <View
+                        style={[styles.fieldBadge, { backgroundColor: DESIGN_COLORS.accentPurple }]}
+                      >
                         <Text style={styles.fieldBadgeText}>B</Text>
                       </View>
                       <Text style={styles.fieldLabel}>Belief</Text>
@@ -313,7 +307,9 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
                   {/* Consequence */}
                   <View style={styles.fieldContainer}>
                     <View style={styles.fieldHeader}>
-                      <View style={[styles.fieldBadge, { backgroundColor: DESIGN_COLORS.accentRose }]}>
+                      <View
+                        style={[styles.fieldBadge, { backgroundColor: DESIGN_COLORS.accentRose }]}
+                      >
                         <Text style={styles.fieldBadgeText}>C</Text>
                       </View>
                       <Text style={styles.fieldLabel}>Consequence</Text>
@@ -332,7 +328,9 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
                   {/* Optional: Alternative Belief */}
                   <View style={styles.fieldContainer}>
                     <View style={styles.fieldHeader}>
-                      <View style={[styles.fieldBadge, { backgroundColor: DESIGN_COLORS.accentGreen }]}>
+                      <View
+                        style={[styles.fieldBadge, { backgroundColor: DESIGN_COLORS.accentGreen }]}
+                      >
                         <Text style={styles.fieldBadgeText}>B+</Text>
                       </View>
                       <Text style={styles.fieldLabel}>Alternative Belief (Optional)</Text>
@@ -340,7 +338,9 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
                     <TextInput
                       style={styles.textInput}
                       value={entry.alternativeBelief || ''}
-                      onChangeText={(text) => handleUpdateEntry(entry.id, 'alternativeBelief', text)}
+                      onChangeText={(text) =>
+                        handleUpdateEntry(entry.id, 'alternativeBelief', text)
+                      }
                       placeholder="What's a healthier way to think about this?"
                       placeholderTextColor={DESIGN_COLORS.textTertiary}
                       multiline
@@ -363,10 +363,7 @@ const AbcModelScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Add Entry Button */}
         <Pressable
-          style={({ pressed }) => [
-            styles.addButton,
-            pressed && styles.addButtonPressed,
-          ]}
+          style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
           onPress={handleAddEntry}
         >
           <Text style={styles.addButtonText}>+ Add ABC Analysis</Text>

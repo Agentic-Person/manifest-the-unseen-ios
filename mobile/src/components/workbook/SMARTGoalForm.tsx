@@ -36,13 +36,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
-import {
-  SMARTGoal,
-  GoalCategory,
-  GoalStatus,
-  CATEGORY_COLORS,
-  CATEGORY_NAMES,
-} from './GoalCard';
+import { SMARTGoal, GoalCategory, GoalStatus, CATEGORY_COLORS, CATEGORY_NAMES } from './GoalCard';
 
 /**
  * SMART criteria configuration
@@ -167,19 +161,19 @@ export const SMARTGoalForm: React.FC<SMARTGoalFormProps> = ({
   /**
    * Update form field
    */
-  const updateField = useCallback(<K extends keyof typeof formData>(
-    key: K,
-    value: (typeof formData)[K]
-  ) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
-  }, []);
+  const updateField = useCallback(
+    <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
+      setFormData((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
   /**
    * Toggle criterion expansion
    */
   const toggleCriterion = useCallback((key: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setExpandedCriterion(prev => prev === key ? null : key);
+    setExpandedCriterion((prev) => (prev === key ? null : key));
   }, []);
 
   /**
@@ -226,7 +220,7 @@ export const SMARTGoalForm: React.FC<SMARTGoalFormProps> = ({
    */
   const calculateCompletion = (): number => {
     const fields = ['title', 'specific', 'measurable', 'achievable', 'relevant', 'timeBound'];
-    const filled = fields.filter(f => {
+    const filled = fields.filter((f) => {
       const value = formData[f as keyof typeof formData];
       return typeof value === 'string' && value.trim().length > 0;
     }).length;
@@ -259,9 +253,7 @@ export const SMARTGoalForm: React.FC<SMARTGoalFormProps> = ({
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
 
-          <Text style={styles.headerTitle}>
-            {goal ? 'Edit Goal' : 'New SMART Goal'}
-          </Text>
+          <Text style={styles.headerTitle}>{goal ? 'Edit Goal' : 'New SMART Goal'}</Text>
 
           <TouchableOpacity
             onPress={handleSave}
@@ -271,10 +263,7 @@ export const SMARTGoalForm: React.FC<SMARTGoalFormProps> = ({
             accessibilityLabel="Save goal"
             testID={`${testID}-save`}
           >
-            <Text style={[
-              styles.saveText,
-              !formData.title.trim() && styles.saveTextDisabled,
-            ]}>
+            <Text style={[styles.saveText, !formData.title.trim() && styles.saveTextDisabled]}>
               Save
             </Text>
           </TouchableOpacity>
@@ -321,14 +310,13 @@ export const SMARTGoalForm: React.FC<SMARTGoalFormProps> = ({
               accessibilityLabel={`Category: ${CATEGORY_NAMES[formData.category]}`}
               testID={`${testID}-category`}
             >
-              <View style={[
-                styles.categoryBadge,
-                { backgroundColor: `${CATEGORY_COLORS[formData.category]}30` },
-              ]}>
-                <Text style={[
-                  styles.categoryText,
-                  { color: CATEGORY_COLORS[formData.category] },
-                ]}>
+              <View
+                style={[
+                  styles.categoryBadge,
+                  { backgroundColor: `${CATEGORY_COLORS[formData.category]}30` },
+                ]}
+              >
+                <Text style={[styles.categoryText, { color: CATEGORY_COLORS[formData.category] }]}>
                   {CATEGORY_NAMES[formData.category]}
                 </Text>
               </View>
@@ -356,14 +344,8 @@ export const SMARTGoalForm: React.FC<SMARTGoalFormProps> = ({
                     testID={`${testID}-${criterion.key}-header`}
                   >
                     <View style={styles.criterionLeft}>
-                      <View style={[
-                        styles.letterBadge,
-                        isFilled && styles.letterBadgeFilled,
-                      ]}>
-                        <Text style={[
-                          styles.letterText,
-                          isFilled && styles.letterTextFilled,
-                        ]}>
+                      <View style={[styles.letterBadge, isFilled && styles.letterBadgeFilled]}>
+                        <Text style={[styles.letterText, isFilled && styles.letterTextFilled]}>
                           {criterion.letter}
                         </Text>
                       </View>
@@ -396,9 +378,7 @@ export const SMARTGoalForm: React.FC<SMARTGoalFormProps> = ({
                           testID={`${testID}-${criterion.key}-input`}
                         >
                           <Text style={styles.dateIcon}>{'\uD83D\uDCC5'}</Text>
-                          <Text style={styles.dateText}>
-                            {formatDate(formData.timeBound)}
-                          </Text>
+                          <Text style={styles.dateText}>{formatDate(formData.timeBound)}</Text>
                         </TouchableOpacity>
                       ) : (
                         <RNTextInput
@@ -453,14 +433,9 @@ export const SMARTGoalForm: React.FC<SMARTGoalFormProps> = ({
                   }}
                   testID={`${testID}-category-${cat}`}
                 >
-                  <View style={[
-                    styles.pickerDot,
-                    { backgroundColor: CATEGORY_COLORS[cat] },
-                  ]} />
+                  <View style={[styles.pickerDot, { backgroundColor: CATEGORY_COLORS[cat] }]} />
                   <Text style={styles.pickerOptionText}>{CATEGORY_NAMES[cat]}</Text>
-                  {formData.category === cat && (
-                    <Text style={styles.checkmark}>{'\u2713'}</Text>
-                  )}
+                  {formData.category === cat && <Text style={styles.checkmark}>{'\u2713'}</Text>}
                 </TouchableOpacity>
               ))}
             </View>

@@ -23,20 +23,9 @@ export function MessageBubble({ message, onLongPress }: MessageBubbleProps) {
       onLongPress={onLongPress}
       style={[styles.container, isUser ? styles.containerUser : styles.containerAI]}
     >
-      <View
-        style={[
-          styles.bubble,
-          isUser ? styles.bubbleUser : styles.bubbleAI,
-        ]}
-      >
-        {!isUser && (
-          <Text style={styles.monkLabel}>
-            Wisdom Monk
-          </Text>
-        )}
-        <Text style={styles.messageText}>
-          {message.content}
-        </Text>
+      <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAI]}>
+        {!isUser && <Text style={styles.monkLabel}>Wisdom Monk</Text>}
+        <Text style={styles.messageText}>{message.content}</Text>
         <Text style={[styles.timestamp, isUser ? styles.timestampUser : styles.timestampAI]}>
           {formatMessageTime(message.timestamp)}
         </Text>
@@ -51,11 +40,17 @@ function formatMessageTime(timestamp: string): string {
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffMins < 1) {
+    return 'Just now';
+  }
+  if (diffMins < 60) {
+    return `${diffMins}m ago`;
+  }
 
   const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
 
   // Show time if today, date if older
   const isToday =

@@ -42,9 +42,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
             ]}
           />
         </View>
-        {showPercentage && (
-          <Text style={styles.percentage}>{Math.round(clampedProgress)}%</Text>
-        )}
+        {showPercentage && <Text style={styles.percentage}>{Math.round(clampedProgress)}%</Text>}
       </View>
     </View>
   );

@@ -24,16 +24,12 @@ export function EmptyChatState() {
       <View style={styles.suggestionsContainer}>
         <View style={styles.suggestionCard}>
           <Text style={styles.suggestionTitle}>Ask me about manifestation</Text>
-          <Text style={styles.suggestionExample}>
-            "How do I start my manifestation journey?"
-          </Text>
+          <Text style={styles.suggestionExample}>"How do I start my manifestation journey?"</Text>
         </View>
 
         <View style={styles.suggestionCard}>
           <Text style={styles.suggestionTitle}>Explore limiting beliefs</Text>
-          <Text style={styles.suggestionExample}>
-            "Help me identify my limiting beliefs"
-          </Text>
+          <Text style={styles.suggestionExample}>"Help me identify my limiting beliefs"</Text>
         </View>
 
         <View style={styles.suggestionCard}>
@@ -45,8 +41,8 @@ export function EmptyChatState() {
       </View>
 
       <Text style={styles.footer}>
-        Ask me anything about your spiritual journey, manifestation practices,
-        or the workbook exercises
+        Ask me anything about your spiritual journey, manifestation practices, or the workbook
+        exercises
       </Text>
     </View>
   );

@@ -68,7 +68,9 @@ const AccountSettingsScreen = (_props: Props) => {
   }, [fullName, profile?.fullName]);
 
   const handleSave = async () => {
-    if (!hasChanges) return;
+    if (!hasChanges) {
+      return;
+    }
 
     try {
       await updateProfile.mutateAsync({ fullName: fullName.trim() });
@@ -80,8 +82,12 @@ const AccountSettingsScreen = (_props: Props) => {
   };
 
   const getInitial = () => {
-    if (fullName) return fullName.charAt(0).toUpperCase();
-    if (user?.email) return user.email.charAt(0).toUpperCase();
+    if (fullName) {
+      return fullName.charAt(0).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
     return 'U';
   };
 
@@ -148,14 +154,11 @@ const AccountSettingsScreen = (_props: Props) => {
       signOut();
 
       // Show success message
-      Alert.alert(
-        'Account Deleted',
-        'Your account has been permanently deleted.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Account Deleted', 'Your account has been permanently deleted.', [
+        { text: 'OK' },
+      ]);
 
       // Navigation will happen automatically when auth state changes
-
     } catch (error) {
       // Handle timeout specifically
       if (error instanceof Error && error.message === 'TIMEOUT') {
@@ -178,10 +181,7 @@ const AccountSettingsScreen = (_props: Props) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-      >
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {/* Avatar */}
         <View style={styles.avatarContainer}>
           <TouchableOpacity
@@ -193,17 +193,12 @@ const AccountSettingsScreen = (_props: Props) => {
             {isUploadingAvatar ? (
               <ActivityIndicator size="large" color={colors.white} />
             ) : profile?.avatarUrl ? (
-              <Image
-                source={{ uri: profile.avatarUrl }}
-                style={styles.avatarImage}
-              />
+              <Image source={{ uri: profile.avatarUrl }} style={styles.avatarImage} />
             ) : (
               <Text style={styles.avatarText}>{getInitial()}</Text>
             )}
           </TouchableOpacity>
-          <Text style={styles.avatarHint}>
-            Tap to change
-          </Text>
+          <Text style={styles.avatarHint}>Tap to change</Text>
         </View>
 
         {/* Profile Information */}
@@ -220,33 +215,28 @@ const AccountSettingsScreen = (_props: Props) => {
               autoCorrect={false}
             />
           </View>
-          <SettingsRow
-            label="Email"
-            value={user?.email || 'Not set'}
-            isLast
-          />
+          <SettingsRow label="Email" value={user?.email || 'Not set'} isLast />
         </SettingsSection>
 
         {/* Account Info */}
         <SettingsSection title="Account">
           <SettingsRow
             label="Member Since"
-            value={profile?.createdAt
-              ? new Date(profile.createdAt).toLocaleDateString('en-US', {
-                  month: 'long',
-                  year: 'numeric',
-                })
-              : 'Unknown'}
+            value={
+              profile?.createdAt
+                ? new Date(profile.createdAt).toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                : 'Unknown'
+            }
             isLast
           />
         </SettingsSection>
 
         {/* Save Button */}
         <TouchableOpacity
-          style={[
-            styles.saveButton,
-            !hasChanges && styles.saveButtonDisabled,
-          ]}
+          style={[styles.saveButton, !hasChanges && styles.saveButtonDisabled]}
           onPress={handleSave}
           disabled={!hasChanges || updateProfile.isPending}
         >
@@ -284,15 +274,11 @@ const AccountSettingsScreen = (_props: Props) => {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.modalOverlay}
         >
-          <Pressable
-            style={styles.modalBackdrop}
-            onPress={handleCloseDeleteModal}
-          />
+          <Pressable style={styles.modalBackdrop} onPress={handleCloseDeleteModal} />
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Confirm Deletion</Text>
             <Text style={styles.modalDescription}>
-              Please enter your password to confirm account deletion.
-              This action cannot be undone.
+              Please enter your password to confirm account deletion. This action cannot be undone.
             </Text>
 
             <TextInput
@@ -307,9 +293,7 @@ const AccountSettingsScreen = (_props: Props) => {
               editable={!isDeleting}
             />
 
-            {deleteError && (
-              <Text style={styles.errorText}>{deleteError}</Text>
-            )}
+            {deleteError && <Text style={styles.errorText}>{deleteError}</Text>}
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
@@ -331,9 +315,7 @@ const AccountSettingsScreen = (_props: Props) => {
                 {isDeleting ? (
                   <ActivityIndicator color={colors.white} size="small" />
                 ) : (
-                  <Text style={styles.confirmDeleteButtonText}>
-                    Delete Account
-                  </Text>
+                  <Text style={styles.confirmDeleteButtonText}>Delete Account</Text>
                 )}
               </TouchableOpacity>
             </View>

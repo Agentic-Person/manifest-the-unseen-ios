@@ -17,7 +17,11 @@ import { Text } from '../../../components';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase5ExerciseImages } from '../../../assets';
-import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import {
+  usePhaseExercises,
+  type ExerciseConfig,
+  type ExerciseWithProgress,
+} from '../../../hooks/usePhaseExercises';
 import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
 import { PhaseErrorState } from '../../../components/workbook/PhaseErrorState';
 
@@ -59,10 +63,7 @@ const ExerciseCard: React.FC<{
 }> = ({ exercise, onPress }) => {
   return (
     <TouchableOpacity
-      style={[
-        styles.exerciseCard,
-        exercise.isCompleted && styles.exerciseCardCompleted,
-      ]}
+      style={[styles.exerciseCard, exercise.isCompleted && styles.exerciseCardCompleted]}
       onPress={onPress}
       activeOpacity={0.8}
       accessibilityRole="button"
@@ -86,10 +87,7 @@ const ExerciseCard: React.FC<{
               style={styles.exerciseProgressGradient}
             >
               <View
-                style={[
-                  styles.exerciseProgressUnfilled,
-                  { width: `${100 - exercise.progress}%` },
-                ]}
+                style={[styles.exerciseProgressUnfilled, { width: `${100 - exercise.progress}%` }]}
               />
             </LinearGradient>
           </View>
@@ -143,7 +141,7 @@ const Phase5Dashboard: React.FC<Props> = ({ navigation }) => {
         navigation.navigate('InnerChild');
         break;
       default:
-        console.log('Unknown exercise:', exerciseId);
+        break;
     }
   };
   // Show loading state while fetching progress
@@ -169,15 +167,12 @@ const Phase5Dashboard: React.FC<Props> = ({ navigation }) => {
       {/* New Header Section */}
       <View style={styles.newHeader}>
         <View style={styles.headerImageContainer}>
-          <Image
-            source={PhaseImages.phase5}
-            style={styles.headerImage}
-            resizeMode="cover"
-          />
+          <Image source={PhaseImages.phase5} style={styles.headerImage} resizeMode="cover" />
         </View>
         <Text style={styles.headerTitle}>Self-Love & Self-Care</Text>
         <Text style={styles.headerSubtitle}>
-          Cultivate deep self-love and establish nurturing self-care practices that support your journey
+          Cultivate deep self-love and establish nurturing self-care practices that support your
+          journey
         </Text>
       </View>
 
@@ -191,10 +186,7 @@ const Phase5Dashboard: React.FC<Props> = ({ navigation }) => {
             style={styles.gradientProgressTrack}
           >
             <View
-              style={[
-                styles.gradientProgressUnfilled,
-                { width: `${100 - overallProgress}%` },
-              ]}
+              style={[styles.gradientProgressUnfilled, { width: `${100 - overallProgress}%` }]}
             />
           </LinearGradient>
         </View>

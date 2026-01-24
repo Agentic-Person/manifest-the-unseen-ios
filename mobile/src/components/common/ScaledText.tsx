@@ -6,13 +6,7 @@
  */
 
 import React, { useMemo } from 'react';
-import {
-  Text,
-  TextProps,
-  TextStyle,
-  StyleSheet,
-  StyleProp,
-} from 'react-native';
+import { Text, TextProps, TextStyle, StyleSheet, StyleProp } from 'react-native';
 import { useFontSizeContext } from '../../contexts/FontSizeContext';
 
 interface ScaledTextProps extends TextProps {
@@ -23,14 +17,18 @@ interface ScaledTextProps extends TextProps {
  * Extracts and flattens font size from a style prop
  */
 const extractFontSize = (style: StyleProp<TextStyle>): number | undefined => {
-  if (!style) return undefined;
+  if (!style) {
+    return undefined;
+  }
 
   // Handle array of styles
   if (Array.isArray(style)) {
     for (let i = style.length - 1; i >= 0; i--) {
       // Cast to StyleProp<TextStyle> to handle readonly arrays
       const fontSize = extractFontSize(style[i] as StyleProp<TextStyle>);
-      if (fontSize !== undefined) return fontSize;
+      if (fontSize !== undefined) {
+        return fontSize;
+      }
     }
     return undefined;
   }
@@ -55,18 +53,18 @@ const extractFontSize = (style: StyleProp<TextStyle>): number | undefined => {
  * <ScaledText style={{ fontSize: 16, color: 'red' }}>Scaled text</ScaledText>
  * ```
  */
-export const ScaledText: React.FC<ScaledTextProps> = ({
-  style,
-  children,
-  ...props
-}) => {
+export const ScaledText: React.FC<ScaledTextProps> = ({ style, children, ...props }) => {
   const { scaleFont } = useFontSizeContext();
 
   const scaledStyle = useMemo(() => {
-    if (!style) return undefined;
+    if (!style) {
+      return undefined;
+    }
 
     const flatStyle = StyleSheet.flatten(style);
-    if (!flatStyle) return style;
+    if (!flatStyle) {
+      return style;
+    }
 
     const scaledProps: TextStyle = {};
 

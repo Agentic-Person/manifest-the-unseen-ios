@@ -100,7 +100,11 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
       customValidator: (data) => {
         // Should have at least 5 habits logged with 10+ char names
         // Data structure: { morning: Habit[], afternoon: Habit[], evening: Habit[] }
-        interface Habit { id: string; habit: string; category: string; }
+        interface Habit {
+          id: string;
+          habit: string;
+          category: string;
+        }
         const habitsData = data as { morning?: Habit[]; afternoon?: Habit[]; evening?: Habit[] };
         const allHabits = [
           ...(habitsData.morning ?? []),
@@ -108,7 +112,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
           ...(habitsData.evening ?? []),
         ];
         // Count habits with 10+ character names
-        const validHabits = allHabits.filter(h => h.habit && h.habit.trim().length >= 10);
+        const validHabits = allHabits.filter((h) => h.habit && h.habit.trim().length >= 10);
         return validHabits.length >= 5;
       },
     },
@@ -154,10 +158,14 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
       customValidator: (data) => {
         // Should have at least 3 strengths and 3 weaknesses with non-empty text
         // Data structure: { strengths: Array<{ text: string }>, weaknesses: Array<{ text: string }> }
-        interface Item { text?: string }
+        interface Item {
+          text?: string;
+        }
         const strengthsData = data as { strengths?: Item[]; weaknesses?: Item[] };
-        const validStrengths = strengthsData.strengths?.filter(s => (s.text?.trim()?.length ?? 0) > 0) ?? [];
-        const validWeaknesses = strengthsData.weaknesses?.filter(w => (w.text?.trim()?.length ?? 0) > 0) ?? [];
+        const validStrengths =
+          strengthsData.strengths?.filter((s) => (s.text?.trim()?.length ?? 0) > 0) ?? [];
+        const validWeaknesses =
+          strengthsData.weaknesses?.filter((w) => (w.text?.trim()?.length ?? 0) > 0) ?? [];
         return validStrengths.length >= 3 && validWeaknesses.length >= 3;
       },
     },
@@ -314,7 +322,13 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         // TimelineScreen saves: { goals, selectedView, updatedAt }
         // Should have at least 3 goals with title and dates
         const timelineData = data as {
-          goals?: Array<{ id: string; title: string; startDate: string; endDate: string; status: string }>;
+          goals?: Array<{
+            id: string;
+            title: string;
+            startDate: string;
+            endDate: string;
+            status: string;
+          }>;
         };
         const validGoals = timelineData.goals?.filter(
           (g) => g.title?.trim().length > 0 && g.startDate && g.endDate
@@ -441,14 +455,14 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
       customValidator: (data) => {
         // Should have manifestation text and at least 3 days of practice
         // Data structure: { practice: { manifestation: string; dailyProgress: Array } }
-        interface PracticeData { manifestation?: string; dailyProgress?: Array<unknown> }
+        interface PracticeData {
+          manifestation?: string;
+          dailyProgress?: Array<unknown>;
+        }
         const methodData = data as { practice?: PracticeData };
         const manifestation = methodData.practice?.manifestation ?? '';
         const dailyProgress = methodData.practice?.dailyProgress ?? [];
-        return (
-          manifestation.trim().length >= 10 &&
-          dailyProgress.length >= 3
-        );
+        return manifestation.trim().length >= 10 && dailyProgress.length >= 3;
       },
     },
   },
@@ -477,7 +491,9 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
           currentWOOP?: { wish?: string; outcome?: string; obstacle?: string; plan?: string };
         };
         const woop = woopData.currentWOOP;
-        if (!woop) return false;
+        if (!woop) {
+          return false;
+        }
 
         const minChars = 30;
         return (
@@ -502,14 +518,17 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         // Should have at least 7 gratitude entries (one week)
         // Data structure: Record<string, { dateKey: string; items: Array<{ text: string }>; ... }>
         // The data is keyed by date string, so we need to get the values
-        interface GratitudeEntry { dateKey: string; items?: Array<{ text: string }> }
+        interface GratitudeEntry {
+          dateKey: string;
+          items?: Array<{ text: string }>;
+        }
         const entriesRecord = data as Record<string, GratitudeEntry>;
         const entries = Object.values(entriesRecord).filter(
-          e => e && typeof e === 'object' && e.dateKey
+          (e) => e && typeof e === 'object' && e.dateKey
         );
         // Count entries with at least 3 non-empty items
         const validEntries = entries.filter(
-          (e) => (e.items?.filter(item => item.text?.trim().length > 0)?.length ?? 0) >= 3
+          (e) => (e.items?.filter((item) => item.text?.trim().length > 0)?.length ?? 0) >= 3
         );
         return validEntries.length >= 7;
       },
@@ -560,10 +579,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
           envyItems?: Array<{ whoWhat: string; trigger: string; intensity: number }>;
         };
         const validItems = envyData.envyItems?.filter(
-          (e) =>
-            e.whoWhat?.trim().length > 0 &&
-            e.trigger?.trim().length >= 10 &&
-            e.intensity > 0
+          (e) => e.whoWhat?.trim().length > 0 && e.trigger?.trim().length >= 10 && e.intensity > 0
         );
         return (validItems?.length ?? 0) >= 3;
       },
@@ -622,14 +638,24 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         // Screen saves: { trustValues: { self: number, others: number, universe: number, process: number, timing: number } }
         // All 5 dimensions must have a value (any value 1-10 is valid)
         const trustData = data as {
-          trustValues?: { self?: number; others?: number; universe?: number; process?: number; timing?: number };
+          trustValues?: {
+            self?: number;
+            others?: number;
+            universe?: number;
+            process?: number;
+            timing?: number;
+          };
         };
         const values = trustData.trustValues;
-        if (!values) return false;
+        if (!values) {
+          return false;
+        }
 
         // Check all 5 dimensions have numeric values
         const dimensions = ['self', 'others', 'universe', 'process', 'timing'] as const;
-        return dimensions.every((dim) => typeof values[dim] === 'number' && values[dim] >= 1 && values[dim] <= 10);
+        return dimensions.every(
+          (dim) => typeof values[dim] === 'number' && values[dim] >= 1 && values[dim] <= 10
+        );
       },
     },
   },
@@ -642,7 +668,11 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         // Screen saves: { entries: [{ controllingText, surrenderText, affirmation, isReleased, ... }], totalReleased }
         // Should have at least 3 surrender entries with meaningful content
         const surrenderData = data as {
-          entries?: Array<{ controllingText?: string; surrenderText?: string; isReleased?: boolean }>;
+          entries?: Array<{
+            controllingText?: string;
+            surrenderText?: string;
+            isReleased?: boolean;
+          }>;
         };
         const validEntries = surrenderData.entries?.filter(
           (e) =>
@@ -665,7 +695,9 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
           entries?: Array<{ whatHappened?: string; possibleMeaning?: string }>;
         };
         const validEntries = signsData.entries?.filter(
-          (e) => (e.whatHappened?.trim()?.length ?? 0) >= 20 && (e.possibleMeaning?.trim()?.length ?? 0) >= 10
+          (e) =>
+            (e.whatHappened?.trim()?.length ?? 0) >= 20 &&
+            (e.possibleMeaning?.trim()?.length ?? 0) >= 10
         );
         return (validEntries?.length ?? 0) >= 5;
       },
@@ -684,10 +716,17 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         // Screen saves: { transformation: { beforeState, afterState, biggestLesson, gratefulFor } }
         // All 4 transformation fields should be filled with meaningful content
         const reviewData = data as {
-          transformation?: { beforeState?: string; afterState?: string; biggestLesson?: string; gratefulFor?: string };
+          transformation?: {
+            beforeState?: string;
+            afterState?: string;
+            biggestLesson?: string;
+            gratefulFor?: string;
+          };
         };
         const t = reviewData.transformation;
-        if (!t) return false;
+        if (!t) {
+          return false;
+        }
 
         const minChars = 30;
         return (

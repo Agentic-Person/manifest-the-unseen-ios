@@ -54,36 +54,29 @@ export function SettingsPicker<T extends string>({
 }: SettingsPickerProps<T>) {
   const { scaleFont } = useFontSizeContext();
 
-  const scaledStyles = useMemo(() => ({
-    label: {
-      ...styles.label,
-      fontSize: scaleFont(16),
-    } as TextStyle,
-    description: {
-      ...styles.description,
-      fontSize: scaleFont(13),
-    } as TextStyle,
-    segmentText: {
-      ...styles.segmentText,
-      fontSize: scaleFont(14),
-    } as TextStyle,
-  }), [scaleFont]);
+  const scaledStyles = useMemo(
+    () => ({
+      label: {
+        ...styles.label,
+        fontSize: scaleFont(16),
+      } as TextStyle,
+      description: {
+        ...styles.description,
+        fontSize: scaleFont(13),
+      } as TextStyle,
+      segmentText: {
+        ...styles.segmentText,
+        fontSize: scaleFont(14),
+      } as TextStyle,
+    }),
+    [scaleFont]
+  );
 
   return (
-    <View
-      style={[
-        styles.container,
-        !isLast && styles.borderBottom,
-        disabled && styles.disabled,
-      ]}
-    >
+    <View style={[styles.container, !isLast && styles.borderBottom, disabled && styles.disabled]}>
       <View style={styles.labelContainer}>
-        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>
-          {label}
-        </Text>
-        {description && (
-          <Text style={scaledStyles.description}>{description}</Text>
-        )}
+        <Text style={[scaledStyles.label, disabled && styles.labelDisabled]}>{label}</Text>
+        {description && <Text style={scaledStyles.description}>{description}</Text>}
       </View>
 
       <View style={styles.segmentedControl}>
@@ -105,12 +98,7 @@ export function SettingsPicker<T extends string>({
               activeOpacity={0.7}
               disabled={disabled}
             >
-              <Text
-                style={[
-                  scaledStyles.segmentText,
-                  isSelected && styles.segmentTextSelected,
-                ]}
-              >
+              <Text style={[scaledStyles.segmentText, isSelected && styles.segmentTextSelected]}>
                 {option.label}
               </Text>
             </TouchableOpacity>

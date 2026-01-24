@@ -6,14 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TextInput, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { colors, spacing } from '../theme';
 import { usePromoCodeState, usePromoActions } from '../stores/subscriptionStore';
 import { formatDiscountText } from '../services/promoService';
@@ -50,7 +43,9 @@ export const PromoCodeInput: React.FC<PromoCodeInputProps> = ({ onApplied }) => 
   const { validatePromo, clearPromo } = usePromoActions();
 
   const handleApply = async () => {
-    if (!code.trim()) return;
+    if (!code.trim()) {
+      return;
+    }
 
     setError(null);
     const result = await validatePromo(code.trim());
@@ -76,9 +71,7 @@ export const PromoCodeInput: React.FC<PromoCodeInputProps> = ({ onApplied }) => 
           <Text style={styles.appliedIcon}>🎉</Text>
           <View style={styles.appliedInfo}>
             <Text style={styles.appliedCode}>{appliedPromoCode}</Text>
-            <Text style={styles.appliedDiscount}>
-              {formatDiscountText(promoCodeValidation)}
-            </Text>
+            <Text style={styles.appliedDiscount}>{formatDiscountText(promoCodeValidation)}</Text>
           </View>
           <Pressable onPress={handleClear} hitSlop={8}>
             <Text style={styles.removeText}>Remove</Text>

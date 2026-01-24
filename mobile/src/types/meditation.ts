@@ -150,13 +150,7 @@ export const BREATHING_PHASE_LABELS: Record<BreathingPhase, string> = {
 /**
  * Audio playback state
  */
-export type PlaybackState =
-  | 'idle'
-  | 'loading'
-  | 'playing'
-  | 'paused'
-  | 'ended'
-  | 'error';
+export type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused' | 'ended' | 'error';
 
 /**
  * Audio player progress info

@@ -18,14 +18,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Animated,
-  Easing,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, Animated, Easing } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors
@@ -96,9 +89,7 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
   /**
    * Calculate progress percentage
    */
-  const progress = timerState === 'idle'
-    ? 0
-    : 1 - (timeRemaining / selectedDuration);
+  const progress = timerState === 'idle' ? 0 : 1 - timeRemaining / selectedDuration;
 
   // Calculate stroke dash offset for SVG-based progress (currently unused in view-based implementation)
   // const strokeDashoffset = CIRCUMFERENCE * (1 - progress);
@@ -106,10 +97,13 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
   /**
    * Update timer state and notify parent
    */
-  const updateTimerState = useCallback((newState: TimerState) => {
-    setTimerState(newState);
-    onStateChange?.(newState);
-  }, [onStateChange]);
+  const updateTimerState = useCallback(
+    (newState: TimerState) => {
+      setTimerState(newState);
+      onStateChange?.(newState);
+    },
+    [onStateChange]
+  );
 
   /**
    * Animate bell icon
@@ -184,7 +178,6 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     animateBell();
     onComplete?.(selectedDuration);
-    console.log('Meditation completed:', { duration: selectedDuration });
   }, [selectedDuration, onComplete, updateTimerState, animateBell, stopPulseAnimation]);
 
   /**
@@ -219,7 +212,6 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
     animateBell(); // Bell at start
     startPulseAnimation();
     updateTimerState('running');
-    console.log('Meditation started:', { duration: selectedDuration });
   };
 
   /**
@@ -262,7 +254,9 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
    * Handle duration selection
    */
   const handleDurationSelect = (duration: number) => {
-    if (timerState !== 'idle') return;
+    if (timerState !== 'idle') {
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedDuration(duration);
     setTimeRemaining(duration);
@@ -315,12 +309,7 @@ export const MeditationTimer: React.FC<MeditationTimerProps> = ({
       </View>
 
       {/* Timer Display */}
-      <Animated.View
-        style={[
-          styles.timerContainer,
-          { transform: [{ scale: pulseAnimValue }] },
-        ]}
-      >
+      <Animated.View style={[styles.timerContainer, { transform: [{ scale: pulseAnimValue }] }]}>
         {/* SVG-like Progress Ring using Views */}
         <View style={styles.progressRing}>
           {/* Background Track */}

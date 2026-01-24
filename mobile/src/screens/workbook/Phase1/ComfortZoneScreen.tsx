@@ -12,14 +12,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { Phase1ExerciseImages } from '../../../assets';
@@ -77,13 +70,16 @@ const DEFAULT_DATA: ComfortZoneData = {
 
 type ZoneType = 'comfort' | 'growth' | 'panic';
 
-const ZONE_CONFIG: Record<ZoneType, {
-  label: string;
-  description: string;
-  color: string;
-  emoji: string;
-  prompt: string;
-}> = {
+const ZONE_CONFIG: Record<
+  ZoneType,
+  {
+    label: string;
+    description: string;
+    color: string;
+    emoji: string;
+    prompt: string;
+  }
+> = {
   comfort: {
     label: 'Comfort Zone',
     description: 'Where you feel safe and in control',
@@ -148,19 +144,13 @@ const ZoneSection: React.FC<{
               placeholder="Type here..."
               placeholderTextColor={DESIGN_COLORS.textTertiary}
             />
-            <Pressable
-              onPress={() => onDeleteItem(item.id)}
-              style={styles.itemDeleteBtn}
-            >
+            <Pressable onPress={() => onDeleteItem(item.id)} style={styles.itemDeleteBtn}>
               <Text style={styles.itemDeleteText}>✕</Text>
             </Pressable>
           </View>
         ))}
 
-        <Pressable
-          style={[styles.addItemBtn, { borderColor: config.color }]}
-          onPress={onAddItem}
-        >
+        <Pressable style={[styles.addItemBtn, { borderColor: config.color }]} onPress={onAddItem}>
           <Text style={[styles.addItemText, { color: config.color }]}>+ Add Item</Text>
         </Pressable>
       </View>
@@ -179,13 +169,14 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.COMFORT_ZONE);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: data as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.COMFORT_ZONE,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: data as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.COMFORT_ZONE,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -228,9 +219,7 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
   const handleUpdateItem = useCallback((zone: ZoneType, id: string, text: string) => {
     setData((prev) => ({
       ...prev,
-      [zone]: prev[zone].map((item) =>
-        item.id === id ? { ...item, text } : item
-      ),
+      [zone]: prev[zone].map((item) => (item.id === id ? { ...item, text } : item)),
       updatedAt: new Date().toISOString(),
     }));
   }, []);
@@ -275,7 +264,7 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
 
     if (growthRatio > 0.4) {
       return {
-        message: 'You\'ve identified many growth opportunities! Focus on one or two at a time.',
+        message: "You've identified many growth opportunities! Focus on one or two at a time.",
         type: 'growth',
       };
     }
@@ -347,14 +336,16 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       {/* Insight Card */}
-      <View style={[
-        styles.insightCard,
-        insight.type === 'growth' && { borderColor: DESIGN_COLORS.growthZone },
-        insight.type === 'comfort' && { borderColor: DESIGN_COLORS.comfortZone },
-        insight.type === 'panic' && { borderColor: DESIGN_COLORS.panicZone },
-        insight.type === 'balanced' && { borderColor: DESIGN_COLORS.accentGold },
-        insight.type === 'neutral' && { borderColor: DESIGN_COLORS.border },
-      ]}>
+      <View
+        style={[
+          styles.insightCard,
+          insight.type === 'growth' && { borderColor: DESIGN_COLORS.growthZone },
+          insight.type === 'comfort' && { borderColor: DESIGN_COLORS.comfortZone },
+          insight.type === 'panic' && { borderColor: DESIGN_COLORS.panicZone },
+          insight.type === 'balanced' && { borderColor: DESIGN_COLORS.accentGold },
+          insight.type === 'neutral' && { borderColor: DESIGN_COLORS.border },
+        ]}
+      >
         <Text style={styles.insightText}>{insight.message}</Text>
       </View>
 

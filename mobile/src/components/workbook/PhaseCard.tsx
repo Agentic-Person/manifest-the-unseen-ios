@@ -79,9 +79,7 @@ export const PhaseCard: React.FC<PhaseCardProps> = ({
         </View>
 
         <View style={styles.phaseInfo}>
-          <Text style={[styles.phaseName, isLocked && styles.textLocked]}>
-            {phaseName}
-          </Text>
+          <Text style={[styles.phaseName, isLocked && styles.textLocked]}>{phaseName}</Text>
           <Text style={[styles.description, isLocked && styles.descriptionLocked]}>
             {description}
           </Text>

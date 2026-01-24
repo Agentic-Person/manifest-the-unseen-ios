@@ -80,7 +80,8 @@ const LETTER_TEMPLATES = {
     label: 'Forgiveness',
     icon: '\uD83D\uDD4A\uFE0F',
     color: DESIGN_COLORS.accentTeal,
-    prompt: 'Dear [Name],\n\nI have been holding onto some feelings, and I want to let them go...\n\n',
+    prompt:
+      'Dear [Name],\n\nI have been holding onto some feelings, and I want to let them go...\n\n',
     description: 'Release and forgive (for your own healing)',
   },
 } as const;
@@ -125,7 +126,12 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Supabase integration hooks
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_LETTERS);
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_LETTERS);
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: letters as unknown as Record<string, unknown>,
@@ -146,7 +152,9 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data && Array.isArray(savedProgress.data)) {
       setLetters(savedProgress.data as unknown as GratitudeLetter[]);
@@ -202,7 +210,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleSaveLetter = async (status: LetterStatus = 'draft') => {
     if (!editRecipient.trim()) {
-      Alert.alert('Missing Recipient', 'Please enter the name of the person you\'re writing to.');
+      Alert.alert('Missing Recipient', "Please enter the name of the person you're writing to.");
       return;
     }
 
@@ -244,11 +252,11 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
   const handleMarkAsSent = () => {
     Alert.alert(
       'Mark as Sent',
-      'This is a symbolic action to acknowledge you\'ve shared your gratitude. Have you sent or shared this letter?',
+      "This is a symbolic action to acknowledge you've shared your gratitude. Have you sent or shared this letter?",
       [
         { text: 'Not Yet', style: 'cancel' },
         {
-          text: 'Yes, I\'ve Shared It',
+          text: "Yes, I've Shared It",
           onPress: () => handleSaveLetter('sent'),
         },
       ]
@@ -315,7 +323,9 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.letterType}>{template.label}</Text>
           </View>
           <View style={[styles.statusBadge, { backgroundColor: statusBadge.bg }]}>
-            <Text style={styles.statusText}>{statusBadge.icon} {statusBadge.text}</Text>
+            <Text style={styles.statusText}>
+              {statusBadge.icon} {statusBadge.text}
+            </Text>
           </View>
         </View>
         <Text style={styles.letterPreview} numberOfLines={2}>
@@ -404,9 +414,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.lettersSection}>
             <Text style={styles.sectionTitle}>Your Letters</Text>
             {letters.map((letter) => (
-              <View key={letter.id}>
-                {renderLetterItem({ item: letter })}
-              </View>
+              <View key={letter.id}>{renderLetterItem({ item: letter })}</View>
             ))}
           </View>
         ) : (
@@ -414,8 +422,8 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.emptyIcon}>{'\uD83D\uDCDD'}</Text>
             <Text style={styles.emptyTitle}>No Letters Yet</Text>
             <Text style={styles.emptyText}>
-              Start your gratitude practice by writing a letter to someone special.
-              It could be a friend, family member, mentor, or even yourself.
+              Start your gratitude practice by writing a letter to someone special. It could be a
+              friend, family member, mentor, or even yourself.
             </Text>
           </View>
         )}
@@ -423,14 +431,21 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
         {/* Tips Card */}
         <View style={styles.tipsCard}>
           <Text style={styles.tipsTitle}>Writing Tips</Text>
-          <Text style={styles.tipItem}>- Be specific about what they did and how it affected you</Text>
+          <Text style={styles.tipItem}>
+            - Be specific about what they did and how it affected you
+          </Text>
           <Text style={styles.tipItem}>- Share how their actions made you feel</Text>
           <Text style={styles.tipItem}>- Writing heals, even if you never send the letter</Text>
           <Text style={styles.tipItem}>- Consider writing to yourself for self-compassion</Text>
         </View>
 
         {/* Save Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </ExerciseScreenLayout>
 
       {/* Template Selection Modal */}
@@ -440,14 +455,8 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowTemplateModal(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowTemplateModal(false)}
-        >
-          <Pressable
-            style={styles.templateModalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowTemplateModal(false)}>
+          <Pressable style={styles.templateModalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Choose Letter Type</Text>
             <Text style={styles.modalSubtitle}>
               Select the type of gratitude you want to express
@@ -485,21 +494,14 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
       </Modal>
 
       {/* Letter Editor Modal */}
-      <Modal
-        visible={showEditor}
-        animationType="slide"
-        onRequestClose={() => setShowEditor(false)}
-      >
+      <Modal visible={showEditor} animationType="slide" onRequestClose={() => setShowEditor(false)}>
         <KeyboardAvoidingView
           style={styles.editorContainer}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           {/* Editor Header */}
           <View style={styles.editorHeader}>
-            <TouchableOpacity
-              onPress={() => setShowEditor(false)}
-              style={styles.editorBackButton}
-            >
+            <TouchableOpacity onPress={() => setShowEditor(false)} style={styles.editorBackButton}>
               <Text style={styles.editorBackText}>{'\u2190'} Back</Text>
             </TouchableOpacity>
             <Text style={styles.editorTitle}>
@@ -562,10 +564,7 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.completeText}>Complete</Text>
             </TouchableOpacity>
             {selectedLetter && selectedLetter.status !== 'sent' && (
-              <TouchableOpacity
-                style={styles.sentButton}
-                onPress={handleMarkAsSent}
-              >
+              <TouchableOpacity style={styles.sentButton} onPress={handleMarkAsSent}>
                 <Text style={styles.sentText}>Mark as Sent</Text>
               </TouchableOpacity>
             )}

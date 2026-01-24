@@ -76,15 +76,14 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: true });
 
           // Check for existing session with timeout protection
-          const { data: { session } } = await withTimeout(
-            supabase.auth.getSession(),
-            AUTH_TIMEOUT_MS
-          );
+          const {
+            data: { session },
+          } = await withTimeout(supabase.auth.getSession(), AUTH_TIMEOUT_MS);
 
           if (session) {
             set({
               user: session.user,
-              session: session,
+              session,
               isAuthenticated: true,
             });
 
@@ -99,10 +98,7 @@ export const useAuthStore = create<AuthState>()(
                 return { data, error };
               };
 
-              const profileResult = await withTimeout(
-                fetchProfile(),
-                AUTH_TIMEOUT_MS
-              );
+              const profileResult = await withTimeout(fetchProfile(), AUTH_TIMEOUT_MS);
 
               if (!profileResult.error && profileResult.data) {
                 set({ profile: profileResult.data });
@@ -137,15 +133,16 @@ export const useAuthStore = create<AuthState>()(
 
           const { error } = await supabase.auth.signOut();
 
-          if (error) throw error;
+          if (error) {
+            throw error;
+          }
 
           set({
             ...initialState,
             isLoading: false,
           });
         } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : 'Failed to sign out';
+          const errorMessage = error instanceof Error ? error.message : 'Failed to sign out';
           set({
             error: errorMessage,
             isLoading: false,
@@ -168,14 +165,13 @@ export const useAuthStore = create<AuthState>()(
             .eq('id', user.id)
             .single();
 
-          if (error) throw error;
+          if (error) {
+            throw error;
+          }
 
           set({ profile });
         } catch (error) {
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : 'Failed to refresh profile';
+          const errorMessage = error instanceof Error ? error.message : 'Failed to refresh profile';
           set({ error: errorMessage });
           throw error;
         }
@@ -200,14 +196,12 @@ export const useAuthStore = create<AuthState>()(
 export const useUser = () => useAuthStore((state) => state.user);
 export const useProfile = () => useAuthStore((state) => state.profile);
 export const useSession = () => useAuthStore((state) => state.session);
-export const useIsAuthenticated = () =>
-  useAuthStore((state) => state.isAuthenticated);
+export const useIsAuthenticated = () => useAuthStore((state) => state.isAuthenticated);
 export const useAuthLoading = () => useAuthStore((state) => state.isLoading);
 export const useAuthError = () => useAuthStore((state) => state.error);
 
 export const useSignOut = () => useAuthStore((state) => state.signOut);
-export const useRefreshProfile = () =>
-  useAuthStore((state) => state.refreshProfile);
+export const useRefreshProfile = () => useAuthStore((state) => state.refreshProfile);
 
 export const useSubscriptionTier = () =>
   useAuthStore((state) => state.profile?.subscriptionTier ?? 'free');
@@ -223,8 +217,7 @@ export const useHasFeatureAccess = (requiredTier: string): boolean => {
   };
 
   const userTierLevel = tierHierarchy[tier as keyof typeof tierHierarchy] ?? 0;
-  const requiredTierLevel =
-    tierHierarchy[requiredTier as keyof typeof tierHierarchy] ?? 0;
+  const requiredTierLevel = tierHierarchy[requiredTier as keyof typeof tierHierarchy] ?? 0;
 
   return userTierLevel >= requiredTierLevel;
 };

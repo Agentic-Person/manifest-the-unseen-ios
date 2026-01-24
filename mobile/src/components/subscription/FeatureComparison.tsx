@@ -83,9 +83,7 @@ const FEATURES: FeatureRow[] = [
   },
 ];
 
-export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
-  currentTier,
-}) => {
+export const FeatureComparison: React.FC<FeatureComparisonProps> = ({ currentTier }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Compare All Features</Text>

@@ -53,10 +53,7 @@ interface PhaseItem {
  * />
  * ```
  */
-export const PhaseSelector: React.FC<PhaseSelectorProps> = ({
-  completedPhases,
-  onSelectPhase,
-}) => {
+export const PhaseSelector: React.FC<PhaseSelectorProps> = ({ completedPhases, onSelectPhase }) => {
   // Build phase items array (1-10)
   const phases: PhaseItem[] = PHASE_NAMES.map((name, index) => ({
     phaseNumber: index + 1,

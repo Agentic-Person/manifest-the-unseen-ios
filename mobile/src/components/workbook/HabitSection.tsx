@@ -54,7 +54,10 @@ export interface Habit {
 /**
  * Icon and color configuration for each time of day
  */
-const TIME_CONFIG: Record<TimeOfDay, { icon: string; title: string; accentColor: string; bgColor: string }> = {
+const TIME_CONFIG: Record<
+  TimeOfDay,
+  { icon: string; title: string; accentColor: string; bgColor: string }
+> = {
   morning: {
     icon: '🌅',
     title: 'Morning',
@@ -121,16 +124,16 @@ export const HabitSection: React.FC<HabitSectionProps> = ({
   const config = TIME_CONFIG[timeOfDay];
 
   // Calculate category counts
-  const positiveCount = habits.filter(h => h.category === 'positive').length;
-  const negativeCount = habits.filter(h => h.category === 'negative').length;
-  const neutralCount = habits.filter(h => h.category === 'neutral').length;
+  const positiveCount = habits.filter((h) => h.category === 'positive').length;
+  const negativeCount = habits.filter((h) => h.category === 'negative').length;
+  const neutralCount = habits.filter((h) => h.category === 'neutral').length;
 
   /**
    * Toggle expand/collapse with animation
    */
   const toggleExpand = useCallback(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setIsExpanded(prev => !prev);
+    setIsExpanded((prev) => !prev);
   }, []);
 
   /**
@@ -143,32 +146,38 @@ export const HabitSection: React.FC<HabitSectionProps> = ({
   /**
    * Handle habit text edit
    */
-  const handleEditHabit = useCallback((habitId: string, newText: string) => {
-    onEditHabit(timeOfDay, habitId, newText);
-  }, [onEditHabit, timeOfDay]);
+  const handleEditHabit = useCallback(
+    (habitId: string, newText: string) => {
+      onEditHabit(timeOfDay, habitId, newText);
+    },
+    [onEditHabit, timeOfDay]
+  );
 
   /**
    * Handle habit removal
    */
-  const handleRemoveHabit = useCallback((habitId: string) => {
-    onRemoveHabit(timeOfDay, habitId);
-  }, [onRemoveHabit, timeOfDay]);
+  const handleRemoveHabit = useCallback(
+    (habitId: string) => {
+      onRemoveHabit(timeOfDay, habitId);
+    },
+    [onRemoveHabit, timeOfDay]
+  );
 
   /**
    * Handle category change
    */
-  const handleCategoryChange = useCallback((habitId: string, category: HabitCategory) => {
-    onCategoryChange(timeOfDay, habitId, category);
-  }, [onCategoryChange, timeOfDay]);
+  const handleCategoryChange = useCallback(
+    (habitId: string, category: HabitCategory) => {
+      onCategoryChange(timeOfDay, habitId, category);
+    },
+    [onCategoryChange, timeOfDay]
+  );
 
   return (
     <View style={styles.container} testID={testID}>
       {/* Section Header */}
       <TouchableOpacity
-        style={[
-          styles.header,
-          { backgroundColor: config.bgColor },
-        ]}
+        style={[styles.header, { backgroundColor: config.bgColor }]}
         onPress={toggleExpand}
         activeOpacity={0.7}
         accessibilityRole="button"
@@ -238,12 +247,8 @@ export const HabitSection: React.FC<HabitSectionProps> = ({
             </View>
           ) : (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>
-                No {config.title.toLowerCase()} habits yet
-              </Text>
-              <Text style={styles.emptySubtext}>
-                Tap the button below to add your first habit
-              </Text>
+              <Text style={styles.emptyText}>No {config.title.toLowerCase()} habits yet</Text>
+              <Text style={styles.emptySubtext}>Tap the button below to add your first habit</Text>
             </View>
           )}
 

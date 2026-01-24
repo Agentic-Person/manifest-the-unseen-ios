@@ -267,8 +267,7 @@ export const useSettingsStore = create<SettingsState>()(
 export const useTheme = () => useSettingsStore((state) => state.theme);
 
 // Meditation
-export const usePreferredNarrator = () =>
-  useSettingsStore((state) => state.preferredNarrator);
+export const usePreferredNarrator = () => useSettingsStore((state) => state.preferredNarrator);
 export const useMeditationReminder = () =>
   useSettingsStore((state) => ({
     enabled: state.meditationReminderEnabled,
@@ -281,8 +280,7 @@ export const useJournalReminder = () =>
     enabled: state.journalReminderEnabled,
     time: state.journalReminderTime,
   }));
-export const useAutoTranscribeVoice = () =>
-  useSettingsStore((state) => state.autoTranscribeVoice);
+export const useAutoTranscribeVoice = () => useSettingsStore((state) => state.autoTranscribeVoice);
 
 // Spoken Prayer
 export const useSpokenPrayerReminder = () =>
@@ -297,9 +295,7 @@ export const usePushNotifications = () =>
 
 // Accessibility
 export const useFontSize = () => useSettingsStore((state) => state.fontSize);
-export const useReducedMotion = () =>
-  useSettingsStore((state) => state.reducedMotion);
+export const useReducedMotion = () => useSettingsStore((state) => state.reducedMotion);
 
 // Privacy
-export const useAnalyticsEnabled = () =>
-  useSettingsStore((state) => state.analyticsEnabled);
+export const useAnalyticsEnabled = () => useSettingsStore((state) => state.analyticsEnabled);

@@ -27,12 +27,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
@@ -96,7 +91,8 @@ export const SCRIPT_TEMPLATES: ScriptTemplateData[] = [
       'My colleagues and I...',
       'I contribute to the world by...',
     ],
-    exampleOpening: 'I am living my dream career, doing work that fills me with purpose every single day...',
+    exampleOpening:
+      'I am living my dream career, doing work that fills me with purpose every single day...',
   },
   {
     id: 'ideal-relationship',
@@ -112,7 +108,8 @@ export const SCRIPT_TEMPLATES: ScriptTemplateData[] = [
       'Our love continues to grow because...',
       'Together, we...',
     ],
-    exampleOpening: 'I am in a deeply fulfilling relationship with someone who truly sees and cherishes me...',
+    exampleOpening:
+      'I am in a deeply fulfilling relationship with someone who truly sees and cherishes me...',
   },
   {
     id: 'financial-abundance',
@@ -128,7 +125,8 @@ export const SCRIPT_TEMPLATES: ScriptTemplateData[] = [
       'I invest in...',
       'My relationship with money is...',
     ],
-    exampleOpening: 'I am financially free and abundant, with more than enough to live my dream life...',
+    exampleOpening:
+      'I am financially free and abundant, with more than enough to live my dream life...',
   },
   {
     id: 'optimal-health',
@@ -144,7 +142,8 @@ export const SCRIPT_TEMPLATES: ScriptTemplateData[] = [
       'My mental clarity allows me to...',
       'I am grateful for my health because...',
     ],
-    exampleOpening: 'I am in the best health of my life, feeling strong, energized, and vibrant every day...',
+    exampleOpening:
+      'I am in the best health of my life, feeling strong, energized, and vibrant every day...',
   },
   {
     id: 'custom',
@@ -154,12 +153,13 @@ export const SCRIPT_TEMPLATES: ScriptTemplateData[] = [
     category: 'custom',
     prompts: [
       'Start with "I am" or "I have"...',
-      'Write in present tense as if it\'s already true...',
+      "Write in present tense as if it's already true...",
       'Include sensory details - what do you see, hear, feel?',
       'Express gratitude throughout...',
       'Describe how this reality makes you feel...',
     ],
-    exampleOpening: 'I am living my most extraordinary life, where everything I\'ve ever dreamed of...',
+    exampleOpening:
+      "I am living my most extraordinary life, where everything I've ever dreamed of...",
   },
 ];
 
@@ -239,9 +239,7 @@ export const ScriptTemplate: React.FC<ScriptTemplateProps> = ({
           {/* Prompts Preview */}
           {isSelected && template.prompts.length > 0 && (
             <View style={styles.promptsPreview}>
-              <Text style={[styles.promptsLabel, { color: categoryColor }]}>
-                Writing prompts:
-              </Text>
+              <Text style={[styles.promptsLabel, { color: categoryColor }]}>Writing prompts:</Text>
               {template.prompts.slice(0, 3).map((prompt, index) => (
                 <Text key={index} style={styles.promptItem}>
                   {'\u2022'} {prompt}
@@ -257,20 +255,8 @@ export const ScriptTemplate: React.FC<ScriptTemplateProps> = ({
         </View>
 
         {/* Selection Indicator */}
-        <View
-          style={[
-            styles.radioOuter,
-            isSelected && { borderColor: categoryColor },
-          ]}
-        >
-          {isSelected && (
-            <View
-              style={[
-                styles.radioInner,
-                { backgroundColor: categoryColor },
-              ]}
-            />
-          )}
+        <View style={[styles.radioOuter, isSelected && { borderColor: categoryColor }]}>
+          {isSelected && <View style={[styles.radioInner, { backgroundColor: categoryColor }]} />}
         </View>
       </View>
     </TouchableOpacity>

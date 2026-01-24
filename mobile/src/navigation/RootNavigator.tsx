@@ -36,7 +36,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  * ```
  */
 export const RootNavigator = () => {
-  const { isAuthenticated, isLoading: _isLoading, initialize, setUser, setSession, setProfile } = useAuthStore();
+  const {
+    isAuthenticated,
+    isLoading: _isLoading,
+    initialize,
+    setUser,
+    setSession,
+    setProfile,
+  } = useAuthStore();
 
   // Debounce timer for TOKEN_REFRESHED events
   const tokenRefreshDebounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -53,16 +60,15 @@ export const RootNavigator = () => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (__DEV__) {
-        console.log('[RootNavigator] Auth event:', event, 'Has session:', !!session);
-      }
-
       // Always update session and user from Supabase (source of truth)
       setSession(session);
       setUser(session?.user ?? null);
 
       // Fetch profile when user signs in or token refreshes
-      if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
+      if (
+        session?.user &&
+        (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')
+      ) {
         // Debounce TOKEN_REFRESHED events to prevent rapid auth state flips during navigation
         if (event === 'TOKEN_REFRESHED') {
           // Clear any existing debounce timer
@@ -73,9 +79,6 @@ export const RootNavigator = () => {
           // Set new debounce timer (500ms delay)
           tokenRefreshDebounceRef.current = setTimeout(async () => {
             try {
-              if (__DEV__) {
-                console.log('[RootNavigator] Debounced profile fetch for TOKEN_REFRESHED');
-              }
               const { data: profile } = await supabase
                 .from('users')
                 .select('*')

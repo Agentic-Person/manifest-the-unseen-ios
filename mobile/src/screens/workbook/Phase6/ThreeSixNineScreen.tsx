@@ -19,15 +19,12 @@
  */
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
-import RepetitionTracker, { RepetitionPeriod } from '../../../components/workbook/RepetitionTracker';
+import RepetitionTracker, {
+  RepetitionPeriod,
+} from '../../../components/workbook/RepetitionTracker';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -122,18 +119,22 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress } = useWorkbookProgress(6, WORKSHEET_IDS.THREE_SIX_NINE);
 
   // Prepare form data for auto-save
-  const formData: ThreeSixNineFormData = useMemo(() => ({
-    practice,
-    todayProgress,
-  }), [practice, todayProgress]);
+  const formData: ThreeSixNineFormData = useMemo(
+    () => ({
+      practice,
+      todayProgress,
+    }),
+    [practice, todayProgress]
+  );
 
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: formData as unknown as Record<string, unknown>,
-    phaseNumber: 6,
-    worksheetId: WORKSHEET_IDS.THREE_SIX_NINE,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: formData as unknown as Record<string, unknown>,
+      phaseNumber: 6,
+      worksheetId: WORKSHEET_IDS.THREE_SIX_NINE,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -149,10 +150,19 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
           ...data.practice,
           // Ensure specific fields have correct types
           id: typeof data.practice.id === 'string' ? data.practice.id : generateId(),
-          manifestation: typeof data.practice.manifestation === 'string' ? data.practice.manifestation : '',
-          cycleDuration: (data.practice.cycleDuration === 21 || data.practice.cycleDuration === 33) ? data.practice.cycleDuration : 21,
-          startDate: typeof data.practice.startDate === 'string' ? data.practice.startDate : getTodayString(),
-          dailyProgress: Array.isArray(data.practice.dailyProgress) ? data.practice.dailyProgress : [],
+          manifestation:
+            typeof data.practice.manifestation === 'string' ? data.practice.manifestation : '',
+          cycleDuration:
+            data.practice.cycleDuration === 21 || data.practice.cycleDuration === 33
+              ? data.practice.cycleDuration
+              : 21,
+          startDate:
+            typeof data.practice.startDate === 'string'
+              ? data.practice.startDate
+              : getTodayString(),
+          dailyProgress: Array.isArray(data.practice.dailyProgress)
+            ? data.practice.dailyProgress
+            : [],
           isActive: typeof data.practice.isActive === 'boolean' ? data.practice.isActive : true,
         };
         setPractice(validatedPractice);
@@ -161,12 +171,24 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
       // Validate todayProgress data shape before using
       if (data.todayProgress && typeof data.todayProgress === 'object') {
         // Check if it's still today, otherwise reset today's progress
-        if (typeof data.todayProgress.date === 'string' && data.todayProgress.date === getTodayString()) {
+        if (
+          typeof data.todayProgress.date === 'string' &&
+          data.todayProgress.date === getTodayString()
+        ) {
           const validatedProgress: DailyProgress = {
             date: data.todayProgress.date,
-            morning: typeof data.todayProgress.morning === 'number' ? Math.max(0, Math.min(3, data.todayProgress.morning)) : 0,
-            afternoon: typeof data.todayProgress.afternoon === 'number' ? Math.max(0, Math.min(6, data.todayProgress.afternoon)) : 0,
-            evening: typeof data.todayProgress.evening === 'number' ? Math.max(0, Math.min(9, data.todayProgress.evening)) : 0,
+            morning:
+              typeof data.todayProgress.morning === 'number'
+                ? Math.max(0, Math.min(3, data.todayProgress.morning))
+                : 0,
+            afternoon:
+              typeof data.todayProgress.afternoon === 'number'
+                ? Math.max(0, Math.min(6, data.todayProgress.afternoon))
+                : 0,
+            evening:
+              typeof data.todayProgress.evening === 'number'
+                ? Math.max(0, Math.min(9, data.todayProgress.evening))
+                : 0,
           };
           setTodayProgress(validatedProgress);
         }
@@ -179,7 +201,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
    * Handle manifestation text change
    */
   const handleManifestationChange = useCallback((text: string) => {
-    setPractice(prev => ({
+    setPractice((prev) => ({
       ...prev,
       manifestation: text,
       updatedAt: new Date().toISOString(),
@@ -191,7 +213,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleCycleDurationChange = useCallback((duration: CycleDuration) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setPractice(prev => ({
+    setPractice((prev) => ({
       ...prev,
       cycleDuration: duration,
       updatedAt: new Date().toISOString(),
@@ -201,42 +223,45 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Handle repetition toggle
    */
-  const handleRepetitionToggle = useCallback((period: RepetitionPeriod, index: number) => {
-    const maxCounts = { morning: 3, afternoon: 6, evening: 9 };
-    const currentCount = todayProgress[period];
+  const handleRepetitionToggle = useCallback(
+    (period: RepetitionPeriod, index: number) => {
+      const maxCounts = { morning: 3, afternoon: 6, evening: 9 };
+      const currentCount = todayProgress[period];
 
-    // Toggle logic: if clicking completed circle, decrease; otherwise increase
-    let newCount: number;
-    if (index < currentCount) {
-      // Clicking a completed circle - set count to that index
-      newCount = index;
-    } else {
-      // Clicking an incomplete circle - set count to index + 1
-      newCount = Math.min(index + 1, maxCounts[period]);
-    }
+      // Toggle logic: if clicking completed circle, decrease; otherwise increase
+      let newCount: number;
+      if (index < currentCount) {
+        // Clicking a completed circle - set count to that index
+        newCount = index;
+      } else {
+        // Clicking an incomplete circle - set count to index + 1
+        newCount = Math.min(index + 1, maxCounts[period]);
+      }
 
-    setTodayProgress(prev => ({
-      ...prev,
-      [period]: newCount,
-    }));
+      setTodayProgress((prev) => ({
+        ...prev,
+        [period]: newCount,
+      }));
 
-    // Check if all complete for celebration
-    const allComplete =
-      (period === 'morning' ? newCount : todayProgress.morning) >= 3 &&
-      (period === 'afternoon' ? newCount : todayProgress.afternoon) >= 6 &&
-      (period === 'evening' ? newCount : todayProgress.evening) >= 9;
+      // Check if all complete for celebration
+      const allComplete =
+        (period === 'morning' ? newCount : todayProgress.morning) >= 3 &&
+        (period === 'afternoon' ? newCount : todayProgress.afternoon) >= 6 &&
+        (period === 'evening' ? newCount : todayProgress.evening) >= 9;
 
-    if (allComplete) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
-  }, [todayProgress]);
+      if (allComplete) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    },
+    [todayProgress]
+  );
 
   /**
    * Toggle explanation card
    */
   const handleToggleExplanation = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setShowExplanation(prev => !prev);
+    setShowExplanation((prev) => !prev);
   }, []);
 
   /**
@@ -262,10 +287,7 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
    * Check if today's practice is complete
    */
   const isTodayComplete =
-    todayProgress.morning >= 3 &&
-    todayProgress.afternoon >= 6 &&
-    todayProgress.evening >= 9;
-
+    todayProgress.morning >= 3 && todayProgress.afternoon >= 6 && todayProgress.evening >= 9;
 
   return (
     <ExerciseScreenLayout
@@ -288,171 +310,174 @@ const ThreeSixNineScreen: React.FC<Props> = ({ navigation }) => {
         isCompleted={savedProgress?.completed || false}
       />
 
-        {/* Progress Card */}
-        <View style={styles.progressCard}>
-          <View style={styles.progressHeader}>
-            <Text style={styles.progressTitle}>Cycle Progress</Text>
-            <Text style={styles.progressDay}>Day {currentDay} of {practice.cycleDuration}</Text>
-          </View>
-          <View style={styles.progressBarContainer}>
-            <View style={[styles.progressBar, { width: `${overallProgress}%` }]} />
-          </View>
-          <View style={styles.progressFooter}>
-            <Text style={styles.progressPercent}>{overallProgress}% Complete</Text>
-            {isTodayComplete && (
-              <Text style={styles.todayComplete}>{'\u2713'} Today Complete!</Text>
-            )}
-          </View>
+      {/* Progress Card */}
+      <View style={styles.progressCard}>
+        <View style={styles.progressHeader}>
+          <Text style={styles.progressTitle}>Cycle Progress</Text>
+          <Text style={styles.progressDay}>
+            Day {currentDay} of {practice.cycleDuration}
+          </Text>
         </View>
+        <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBar, { width: `${overallProgress}%` }]} />
+        </View>
+        <View style={styles.progressFooter}>
+          <Text style={styles.progressPercent}>{overallProgress}% Complete</Text>
+          {isTodayComplete && <Text style={styles.todayComplete}>{'\u2713'} Today Complete!</Text>}
+        </View>
+      </View>
 
-        {/* Cycle Duration Selector */}
-        <View style={styles.durationSelector}>
-          <Text style={styles.durationLabel}>Cycle Duration</Text>
-          <View style={styles.durationOptions}>
-            {([21, 33] as CycleDuration[]).map(duration => (
-              <TouchableOpacity
-                key={duration}
+      {/* Cycle Duration Selector */}
+      <View style={styles.durationSelector}>
+        <Text style={styles.durationLabel}>Cycle Duration</Text>
+        <View style={styles.durationOptions}>
+          {([21, 33] as CycleDuration[]).map((duration) => (
+            <TouchableOpacity
+              key={duration}
+              style={[
+                styles.durationOption,
+                practice.cycleDuration === duration && styles.durationOptionActive,
+              ]}
+              onPress={() => handleCycleDurationChange(duration)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: practice.cycleDuration === duration }}
+              accessibilityLabel={`${duration} day cycle`}
+              testID={`cycle-duration-${duration}`}
+            >
+              <Text
                 style={[
-                  styles.durationOption,
-                  practice.cycleDuration === duration && styles.durationOptionActive,
-                ]}
-                onPress={() => handleCycleDurationChange(duration)}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: practice.cycleDuration === duration }}
-                accessibilityLabel={`${duration} day cycle`}
-                testID={`cycle-duration-${duration}`}
-              >
-                <Text style={[
                   styles.durationNumber,
                   practice.cycleDuration === duration && styles.durationNumberActive,
-                ]}>
-                  {duration}
-                </Text>
-                <Text style={[
+                ]}
+              >
+                {duration}
+              </Text>
+              <Text
+                style={[
                   styles.durationText,
                   practice.cycleDuration === duration && styles.durationTextActive,
-                ]}>
-                  days
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Manifestation Input */}
-        <View style={styles.manifestationCard}>
-          <Text style={styles.manifestationLabel}>Your Manifestation</Text>
-          <Text style={styles.manifestationHint}>
-            Write a clear, specific statement of what you want to manifest
-          </Text>
-          <TextInput
-            value={practice.manifestation}
-            onChangeText={handleManifestationChange}
-            placeholder="I am grateful for... / I attract..."
-            placeholderTextColor={colors.dark.textTertiary}
-            multiline
-            numberOfLines={3}
-            maxLength={280}
-            style={styles.manifestationInput}
-            accessibilityLabel="Manifestation statement"
-            accessibilityHint="Enter what you want to manifest"
-            testID="manifestation-input"
-          />
-          <Text style={styles.charCount}>
-            {practice.manifestation.length}/280
-          </Text>
-        </View>
-
-        {/* Repetition Trackers */}
-        <View style={styles.trackersContainer}>
-          <RepetitionTracker
-            period="morning"
-            completed={todayProgress.morning}
-            onToggle={(index) => handleRepetitionToggle('morning', index)}
-            disabled={!practice.manifestation.trim()}
-            style={styles.tracker}
-            testID="tracker-morning"
-          />
-          <RepetitionTracker
-            period="afternoon"
-            completed={todayProgress.afternoon}
-            onToggle={(index) => handleRepetitionToggle('afternoon', index)}
-            disabled={!practice.manifestation.trim()}
-            style={styles.tracker}
-            testID="tracker-afternoon"
-          />
-          <RepetitionTracker
-            period="evening"
-            completed={todayProgress.evening}
-            onToggle={(index) => handleRepetitionToggle('evening', index)}
-            disabled={!practice.manifestation.trim()}
-            style={styles.tracker}
-            testID="tracker-evening"
-          />
-        </View>
-
-        {/* Explanation Card */}
-        <TouchableOpacity
-          onPress={handleToggleExplanation}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityState={{ expanded: showExplanation }}
-          accessibilityLabel="Learn about the 369 method"
-          testID="explanation-toggle"
-        >
-          <View style={styles.explanationCard}>
-            <View style={styles.explanationHeader}>
-              <Text style={styles.explanationIcon}>{'\u26A1'}</Text>
-              <Text style={styles.explanationTitle}>
-                Why 3, 6, and 9?
+                ]}
+              >
+                days
               </Text>
-              <Text style={styles.expandIcon}>
-                {showExplanation ? '\u25B2' : '\u25BC'}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Manifestation Input */}
+      <View style={styles.manifestationCard}>
+        <Text style={styles.manifestationLabel}>Your Manifestation</Text>
+        <Text style={styles.manifestationHint}>
+          Write a clear, specific statement of what you want to manifest
+        </Text>
+        <TextInput
+          value={practice.manifestation}
+          onChangeText={handleManifestationChange}
+          placeholder="I am grateful for... / I attract..."
+          placeholderTextColor={colors.dark.textTertiary}
+          multiline
+          numberOfLines={3}
+          maxLength={280}
+          style={styles.manifestationInput}
+          accessibilityLabel="Manifestation statement"
+          accessibilityHint="Enter what you want to manifest"
+          testID="manifestation-input"
+        />
+        <Text style={styles.charCount}>{practice.manifestation.length}/280</Text>
+      </View>
+
+      {/* Repetition Trackers */}
+      <View style={styles.trackersContainer}>
+        <RepetitionTracker
+          period="morning"
+          completed={todayProgress.morning}
+          onToggle={(index) => handleRepetitionToggle('morning', index)}
+          disabled={!practice.manifestation.trim()}
+          style={styles.tracker}
+          testID="tracker-morning"
+        />
+        <RepetitionTracker
+          period="afternoon"
+          completed={todayProgress.afternoon}
+          onToggle={(index) => handleRepetitionToggle('afternoon', index)}
+          disabled={!practice.manifestation.trim()}
+          style={styles.tracker}
+          testID="tracker-afternoon"
+        />
+        <RepetitionTracker
+          period="evening"
+          completed={todayProgress.evening}
+          onToggle={(index) => handleRepetitionToggle('evening', index)}
+          disabled={!practice.manifestation.trim()}
+          style={styles.tracker}
+          testID="tracker-evening"
+        />
+      </View>
+
+      {/* Explanation Card */}
+      <TouchableOpacity
+        onPress={handleToggleExplanation}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: showExplanation }}
+        accessibilityLabel="Learn about the 369 method"
+        testID="explanation-toggle"
+      >
+        <View style={styles.explanationCard}>
+          <View style={styles.explanationHeader}>
+            <Text style={styles.explanationIcon}>{'\u26A1'}</Text>
+            <Text style={styles.explanationTitle}>Why 3, 6, and 9?</Text>
+            <Text style={styles.expandIcon}>{showExplanation ? '\u25B2' : '\u25BC'}</Text>
+          </View>
+
+          {showExplanation && (
+            <View style={styles.explanationContent}>
+              <Text style={styles.explanationQuote}>
+                "If you only knew the magnificence of the 3, 6, and 9, then you would have the key
+                to the universe."
+              </Text>
+              <Text style={styles.explanationAuthor}>- Nikola Tesla</Text>
+
+              <View style={styles.numberExplanations}>
+                {[
+                  { num: '3', meaning: 'The creative force - mind, body, spirit unified' },
+                  { num: '6', meaning: 'The nurturing force - harmony and balance' },
+                  { num: '9', meaning: 'The completion force - enlightenment and fulfillment' },
+                ].map((item) => (
+                  <View key={item.num} style={styles.numberRow}>
+                    <View style={styles.numberBadge}>
+                      <Text style={styles.numberText}>{item.num}</Text>
+                    </View>
+                    <Text style={styles.numberMeaning}>{item.meaning}</Text>
+                  </View>
+                ))}
+              </View>
+
+              <Text style={styles.explanationNote}>
+                By writing your manifestation 3+6+9 times daily, you align with these universal
+                frequencies and amplify your intention.
               </Text>
             </View>
-
-            {showExplanation && (
-              <View style={styles.explanationContent}>
-                <Text style={styles.explanationQuote}>
-                  "If you only knew the magnificence of the 3, 6, and 9,
-                  then you would have the key to the universe."
-                </Text>
-                <Text style={styles.explanationAuthor}>- Nikola Tesla</Text>
-
-                <View style={styles.numberExplanations}>
-                  {[
-                    { num: '3', meaning: 'The creative force - mind, body, spirit unified' },
-                    { num: '6', meaning: 'The nurturing force - harmony and balance' },
-                    { num: '9', meaning: 'The completion force - enlightenment and fulfillment' },
-                  ].map(item => (
-                    <View key={item.num} style={styles.numberRow}>
-                      <View style={styles.numberBadge}>
-                        <Text style={styles.numberText}>{item.num}</Text>
-                      </View>
-                      <Text style={styles.numberMeaning}>{item.meaning}</Text>
-                    </View>
-                  ))}
-                </View>
-
-                <Text style={styles.explanationNote}>
-                  By writing your manifestation 3+6+9 times daily, you align with
-                  these universal frequencies and amplify your intention.
-                </Text>
-              </View>
-            )}
-          </View>
-        </TouchableOpacity>
-
-        {/* Inspirational Quote */}
-        <View style={styles.quoteContainer}>
-          <Text style={styles.quoteText}>
-            "Everything is energy. Match the frequency of the reality you want."
-          </Text>
-          <Text style={styles.quoteAuthor}>- Albert Einstein</Text>
+          )}
         </View>
+      </TouchableOpacity>
+
+      {/* Inspirational Quote */}
+      <View style={styles.quoteContainer}>
+        <Text style={styles.quoteText}>
+          "Everything is energy. Match the frequency of the reality you want."
+        </Text>
+        <Text style={styles.quoteAuthor}>- Albert Einstein</Text>
+      </View>
 
       {/* Save Status */}
-      <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+      <SaveIndicator
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+        isError={isError}
+        onRetry={saveNow}
+      />
     </ExerciseScreenLayout>
   );
 };

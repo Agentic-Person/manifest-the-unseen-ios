@@ -65,7 +65,9 @@ export function useNotifications(): UseNotificationsReturn {
 
   const requestPermission = useCallback(async (): Promise<boolean> => {
     logger.debug('[Notifications] MOCK: requestPermission called - notifications disabled');
-    logger.debug('[Notifications] To enable: regenerate provisioning profile with Push Notification capability');
+    logger.debug(
+      '[Notifications] To enable: regenerate provisioning profile with Push Notification capability'
+    );
     // Return false - notifications not available
     return false;
   }, []);

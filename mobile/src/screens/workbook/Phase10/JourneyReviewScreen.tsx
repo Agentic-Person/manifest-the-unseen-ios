@@ -67,14 +67,34 @@ interface PhaseInfo {
 const PHASES: PhaseInfo[] = [
   { number: 1, name: 'Self-Evaluation', exercises: 11, description: 'Discover who you truly are' },
   { number: 2, name: 'Values & Vision', exercises: 3, description: 'Define your vision for life' },
-  { number: 3, name: 'Goal Setting', exercises: 3, description: 'Set SMART goals and action plans' },
+  {
+    number: 3,
+    name: 'Goal Setting',
+    exercises: 3,
+    description: 'Set SMART goals and action plans',
+  },
   { number: 4, name: 'Facing Fears', exercises: 3, description: 'Confront and transform fears' },
   { number: 5, name: 'Self-Love', exercises: 3, description: 'Cultivate self-compassion' },
-  { number: 6, name: 'Manifestation', exercises: 3, description: 'Master manifestation techniques' },
+  {
+    number: 6,
+    name: 'Manifestation',
+    exercises: 3,
+    description: 'Master manifestation techniques',
+  },
   { number: 7, name: 'Gratitude', exercises: 3, description: 'Practice daily gratitude' },
-  { number: 8, name: 'Envy to Inspiration', exercises: 2, description: 'Transform envy into motivation' },
+  {
+    number: 8,
+    name: 'Envy to Inspiration',
+    exercises: 2,
+    description: 'Transform envy into motivation',
+  },
   { number: 9, name: 'Trust & Surrender', exercises: 2, description: 'Release control and trust' },
-  { number: 10, name: 'Trust & Letting Go', exercises: 3, description: 'Complete your transformation' },
+  {
+    number: 10,
+    name: 'Trust & Letting Go',
+    exercises: 3,
+    description: 'Complete your transformation',
+  },
 ];
 
 // Transformation reflection interface
@@ -103,10 +123,12 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
   const { data: allProgress, isLoading: isLoadingAll } = useAllWorkbookProgress();
 
   // Fetch this worksheet's data
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.JOURNEY_REVIEW
-  );
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.JOURNEY_REVIEW);
 
   const [transformation, setTransformation] = useState<TransformationReflection>({
     beforeState: '',
@@ -163,7 +185,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
 
     return {
       totalDays: daysDiff,
-      exercisesCompleted: allProgress.filter(p => p.completed).length,
+      exercisesCompleted: allProgress.filter((p) => p.completed).length,
       journalEntries: 45, // Would come from separate journal table
       meditationMinutes: 360, // Would come from meditation_sessions table
     };
@@ -172,12 +194,15 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
   // Generate phase progress data from all progress
   const phaseProgress = useMemo(() => {
     const progressByPhase: PhaseProgressData[] = PHASES.map((phase) => {
-      const phaseItems = allProgress?.filter(p => p.phase_number === phase.number) || [];
-      const completed = phaseItems.filter(p => p.completed).length;
+      const phaseItems = allProgress?.filter((p) => p.phase_number === phase.number) || [];
+      const completed = phaseItems.filter((p) => p.completed).length;
       const percentage = phase.exercises > 0 ? Math.round((completed / phase.exercises) * 100) : 0;
 
       // Get key insight from phase data if available
-      const keyInsight = phaseItems.length > 0 ? `Completed ${completed} of ${phase.exercises} exercises` : undefined;
+      const keyInsight =
+        phaseItems.length > 0
+          ? `Completed ${completed} of ${phase.exercises} exercises`
+          : undefined;
 
       return {
         phaseNumber: phase.number,
@@ -185,7 +210,10 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
         exercisesCompleted: completed,
         totalExercises: phase.exercises,
         keyInsight,
-        lastUpdated: phaseItems.length > 0 ? new Date(phaseItems[0].updated_at).toLocaleDateString() : undefined,
+        lastUpdated:
+          phaseItems.length > 0
+            ? new Date(phaseItems[0].updated_at).toLocaleDateString()
+            : undefined,
       };
     });
 
@@ -195,12 +223,12 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Calculate overall completion
    */
-  const overallCompletion = phaseProgress.length > 0
-    ? Math.round(
-        phaseProgress.reduce((sum, p) => sum + p.completionPercentage, 0) /
-          phaseProgress.length
-      )
-    : 0;
+  const overallCompletion =
+    phaseProgress.length > 0
+      ? Math.round(
+          phaseProgress.reduce((sum, p) => sum + p.completionPercentage, 0) / phaseProgress.length
+        )
+      : 0;
 
   /**
    * Handle phase card press
@@ -274,12 +302,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.progressBarContainer}>
           <View style={styles.progressBarBackground}>
-            <View
-              style={[
-                styles.progressBarFill,
-                { width: `${overallCompletion}%` },
-              ]}
-            />
+            <View style={[styles.progressBarFill, { width: `${overallCompletion}%` }]} />
           </View>
         </View>
 
@@ -324,7 +347,12 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>My Transformation</Text>
         <Text style={styles.sectionSubtitle}>Before and after this journey</Text>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </View>
 
       <View style={styles.transformationCard}>
@@ -337,7 +365,9 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
                 placeholder="Reflect on who you were..."
                 placeholderTextColor={DESIGN_COLORS.textTertiary}
                 value={transformation.beforeState}
-                onChangeText={(text) => setTransformation(prev => ({ ...prev, beforeState: text }))}
+                onChangeText={(text) =>
+                  setTransformation((prev) => ({ ...prev, beforeState: text }))
+                }
                 multiline
                 textAlignVertical="top"
                 accessibilityLabel="Before transformation reflection"
@@ -356,7 +386,9 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
                 placeholder="Who are you becoming..."
                 placeholderTextColor={DESIGN_COLORS.textTertiary}
                 value={transformation.afterState}
-                onChangeText={(text) => setTransformation(prev => ({ ...prev, afterState: text }))}
+                onChangeText={(text) =>
+                  setTransformation((prev) => ({ ...prev, afterState: text }))
+                }
                 multiline
                 textAlignVertical="top"
                 accessibilityLabel="After transformation reflection"
@@ -373,7 +405,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
             placeholder="What was your greatest takeaway?"
             placeholderTextColor={DESIGN_COLORS.textTertiary}
             value={transformation.biggestLesson}
-            onChangeText={(text) => setTransformation(prev => ({ ...prev, biggestLesson: text }))}
+            onChangeText={(text) => setTransformation((prev) => ({ ...prev, biggestLesson: text }))}
             multiline
             textAlignVertical="top"
             accessibilityLabel="Biggest lesson from your journey"
@@ -388,7 +420,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
             placeholder="What are you most grateful for from this journey?"
             placeholderTextColor={DESIGN_COLORS.textTertiary}
             value={transformation.gratefulFor}
-            onChangeText={(text) => setTransformation(prev => ({ ...prev, gratefulFor: text }))}
+            onChangeText={(text) => setTransformation((prev) => ({ ...prev, gratefulFor: text }))}
             multiline
             textAlignVertical="top"
             accessibilityLabel="What you are grateful for"
@@ -421,12 +453,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
                   {isComplete && <Text style={styles.timelineCheck}>{'\u2713'}</Text>}
                 </View>
                 {index < PHASES.length - 1 && (
-                  <View
-                    style={[
-                      styles.timelineLine,
-                      isComplete && styles.timelineLineComplete,
-                    ]}
-                  />
+                  <View style={[styles.timelineLine, isComplete && styles.timelineLineComplete]} />
                 )}
               </View>
               <View style={styles.timelineContent}>
@@ -441,10 +468,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Export Button */}
       <Pressable
-        style={({ pressed }) => [
-          styles.exportButton,
-          pressed && styles.buttonPressed,
-        ]}
+        style={({ pressed }) => [styles.exportButton, pressed && styles.buttonPressed]}
         onPress={handleExportJourney}
         accessibilityRole="button"
         accessibilityLabel="Export journey summary"
@@ -454,10 +478,7 @@ const JourneyReviewScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Continue Button */}
       <Pressable
-        style={({ pressed }) => [
-          styles.continueButton,
-          pressed && styles.buttonPressed,
-        ]}
+        style={({ pressed }) => [styles.continueButton, pressed && styles.buttonPressed]}
         onPress={handleContinue}
         accessibilityRole="button"
         accessibilityLabel="Continue to write a letter to your future self"

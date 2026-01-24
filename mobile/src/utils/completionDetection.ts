@@ -27,72 +27,32 @@ export const detectCompletion = (
   data: Record<string, unknown>,
   criteria: CompletionCriteria
 ): boolean => {
-  // DEBUG: Log incoming data for troubleshooting
-  if (__DEV__) {
-    console.log('[detectCompletion] Checking completion:', {
-      dataKeys: Object.keys(data),
-      criteria: JSON.stringify(criteria).slice(0, 200),
-    });
-  }
-
   // Count filled fields (non-null, non-undefined, non-empty)
   const filledFields = Object.values(data).filter((v) => v !== null && v !== undefined && v !== '');
 
   // Check if minimum number of fields are filled
   if (criteria.requiredFields !== undefined && filledFields.length < criteria.requiredFields) {
-    if (__DEV__) {
-      console.log('[detectCompletion] Failed: not enough filled fields', {
-        filled: filledFields.length,
-        required: criteria.requiredFields,
-      });
-    }
     return false;
   }
 
   // Check if all mandatory fields are filled and meet minimum character count
   if (criteria.mandatoryFields && criteria.mandatoryFields.length > 0) {
     const minChars = criteria.minCharsPerField ?? 0;
-    const fieldResults: Record<string, { exists: boolean; length: number; passes: boolean }> = {};
-
-    if (__DEV__) {
-      console.log('[detectCompletion] Checking mandatory fields:', {
-        fields: criteria.mandatoryFields,
-        minChars,
-      });
-    }
 
     const allFilled = criteria.mandatoryFields.every((key) => {
       const value = data[key];
       // Field must exist and be a non-empty string
       if (!value || typeof value !== 'string') {
-        fieldResults[key] = { exists: false, length: 0, passes: false };
-        if (__DEV__) {
-          console.log(`[detectCompletion] Field "${key}" missing or not string:`, { value: typeof value, actualValue: value });
-        }
         return false;
       }
       const trimmed = value.trim();
-      const passes = trimmed.length > 0 && trimmed.length >= minChars;
-      fieldResults[key] = { exists: true, length: trimmed.length, passes };
-      if (__DEV__) {
-        console.log(`[detectCompletion] Field "${key}": length=${trimmed.length}, minChars=${minChars}, passes=${passes}`);
-      }
       // Field must meet minimum character count if specified
-      return passes;
+      return trimmed.length > 0 && trimmed.length >= minChars;
     });
 
-    if (!allFilled && __DEV__) {
-      console.log('[detectCompletion] FAILED: mandatory fields not satisfied', {
-        minChars,
-        fieldResults,
-      });
+    if (!allFilled) {
+      return false;
     }
-
-    if (allFilled && __DEV__) {
-      console.log('[detectCompletion] SUCCESS: all mandatory fields satisfied');
-    }
-
-    if (!allFilled) return false;
   }
 
   // Check if all OTHER non-mandatory STRING fields also meet minimum character count
@@ -105,7 +65,9 @@ export const detectCompletion = (
     const hasShortFields = stringFields.some(
       (v) => typeof v === 'string' && v.trim().length < minChars
     );
-    if (hasShortFields) return false;
+    if (hasShortFields) {
+      return false;
+    }
   }
 
   // Run custom validation if provided

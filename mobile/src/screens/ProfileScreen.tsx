@@ -73,13 +73,12 @@ const ProfileScreen = ({ navigation }: Props) => {
       <View style={styles.profileHeader}>
         <View style={styles.avatar}>
           {profile?.avatarUrl ? (
-            <Image
-              source={{ uri: profile.avatarUrl }}
-              style={styles.avatarImage}
-            />
+            <Image source={{ uri: profile.avatarUrl }} style={styles.avatarImage} />
           ) : (
             <Text style={styles.avatarText}>
-              {profile?.fullName?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'U'}
+              {profile?.fullName?.charAt(0).toUpperCase() ||
+                user?.email?.charAt(0).toUpperCase() ||
+                'U'}
             </Text>
           )}
         </View>
@@ -93,15 +92,14 @@ const ProfileScreen = ({ navigation }: Props) => {
           <Text style={styles.cardTitle}>Subscription</Text>
           <View style={styles.subscriptionInfo}>
             <View>
-              <Text style={styles.tierName}>
-                {tierName}
-              </Text>
-              <Text style={styles.tierStatus}>
-                {statusLabel}
-              </Text>
+              <Text style={styles.tierName}>{tierName}</Text>
+              <Text style={styles.tierStatus}>{statusLabel}</Text>
             </View>
             <Pressable
-              style={({ pressed }) => [styles.upgradeButton, pressed && styles.upgradeButtonPressed]}
+              style={({ pressed }) => [
+                styles.upgradeButton,
+                pressed && styles.upgradeButtonPressed,
+              ]}
               onPress={() => navigation.navigate('Paywall')}
             >
               <Text style={styles.upgradeButtonText}>Manage</Text>
@@ -181,7 +179,9 @@ const ProfileScreen = ({ navigation }: Props) => {
       </Pressable>
 
       {/* Version Info */}
-      <Text style={styles.versionText}>Version {appVersion} ({buildNumber})</Text>
+      <Text style={styles.versionText}>
+        Version {appVersion} ({buildNumber})
+      </Text>
     </ScrollView>
   );
 };

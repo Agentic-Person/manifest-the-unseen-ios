@@ -153,7 +153,10 @@ export const trackScreenView = (screenName: string): void => {
 /**
  * Track feature usage
  */
-export const trackFeatureUsed = (featureName: string, details?: Record<string, string | number | boolean>): void => {
+export const trackFeatureUsed = (
+  featureName: string,
+  details?: Record<string, string | number | boolean>
+): void => {
   trackEvent('feature_used', { feature: featureName, ...details });
 };
 

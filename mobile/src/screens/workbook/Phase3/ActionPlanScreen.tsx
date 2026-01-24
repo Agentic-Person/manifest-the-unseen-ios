@@ -104,8 +104,14 @@ interface ActionPlanData {
  */
 const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-  const { data: savedProgress, isError: isLoadError } = useWorkbookProgress(3, WORKSHEET_IDS.ACTION_PLAN);
-  const { data: smartGoalsProgress, isLoading: isLoadingGoals } = useWorkbookProgress(3, WORKSHEET_IDS.SMART_GOALS);
+  const { data: savedProgress, isError: isLoadError } = useWorkbookProgress(
+    3,
+    WORKSHEET_IDS.ACTION_PLAN
+  );
+  const { data: smartGoalsProgress, isLoading: isLoadingGoals } = useWorkbookProgress(
+    3,
+    WORKSHEET_IDS.SMART_GOALS
+  );
 
   // State
   const [goals, setGoals] = useState<SMARTGoal[]>([]);
@@ -117,11 +123,14 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   const [showCelebration, setShowCelebration] = useState(false);
 
   // Auto-save hook
-  const formData = useMemo(() => ({
-    selectedGoalId,
-    steps,
-    updatedAt: new Date().toISOString(),
-  }), [selectedGoalId, steps]);
+  const formData = useMemo(
+    () => ({
+      selectedGoalId,
+      steps,
+      updatedAt: new Date().toISOString(),
+    }),
+    [selectedGoalId, steps]
+  );
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
@@ -159,15 +168,12 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
     if (smartGoalsProgress?.data) {
       const data = smartGoalsProgress.data as unknown as SMARTGoalsData;
       if (data.goals && Array.isArray(data.goals)) {
-        console.log('[ActionPlan] Loaded goals from Supabase:', data.goals.length);
         setGoals(data.goals);
       } else {
-        console.log('[ActionPlan] No goals found in SMART Goals worksheet');
         setGoals([]);
       }
     } else if (!isLoadingGoals) {
       // If not loading and no data, set empty array
-      console.log('[ActionPlan] No SMART Goals data available');
       setGoals([]);
     }
   }, [smartGoalsProgress, isLoadingGoals]);
@@ -179,8 +185,12 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as ActionPlanData;
-      if (typeof data.selectedGoalId === 'string') setSelectedGoalId(data.selectedGoalId);
-      if (Array.isArray(data.steps)) setSteps(data.steps);
+      if (typeof data.selectedGoalId === 'string') {
+        setSelectedGoalId(data.selectedGoalId);
+      }
+      if (Array.isArray(data.steps)) {
+        setSteps(data.steps);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -193,7 +203,6 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
       triggerCelebration();
     }
   }, [isAllComplete, steps.length]);
-
 
   // Auto-save is handled by useAutoSave hook
 
@@ -297,7 +306,9 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
     setSteps((prev) => {
       const sorted = [...prev].sort((a, b) => a.order - b.order);
       const index = sorted.findIndex((s) => s.id === id);
-      if (index <= 0) return prev;
+      if (index <= 0) {
+        return prev;
+      }
 
       const newSteps = [...sorted];
       // Swap orders
@@ -316,7 +327,9 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
     setSteps((prev) => {
       const sorted = [...prev].sort((a, b) => a.order - b.order);
       const index = sorted.findIndex((s) => s.id === id);
-      if (index < 0 || index >= sorted.length - 1) return prev;
+      if (index < 0 || index >= sorted.length - 1) {
+        return prev;
+      }
 
       const newSteps = [...sorted];
       // Swap orders
@@ -332,29 +345,25 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
    * Delete a step
    */
   const handleDeleteStep = useCallback((id: string) => {
-    Alert.alert(
-      'Delete Step',
-      'Are you sure you want to remove this step from your action plan?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            setSteps((prev) => {
-              const filtered = prev.filter((step) => step.id !== id);
-              // Reorder remaining steps
-              return filtered.map((step, index) => ({
-                ...step,
-                order: index,
-                updatedAt: new Date().toISOString(),
-              }));
-            });
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-          },
+    Alert.alert('Delete Step', 'Are you sure you want to remove this step from your action plan?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          setSteps((prev) => {
+            const filtered = prev.filter((step) => step.id !== id);
+            // Reorder remaining steps
+            return filtered.map((step, index) => ({
+              ...step,
+              order: index,
+              updatedAt: new Date().toISOString(),
+            }));
+          });
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         },
-      ]
-    );
+      },
+    ]);
   }, []);
 
   /**
@@ -380,8 +389,7 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.emptyGoalsIcon}>🎯</Text>
         <Text style={styles.emptyGoalsTitle}>No Goals Yet</Text>
         <Text style={styles.emptyGoalsMessage}>
-          Create SMART goals first to build your action plan.
-          Go to SMART Goals to get started.
+          Create SMART goals first to build your action plan. Go to SMART Goals to get started.
         </Text>
         <TouchableOpacity
           style={styles.createGoalButton}
@@ -419,8 +427,8 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
           title="Action Plan"
           subtitle="Break down your goals into actionable steps. Check off each step as you complete it."
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Goal Selector */}
         <View style={styles.goalSelectorContainer}>
@@ -445,9 +453,7 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
               </>
             ) : (
               <>
-                <Text style={styles.goalSelectorPlaceholder}>
-                  Choose a goal to plan...
-                </Text>
+                <Text style={styles.goalSelectorPlaceholder}>Choose a goal to plan...</Text>
                 <Text style={styles.goalSelectorArrow}>▼</Text>
               </>
             )}
@@ -492,7 +498,12 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </ExerciseScreenLayout>
 
       {/* Goal Picker Modal */}
@@ -502,14 +513,8 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowGoalPicker(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowGoalPicker(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowGoalPicker(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Select a Goal</Text>
             <Text style={styles.modalSubtitle}>
               Choose a SMART goal to create an action plan for
@@ -551,14 +556,8 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowAddStepModal(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowAddStepModal(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowAddStepModal(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Add Action Step</Text>
             <Text style={styles.modalSubtitle}>
               What specific action will move you closer to your goal?
@@ -614,9 +613,7 @@ const ActionPlanScreen: React.FC<Props> = ({ navigation }) => {
         >
           <Text style={styles.celebrationEmoji}>🎉</Text>
           <Text style={styles.celebrationTitle}>Amazing!</Text>
-          <Text style={styles.celebrationMessage}>
-            You completed all steps for this goal!
-          </Text>
+          <Text style={styles.celebrationMessage}>You completed all steps for this goal!</Text>
         </Animated.View>
       )}
     </KeyboardAvoidingView>

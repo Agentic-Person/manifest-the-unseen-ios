@@ -27,16 +27,16 @@ interface SettingsSectionProps {
  * </SettingsSection>
  * ```
  */
-export const SettingsSection: React.FC<SettingsSectionProps> = ({
-  title,
-  children,
-}) => {
+export const SettingsSection: React.FC<SettingsSectionProps> = ({ title, children }) => {
   const { scaleFont } = useFontSizeContext();
 
-  const scaledTitleStyle = useMemo((): TextStyle => ({
-    ...styles.title,
-    fontSize: scaleFont(13),
-  }), [scaleFont]);
+  const scaledTitleStyle = useMemo(
+    (): TextStyle => ({
+      ...styles.title,
+      fontSize: scaleFont(13),
+    }),
+    [scaleFont]
+  );
 
   return (
     <View style={styles.container}>

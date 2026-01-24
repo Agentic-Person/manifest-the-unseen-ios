@@ -23,12 +23,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { IntensitySlider } from './IntensitySlider';
@@ -124,21 +119,17 @@ export const FearCard: React.FC<FearCardProps> = ({
    */
   const handleDelete = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      'Delete Fear',
-      'Are you sure you want to remove this fear from your inventory?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            onDelete();
-          },
+    Alert.alert('Delete Fear', 'Are you sure you want to remove this fear from your inventory?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          onDelete();
         },
-      ]
-    );
+      },
+    ]);
   }, [onDelete]);
 
   /**
@@ -169,9 +160,7 @@ export const FearCard: React.FC<FearCardProps> = ({
         {/* Category Badge */}
         <View style={[styles.categoryBadge, { backgroundColor: `${category.color}25` }]}>
           <Text style={styles.categoryIcon}>{category.icon}</Text>
-          <Text style={[styles.categoryText, { color: category.color }]}>
-            {category.label}
-          </Text>
+          <Text style={[styles.categoryText, { color: category.color }]}>{category.label}</Text>
         </View>
 
         {/* Action Buttons */}
@@ -212,9 +201,7 @@ export const FearCard: React.FC<FearCardProps> = ({
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.dateText}>
-          Added {formatDate(fear.createdAt)}
-        </Text>
+        <Text style={styles.dateText}>Added {formatDate(fear.createdAt)}</Text>
       </View>
     </View>
   );

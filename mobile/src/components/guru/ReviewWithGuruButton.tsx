@@ -69,10 +69,7 @@ export const ReviewWithGuruButton: React.FC<ReviewWithGuruButtonProps> = ({
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        style={[
-          styles.button,
-          !hasGuruAccess && styles.buttonLocked,
-        ]}
+        style={[styles.button, !hasGuruAccess && styles.buttonLocked]}
         onPress={handlePress}
         activeOpacity={0.8}
         accessibilityRole="button"
@@ -98,16 +95,8 @@ export const ReviewWithGuruButton: React.FC<ReviewWithGuruButtonProps> = ({
 
         {/* Text Content */}
         <View style={styles.textContainer}>
-          <Text style={[
-            styles.title,
-            !hasGuruAccess && styles.titleLocked,
-          ]}>
-            Review with Guru
-          </Text>
-          <Text style={[
-            styles.subtitle,
-            !hasGuruAccess && styles.subtitleLocked,
-          ]}>
+          <Text style={[styles.title, !hasGuruAccess && styles.titleLocked]}>Review with Guru</Text>
+          <Text style={[styles.subtitle, !hasGuruAccess && styles.subtitleLocked]}>
             {hasGuruAccess
               ? 'Get personalized insights on your journey'
               : 'Upgrade to Awakening+ for AI-guided wisdom'}

@@ -82,10 +82,12 @@ const PHASE_NUMBER = 9;
 const SignsScreen: React.FC<Props> = ({ navigation }) => {
   // Supabase data fetching
 
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.SIGNS_TRACKING
-  );
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.SIGNS_TRACKING);
 
   const [entries, setEntries] = useState<SignEntryData[]>([]);
   const [expandedEntryId, setExpandedEntryId] = useState<string | null>(null);
@@ -113,7 +115,9 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SignsData;
@@ -149,9 +153,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
    * Update category
    */
   const handleCategoryChange = (id: string, category: SignCategory) => {
-    setEntries((prev) =>
-      prev.map((entry) => (entry.id === id ? { ...entry, category } : entry))
-    );
+    setEntries((prev) => prev.map((entry) => (entry.id === id ? { ...entry, category } : entry)));
   };
 
   /**
@@ -159,9 +161,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleWhatHappenedChange = (id: string, text: string) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, whatHappened: text } : entry
-      )
+      prev.map((entry) => (entry.id === id ? { ...entry, whatHappened: text } : entry))
     );
   };
 
@@ -170,9 +170,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleMeaningChange = (id: string, text: string) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, possibleMeaning: text } : entry
-      )
+      prev.map((entry) => (entry.id === id ? { ...entry, possibleMeaning: text } : entry))
     );
   };
 
@@ -181,9 +179,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleFeelingChange = (id: string, text: string) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, howItFelt: text } : entry
-      )
+      prev.map((entry) => (entry.id === id ? { ...entry, howItFelt: text } : entry))
     );
   };
 
@@ -192,9 +188,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handlePhotoChange = (id: string, uri: string | undefined) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, photoUri: uri } : entry
-      )
+      prev.map((entry) => (entry.id === id ? { ...entry, photoUri: uri } : entry))
     );
   };
 
@@ -203,9 +197,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleRecurringToggle = (id: string) => {
     setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, isRecurring: !entry.isRecurring } : entry
-      )
+      prev.map((entry) => (entry.id === id ? { ...entry, isRecurring: !entry.isRecurring } : entry))
     );
   };
 
@@ -213,24 +205,20 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
    * Delete entry
    */
   const handleDelete = (id: string) => {
-    Alert.alert(
-      'Delete Sign Entry',
-      'Are you sure you want to delete this synchronicity entry?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            setEntries((prev) => prev.filter((entry) => entry.id !== id));
-            if (expandedEntryId === id) {
-              setExpandedEntryId(null);
-            }
-          },
+    Alert.alert('Delete Sign Entry', 'Are you sure you want to delete this synchronicity entry?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          setEntries((prev) => prev.filter((entry) => entry.id !== id));
+          if (expandedEntryId === id) {
+            setExpandedEntryId(null);
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   /**
@@ -244,9 +232,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
    * Filter entries by category
    */
   const filteredEntries =
-    filterCategory === 'all'
-      ? entries
-      : entries.filter((e) => e.category === filterCategory);
+    filterCategory === 'all' ? entries : entries.filter((e) => e.category === filterCategory);
 
   /**
    * Get recurring signs
@@ -322,16 +308,9 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
       {/* Category Filter */}
       <View style={styles.filterContainer}>
         <Text style={styles.filterLabel}>Filter by Category</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.filterScroll}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
           <Pressable
-            style={[
-              styles.filterChip,
-              filterCategory === 'all' && styles.filterChipActive,
-            ]}
+            style={[styles.filterChip, filterCategory === 'all' && styles.filterChipActive]}
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setFilterCategory('all');
@@ -381,10 +360,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Add Entry Button */}
       <Pressable
-        style={({ pressed }) => [
-          styles.addButton,
-          pressed && styles.addButtonPressed,
-        ]}
+        style={({ pressed }) => [styles.addButton, pressed && styles.addButtonPressed]}
         onPress={handleAddEntry}
         accessibilityRole="button"
         accessibilityLabel="Log a new sign or synchronicity"
@@ -415,8 +391,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
               : SIGN_CATEGORIES.find((c) => c.key === filterCategory)?.label}
           </Text>
           <Text style={styles.sectionSubtitle}>
-            {filteredEntries.length}{' '}
-            {filteredEntries.length === 1 ? 'entry' : 'entries'}
+            {filteredEntries.length} {filteredEntries.length === 1 ? 'entry' : 'entries'}
           </Text>
           {filteredEntries.map((entry) => (
             <SignCard
@@ -440,9 +415,7 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
       {recurringSigns.length > 0 && filterCategory === 'all' && (
         <View style={styles.patternsSection}>
           <Text style={styles.sectionTitle}>Recurring Patterns</Text>
-          <Text style={styles.sectionSubtitle}>
-            Signs that keep showing up in your life
-          </Text>
+          <Text style={styles.sectionSubtitle}>Signs that keep showing up in your life</Text>
           <View style={styles.patternsGrid}>
             {recurringSigns.slice(0, 6).map((sign) => {
               const cat = SIGN_CATEGORIES.find((c) => c.key === sign.category);
@@ -468,26 +441,21 @@ const SignsScreen: React.FC<Props> = ({ navigation }) => {
       {/* Tips Card */}
       <View style={styles.tipsCard}>
         <Text style={styles.tipsTitle}>Signs to Watch For</Text>
-        <Text style={styles.tipItem}>
-          - Repeating numbers (11:11, 222, 333) - angel numbers
-        </Text>
-        <Text style={styles.tipItem}>
-          - Animals that appear at significant moments
-        </Text>
-        <Text style={styles.tipItem}>
-          - Songs or quotes that answer your questions
-        </Text>
-        <Text style={styles.tipItem}>
-          - People who show up right when you need them
-        </Text>
-        <Text style={styles.tipItem}>
-          - Vivid dreams with recurring themes or messages
-        </Text>
+        <Text style={styles.tipItem}>- Repeating numbers (11:11, 222, 333) - angel numbers</Text>
+        <Text style={styles.tipItem}>- Animals that appear at significant moments</Text>
+        <Text style={styles.tipItem}>- Songs or quotes that answer your questions</Text>
+        <Text style={styles.tipItem}>- People who show up right when you need them</Text>
+        <Text style={styles.tipItem}>- Vivid dreams with recurring themes or messages</Text>
       </View>
 
       {/* Save Status */}
       <View style={styles.saveStatusContainer}>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </View>
     </ExerciseScreenLayout>
   );

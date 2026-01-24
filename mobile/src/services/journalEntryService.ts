@@ -217,9 +217,15 @@ export const JournalEntryService = {
       }
     }
 
-    if (entry.tags !== undefined) updateData.tags = entry.tags;
-    if (entry.mood !== undefined) updateData.mood = entry.mood;
-    if (entry.images !== undefined) updateData.images = entry.images;
+    if (entry.tags !== undefined) {
+      updateData.tags = entry.tags;
+    }
+    if (entry.mood !== undefined) {
+      updateData.mood = entry.mood;
+    }
+    if (entry.images !== undefined) {
+      updateData.images = entry.images;
+    }
 
     const { data, error } = await supabase
       .from('journal_entries')
@@ -346,7 +352,9 @@ export const JournalEntryService = {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return 0;
+    if (!user) {
+      return 0;
+    }
 
     const { count, error } = await supabase
       .from('journal_entries')

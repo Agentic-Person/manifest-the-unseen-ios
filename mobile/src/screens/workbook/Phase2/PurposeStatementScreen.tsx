@@ -49,14 +49,16 @@ const GUIDED_QUESTIONS: GuidedQuestionData[] = [
   {
     id: 'q1',
     question: 'What activities make you lose track of time?',
-    placeholder: 'Describe the activities that absorb you completely, where hours feel like minutes...',
+    placeholder:
+      'Describe the activities that absorb you completely, where hours feel like minutes...',
     inspirationalQuote: '"The soul becomes dyed with the color of its thoughts." - Marcus Aurelius',
   },
   {
     id: 'q2',
     question: 'What would you do if money was not a concern?',
     placeholder: 'Imagine unlimited resources. What would you dedicate your life to?',
-    inspirationalQuote: '"Your work is to discover your work and then give your whole heart to it." - Buddha',
+    inspirationalQuote:
+      '"Your work is to discover your work and then give your whole heart to it." - Buddha',
   },
   {
     id: 'q3',
@@ -68,25 +70,29 @@ const GUIDED_QUESTIONS: GuidedQuestionData[] = [
     id: 'q4',
     question: 'What are you naturally good at that others appreciate?',
     placeholder: 'What talents come easily to you? What do people often thank you for?',
-    inspirationalQuote: '"Your talent is God\'s gift to you. What you do with it is your gift back." - Leo Buscaglia',
+    inspirationalQuote:
+      '"Your talent is God\'s gift to you. What you do with it is your gift back." - Leo Buscaglia',
   },
   {
     id: 'q5',
     question: 'What legacy do you want to leave behind?',
     placeholder: 'How do you want to be remembered? What impact will outlast you?',
-    inspirationalQuote: '"The meaning of life is to find your gift. The purpose is to give it away." - Pablo Picasso',
+    inspirationalQuote:
+      '"The meaning of life is to find your gift. The purpose is to give it away." - Pablo Picasso',
   },
   {
     id: 'q6',
     question: 'When do you feel most alive and fulfilled?',
     placeholder: 'Describe the moments when you feel complete joy and alignment...',
-    inspirationalQuote: '"Life is not about finding yourself. Life is about creating yourself." - George Bernard Shaw',
+    inspirationalQuote:
+      '"Life is not about finding yourself. Life is about creating yourself." - George Bernard Shaw',
   },
   {
     id: 'q7',
     question: 'What values are non-negotiable in your life?',
     placeholder: 'What principles guide your decisions? What would you never compromise on?',
-    inspirationalQuote: '"When your values are clear to you, making decisions becomes easier." - Roy E. Disney',
+    inspirationalQuote:
+      '"When your values are clear to you, making decisions becomes easier." - Roy E. Disney',
   },
 ];
 
@@ -116,12 +122,14 @@ const generateStatement = (answers: Record<string, string>): string => {
   // Extract key phrases (simplified - take first sentence or phrase)
   const extractEssence = (text: string) => {
     const firstSentence = text.split(/[.!?]/)[0].trim().toLowerCase();
-    return firstSentence.length > 60 ? firstSentence.substring(0, 60) + '...' : firstSentence;
+    return firstSentence.length > 60 ? `${firstSentence.substring(0, 60)}...` : firstSentence;
   };
 
-  return `My purpose is to ${extractEssence(q3)} by using my natural gift of ${extractEssence(q4)}. ` +
+  return (
+    `My purpose is to ${extractEssence(q3)} by using my natural gift of ${extractEssence(q4)}. ` +
     `I find deep fulfillment when ${extractEssence(q6)}, and I aspire to leave a legacy of ${extractEssence(q5)}. ` +
-    `My life is guided by ${extractEssence(q7)}.`;
+    `My life is guided by ${extractEssence(q7)}.`
+  );
 };
 
 /**
@@ -129,7 +137,10 @@ const generateStatement = (answers: Record<string, string>): string => {
  */
 const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   // Fetch saved progress from Supabase
-  const { data: savedProgress, isError: isLoadError } = useWorkbookProgress(2, WORKSHEET_IDS.PURPOSE_STATEMENT);
+  const { data: savedProgress, isError: isLoadError } = useWorkbookProgress(
+    2,
+    WORKSHEET_IDS.PURPOSE_STATEMENT
+  );
   const { isPending: isSaving } = useSaveWorkbook();
 
   // Current question index
@@ -144,14 +155,24 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   const [isEditingStatement, setIsEditingStatement] = useState(false);
 
   // Auto-save hook
-  const formData = useMemo(() => ({
-    answers,
-    generatedStatement: generateStatement(answers),
-    finalStatement,
-    updatedAt: new Date().toISOString(),
-  }), [answers, finalStatement]);
+  const formData = useMemo(
+    () => ({
+      answers,
+      generatedStatement: generateStatement(answers),
+      finalStatement,
+      updatedAt: new Date().toISOString(),
+    }),
+    [answers, finalStatement]
+  );
 
-  const { isSaving: isAutoSaving, lastSaved, saveNow, isAutoCompleted: _isAutoCompleted, canComplete: _canComplete, markComplete: _markComplete } = useAutoSave({
+  const {
+    isSaving: isAutoSaving,
+    lastSaved,
+    saveNow,
+    isAutoCompleted: _isAutoCompleted,
+    canComplete: _canComplete,
+    markComplete: _markComplete,
+  } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
     phaseNumber: 2,
     worksheetId: WORKSHEET_IDS.PURPOSE_STATEMENT,
@@ -166,8 +187,12 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as PurposeStatementData;
-      if (data.answers && typeof data.answers === 'object') setAnswers(data.answers);
-      if (typeof data.finalStatement === 'string') setFinalStatement(data.finalStatement);
+      if (data.answers && typeof data.answers === 'object') {
+        setAnswers(data.answers);
+      }
+      if (typeof data.finalStatement === 'string') {
+        setFinalStatement(data.finalStatement);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -180,20 +205,23 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
    * Get indices of answered questions
    */
   const answeredQuestions = useMemo(() => {
-    return GUIDED_QUESTIONS
-      .map((q, index) => (answers[q.id]?.trim() ? index : -1))
-      .filter((index) => index !== -1);
+    return GUIDED_QUESTIONS.map((q, index) => (answers[q.id]?.trim() ? index : -1)).filter(
+      (index) => index !== -1
+    );
   }, [answers]);
 
   /**
    * Handle answer change
    */
-  const handleAnswerChange = useCallback((text: string) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [currentQuestion.id]: text,
-    }));
-  }, [currentQuestion.id]);
+  const handleAnswerChange = useCallback(
+    (text: string) => {
+      setAnswers((prev) => ({
+        ...prev,
+        [currentQuestion.id]: text,
+      }));
+    },
+    [currentQuestion.id]
+  );
 
   /**
    * Navigate to next question
@@ -226,13 +254,16 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Navigate to specific question
    */
-  const handleDotPress = useCallback((index: number) => {
-    if (index <= currentIndex || answeredQuestions.includes(index - 1) || index === 0) {
-      setCurrentIndex(index);
-      setShowStatement(false);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-  }, [currentIndex, answeredQuestions]);
+  const handleDotPress = useCallback(
+    (index: number) => {
+      if (index <= currentIndex || answeredQuestions.includes(index - 1) || index === 0) {
+        setCurrentIndex(index);
+        setShowStatement(false);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    },
+    [currentIndex, answeredQuestions]
+  );
 
   /**
    * Toggle statement edit mode
@@ -290,12 +321,10 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
         <ExerciseHeader
           image={Phase2ExerciseImages.lifeMission}
           title="Purpose Statement"
-          subtitle={showStatement
-            ? 'Your purpose, revealed'
-            : 'Discover what drives your soul'}
+          subtitle={showStatement ? 'Your purpose, revealed' : 'Discover what drives your soul'}
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Progress Indicator */}
         {!showStatement && (
@@ -309,7 +338,12 @@ const PurposeStatementScreen: React.FC<Props> = ({ navigation }) => {
         )}
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isAutoSaving || isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isAutoSaving || isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
 
         {/* Main Content */}
         <ScrollView

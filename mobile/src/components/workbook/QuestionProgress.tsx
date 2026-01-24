@@ -20,11 +20,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text } from '../Text';
 import { colors, spacing, typography, fontWeights } from '../../theme';
 
@@ -69,12 +65,7 @@ export const QuestionProgress: React.FC<QuestionProgressProps> = ({
             <React.Fragment key={index}>
               {/* Connecting line (except before first dot) */}
               {index > 0 && (
-                <View
-                  style={[
-                    styles.connectingLine,
-                    isPast && styles.connectingLineFilled,
-                  ]}
-                />
+                <View style={[styles.connectingLine, isPast && styles.connectingLineFilled]} />
               )}
 
               {/* Dot */}
@@ -92,9 +83,7 @@ export const QuestionProgress: React.FC<QuestionProgressProps> = ({
                 testID={`${testID}-dot-${index}`}
               >
                 {isCurrent && <View style={styles.dotInner} />}
-                {isAnswered && !isCurrent && (
-                  <Text style={styles.checkmark}>check</Text>
-                )}
+                {isAnswered && !isCurrent && <Text style={styles.checkmark}>check</Text>}
               </TouchableOpacity>
             </React.Fragment>
           );
@@ -106,20 +95,13 @@ export const QuestionProgress: React.FC<QuestionProgressProps> = ({
         <Text style={styles.progressText}>
           Question {currentIndex + 1} of {totalQuestions}
         </Text>
-        <Text style={styles.percentageText}>
-          {Math.round(progressPercentage)}% Complete
-        </Text>
+        <Text style={styles.percentageText}>{Math.round(progressPercentage)}% Complete</Text>
       </View>
 
       {/* Progress bar (alternative visual) */}
       <View style={styles.progressBarContainer}>
         <View style={styles.progressBarTrack}>
-          <View
-            style={[
-              styles.progressBarFill,
-              { width: `${progressPercentage}%` },
-            ]}
-          />
+          <View style={[styles.progressBarFill, { width: `${progressPercentage}%` }]} />
         </View>
       </View>
     </View>

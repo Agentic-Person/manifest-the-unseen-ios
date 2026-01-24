@@ -28,7 +28,14 @@ export * from './spacing';
 export * from './shadows';
 
 import { colors } from './colors';
-import { typography, fontFamilies, fontWeights, fontSizes, lineHeights, letterSpacing } from './typography';
+import {
+  typography,
+  fontFamilies,
+  fontWeights,
+  fontSizes,
+  lineHeights,
+  letterSpacing,
+} from './typography';
 import { spacing, borderRadius, componentSpacing, safeAreaInsets, createSpacing } from './spacing';
 import { shadows, componentShadows, innerShadow, glow } from './shadows';
 

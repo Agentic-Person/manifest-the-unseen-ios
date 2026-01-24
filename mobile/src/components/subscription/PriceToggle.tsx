@@ -14,53 +14,30 @@ interface PriceToggleProps {
   onToggle: (period: SubscriptionPeriod) => void;
 }
 
-export const PriceToggle: React.FC<PriceToggleProps> = ({
-  selectedPeriod,
-  onToggle,
-}) => {
+export const PriceToggle: React.FC<PriceToggleProps> = ({ selectedPeriod, onToggle }) => {
   const isYearly = selectedPeriod === 'yearly';
 
   return (
     <View style={styles.container}>
       {/* Monthly Button */}
       <Pressable
-        style={[
-          styles.option,
-          !isYearly && styles.optionSelected,
-        ]}
+        style={[styles.option, !isYearly && styles.optionSelected]}
         onPress={() => onToggle('monthly')}
         accessibilityRole="button"
         accessibilityState={{ selected: !isYearly }}
       >
-        <Text
-          style={[
-            styles.optionText,
-            !isYearly && styles.optionTextSelected,
-          ]}
-        >
-          Monthly
-        </Text>
+        <Text style={[styles.optionText, !isYearly && styles.optionTextSelected]}>Monthly</Text>
       </Pressable>
 
       {/* Yearly Button */}
       <Pressable
-        style={[
-          styles.option,
-          isYearly && styles.optionSelected,
-        ]}
+        style={[styles.option, isYearly && styles.optionSelected]}
         onPress={() => onToggle('yearly')}
         accessibilityRole="button"
         accessibilityState={{ selected: isYearly }}
       >
         <View style={styles.yearlyContent}>
-          <Text
-            style={[
-              styles.optionText,
-              isYearly && styles.optionTextSelected,
-            ]}
-          >
-            Annual
-          </Text>
+          <Text style={[styles.optionText, isYearly && styles.optionTextSelected]}>Annual</Text>
           <View style={styles.saveBadge}>
             <Text style={styles.saveText}>Save 37%</Text>
           </View>

@@ -81,12 +81,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
         <Pressable style={styles.modal} onPress={(e) => e.stopPropagation()}>
           {/* Header */}
@@ -96,17 +91,12 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
           </View>
 
           {/* Content */}
-          <ScrollView
-            style={styles.content}
-            showsVerticalScrollIndicator={false}
-          >
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
             <Text style={styles.description}>{description}</Text>
 
             {/* Required Tier Badge */}
             <View style={styles.tierBadge}>
-              <Text style={styles.tierBadgeText}>
-                {tierDisplayNames[requiredTier]}
-              </Text>
+              <Text style={styles.tierBadgeText}>{tierDisplayNames[requiredTier]}</Text>
             </View>
 
             {/* Benefits List */}
@@ -131,11 +121,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
               <Text style={styles.upgradeButtonText}>Upgrade Now</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.laterButton}
-              onPress={onClose}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity style={styles.laterButton} onPress={onClose} activeOpacity={0.7}>
               <Text style={styles.laterButtonText}>Maybe Later</Text>
             </TouchableOpacity>
           </View>

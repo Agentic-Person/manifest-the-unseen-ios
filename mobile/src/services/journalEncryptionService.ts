@@ -67,9 +67,7 @@ export const JournalEncryptionService = {
   async getOrCreateKey(): Promise<string> {
     try {
       // Check if key already exists
-      const existingKey = await SecureStore.getItemAsync(
-        SecureStorageKeys.JOURNAL_ENCRYPTION_KEY
-      );
+      const existingKey = await SecureStore.getItemAsync(SecureStorageKeys.JOURNAL_ENCRYPTION_KEY);
 
       if (existingKey) {
         if (__DEV__) {
@@ -86,13 +84,9 @@ export const JournalEncryptionService = {
       const newKey = generateRandomKey();
 
       // Store in secure storage
-      await SecureStore.setItemAsync(
-        SecureStorageKeys.JOURNAL_ENCRYPTION_KEY,
-        newKey,
-        {
-          keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-        }
-      );
+      await SecureStore.setItemAsync(SecureStorageKeys.JOURNAL_ENCRYPTION_KEY, newKey, {
+        keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+      });
 
       if (__DEV__) {
         logger.debug('[JournalEncryption] New key generated and stored');
@@ -204,12 +198,8 @@ export const JournalEncryptionService = {
   /**
    * Check if an entry needs migration (has plaintext but no encrypted content)
    */
-  needsEncryption(entry: {
-    content?: string | null;
-    encrypted_content?: string | null;
-  }): boolean {
-    const hasPlaintext =
-      !!entry.content && entry.content !== '' && entry.content !== '[encrypted]';
+  needsEncryption(entry: { content?: string | null; encrypted_content?: string | null }): boolean {
+    const hasPlaintext = !!entry.content && entry.content !== '' && entry.content !== '[encrypted]';
     const hasEncrypted = !!entry.encrypted_content;
     return hasPlaintext && !hasEncrypted;
   },

@@ -107,9 +107,7 @@ interface UseAudioPlayerReturn {
  * }
  * ```
  */
-export function useAudioPlayer(
-  options: UseAudioPlayerOptions = {}
-): UseAudioPlayerReturn {
+export function useAudioPlayer(options: UseAudioPlayerOptions = {}): UseAudioPlayerReturn {
   const {
     autoPlay = false,
     loop = false,
@@ -157,7 +155,9 @@ export function useAudioPlayer(
    */
   const onPlaybackStatusUpdate = useCallback(
     (status: AVPlaybackStatus) => {
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current) {
+        return;
+      }
 
       if (!status.isLoaded) {
         // Handle error state
@@ -260,9 +260,7 @@ export function useAudioPlayer(
       await soundRef.current.playAsync();
       setState('playing');
     } catch (err) {
-      const errorMsg = `Failed to play: ${
-        err instanceof Error ? err.message : 'Unknown error'
-      }`;
+      const errorMsg = `Failed to play: ${err instanceof Error ? err.message : 'Unknown error'}`;
       setError(errorMsg);
       onError?.(errorMsg);
       throw new Error(errorMsg);
@@ -281,9 +279,7 @@ export function useAudioPlayer(
       await soundRef.current.pauseAsync();
       setState('paused');
     } catch (err) {
-      const errorMsg = `Failed to pause: ${
-        err instanceof Error ? err.message : 'Unknown error'
-      }`;
+      const errorMsg = `Failed to pause: ${err instanceof Error ? err.message : 'Unknown error'}`;
       setError(errorMsg);
       onError?.(errorMsg);
       throw new Error(errorMsg);
@@ -303,9 +299,7 @@ export function useAudioPlayer(
       setProgress((prev) => ({ ...prev, position: 0, progress: 0 }));
       setState('paused');
     } catch (err) {
-      const errorMsg = `Failed to stop: ${
-        err instanceof Error ? err.message : 'Unknown error'
-      }`;
+      const errorMsg = `Failed to stop: ${err instanceof Error ? err.message : 'Unknown error'}`;
       setError(errorMsg);
       onError?.(errorMsg);
       throw new Error(errorMsg);
@@ -326,9 +320,7 @@ export function useAudioPlayer(
         const clampedPosition = Math.max(0, Math.min(positionMs, progress.duration));
         await soundRef.current.setPositionAsync(clampedPosition);
       } catch (err) {
-        const errorMsg = `Failed to seek: ${
-          err instanceof Error ? err.message : 'Unknown error'
-        }`;
+        const errorMsg = `Failed to seek: ${err instanceof Error ? err.message : 'Unknown error'}`;
         setError(errorMsg);
         onError?.(errorMsg);
         throw new Error(errorMsg);

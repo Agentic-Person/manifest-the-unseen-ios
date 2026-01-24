@@ -11,12 +11,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Dimensions,
-} from 'react-native';
+import { View, StyleSheet, Text, Dimensions } from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -98,9 +93,9 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
 
               {/* Achievement Text */}
               <Text style={styles.achievementText}>
-                has successfully completed the sacred journey of self-discovery,
-                manifestation mastery, and spiritual awakening through dedicated
-                practice and unwavering commitment to personal transformation.
+                has successfully completed the sacred journey of self-discovery, manifestation
+                mastery, and spiritual awakening through dedicated practice and unwavering
+                commitment to personal transformation.
               </Text>
 
               {/* Stats */}
@@ -159,9 +154,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({
               </View>
 
               {/* Quote */}
-              <Text style={styles.quote}>
-                "What you seek is seeking you." - Rumi
-              </Text>
+              <Text style={styles.quote}>"What you seek is seeking you." - Rumi</Text>
             </View>
           </View>
         </View>

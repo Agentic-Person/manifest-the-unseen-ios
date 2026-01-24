@@ -124,10 +124,7 @@ export const authService = {
    * }
    * ```
    */
-  signInWithEmail: async (
-    email: string,
-    password: string
-  ): Promise<AuthResult> => {
+  signInWithEmail: async (email: string, password: string): Promise<AuthResult> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -281,8 +278,7 @@ export const authService = {
       return {};
     } catch (error) {
       return {
-        error:
-          error instanceof Error ? error : new Error('Account deletion failed'),
+        error: error instanceof Error ? error : new Error('Account deletion failed'),
       };
     }
   },
@@ -319,8 +315,7 @@ export const authService = {
       return {};
     } catch (error) {
       return {
-        error:
-          error instanceof Error ? error : new Error('Password reset failed'),
+        error: error instanceof Error ? error : new Error('Password reset failed'),
       };
     }
   },
@@ -352,8 +347,7 @@ export const authService = {
       return {};
     } catch (error) {
       return {
-        error:
-          error instanceof Error ? error : new Error('Password update failed'),
+        error: error instanceof Error ? error : new Error('Password update failed'),
       };
     }
   },
@@ -393,11 +387,7 @@ export const authService = {
    */
   fetchUserProfile: async (userId: string): Promise<UserProfile | null> => {
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
       if (error) {
         logger.error('Failed to fetch user profile:', error);
@@ -444,9 +434,7 @@ export const authService = {
    * subscription.unsubscribe();
    * ```
    */
-  onAuthStateChange: (
-    callback: (event: string, session: Session | null) => void
-  ) => {
+  onAuthStateChange: (callback: (event: string, session: Session | null) => void) => {
     return supabase.auth.onAuthStateChange(callback);
   },
 };

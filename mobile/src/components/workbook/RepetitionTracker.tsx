@@ -22,12 +22,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, shadows } from '../../theme';
@@ -118,9 +113,7 @@ const RepCircle: React.FC<RepCircleProps> = ({
   const handlePress = useCallback(() => {
     if (!disabled) {
       Haptics.impactAsync(
-        isCompleted
-          ? Haptics.ImpactFeedbackStyle.Light
-          : Haptics.ImpactFeedbackStyle.Medium
+        isCompleted ? Haptics.ImpactFeedbackStyle.Light : Haptics.ImpactFeedbackStyle.Medium
       );
       onPress();
     }
@@ -145,9 +138,7 @@ const RepCircle: React.FC<RepCircleProps> = ({
           disabled && styles.circleDisabled,
         ]}
       >
-        {isCompleted && (
-          <Text style={styles.checkmark}>{'\u2713'}</Text>
-        )}
+        {isCompleted && <Text style={styles.checkmark}>{'\u2713'}</Text>}
         {!isCompleted && (
           <Text style={[styles.circleNumber, { color: colors.dark.textTertiary }]}>
             {index + 1}
@@ -192,9 +183,7 @@ export const RepetitionTracker: React.FC<RepetitionTrackerProps> = ({
       </View>
 
       {/* Progress Text */}
-      <Text style={styles.instruction}>
-        Write your manifestation {config.count} times
-      </Text>
+      <Text style={styles.instruction}>Write your manifestation {config.count} times</Text>
 
       {/* Circles Grid */}
       <View style={styles.circlesContainer}>

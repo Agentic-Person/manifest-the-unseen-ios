@@ -48,9 +48,9 @@ const DESIGN_COLORS = {
   accentGreen: '#2d5a4a',
   accentRose: '#8b3a5f',
   accentLavender: '#6b5b8a', // Softer purple
-  accentPeach: '#c4846d',    // Warm peach
+  accentPeach: '#c4846d', // Warm peach
   border: '#3a3a5a',
-  borderSoft: '#2d2d4a',     // Softer border
+  borderSoft: '#2d2d4a', // Softer border
 };
 
 /**
@@ -79,37 +79,43 @@ const GUIDED_PROMPTS: GuidedPrompt[] = [
   {
     id: 'comfort',
     title: 'Comfort & Safety',
-    prompt: 'Tell your younger self what you wish someone had told you when you felt scared or alone. What comfort would have helped?',
+    prompt:
+      'Tell your younger self what you wish someone had told you when you felt scared or alone. What comfort would have helped?',
     icon: '\u{1F49C}', // Purple heart
   },
   {
     id: 'validation',
     title: 'Validation',
-    prompt: 'Your younger self needs to hear that their feelings mattered. Write about a time you felt unheard, and validate those feelings now.',
+    prompt:
+      'Your younger self needs to hear that their feelings mattered. Write about a time you felt unheard, and validate those feelings now.',
     icon: '\u{2728}', // Sparkles
   },
   {
     id: 'apology',
     title: 'Gentle Apology',
-    prompt: 'Is there anything you need to apologize to your younger self for? Self-criticism, neglect, or harsh words you\'ve said to yourself?',
+    prompt:
+      "Is there anything you need to apologize to your younger self for? Self-criticism, neglect, or harsh words you've said to yourself?",
     icon: '\u{1F338}', // Cherry blossom
   },
   {
     id: 'protection',
     title: 'Protection',
-    prompt: 'What would you protect your younger self from if you could go back? Write about becoming your own guardian.',
+    prompt:
+      'What would you protect your younger self from if you could go back? Write about becoming your own guardian.',
     icon: '\u{1F6E1}', // Shield
   },
   {
     id: 'celebration',
     title: 'Celebration',
-    prompt: 'Write about something your younger self did that deserves celebration - a strength, a kindness, a moment of bravery.',
+    prompt:
+      'Write about something your younger self did that deserves celebration - a strength, a kindness, a moment of bravery.',
     icon: '\u{1F31F}', // Glowing star
   },
   {
     id: 'dreams',
     title: 'Dreams & Wishes',
-    prompt: 'What dreams did your younger self have? Which ones have you fulfilled, and which ones still matter to you?',
+    prompt:
+      'What dreams did your younger self have? Which ones have you fulfilled, and which ones still matter to you?',
     icon: '\u{1F308}', // Rainbow
   },
 ];
@@ -150,12 +156,20 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Supabase hooks
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(5, WORKSHEET_IDS.INNER_CHILD);
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(5, WORKSHEET_IDS.INNER_CHILD);
 
   // Prepare form data for auto-save
-  const formData: InnerChildFormData = useMemo(() => ({
-    letters,
-  }), [letters]);
+  const formData: InnerChildFormData = useMemo(
+    () => ({
+      letters,
+    }),
+    [letters]
+  );
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
@@ -175,7 +189,9 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as InnerChildFormData;
@@ -199,7 +215,9 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
    * Save current letter to letters array
    */
   const saveCurrentLetter = useCallback(() => {
-    if (!letterContent.trim()) return;
+    if (!letterContent.trim()) {
+      return;
+    }
 
     const now = new Date().toISOString();
     const age = letterAge ? parseInt(letterAge, 10) : null;
@@ -213,9 +231,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
         ageAddressed: age,
         updatedAt: now,
       };
-      setLetters((prev) =>
-        prev.map((l) => (l.id === updated.id ? updated : l))
-      );
+      setLetters((prev) => prev.map((l) => (l.id === updated.id ? updated : l)));
       setCurrentLetter(updated);
     } else {
       // Create new letter
@@ -471,9 +487,9 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.welcomeIcon}>{'\u{1F49C}'}</Text>
             <Text style={styles.welcomeTitle}>Welcome to Inner Child Work</Text>
             <Text style={styles.welcomeText}>
-              This is a gentle practice of connecting with the younger parts of yourself
-              that may still carry old wounds. Through letters of love and understanding,
-              you can begin to heal, comfort, and reparent yourself.
+              This is a gentle practice of connecting with the younger parts of yourself that may
+              still carry old wounds. Through letters of love and understanding, you can begin to
+              heal, comfort, and reparent yourself.
             </Text>
             <TouchableOpacity
               style={styles.startButton}
@@ -504,17 +520,13 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
                   <Text style={styles.recentLetterTitle} numberOfLines={1}>
                     {letter.title}
                   </Text>
-                  <Text style={styles.recentLetterDate}>
-                    {formatDate(letter.createdAt)}
-                  </Text>
+                  <Text style={styles.recentLetterDate}>{formatDate(letter.createdAt)}</Text>
                 </View>
                 <Text style={styles.recentLetterPreview} numberOfLines={2}>
                   {letter.content}
                 </Text>
                 {letter.ageAddressed && (
-                  <Text style={styles.recentLetterAge}>
-                    To {letter.ageAddressed} year old self
-                  </Text>
+                  <Text style={styles.recentLetterAge}>To {letter.ageAddressed} year old self</Text>
                 )}
               </TouchableOpacity>
             ))}
@@ -530,7 +542,12 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Save Status */}
         {isEditing && (
-          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+          <SaveIndicator
+            isSaving={isSaving}
+            lastSaved={lastSaved}
+            isError={isLoadError}
+            onRetry={saveNow}
+          />
         )}
       </ExerciseScreenLayout>
 
@@ -541,14 +558,8 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowPromptsModal(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowPromptsModal(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowPromptsModal(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Guided Prompts</Text>
             <Text style={styles.modalSubtitle}>
               Choose a prompt to guide your inner child letter
@@ -592,18 +603,10 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowTimelineModal(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowTimelineModal(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowTimelineModal(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Your Letters</Text>
-            <Text style={styles.modalSubtitle}>
-              A timeline of letters to your inner child
-            </Text>
+            <Text style={styles.modalSubtitle}>A timeline of letters to your inner child</Text>
 
             {letters.length === 0 ? (
               <View style={styles.emptyTimeline}>
@@ -617,9 +620,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
                 {letters.map((letter, index) => (
                   <View key={letter.id} style={styles.timelineItem}>
                     {/* Timeline connector */}
-                    {index < letters.length - 1 && (
-                      <View style={styles.timelineConnector} />
-                    )}
+                    {index < letters.length - 1 && <View style={styles.timelineConnector} />}
                     <View style={styles.timelineDot} />
                     <TouchableOpacity
                       style={styles.timelineCard}
@@ -628,9 +629,7 @@ const InnerChildScreen: React.FC<Props> = ({ navigation }) => {
                       accessibilityLabel={`View ${letter.title}`}
                     >
                       <View style={styles.timelineCardHeader}>
-                        <Text style={styles.timelineDate}>
-                          {formatDate(letter.createdAt)}
-                        </Text>
+                        <Text style={styles.timelineDate}>{formatDate(letter.createdAt)}</Text>
                         <TouchableOpacity
                           style={styles.deleteButton}
                           onPress={() => handleDeleteLetter(letter.id)}

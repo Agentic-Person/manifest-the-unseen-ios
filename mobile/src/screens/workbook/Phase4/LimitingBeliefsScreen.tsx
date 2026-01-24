@@ -52,7 +52,8 @@ const SAMPLE_BELIEFS: LimitingBelief[] = [
   {
     id: 'sample_1',
     limitingBelief: 'I am not smart enough to succeed in my career',
-    evidenceAgainst: 'I have completed challenging projects successfully. Colleagues often ask for my advice.',
+    evidenceAgainst:
+      'I have completed challenging projects successfully. Colleagues often ask for my advice.',
     newBelief: 'I have unique skills and knowledge that contribute to my success',
     isComplete: true,
     createdAt: new Date().toISOString(),
@@ -103,20 +104,23 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: { beliefs, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
-    phaseNumber: 4,
-    worksheetId: WORKSHEET_IDS.LIMITING_BELIEFS,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: { beliefs, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+      phaseNumber: 4,
+      worksheetId: WORKSHEET_IDS.LIMITING_BELIEFS,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as LimitingBeliefsData;
-      if (Array.isArray(data.beliefs)) setBeliefs(data.beliefs);
+      if (Array.isArray(data.beliefs)) {
+        setBeliefs(data.beliefs);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -196,22 +200,26 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const now = new Date().toISOString();
-    const isComplete = Boolean(limitingBeliefText.trim() && evidenceText.trim() && newBeliefText.trim());
+    const isComplete = Boolean(
+      limitingBeliefText.trim() && evidenceText.trim() && newBeliefText.trim()
+    );
 
     if (editingBelief) {
       // Update existing belief
-      setBeliefs(prev => prev.map(b =>
-        b.id === editingBelief.id
-          ? {
-              ...b,
-              limitingBelief: limitingBeliefText.trim(),
-              evidenceAgainst: evidenceText.trim(),
-              newBelief: newBeliefText.trim(),
-              isComplete,
-              updatedAt: now,
-            }
-          : b
-      ));
+      setBeliefs((prev) =>
+        prev.map((b) =>
+          b.id === editingBelief.id
+            ? {
+                ...b,
+                limitingBelief: limitingBeliefText.trim(),
+                evidenceAgainst: evidenceText.trim(),
+                newBelief: newBeliefText.trim(),
+                isComplete,
+                updatedAt: now,
+              }
+            : b
+        )
+      );
     } else {
       // Create new belief
       const newBelief: LimitingBelief = {
@@ -223,7 +231,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
         createdAt: now,
         updatedAt: now,
       };
-      setBeliefs(prev => [newBelief, ...prev]);
+      setBeliefs((prev) => [newBelief, ...prev]);
     }
 
     setShowModal(false);
@@ -234,7 +242,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
    * Handle delete
    */
   const handleDeleteBelief = useCallback((beliefId: string) => {
-    setBeliefs(prev => prev.filter(b => b.id !== beliefId));
+    setBeliefs((prev) => prev.filter((b) => b.id !== beliefId));
   }, []);
 
   /**
@@ -242,8 +250,8 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
    */
   const stats = {
     total: beliefs.length,
-    restructured: beliefs.filter(b => b.isComplete).length,
-    inProgress: beliefs.filter(b => !b.isComplete).length,
+    restructured: beliefs.filter((b) => b.isComplete).length,
+    inProgress: beliefs.filter((b) => !b.isComplete).length,
   };
 
   /**
@@ -349,7 +357,12 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
 
         {/* How It Works Card */}
         <View style={styles.howItWorksCard}>
@@ -363,14 +376,18 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
             </View>
             <Text style={styles.processArrow}>{'\u2192'}</Text>
             <View style={styles.processStep}>
-              <View style={[styles.processIcon, { backgroundColor: `${colors.dark.accentTeal}30` }]}>
+              <View
+                style={[styles.processIcon, { backgroundColor: `${colors.dark.accentTeal}30` }]}
+              >
                 <Text style={styles.processEmoji}>{'\uD83D\uDD0D'}</Text>
               </View>
               <Text style={styles.processLabel}>Challenge</Text>
             </View>
             <Text style={styles.processArrow}>{'\u2192'}</Text>
             <View style={styles.processStep}>
-              <View style={[styles.processIcon, { backgroundColor: `${colors.dark.accentGreen}30` }]}>
+              <View
+                style={[styles.processIcon, { backgroundColor: `${colors.dark.accentGreen}30` }]}
+              >
                 <Text style={styles.processEmoji}>✨</Text>
               </View>
               <Text style={styles.processLabel}>Reframe</Text>
@@ -390,7 +407,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
               </Text>
             </View>
           ) : (
-            beliefs.map(belief => (
+            beliefs.map((belief) => (
               <BeliefCard
                 key={belief.id}
                 belief={belief}
@@ -412,12 +429,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
       </ExerciseScreenLayout>
 
       {/* Floating Action Button */}
-      <Animated.View
-        style={[
-          styles.fabContainer,
-          { transform: [{ scale: fabScale }] },
-        ]}
-      >
+      <Animated.View style={[styles.fabContainer, { transform: [{ scale: fabScale }] }]}>
         <TouchableOpacity
           style={styles.fab}
           onPress={handleAddBelief}
@@ -476,8 +488,7 @@ const LimitingBeliefsScreen: React.FC<Props> = ({ navigation }) => {
                     <View
                       style={[
                         styles.stepLine,
-                        (currentStep === 'evidence' && index === 0) ||
-                        (currentStep === 'new')
+                        (currentStep === 'evidence' && index === 0) || currentStep === 'new'
                           ? styles.stepLineActive
                           : null,
                       ]}

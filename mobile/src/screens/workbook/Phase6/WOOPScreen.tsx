@@ -19,17 +19,13 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-  Alert,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Modal, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
-import WOOPSection, { WOOPSectionType, WOOP_CONFIG } from '../../../components/workbook/WOOPSection';
+import WOOPSection, {
+  WOOPSectionType,
+  WOOP_CONFIG,
+} from '../../../components/workbook/WOOPSection';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -102,26 +98,34 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading: _isLoading } = useWorkbookProgress(6, WORKSHEET_IDS.WOOP);
 
   // Prepare form data for auto-save
-  const formData: WOOPFormData = useMemo(() => ({
-    currentWOOP,
-    savedWOOPs,
-  }), [currentWOOP, savedWOOPs]);
+  const formData: WOOPFormData = useMemo(
+    () => ({
+      currentWOOP,
+      savedWOOPs,
+    }),
+    [currentWOOP, savedWOOPs]
+  );
 
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: formData as unknown as Record<string, unknown>,
-    phaseNumber: 6,
-    worksheetId: WORKSHEET_IDS.WOOP,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 2000,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: formData as unknown as Record<string, unknown>,
+      phaseNumber: 6,
+      worksheetId: WORKSHEET_IDS.WOOP,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 2000,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as WOOPFormData;
-      if (data.currentWOOP) setCurrentWOOP(data.currentWOOP);
-      if (data.savedWOOPs) setSavedWOOPs(data.savedWOOPs);
+      if (data.currentWOOP) {
+        setCurrentWOOP(data.currentWOOP);
+      }
+      if (data.savedWOOPs) {
+        setSavedWOOPs(data.savedWOOPs);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -130,7 +134,7 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
    * Handle section value change
    */
   const handleSectionChange = useCallback((section: WOOPSectionType, value: string) => {
-    setCurrentWOOP(prev => ({
+    setCurrentWOOP((prev) => ({
       ...prev,
       [section]: value,
       updatedAt: new Date().toISOString(),
@@ -141,7 +145,7 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
    * Handle section press (expand/collapse)
    */
   const handleSectionPress = useCallback((section: WOOPSectionType) => {
-    setActiveSection(prev => prev === section ? section : section);
+    setActiveSection((prev) => (prev === section ? section : section));
   }, []);
 
   /**
@@ -176,15 +180,13 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
    * Save WOOP plan
    */
   const handleSaveWOOP = useCallback(() => {
-    const isComplete = currentWOOP.wish && currentWOOP.outcome &&
-                       currentWOOP.obstacle && currentWOOP.plan;
+    const isComplete =
+      currentWOOP.wish && currentWOOP.outcome && currentWOOP.obstacle && currentWOOP.plan;
 
     if (!isComplete) {
-      Alert.alert(
-        'Incomplete WOOP',
-        'Please complete all four sections before saving.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Incomplete WOOP', 'Please complete all four sections before saving.', [
+        { text: 'OK' },
+      ]);
       return;
     }
 
@@ -192,12 +194,10 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
 
     if (editingWOOPId) {
       // Update existing
-      setSavedWOOPs(prev => prev.map(w =>
-        w.id === editingWOOPId ? currentWOOP : w
-      ));
+      setSavedWOOPs((prev) => prev.map((w) => (w.id === editingWOOPId ? currentWOOP : w)));
     } else {
       // Save new
-      setSavedWOOPs(prev => [currentWOOP, ...prev]);
+      setSavedWOOPs((prev) => [currentWOOP, ...prev]);
     }
 
     // Reset form
@@ -205,11 +205,7 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
     setActiveSection('wish');
     setEditingWOOPId(null);
 
-    Alert.alert(
-      'WOOP Saved!',
-      'Your WOOP plan has been saved successfully.',
-      [{ text: 'Great!' }]
-    );
+    Alert.alert('WOOP Saved!', 'Your WOOP plan has been saved successfully.', [{ text: 'Great!' }]);
   }, [currentWOOP, editingWOOPId]);
 
   /**
@@ -226,21 +222,17 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
    * Delete WOOP plan
    */
   const handleDeleteWOOP = useCallback((woopId: string) => {
-    Alert.alert(
-      'Delete WOOP',
-      'Are you sure you want to delete this WOOP plan?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            setSavedWOOPs(prev => prev.filter(w => w.id !== woopId));
-          },
+    Alert.alert('Delete WOOP', 'Are you sure you want to delete this WOOP plan?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          setSavedWOOPs((prev) => prev.filter((w) => w.id !== woopId));
         },
-      ]
-    );
+      },
+    ]);
   }, []);
 
   /**
@@ -248,37 +240,35 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleCompleteWOOP = useCallback((woopId: string) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setSavedWOOPs(prev => prev.map(w =>
-      w.id === woopId
-        ? { ...w, status: 'completed' as const, updatedAt: new Date().toISOString() }
-        : w
-    ));
+    setSavedWOOPs((prev) =>
+      prev.map((w) =>
+        w.id === woopId
+          ? { ...w, status: 'completed' as const, updatedAt: new Date().toISOString() }
+          : w
+      )
+    );
   }, []);
 
   /**
    * Clear current WOOP
    */
   const handleClearWOOP = useCallback(() => {
-    const hasContent = currentWOOP.wish || currentWOOP.outcome ||
-                      currentWOOP.obstacle || currentWOOP.plan;
+    const hasContent =
+      currentWOOP.wish || currentWOOP.outcome || currentWOOP.obstacle || currentWOOP.plan;
 
     if (hasContent) {
-      Alert.alert(
-        'Clear WOOP?',
-        'This will clear all your current entries. Continue?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Clear',
-            style: 'destructive',
-            onPress: () => {
-              setCurrentWOOP(createEmptyWOOP());
-              setActiveSection('wish');
-              setEditingWOOPId(null);
-            },
+      Alert.alert('Clear WOOP?', 'This will clear all your current entries. Continue?', [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: () => {
+            setCurrentWOOP(createEmptyWOOP());
+            setActiveSection('wish');
+            setEditingWOOPId(null);
           },
-        ]
-      );
+        },
+      ]);
     }
   }, [currentWOOP]);
 
@@ -287,10 +277,18 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
    */
   const calculateProgress = (): number => {
     let completed = 0;
-    if ((currentWOOP.wish?.trim()?.length ?? 0) > 10) completed++;
-    if ((currentWOOP.outcome?.trim()?.length ?? 0) > 10) completed++;
-    if ((currentWOOP.obstacle?.trim()?.length ?? 0) > 10) completed++;
-    if ((currentWOOP.plan?.trim()?.length ?? 0) > 10) completed++;
+    if ((currentWOOP.wish?.trim()?.length ?? 0) > 10) {
+      completed++;
+    }
+    if ((currentWOOP.outcome?.trim()?.length ?? 0) > 10) {
+      completed++;
+    }
+    if ((currentWOOP.obstacle?.trim()?.length ?? 0) > 10) {
+      completed++;
+    }
+    if ((currentWOOP.plan?.trim()?.length ?? 0) > 10) {
+      completed++;
+    }
     return completed;
   };
 
@@ -312,14 +310,14 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
           onComplete: () => navigation.goBack(),
         }}
       >
-      {/* Header */}
-      <ExerciseHeader
-        image={Phase6ExerciseImages.woop}
-        title="WOOP Method"
-        subtitle="Turn your wishes into reality with mental contrasting"
-        progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+        {/* Header */}
+        <ExerciseHeader
+          image={Phase6ExerciseImages.woop}
+          title="WOOP Method"
+          subtitle="Turn your wishes into reality with mental contrasting"
+          progress={savedProgress?.progress || 0}
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Progress Indicator */}
         <View style={styles.progressContainer}>
@@ -345,17 +343,21 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
                       isActive && { borderColor: config.color },
                     ]}
                   >
-                    <Text style={[
-                      styles.progressDotLetter,
-                      isFilled && { color: colors.dark.bgPrimary },
-                    ]}>
+                    <Text
+                      style={[
+                        styles.progressDotLetter,
+                        isFilled && { color: colors.dark.bgPrimary },
+                      ]}
+                    >
                       {config.letter}
                     </Text>
                   </View>
-                  <Text style={[
-                    styles.progressDotLabel,
-                    isActive && { color: colors.dark.textPrimary },
-                  ]}>
+                  <Text
+                    style={[
+                      styles.progressDotLabel,
+                      isActive && { color: colors.dark.textPrimary },
+                    ]}
+                  >
                     {config.title}
                   </Text>
                 </TouchableOpacity>
@@ -377,16 +379,14 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
             testID="saved-woops-button"
           >
             <Text style={styles.savedButtonIcon}>{'\uD83D\uDCCB'}</Text>
-            <Text style={styles.savedButtonText}>
-              My WOOPs ({savedWOOPs.length})
-            </Text>
+            <Text style={styles.savedButtonText}>My WOOPs ({savedWOOPs.length})</Text>
             <Text style={styles.chevron}>{'\u203A'}</Text>
           </TouchableOpacity>
         )}
 
         {/* WOOP Sections */}
         <View style={styles.sectionsContainer}>
-          {sections.map(section => (
+          {sections.map((section) => (
             <WOOPSection
               key={section}
               section={section}
@@ -440,10 +440,9 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
               accessibilityState={{ disabled: !isComplete }}
               testID="save-woop"
             >
-              <Text style={[
-                styles.navButtonPrimaryText,
-                !isComplete && styles.navButtonTextDisabled,
-              ]}>
+              <Text
+                style={[styles.navButtonPrimaryText, !isComplete && styles.navButtonTextDisabled]}
+              >
                 Save WOOP {'\u2713'}
               </Text>
             </TouchableOpacity>
@@ -467,8 +466,8 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.explanationCard}>
           <Text style={styles.explanationTitle}>How WOOP Works</Text>
           <Text style={styles.explanationText}>
-            WOOP combines positive thinking (Wish + Outcome) with realistic planning
-            (Obstacle + Plan) to dramatically increase your chances of success.
+            WOOP combines positive thinking (Wish + Outcome) with realistic planning (Obstacle +
+            Plan) to dramatically increase your chances of success.
           </Text>
           <View style={styles.explanationSteps}>
             {[
@@ -478,10 +477,12 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
               { letter: 'P', text: 'Make an if-then Plan to overcome it' },
             ].map((step, index) => (
               <View key={index} style={styles.stepRow}>
-                <View style={[
-                  styles.stepBadge,
-                  { backgroundColor: Object.values(WOOP_CONFIG)[index].color },
-                ]}>
+                <View
+                  style={[
+                    styles.stepBadge,
+                    { backgroundColor: Object.values(WOOP_CONFIG)[index].color },
+                  ]}
+                >
                   <Text style={styles.stepLetter}>{step.letter}</Text>
                 </View>
                 <Text style={styles.stepText}>{step.text}</Text>
@@ -492,14 +493,17 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Inspirational Quote */}
         <View style={styles.quoteContainer}>
-          <Text style={styles.quoteText}>
-            "The obstacle is the way."
-          </Text>
+          <Text style={styles.quoteText}>"The obstacle is the way."</Text>
           <Text style={styles.quoteAuthor}>- Marcus Aurelius</Text>
         </View>
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
       </ExerciseScreenLayout>
 
       {/* Saved WOOPs Modal */}
@@ -523,13 +527,10 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
           </View>
 
           <ScrollView style={styles.savedList}>
-            {savedWOOPs.map(woop => (
+            {savedWOOPs.map((woop) => (
               <View
                 key={woop.id}
-                style={[
-                  styles.savedCard,
-                  woop.status === 'completed' && styles.savedCardCompleted,
-                ]}
+                style={[styles.savedCard, woop.status === 'completed' && styles.savedCardCompleted]}
               >
                 <TouchableOpacity
                   onPress={() => handleEditWOOP(woop)}
@@ -551,17 +552,19 @@ const WOOPScreen: React.FC<Props> = ({ navigation }) => {
 
                   {/* WOOP Preview */}
                   <View style={styles.savedCardPreview}>
-                    {(['wish', 'outcome', 'obstacle', 'plan'] as WOOPSectionType[]).map(section => {
-                      const config = WOOP_CONFIG[section];
-                      return (
-                        <View key={section} style={styles.previewItem}>
-                          <View style={[styles.previewDot, { backgroundColor: config.color }]} />
-                          <Text style={styles.previewText} numberOfLines={1}>
-                            {woop[section] || 'Not filled'}
-                          </Text>
-                        </View>
-                      );
-                    })}
+                    {(['wish', 'outcome', 'obstacle', 'plan'] as WOOPSectionType[]).map(
+                      (section) => {
+                        const config = WOOP_CONFIG[section];
+                        return (
+                          <View key={section} style={styles.previewItem}>
+                            <View style={[styles.previewDot, { backgroundColor: config.color }]} />
+                            <Text style={styles.previewText} numberOfLines={1}>
+                              {woop[section] || 'Not filled'}
+                            </Text>
+                          </View>
+                        );
+                      }
+                    )}
                   </View>
                 </TouchableOpacity>
 

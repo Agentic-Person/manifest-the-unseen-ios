@@ -18,7 +18,11 @@ import { Text } from '../../../components';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { PhaseImages, Phase1ExerciseImages } from '../../../assets';
-import { usePhaseExercises, type ExerciseConfig, type ExerciseWithProgress } from '../../../hooks/usePhaseExercises';
+import {
+  usePhaseExercises,
+  type ExerciseConfig,
+  type ExerciseWithProgress,
+} from '../../../hooks/usePhaseExercises';
 import { ReviewWithGuruButton } from '../../../components/guru/ReviewWithGuruButton';
 
 /**
@@ -115,10 +119,7 @@ const ExerciseCard: React.FC<{
 }> = ({ exercise, onPress }) => {
   return (
     <TouchableOpacity
-      style={[
-        styles.exerciseCard,
-        exercise.isCompleted && styles.exerciseCardCompleted,
-      ]}
+      style={[styles.exerciseCard, exercise.isCompleted && styles.exerciseCardCompleted]}
       onPress={onPress}
       activeOpacity={0.8}
       accessibilityRole="button"
@@ -142,10 +143,7 @@ const ExerciseCard: React.FC<{
               style={styles.exerciseProgressGradient}
             >
               <View
-                style={[
-                  styles.exerciseProgressUnfilled,
-                  { width: `${100 - exercise.progress}%` },
-                ]}
+                style={[styles.exerciseProgressUnfilled, { width: `${100 - exercise.progress}%` }]}
               />
             </LinearGradient>
           </View>
@@ -223,7 +221,7 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
         navigation.navigate('ThoughtAwareness');
         break;
       default:
-        console.log('Unknown exercise:', exerciseId);
+        break;
     }
   };
   // Show loading state while fetching progress
@@ -241,13 +239,11 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
       <View style={styles.errorContainer}>
         <Text style={styles.errorTitle}>Unable to Load Exercises</Text>
         <Text style={styles.errorMessage}>
-          {error instanceof Error ? error.message : 'Something went wrong while loading your progress.'}
+          {error instanceof Error
+            ? error.message
+            : 'Something went wrong while loading your progress.'}
         </Text>
-        <TouchableOpacity
-          style={styles.retryButton}
-          onPress={() => refetch()}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={styles.retryButton} onPress={() => refetch()} activeOpacity={0.8}>
           <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
       </View>
@@ -263,11 +259,7 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
       <View style={styles.newHeader}>
         {/* Centered Image with Golden Border */}
         <View style={styles.headerImageContainer}>
-          <Image
-            source={PhaseImages.phase1}
-            style={styles.headerImage}
-            resizeMode="cover"
-          />
+          <Image source={PhaseImages.phase1} style={styles.headerImage} resizeMode="cover" />
         </View>
 
         {/* Centered Title */}
@@ -291,10 +283,7 @@ const Phase1Dashboard: React.FC<Props> = ({ navigation }) => {
           >
             {/* Unfilled overlay from right */}
             <View
-              style={[
-                styles.gradientProgressUnfilled,
-                { width: `${100 - overallProgress}%` },
-              ]}
+              style={[styles.gradientProgressUnfilled, { width: `${100 - overallProgress}%` }]}
             />
           </LinearGradient>
         </View>

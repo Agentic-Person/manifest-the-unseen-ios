@@ -25,9 +25,15 @@ export interface GradientProgressBarProps {
  * Red (0-25%) -> Orange (26-50%) -> Yellow (51-75%) -> Green (76-100%)
  */
 export function getProgressColor(percentage: number): string {
-  if (percentage <= 25) return '#dc2626'; // Red
-  if (percentage <= 50) return '#c9a227'; // Orange
-  if (percentage <= 75) return '#8b6914'; // Yellow/Amber
+  if (percentage <= 25) {
+    return '#dc2626';
+  } // Red
+  if (percentage <= 50) {
+    return '#c9a227';
+  } // Orange
+  if (percentage <= 75) {
+    return '#8b6914';
+  } // Yellow/Amber
   return '#2d5a4a'; // Green
 }
 
@@ -66,11 +72,7 @@ export const GradientProgressBar: React.FC<GradientProgressBarProps> = ({
         </View>
         {showPercentage && (
           <Text
-            style={[
-              styles.percentage,
-              compact && styles.percentageCompact,
-              { color: fillColor },
-            ]}
+            style={[styles.percentage, compact && styles.percentageCompact, { color: fillColor }]}
           >
             {Math.round(clampedProgress)}%
           </Text>

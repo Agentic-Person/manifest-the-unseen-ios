@@ -12,12 +12,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-} from 'react-native';
+import { View, StyleSheet, Text, Pressable } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors from APP-DESIGN.md
@@ -122,7 +117,9 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
         </View>
         <View style={styles.compactContent}>
           <Text style={styles.compactPhaseNumber}>Phase {phaseNumber}</Text>
-          <Text style={styles.compactPhaseName} numberOfLines={1}>{phaseName}</Text>
+          <Text style={styles.compactPhaseName} numberOfLines={1}>
+            {phaseName}
+          </Text>
         </View>
         <View style={styles.compactProgressContainer}>
           <Text style={[styles.compactPercentage, isComplete && styles.completedText]}>
@@ -181,14 +178,14 @@ export const PhaseProgressCard: React.FC<PhaseProgressCardProps> = ({
       {keyInsight && (
         <View style={styles.insightContainer}>
           <Text style={styles.insightLabel}>Key Insight:</Text>
-          <Text style={styles.insightText} numberOfLines={2}>"{keyInsight}"</Text>
+          <Text style={styles.insightText} numberOfLines={2}>
+            "{keyInsight}"
+          </Text>
         </View>
       )}
 
       {/* Last Updated */}
-      {lastUpdated && (
-        <Text style={styles.lastUpdated}>Last updated: {lastUpdated}</Text>
-      )}
+      {lastUpdated && <Text style={styles.lastUpdated}>Last updated: {lastUpdated}</Text>}
     </Pressable>
   );
 };

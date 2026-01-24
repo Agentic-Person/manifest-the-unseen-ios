@@ -59,40 +59,22 @@ export const ComponentShowcase: React.FC = () => {
 
         {/* Price Toggle */}
         <Section title="PriceToggle">
-          <PriceToggle
-            selectedPeriod={selectedPeriod}
-            onToggle={setSelectedPeriod}
-          />
+          <PriceToggle selectedPeriod={selectedPeriod} onToggle={setSelectedPeriod} />
         </Section>
 
         {/* Purchase Buttons */}
         <Section title="PurchaseButton - States">
           <View style={{ gap: spacing.md }}>
-            <PurchaseButton
-              onPress={handlePurchase}
-              label="Start Free Trial"
-            />
-            <PurchaseButton
-              onPress={handlePurchase}
-              isLoading={true}
-              label="Processing..."
-            />
-            <PurchaseButton
-              onPress={handlePurchase}
-              isCurrentTier={true}
-              label="Current Plan"
-            />
+            <PurchaseButton onPress={handlePurchase} label="Start Free Trial" />
+            <PurchaseButton onPress={handlePurchase} isLoading={true} label="Processing..." />
+            <PurchaseButton onPress={handlePurchase} isCurrentTier={true} label="Current Plan" />
             <PurchaseButton
               onPress={handlePurchase}
               isCurrentTier={true}
               inTrial={true}
               label="Current Trial"
             />
-            <PurchaseButton
-              onPress={handlePurchase}
-              disabled={true}
-              label="Disabled"
-            />
+            <PurchaseButton onPress={handlePurchase} disabled={true} label="Disabled" />
           </View>
         </Section>
 

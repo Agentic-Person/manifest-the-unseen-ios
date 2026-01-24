@@ -18,13 +18,7 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
 import GoalCard, {
@@ -94,13 +88,14 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
   const fabScale = useRef(new Animated.Value(1)).current;
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: { goals, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
-    phaseNumber: 3,
-    worksheetId: WORKSHEET_IDS.SMART_GOALS,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: { goals, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+      phaseNumber: 3,
+      worksheetId: WORKSHEET_IDS.SMART_GOALS,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   const hasLoadedInitialData = useRef(false);
 
@@ -109,7 +104,9 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as SMARTGoalsData;
-      if (Array.isArray(data.goals)) setGoals(data.goals);
+      if (Array.isArray(data.goals)) {
+        setGoals(data.goals);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -150,47 +147,46 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Handle saving a goal (create or update)
    */
-  const handleSaveGoal = useCallback((goalData: Omit<SMARTGoal, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = new Date().toISOString();
+  const handleSaveGoal = useCallback(
+    (goalData: Omit<SMARTGoal, 'id' | 'createdAt' | 'updatedAt'>) => {
+      const now = new Date().toISOString();
 
-    if (editingGoal) {
-      // Update existing goal
-      setGoals(prev => prev.map(g =>
-        g.id === editingGoal.id
-          ? { ...g, ...goalData, updatedAt: now }
-          : g
-      ));
-    } else {
-      // Create new goal
-      const newGoal: SMARTGoal = {
-        ...goalData,
-        id: generateId(),
-        createdAt: now,
-        updatedAt: now,
-      };
-      setGoals(prev => [newGoal, ...prev]);
-    }
+      if (editingGoal) {
+        // Update existing goal
+        setGoals((prev) =>
+          prev.map((g) => (g.id === editingGoal.id ? { ...g, ...goalData, updatedAt: now } : g))
+        );
+      } else {
+        // Create new goal
+        const newGoal: SMARTGoal = {
+          ...goalData,
+          id: generateId(),
+          createdAt: now,
+          updatedAt: now,
+        };
+        setGoals((prev) => [newGoal, ...prev]);
+      }
 
-    setShowForm(false);
-    setEditingGoal(null);
-  }, [editingGoal]);
+      setShowForm(false);
+      setEditingGoal(null);
+    },
+    [editingGoal]
+  );
 
   /**
    * Handle deleting a goal
    */
   const handleDeleteGoal = useCallback((goalId: string) => {
-    setGoals(prev => prev.filter(g => g.id !== goalId));
+    setGoals((prev) => prev.filter((g) => g.id !== goalId));
   }, []);
 
   /**
    * Handle status change
    */
   const handleStatusChange = useCallback((goalId: string, status: GoalStatus) => {
-    setGoals(prev => prev.map(g =>
-      g.id === goalId
-        ? { ...g, status, updatedAt: new Date().toISOString() }
-        : g
-    ));
+    setGoals((prev) =>
+      prev.map((g) => (g.id === goalId ? { ...g, status, updatedAt: new Date().toISOString() } : g))
+    );
 
     // Celebration haptic for completed goals
     if (status === 'completed') {
@@ -201,17 +197,16 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Filter goals by category
    */
-  const filteredGoals = filterCategory === 'all'
-    ? goals
-    : goals.filter(g => g.category === filterCategory);
+  const filteredGoals =
+    filterCategory === 'all' ? goals : goals.filter((g) => g.category === filterCategory);
 
   /**
    * Calculate stats
    */
   const stats = {
     total: goals.length,
-    completed: goals.filter(g => g.status === 'completed').length,
-    inProgress: goals.filter(g => g.status === 'in_progress').length,
+    completed: goals.filter((g) => g.status === 'completed').length,
+    inProgress: goals.filter((g) => g.status === 'in_progress').length,
   };
 
   return (
@@ -234,8 +229,8 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
           title="SMART Goals"
           subtitle="Define clear, actionable goals using the SMART framework"
           progress={savedProgress?.progress || 0}
-        isCompleted={savedProgress?.completed || false}
-      />
+          isCompleted={savedProgress?.completed || false}
+        />
 
         {/* Stats Card */}
         <View style={styles.statsCard}>
@@ -260,7 +255,12 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
 
         {/* Category Filter */}
         <View style={styles.filterContainer}>
@@ -270,10 +270,7 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
             contentContainerStyle={styles.filterScroll}
           >
             <TouchableOpacity
-              style={[
-                styles.filterChip,
-                filterCategory === 'all' && styles.filterChipActive,
-              ]}
+              style={[styles.filterChip, filterCategory === 'all' && styles.filterChipActive]}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setFilterCategory('all');
@@ -282,15 +279,14 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
               accessibilityState={{ selected: filterCategory === 'all' }}
               testID="filter-all"
             >
-              <Text style={[
-                styles.filterText,
-                filterCategory === 'all' && styles.filterTextActive,
-              ]}>
+              <Text
+                style={[styles.filterText, filterCategory === 'all' && styles.filterTextActive]}
+              >
                 All
               </Text>
             </TouchableOpacity>
 
-            {(Object.keys(CATEGORY_NAMES) as GoalCategory[]).map(cat => (
+            {(Object.keys(CATEGORY_NAMES) as GoalCategory[]).map((cat) => (
               <TouchableOpacity
                 key={cat}
                 style={[
@@ -306,14 +302,10 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
                 accessibilityState={{ selected: filterCategory === cat }}
                 testID={`filter-${cat}`}
               >
-                <View style={[
-                  styles.filterDot,
-                  { backgroundColor: CATEGORY_COLORS[cat] },
-                ]} />
-                <Text style={[
-                  styles.filterText,
-                  filterCategory === cat && styles.filterTextActive,
-                ]}>
+                <View style={[styles.filterDot, { backgroundColor: CATEGORY_COLORS[cat] }]} />
+                <Text
+                  style={[styles.filterText, filterCategory === cat && styles.filterTextActive]}
+                >
                   {CATEGORY_NAMES[cat]}
                 </Text>
               </TouchableOpacity>
@@ -334,7 +326,7 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
               </Text>
             </View>
           ) : (
-            filteredGoals.map(goal => (
+            filteredGoals.map((goal) => (
               <GoalCard
                 key={goal.id}
                 goal={goal}
@@ -357,7 +349,7 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
               { letter: 'A', word: 'Achievable', desc: 'Realistic and attainable' },
               { letter: 'R', word: 'Relevant', desc: 'Aligned with your values' },
               { letter: 'T', word: 'Time-bound', desc: 'Has a deadline' },
-            ].map(item => (
+            ].map((item) => (
               <View key={item.letter} style={styles.infoRow}>
                 <View style={styles.infoLetterBadge}>
                   <Text style={styles.infoLetter}>{item.letter}</Text>
@@ -373,20 +365,13 @@ const SMARTGoalsScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Inspirational Quote */}
         <View style={styles.quoteContainer}>
-          <Text style={styles.quoteText}>
-            "A goal without a plan is just a wish."
-          </Text>
+          <Text style={styles.quoteText}>"A goal without a plan is just a wish."</Text>
           <Text style={styles.quoteAuthor}>- Antoine de Saint-Exupery</Text>
         </View>
       </ExerciseScreenLayout>
 
       {/* Floating Action Button */}
-      <Animated.View
-        style={[
-          styles.fabContainer,
-          { transform: [{ scale: fabScale }] },
-        ]}
-      >
+      <Animated.View style={[styles.fabContainer, { transform: [{ scale: fabScale }] }]}>
         <TouchableOpacity
           style={styles.fab}
           onPress={handleAddGoal}

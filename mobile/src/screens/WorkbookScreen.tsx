@@ -5,7 +5,16 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, ImageSourcePropType, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  ImageSourcePropType,
+  ActivityIndicator,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import type { WorkbookStackScreenProps, WorkbookStackParamList } from '../types/navigation';
@@ -28,16 +37,51 @@ interface Phase {
 }
 
 const PHASES: Phase[] = [
-  { id: 1, name: 'Self-Evaluation', description: 'Assess your current state', image: PhaseImages.phase1 },
-  { id: 2, name: 'Values & Vision', description: 'Define your core values', image: PhaseImages.phase2 },
+  {
+    id: 1,
+    name: 'Self-Evaluation',
+    description: 'Assess your current state',
+    image: PhaseImages.phase1,
+  },
+  {
+    id: 2,
+    name: 'Values & Vision',
+    description: 'Define your core values',
+    image: PhaseImages.phase2,
+  },
   { id: 3, name: 'Goal Setting', description: 'Set SMART goals', image: PhaseImages.phase3 },
-  { id: 4, name: 'Facing Fears', description: 'Overcome limiting beliefs', image: PhaseImages.phase4 },
-  { id: 5, name: 'Self-Love & Care', description: 'Cultivate self-compassion', image: PhaseImages.phase5 },
-  { id: 6, name: 'Manifestation', description: 'Learn manifestation techniques', image: PhaseImages.phase6 },
+  {
+    id: 4,
+    name: 'Facing Fears',
+    description: 'Overcome limiting beliefs',
+    image: PhaseImages.phase4,
+  },
+  {
+    id: 5,
+    name: 'Self-Love & Care',
+    description: 'Cultivate self-compassion',
+    image: PhaseImages.phase5,
+  },
+  {
+    id: 6,
+    name: 'Manifestation',
+    description: 'Learn manifestation techniques',
+    image: PhaseImages.phase6,
+  },
   { id: 7, name: 'Gratitude', description: 'Practice daily gratitude', image: PhaseImages.phase7 },
-  { id: 8, name: 'Envy to Inspiration', description: 'Transform envy positively', image: PhaseImages.phase8 },
+  {
+    id: 8,
+    name: 'Envy to Inspiration',
+    description: 'Transform envy positively',
+    image: PhaseImages.phase8,
+  },
   { id: 9, name: 'Trust & Surrender', description: 'Let go of control', image: PhaseImages.phase9 },
-  { id: 10, name: 'Letting Go', description: 'Release what no longer serves', image: PhaseImages.phase10 },
+  {
+    id: 10,
+    name: 'Letting Go',
+    description: 'Release what no longer serves',
+    image: PhaseImages.phase10,
+  },
 ];
 
 const WorkbookScreen = ({ navigation }: Props) => {
@@ -66,12 +110,9 @@ const WorkbookScreen = ({ navigation }: Props) => {
    * Get required tier for locked phase
    * Simplified: All phases need at least Novice subscription
    */
-  const getRequiredTier = useCallback(
-    (): 'novice' | 'enlightenment' => {
-      return 'novice'; // All phases are unlocked with Novice
-    },
-    []
-  );
+  const getRequiredTier = useCallback((): 'novice' | 'enlightenment' => {
+    return 'novice'; // All phases are unlocked with Novice
+  }, []);
 
   // Helper to get phase progress
   const getPhaseProgress = (phaseNumber: number) => {
@@ -82,9 +123,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <Text style={styles.title}>Workbook Journey</Text>
-        <Text style={styles.subtitle}>
-          Your transformation through 10 powerful phases
-        </Text>
+        <Text style={styles.subtitle}>Your transformation through 10 powerful phases</Text>
       </View>
 
       <View style={styles.progressCard}>
@@ -94,15 +133,15 @@ const WorkbookScreen = ({ navigation }: Props) => {
         ) : (
           <>
             <View style={styles.overallProgressRow}>
-              <Text style={[styles.overallPercentage, { color: getProgressColor(overallPercentage) }]}>
+              <Text
+                style={[styles.overallPercentage, { color: getProgressColor(overallPercentage) }]}
+              >
                 {overallPercentage}%
               </Text>
               <Text style={styles.overallLabel}>Journey Complete</Text>
             </View>
             <GradientProgressBar progress={overallPercentage} height={10} showPercentage={false} />
-            <Text style={styles.motivationalText}>
-              {getProgressMessage(overallPercentage)}
-            </Text>
+            <Text style={styles.motivationalText}>{getProgressMessage(overallPercentage)}</Text>
           </>
         )}
       </View>
@@ -144,7 +183,9 @@ const WorkbookScreen = ({ navigation }: Props) => {
                   10: 'Phase10Dashboard',
                 };
                 const screenName = dashboardMap[phase.id];
-                if (screenName) (navigation.navigate as any)(screenName);
+                if (screenName) {
+                  (navigation.navigate as any)(screenName);
+                }
               }}
               disabled={!isUnlocked}
               activeOpacity={0.8}
@@ -154,7 +195,12 @@ const WorkbookScreen = ({ navigation }: Props) => {
                   source={phase.image}
                   style={styles.phaseImage}
                   resizeMode="cover"
-                  onError={(e) => console.warn(`WorkbookScreen phase ${phase.id} image failed:`, e.nativeEvent.error)}
+                  onError={(e) =>
+                    console.warn(
+                      `WorkbookScreen phase ${phase.id} image failed:`,
+                      e.nativeEvent.error
+                    )
+                  }
                   onLoad={() => console.log(`WorkbookScreen phase ${phase.id} image loaded`)}
                 />
                 <LinearGradient
@@ -191,7 +237,9 @@ const WorkbookScreen = ({ navigation }: Props) => {
                   <Text style={[styles.phaseName, !isUnlocked && styles.phaseNameLocked]}>
                     {phase.name}
                   </Text>
-                  <Text style={[styles.phaseDescription, !isUnlocked && styles.phaseDescriptionLocked]}>
+                  <Text
+                    style={[styles.phaseDescription, !isUnlocked && styles.phaseDescriptionLocked]}
+                  >
                     {phase.description}
                   </Text>
                 </View>
@@ -201,11 +249,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
               {/* Phase Progress Bar - only show if started and not 100% complete */}
               {phaseProgress?.hasStarted && phaseProgress.percentage < 100 && (
                 <View style={styles.phaseProgressContainer}>
-                  <GradientProgressBar
-                    progress={phaseProgress.percentage}
-                    height={6}
-                    compact
-                  />
+                  <GradientProgressBar progress={phaseProgress.percentage} height={6} compact />
                 </View>
               )}
 
@@ -231,7 +275,7 @@ const WorkbookScreen = ({ navigation }: Props) => {
         visible={showUpgradePrompt}
         onClose={() => setShowUpgradePrompt(false)}
         title={`Unlock Phase ${lockedPhaseNumber}`}
-        description={`Phase ${lockedPhaseNumber} (${PHASES.find(p => p.id === lockedPhaseNumber)?.name || ''}) is part of your transformation journey. Subscribe to access all 10 phases.`}
+        description={`Phase ${lockedPhaseNumber} (${PHASES.find((p) => p.id === lockedPhaseNumber)?.name || ''}) is part of your transformation journey. Subscribe to access all 10 phases.`}
         requiredTier={getRequiredTier()}
         benefits={TIER_PRICING[getRequiredTier()].features}
       />

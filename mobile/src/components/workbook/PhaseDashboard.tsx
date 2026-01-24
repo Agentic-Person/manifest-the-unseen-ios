@@ -6,7 +6,15 @@
  */
 
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ImageSourcePropType,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { colors, spacing, borderRadius } from '../../theme';
@@ -69,18 +77,11 @@ export const PhaseDashboard: React.FC<PhaseDashboardProps> = ({
       <View style={styles.progressCard}>
         <View style={styles.progressCardHeader}>
           <Text style={styles.progressCardTitle}>Your Progress</Text>
-          <Text style={styles.progressCardPercentage}>
-            {Math.round(overallProgress)}%
-          </Text>
+          <Text style={styles.progressCardPercentage}>{Math.round(overallProgress)}%</Text>
         </View>
         <View style={styles.progressBarContainer}>
           <View style={styles.progressTrack}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${overallProgress}%` },
-              ]}
-            />
+            <View style={[styles.progressFill, { width: `${overallProgress}%` }]} />
           </View>
         </View>
         <Text style={styles.progressCardSubtext}>
@@ -94,10 +95,7 @@ export const PhaseDashboard: React.FC<PhaseDashboardProps> = ({
         {exercises.map((exercise) => (
           <TouchableOpacity
             key={exercise.id}
-            style={[
-              styles.exerciseCard,
-              exercise.isCompleted && styles.exerciseCompleted,
-            ]}
+            style={[styles.exerciseCard, exercise.isCompleted && styles.exerciseCompleted]}
             onPress={() => handleExercisePress(exercise.id)}
             activeOpacity={0.7}
             accessibilityRole="button"
@@ -111,9 +109,7 @@ export const PhaseDashboard: React.FC<PhaseDashboardProps> = ({
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseName}>{exercise.name}</Text>
               {exercise.description && (
-                <Text style={styles.exerciseDescription}>
-                  {exercise.description}
-                </Text>
+                <Text style={styles.exerciseDescription}>{exercise.description}</Text>
               )}
               <Text style={styles.exerciseTime}>{exercise.estimatedTime}</Text>
             </View>

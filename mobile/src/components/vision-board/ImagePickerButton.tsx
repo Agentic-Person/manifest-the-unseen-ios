@@ -10,14 +10,7 @@
  */
 
 import React, { useState } from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  View,
-} from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, Alert, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 
@@ -49,7 +42,9 @@ const ImagePickerButton: React.FC<ImagePickerButtonProps> = ({
    * Request permissions and open image picker
    */
   const handlePickImage = async () => {
-    if (disabled || isLoading) return;
+    if (disabled || isLoading) {
+      return;
+    }
 
     setIsLoading(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -83,11 +78,7 @@ const ImagePickerButton: React.FC<ImagePickerButtonProps> = ({
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert(
-        'Error',
-        'Failed to pick image. Please try again.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Error', 'Failed to pick image. Please try again.', [{ text: 'OK' }]);
     } finally {
       setIsLoading(false);
     }

@@ -17,13 +17,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { colors, typography, spacing, fontWeights, borderRadius } from '../../theme';
 
@@ -74,7 +68,9 @@ export const RatingScale: React.FC<RatingScaleProps> = ({
   const values = Array.from({ length: scale + 1 }, (_, i) => i);
 
   const handlePress = (newValue: number) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
 
     if (enableHaptic) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

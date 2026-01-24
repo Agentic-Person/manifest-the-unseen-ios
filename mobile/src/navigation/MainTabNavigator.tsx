@@ -13,7 +13,6 @@ import { Ionicons } from '@expo/vector-icons';
 import type { MainTabParamList } from '../types/navigation';
 import { colors } from '../theme';
 import { BackgroundImages } from '../assets';
-import { ClickableHeaderLogo } from '../components';
 
 // Import screen components
 import HomeScreen from '../screens/HomeScreen';
@@ -92,10 +91,7 @@ export const MainTabNavigator = () => {
           tabBarIcon: ({ focused }) => (
             <Image
               source={BackgroundImages.home}
-              style={[
-                styles.tabIcon,
-                { opacity: focused ? 1 : 0.5 },
-              ]}
+              style={[styles.tabIcon, { opacity: focused ? 1 : 0.5 }]}
               resizeMode="contain"
             />
           ),
@@ -112,10 +108,7 @@ export const MainTabNavigator = () => {
           tabBarIcon: ({ focused }) => (
             <Image
               source={BackgroundImages.workbook}
-              style={[
-                styles.tabIcon,
-                { opacity: focused ? 1 : 0.5 },
-              ]}
+              style={[styles.tabIcon, { opacity: focused ? 1 : 0.5 }]}
               resizeMode="contain"
             />
           ),
@@ -132,10 +125,7 @@ export const MainTabNavigator = () => {
           tabBarIcon: ({ focused }) => (
             <Image
               source={BackgroundImages.meditate}
-              style={[
-                styles.tabIcon,
-                { opacity: focused ? 1 : 0.5 },
-              ]}
+              style={[styles.tabIcon, { opacity: focused ? 1 : 0.5 }]}
               resizeMode="contain"
             />
           ),
@@ -152,10 +142,7 @@ export const MainTabNavigator = () => {
           tabBarIcon: ({ focused }) => (
             <Image
               source={BackgroundImages.guru}
-              style={[
-                styles.tabIcon,
-                { opacity: focused ? 1 : 0.5 },
-              ]}
+              style={[styles.tabIcon, { opacity: focused ? 1 : 0.5 }]}
               resizeMode="contain"
             />
           ),

@@ -16,18 +16,17 @@
  */
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components/Text';
 import { ReframeCard, ReframeData } from '../../../components/workbook/ReframeCard';
 import { EnvyItem } from '../../../components/workbook/EnvyCard';
-import { SaveIndicator, ExerciseHeader, StickyCompletionButton } from '../../../components/workbook';
+import {
+  SaveIndicator,
+  ExerciseHeader,
+  StickyCompletionButton,
+} from '../../../components/workbook';
 import { Phase8ExerciseImages } from '../../../assets';
 import { colors, spacing, borderRadius } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -97,14 +96,18 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
-  const formData: InspirationReframeData = useMemo(() => ({ reframes, envyItems }), [reframes, envyItems]);
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: formData as unknown as Record<string, unknown>,
-    phaseNumber: PHASE_NUMBER,
-    worksheetId: WORKSHEET_IDS.INSPIRATION_REFRAME,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const formData: InspirationReframeData = useMemo(
+    () => ({ reframes, envyItems }),
+    [reframes, envyItems]
+  );
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: formData as unknown as Record<string, unknown>,
+      phaseNumber: PHASE_NUMBER,
+      worksheetId: WORKSHEET_IDS.INSPIRATION_REFRAME,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -145,7 +148,9 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
    * Calculate progress
    */
   const progress = useMemo(() => {
-    if (reframes.length === 0) return { completed: 0, total: 0, percentage: 0 };
+    if (reframes.length === 0) {
+      return { completed: 0, total: 0, percentage: 0 };
+    }
     const completed = reframes.filter((r) => r.isComplete).length;
     return {
       completed,
@@ -237,9 +242,7 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         </Text>
       </View>
       <View style={styles.progressBar}>
-        <View
-          style={[styles.progressFill, { width: `${progress.percentage}%` }]}
-        />
+        <View style={[styles.progressFill, { width: `${progress.percentage}%` }]} />
       </View>
       {progress.percentage === 100 && (
         <Text style={styles.progressComplete}>
@@ -260,8 +263,8 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
         {filter === 'pending'
           ? "Great work! You've transformed all your envies into inspiration."
           : filter === 'complete'
-          ? "No transformations completed yet. Start by filling in what you value and how you can achieve it."
-          : "Add items to your Envy Inventory first, then return here to transform them into inspiration."}
+            ? 'No transformations completed yet. Start by filling in what you value and how you can achieve it.'
+            : 'Add items to your Envy Inventory first, then return here to transform them into inspiration.'}
       </Text>
       {filter === 'all' && (
         <TouchableOpacity
@@ -300,7 +303,12 @@ const InspirationReframeScreen: React.FC<Props> = ({ navigation }) => {
       />
 
       <View style={styles.headerInfo}>
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
       </View>
 
       {/* Progress Bar */}

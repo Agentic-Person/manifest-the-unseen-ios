@@ -5,12 +5,7 @@
  */
 
 import React from 'react';
-import {
-  Pressable,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import { Pressable, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, spacing } from '../../theme';
 
@@ -32,9 +27,15 @@ export const PurchaseButton: React.FC<PurchaseButtonProps> = ({
   label,
 }) => {
   const getButtonLabel = (): string => {
-    if (label) return label;
-    if (isCurrentTier && inTrial) return 'Current Trial';
-    if (isCurrentTier) return 'Current Plan';
+    if (label) {
+      return label;
+    }
+    if (isCurrentTier && inTrial) {
+      return 'Current Trial';
+    }
+    if (isCurrentTier) {
+      return 'Current Plan';
+    }
     return 'Start Free Trial';
   };
 
@@ -44,10 +45,7 @@ export const PurchaseButton: React.FC<PurchaseButtonProps> = ({
     <Pressable
       onPress={onPress}
       disabled={isDisabled || isLoading}
-      style={({ pressed }) => [
-        styles.container,
-        pressed && !isDisabled && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.container, pressed && !isDisabled && styles.pressed]}
       accessibilityRole="button"
       accessibilityState={{ disabled: isDisabled, busy: isLoading }}
     >
@@ -64,14 +62,7 @@ export const PurchaseButton: React.FC<PurchaseButtonProps> = ({
         {isLoading ? (
           <ActivityIndicator color={colors.background.primary} size="small" />
         ) : (
-          <Text
-            style={[
-              styles.text,
-              isDisabled && styles.textDisabled,
-            ]}
-          >
-            {getButtonLabel()}
-          </Text>
+          <Text style={[styles.text, isDisabled && styles.textDisabled]}>{getButtonLabel()}</Text>
         )}
       </LinearGradient>
     </Pressable>

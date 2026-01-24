@@ -150,21 +150,17 @@ export const EnvyCard: React.FC<EnvyCardProps> = ({
    */
   const handleDelete = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      'Delete Envy Item',
-      'Are you sure you want to remove this from your inventory?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            onDelete();
-          },
+    Alert.alert('Delete Envy Item', 'Are you sure you want to remove this from your inventory?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          onDelete();
         },
-      ]
-    );
+      },
+    ]);
   }, [onDelete]);
 
   /**
@@ -195,9 +191,7 @@ export const EnvyCard: React.FC<EnvyCardProps> = ({
         {/* Category Badge */}
         <View style={[styles.categoryBadge, { backgroundColor: `${category.color}25` }]}>
           <Text style={styles.categoryIcon}>{category.icon}</Text>
-          <Text style={[styles.categoryText, { color: category.color }]}>
-            {category.label}
-          </Text>
+          <Text style={[styles.categoryText, { color: category.color }]}>{category.label}</Text>
         </View>
 
         {/* Action Buttons */}
@@ -238,9 +232,7 @@ export const EnvyCard: React.FC<EnvyCardProps> = ({
       </Text>
 
       {/* Trigger */}
-      <Text style={styles.triggerText}>
-        What triggers it: {envy.trigger}
-      </Text>
+      <Text style={styles.triggerText}>What triggers it: {envy.trigger}</Text>
 
       {/* Intensity Slider */}
       <View style={styles.sliderContainer}>
@@ -258,9 +250,7 @@ export const EnvyCard: React.FC<EnvyCardProps> = ({
           {/* Reflection */}
           {envy.reflection && (
             <View style={styles.reflectionContainer}>
-              <Text style={styles.reflectionLabel}>
-                What does this reveal about my desires?
-              </Text>
+              <Text style={styles.reflectionLabel}>What does this reveal about my desires?</Text>
               <Text style={styles.reflectionText}>{envy.reflection}</Text>
             </View>
           )}

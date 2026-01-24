@@ -30,7 +30,11 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Text } from '../../../components';
-import FearCard, { Fear, FearCategory, FEAR_CATEGORIES } from '../../../components/workbook/FearCard';
+import FearCard, {
+  Fear,
+  FearCategory,
+  FEAR_CATEGORIES,
+} from '../../../components/workbook/FearCard';
 import { SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -96,20 +100,23 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Auto-save hook
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: { fears, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
-    phaseNumber: 4,
-    worksheetId: WORKSHEET_IDS.FEAR_INVENTORY,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: { fears, updatedAt: new Date().toISOString() } as unknown as Record<string, unknown>,
+      phaseNumber: 4,
+      worksheetId: WORKSHEET_IDS.FEAR_INVENTORY,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as FearInventoryData;
-      if (Array.isArray(data.fears)) setFears(data.fears);
+      if (Array.isArray(data.fears)) {
+        setFears(data.fears);
+      }
       hasLoadedInitialData.current = true;
     }
   }, [savedProgress]);
@@ -164,11 +171,13 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
 
     if (editingFear) {
       // Update existing fear
-      setFears(prev => prev.map(f =>
-        f.id === editingFear.id
-          ? { ...f, text: fearText.trim(), category: selectedCategory, updatedAt: now }
-          : f
-      ));
+      setFears((prev) =>
+        prev.map((f) =>
+          f.id === editingFear.id
+            ? { ...f, text: fearText.trim(), category: selectedCategory, updatedAt: now }
+            : f
+        )
+      );
     } else {
       // Create new fear
       const newFear: Fear = {
@@ -179,7 +188,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
         createdAt: now,
         updatedAt: now,
       };
-      setFears(prev => [newFear, ...prev]);
+      setFears((prev) => [newFear, ...prev]);
     }
 
     setShowModal(false);
@@ -191,36 +200,36 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
    * Handle intensity change
    */
   const handleIntensityChange = useCallback((fearId: string, intensity: number) => {
-    setFears(prev => prev.map(f =>
-      f.id === fearId
-        ? { ...f, intensity, updatedAt: new Date().toISOString() }
-        : f
-    ));
+    setFears((prev) =>
+      prev.map((f) =>
+        f.id === fearId ? { ...f, intensity, updatedAt: new Date().toISOString() } : f
+      )
+    );
   }, []);
 
   /**
    * Handle delete
    */
   const handleDeleteFear = useCallback((fearId: string) => {
-    setFears(prev => prev.filter(f => f.id !== fearId));
+    setFears((prev) => prev.filter((f) => f.id !== fearId));
   }, []);
 
   /**
    * Filter fears by category
    */
-  const filteredFears = filterCategory === 'all'
-    ? fears
-    : fears.filter(f => f.category === filterCategory);
+  const filteredFears =
+    filterCategory === 'all' ? fears : fears.filter((f) => f.category === filterCategory);
 
   /**
    * Calculate stats
    */
   const stats = {
     total: fears.length,
-    highIntensity: fears.filter(f => f.intensity >= 7).length,
-    avgIntensity: fears.length > 0
-      ? Math.round(fears.reduce((sum, f) => sum + f.intensity, 0) / fears.length)
-      : 0,
+    highIntensity: fears.filter((f) => f.intensity >= 7).length,
+    avgIntensity:
+      fears.length > 0
+        ? Math.round(fears.reduce((sum, f) => sum + f.intensity, 0) / fears.length)
+        : 0,
   };
 
   return (
@@ -268,7 +277,12 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* Save Status Indicator */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isError}
+          onRetry={saveNow}
+        />
 
         {/* Category Filter */}
         <View style={styles.filterContainer}>
@@ -278,10 +292,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
             contentContainerStyle={styles.filterScroll}
           >
             <TouchableOpacity
-              style={[
-                styles.filterChip,
-                filterCategory === 'all' && styles.filterChipActive,
-              ]}
+              style={[styles.filterChip, filterCategory === 'all' && styles.filterChipActive]}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setFilterCategory('all');
@@ -290,15 +301,14 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
               accessibilityState={{ selected: filterCategory === 'all' }}
               testID="filter-all"
             >
-              <Text style={[
-                styles.filterText,
-                filterCategory === 'all' && styles.filterTextActive,
-              ]}>
+              <Text
+                style={[styles.filterText, filterCategory === 'all' && styles.filterTextActive]}
+              >
                 All
               </Text>
             </TouchableOpacity>
 
-            {(Object.keys(FEAR_CATEGORIES) as FearCategory[]).map(cat => (
+            {(Object.keys(FEAR_CATEGORIES) as FearCategory[]).map((cat) => (
               <TouchableOpacity
                 key={cat}
                 style={[
@@ -315,10 +325,9 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
                 testID={`filter-${cat}`}
               >
                 <Text style={styles.filterIcon}>{FEAR_CATEGORIES[cat].icon}</Text>
-                <Text style={[
-                  styles.filterText,
-                  filterCategory === cat && styles.filterTextActive,
-                ]}>
+                <Text
+                  style={[styles.filterText, filterCategory === cat && styles.filterTextActive]}
+                >
                   {FEAR_CATEGORIES[cat].label}
                 </Text>
               </TouchableOpacity>
@@ -339,7 +348,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
               </Text>
             </View>
           ) : (
-            filteredFears.map(fear => (
+            filteredFears.map((fear) => (
               <FearCard
                 key={fear.id}
                 fear={fear}
@@ -373,20 +382,13 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Inspirational Quote */}
         <View style={styles.quoteContainer}>
-          <Text style={styles.quoteText}>
-            "Everything you want is on the other side of fear."
-          </Text>
+          <Text style={styles.quoteText}>"Everything you want is on the other side of fear."</Text>
           <Text style={styles.quoteAuthor}>- Jack Canfield</Text>
         </View>
       </ExerciseScreenLayout>
 
       {/* Floating Action Button */}
-      <Animated.View
-        style={[
-          styles.fabContainer,
-          { transform: [{ scale: fabScale }] },
-        ]}
-      >
+      <Animated.View style={[styles.fabContainer, { transform: [{ scale: fabScale }] }]}>
         <TouchableOpacity
           style={styles.fab}
           onPress={handleAddFear}
@@ -413,9 +415,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
         >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
-                {editingFear ? 'Edit Fear' : 'Add Fear'}
-              </Text>
+              <Text style={styles.modalTitle}>{editingFear ? 'Edit Fear' : 'Add Fear'}</Text>
               <TouchableOpacity
                 onPress={() => setShowModal(false)}
                 accessibilityRole="button"
@@ -444,7 +444,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
             {/* Category Picker */}
             <Text style={styles.inputLabel}>Category</Text>
             <View style={styles.categoryPicker}>
-              {(Object.keys(FEAR_CATEGORIES) as FearCategory[]).map(cat => (
+              {(Object.keys(FEAR_CATEGORIES) as FearCategory[]).map((cat) => (
                 <TouchableOpacity
                   key={cat}
                   style={[
@@ -461,10 +461,12 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
                   testID={`category-${cat}`}
                 >
                   <Text style={styles.categoryOptionIcon}>{FEAR_CATEGORIES[cat].icon}</Text>
-                  <Text style={[
-                    styles.categoryOptionText,
-                    selectedCategory === cat && { color: FEAR_CATEGORIES[cat].color },
-                  ]}>
+                  <Text
+                    style={[
+                      styles.categoryOptionText,
+                      selectedCategory === cat && { color: FEAR_CATEGORIES[cat].color },
+                    ]}
+                  >
                     {FEAR_CATEGORIES[cat].label}
                   </Text>
                 </TouchableOpacity>
@@ -490,9 +492,7 @@ const FearInventoryScreen: React.FC<Props> = ({ navigation }) => {
                 accessibilityLabel="Save fear"
                 testID="modal-save"
               >
-                <Text style={styles.saveButtonText}>
-                  {editingFear ? 'Update' : 'Add Fear'}
-                </Text>
+                <Text style={styles.saveButtonText}>{editingFear ? 'Update' : 'Add Fear'}</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -19,15 +19,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  Pressable,
-  Animated,
-  Easing,
-} from 'react-native';
+import { View, StyleSheet, Text, TextInput, Pressable, Animated, Easing } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 // Design system colors from APP-DESIGN.md
@@ -206,9 +198,7 @@ export const SurrenderCard: React.FC<SurrenderCardProps> = ({
           <Text style={styles.releasedIconText}>✨</Text>
         </View>
         <Text style={styles.releasedTitle}>Released & Surrendered</Text>
-        <Text style={styles.releasedText}>
-          "{entry.controllingText.substring(0, 50)}..."
-        </Text>
+        <Text style={styles.releasedText}>"{entry.controllingText.substring(0, 50)}..."</Text>
         <Text style={styles.releasedDate}>
           Released on {new Date(entry.releasedAt || entry.createdAt).toLocaleDateString()}
         </Text>
@@ -233,13 +223,7 @@ export const SurrenderCard: React.FC<SurrenderCardProps> = ({
       accessibilityLabel={`Surrender card ${index + 1}`}
     >
       {/* Glow Effect Overlay */}
-      <Animated.View
-        style={[
-          styles.glowOverlay,
-          { opacity: glowOpacity },
-        ]}
-        pointerEvents="none"
-      />
+      <Animated.View style={[styles.glowOverlay, { opacity: glowOpacity }]} pointerEvents="none" />
 
       {/* Header */}
       <View style={styles.header}>
@@ -330,7 +314,8 @@ export const SurrenderCard: React.FC<SurrenderCardProps> = ({
       <Pressable
         style={({ pressed }) => [
           styles.releaseButton,
-          (!entry.controllingText.trim() || !entry.surrenderText.trim()) && styles.releaseButtonDisabled,
+          (!entry.controllingText.trim() || !entry.surrenderText.trim()) &&
+            styles.releaseButtonDisabled,
           pressed && styles.releaseButtonPressed,
           isReleasing && styles.releaseButtonReleasing,
         ]}
@@ -339,11 +324,11 @@ export const SurrenderCard: React.FC<SurrenderCardProps> = ({
         accessibilityRole="button"
         accessibilityLabel="Release and surrender"
         accessibilityHint="Press to symbolically release what you've written"
-        accessibilityState={{ disabled: !entry.controllingText.trim() || !entry.surrenderText.trim() }}
+        accessibilityState={{
+          disabled: !entry.controllingText.trim() || !entry.surrenderText.trim(),
+        }}
       >
-        <Text style={styles.releaseButtonIcon}>
-          {isReleasing ? '✨' : '🕊'}
-        </Text>
+        <Text style={styles.releaseButtonIcon}>{isReleasing ? '✨' : '🕊'}</Text>
         <Text style={styles.releaseButtonText}>
           {isReleasing ? 'Releasing...' : 'Release & Surrender'}
         </Text>

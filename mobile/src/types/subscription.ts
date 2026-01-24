@@ -80,7 +80,7 @@ export const PACKAGE_IDS = {
   ENLIGHTENMENT_ANNUAL: 'enlightenment_annual',
 } as const;
 
-export type PackageId = typeof PACKAGE_IDS[keyof typeof PACKAGE_IDS];
+export type PackageId = (typeof PACKAGE_IDS)[keyof typeof PACKAGE_IDS];
 
 /**
  * Purchase Result
@@ -171,7 +171,7 @@ export const TIER_PRICING = {
   },
   awakening: {
     monthly: 19.99,
-    yearly: 199.90,
+    yearly: 199.9,
     features: [
       'Everything in Novice, plus:',
       '6 Guided meditations',
@@ -182,7 +182,7 @@ export const TIER_PRICING = {
   },
   enlightenment: {
     monthly: 49.99,
-    yearly: 499.90,
+    yearly: 499.9,
     features: [
       'Everything in Awakening, plus:',
       'Coming Soon: Full Guru AI chat',
@@ -213,43 +213,43 @@ export const TRIAL_DURATION_DAYS = 7;
  */
 export const FEATURE_LIMITS = {
   free: {
-    maxPhase: 0,                  // LOCKED - must subscribe
-    maxMeditations: 0,            // LOCKED - must subscribe
-    hasGuidedMeditations: false,  // LOCKED - must subscribe
-    hasGuruAnalysis: false,       // LOCKED - must subscribe
-    hasFullGuruChat: false,       // Coming Soon
-    hasJournaling: false,         // Coming Soon
+    maxPhase: 0, // LOCKED - must subscribe
+    maxMeditations: 0, // LOCKED - must subscribe
+    hasGuidedMeditations: false, // LOCKED - must subscribe
+    hasGuruAnalysis: false, // LOCKED - must subscribe
+    hasFullGuruChat: false, // Coming Soon
+    hasJournaling: false, // Coming Soon
     hasAdvancedAnalytics: false,
-    hasVisionBoard: false,        // LOCKED - must subscribe
+    hasVisionBoard: false, // LOCKED - must subscribe
   },
   novice: {
-    maxPhase: 10,                 // All phases
-    maxMeditations: 6,            // Music tracks only
-    hasGuidedMeditations: false,  // NO guided meditations
-    hasGuruAnalysis: false,       // NO Guru - must upgrade to Awakening
+    maxPhase: 10, // All phases
+    maxMeditations: 6, // Music tracks only
+    hasGuidedMeditations: false, // NO guided meditations
+    hasGuruAnalysis: false, // NO Guru - must upgrade to Awakening
     hasFullGuruChat: false,
     hasJournaling: false,
     hasAdvancedAnalytics: false,
     hasVisionBoard: true,
   },
   awakening: {
-    maxPhase: 10,                 // All phases
-    maxMeditations: 12,           // Music + 6 guided meditations
-    hasGuidedMeditations: true,   // YES guided meditations
-    hasGuruAnalysis: true,        // YES Guru workbook analysis
-    hasFullGuruChat: false,       // NO full AI chat (Coming Soon in Enlightenment)
-    hasJournaling: false,         // Coming Soon
-    hasAdvancedAnalytics: true,   // YES analytics
+    maxPhase: 10, // All phases
+    maxMeditations: 12, // Music + 6 guided meditations
+    hasGuidedMeditations: true, // YES guided meditations
+    hasGuruAnalysis: true, // YES Guru workbook analysis
+    hasFullGuruChat: false, // NO full AI chat (Coming Soon in Enlightenment)
+    hasJournaling: false, // Coming Soon
+    hasAdvancedAnalytics: true, // YES analytics
     hasVisionBoard: true,
   },
   enlightenment: {
-    maxPhase: 10,                 // All phases
-    maxMeditations: 18,           // All meditations (Coming Soon: 12+)
-    hasGuidedMeditations: true,   // YES guided meditations
-    hasGuruAnalysis: true,        // YES Guru workbook analysis
-    hasFullGuruChat: false,       // Coming Soon
-    hasJournaling: false,         // Coming Soon
-    hasAdvancedAnalytics: true,   // YES analytics
+    maxPhase: 10, // All phases
+    maxMeditations: 18, // All meditations (Coming Soon: 12+)
+    hasGuidedMeditations: true, // YES guided meditations
+    hasGuruAnalysis: true, // YES Guru workbook analysis
+    hasFullGuruChat: false, // Coming Soon
+    hasJournaling: false, // Coming Soon
+    hasAdvancedAnalytics: true, // YES analytics
     hasVisionBoard: true,
   },
 } as const;

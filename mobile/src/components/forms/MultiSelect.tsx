@@ -17,13 +17,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, Pressable, StyleSheet, ViewStyle } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { colors, typography, spacing, fontWeights, borderRadius } from '../../theme';
 
@@ -68,7 +62,9 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   enableHaptic = true,
 }) => {
   const handleToggle = (option: string) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
 
     if (enableHaptic) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

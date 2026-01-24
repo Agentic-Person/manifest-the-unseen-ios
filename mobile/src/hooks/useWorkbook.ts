@@ -50,7 +50,7 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
     phaseNumber,
     worksheetId,
     userId: user?.id,
-    enabled: !!user?.id
+    enabled: !!user?.id,
   });
 
   const query = useQuery({
@@ -60,7 +60,10 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
         throw new Error('User not authenticated');
       }
       // H3 Security Fix: Only log in development, exclude userId
-      logger.debug('[useWorkbookProgress] Query function executing for:', { phaseNumber, worksheetId });
+      logger.debug('[useWorkbookProgress] Query function executing for:', {
+        phaseNumber,
+        worksheetId,
+      });
       const result = await getWorkbookProgress(user.id, phaseNumber, worksheetId);
       logger.debug('[useWorkbookProgress] Query result:', !!result);
       return result;
@@ -71,12 +74,18 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
 
   // Calculate progress on-the-fly (0%, 50%, or 100%)
   const dataWithProgress = useMemo<WorkbookProgressWithCalculated | undefined>(() => {
-    if (!query.data) return undefined;
+    if (!query.data) {
+      return undefined;
+    }
 
     let progress = 0;
     if (query.data.completed) {
       progress = 100;
-    } else if (query.data.data && typeof query.data.data === 'object' && Object.keys(query.data.data).length > 0) {
+    } else if (
+      query.data.data &&
+      typeof query.data.data === 'object' &&
+      Object.keys(query.data.data).length > 0
+    ) {
       progress = 50;
     }
 
@@ -136,7 +145,12 @@ export function usePhaseProgress(phaseNumber: number) {
       }
       logger.debug('[usePhaseProgress] Fetching phase progress for phase:', phaseNumber);
       const result = await getPhaseProgress(user.id, phaseNumber);
-      logger.debug('[usePhaseProgress] Phase progress fetched:', result.completed, '/', result.total);
+      logger.debug(
+        '[usePhaseProgress] Phase progress fetched:',
+        result.completed,
+        '/',
+        result.total
+      );
       return result;
     },
     enabled: !!user?.id,
@@ -176,7 +190,9 @@ export function useSaveWorkbook() {
       data: Record<string, unknown>;
       completed?: boolean;
     }) => {
-      if (!user?.id) throw new Error('User not authenticated');
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
       return upsertWorkbookProgress(user.id, phaseNumber, worksheetId, data, completed);
     },
     onSuccess: (result) => {
@@ -209,7 +225,9 @@ export function useSaveWorkbook() {
       const phaseKey = workbookKeys.phase(user.id, result.phase_number);
       queryClient.invalidateQueries({ queryKey: phaseKey });
 
-      logger.debug('[useSaveWorkbook] Cache invalidated (worksheet, progress, phase), data will be refetched');
+      logger.debug(
+        '[useSaveWorkbook] Cache invalidated (worksheet, progress, phase), data will be refetched'
+      );
     },
     onError: (error, variables) => {
       // Log mutation errors for debugging
@@ -243,7 +261,9 @@ export function useMarkComplete() {
       phaseNumber: number;
       worksheetId: string;
     }) => {
-      if (!user?.id) throw new Error('User not authenticated');
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
       return markWorksheetComplete(user.id, phaseNumber, worksheetId);
     },
     onSuccess: (result) => {
@@ -276,7 +296,9 @@ export function useMarkComplete() {
       const phaseKey = workbookKeys.phase(user.id, result.phase_number);
       queryClient.invalidateQueries({ queryKey: phaseKey });
 
-      logger.debug('[useMarkComplete] Cache invalidated (worksheet, progress, phase), progress will be refetched');
+      logger.debug(
+        '[useMarkComplete] Cache invalidated (worksheet, progress, phase), progress will be refetched'
+      );
     },
   });
 }
@@ -303,7 +325,9 @@ export function useDeleteWorkbookProgress() {
       phaseNumber: number;
       worksheetId: string;
     }) => {
-      if (!user?.id) throw new Error('User not authenticated');
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
       return deleteWorkbookProgress(user.id, phaseNumber, worksheetId);
     },
     onSuccess: (_, variables) => {

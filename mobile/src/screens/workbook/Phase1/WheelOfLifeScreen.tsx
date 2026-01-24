@@ -16,16 +16,16 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  Text,
-  ActivityIndicator,
-  ScrollView,
-} from 'react-native';
+import { View, StyleSheet, Dimensions, Text, ActivityIndicator, ScrollView } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { WheelChart, LifeAreaSlider, LIFE_AREAS, SaveIndicator, ExerciseHeader, ExerciseScreenLayout } from '../../../components/workbook';
+import {
+  WheelChart,
+  LifeAreaSlider,
+  LIFE_AREAS,
+  SaveIndicator,
+  ExerciseHeader,
+  ExerciseScreenLayout,
+} from '../../../components/workbook';
 import type { WheelOfLifeValues, LifeAreaKey } from '../../../components/workbook';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
 import { useWorkbookProgress } from '../../../hooks/useWorkbook';
@@ -109,13 +109,14 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
   const { data: savedProgress, isLoading } = useWorkbookProgress(1, WORKSHEET_IDS.WHEEL_OF_LIFE);
 
   // Auto-save with debounce
-  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: values as unknown as Record<string, unknown>,
-    phaseNumber: 1,
-    worksheetId: WORKSHEET_IDS.WHEEL_OF_LIFE,
-    isCompleted: savedProgress?.completed || false,
-    debounceMs: 1500,
-  });
+  const { isSaving, isError, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } =
+    useAutoSave({
+      data: values as unknown as Record<string, unknown>,
+      phaseNumber: 1,
+      worksheetId: WORKSHEET_IDS.WHEEL_OF_LIFE,
+      isCompleted: savedProgress?.completed || false,
+      debounceMs: 1500,
+    });
 
   // Load saved data into state ONLY on initial fetch (not after saves)
   // This prevents race condition where save completion overwrites pending user changes
@@ -149,7 +150,10 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
   /**
    * Calculate overall balance status
    */
-  const getBalanceStatus = (): { message: string; type: 'balanced' | 'moderate' | 'unbalanced' } => {
+  const getBalanceStatus = (): {
+    message: string;
+    type: 'balanced' | 'moderate' | 'unbalanced';
+  } => {
     const vals = Object.values(values);
     const max = Math.max(...vals);
     const min = Math.min(...vals);
@@ -160,12 +164,18 @@ const WheelOfLifeScreen: React.FC<Props> = ({ navigation }) => {
       return { message: 'Beautifully balanced! You are living in harmony.', type: 'balanced' };
     }
     if (diff <= 3) {
-      return { message: 'Well balanced. Small adjustments will bring greater harmony.', type: 'balanced' };
+      return {
+        message: 'Well balanced. Small adjustments will bring greater harmony.',
+        type: 'balanced',
+      };
     }
     if (diff <= 5) {
       return { message: 'Moderately balanced. Some areas need more attention.', type: 'moderate' };
     }
-    return { message: 'Imbalanced. Focus on the lower-rated areas for growth.', type: 'unbalanced' };
+    return {
+      message: 'Imbalanced. Focus on the lower-rated areas for growth.',
+      type: 'unbalanced',
+    };
   };
 
   const balanceStatus = getBalanceStatus();

@@ -79,11 +79,7 @@ export const GuruChatHeader: React.FC<GuruChatHeaderProps> = ({
             accessibilityRole="button"
             accessibilityLabel="Start new conversation"
           >
-            <Ionicons
-              name="add-circle-outline"
-              size={24}
-              color={colors.dark.accentGold}
-            />
+            <Ionicons name="add-circle-outline" size={24} color={colors.dark.accentGold} />
           </TouchableOpacity>
         ) : (
           <View style={styles.spacer} />

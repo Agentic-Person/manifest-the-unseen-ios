@@ -33,11 +33,7 @@ import { usePrayer, getPrayerAudioUrl } from '../../hooks/usePrayer';
 import { formatTime, getMeditationIcon, getMeditationTypeLabel } from '../../types/meditation';
 import type { MeditateStackScreenProps } from '../../types/navigation';
 import { Loading } from '../../components/Loading';
-import {
-  GuidedMeditationImages,
-  BreathingImages,
-  InstrumentalImages,
-} from '../../assets';
+import { GuidedMeditationImages, BreathingImages, InstrumentalImages } from '../../assets';
 import { PrayerTextDisplay } from '../../components/prayer';
 
 // Image arrays for each category (same order as MeditateScreen)
@@ -76,7 +72,9 @@ const getMeditationImage = (
   type: 'guided' | 'breathing' | 'music' | 'prayer' | undefined,
   index: number | undefined
 ): ImageSourcePropType | undefined => {
-  if (index === undefined || type === undefined) return undefined;
+  if (index === undefined || type === undefined) {
+    return undefined;
+  }
 
   switch (type) {
     case 'guided':
@@ -232,12 +230,6 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
       const audioUrl = isPrayer
         ? getPrayerAudioUrl(meditation.audio_url)
         : getMeditationAudioUrl(meditation.audio_url);
-      console.log('[MeditationPlayer] Loading audio:', {
-        title: meditation.title,
-        rawPath: meditation.audio_url,
-        fullUrl: audioUrl,
-        isPrayer,
-      });
       load(audioUrl);
     }
 
@@ -315,11 +307,14 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
   /**
    * Handle slider seek complete
    */
-  const handleSeekComplete = useCallback(async (value: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await seek(value);
-    setIsSeeking(false);
-  }, [seek]);
+  const handleSeekComplete = useCallback(
+    async (value: number) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await seek(value);
+      setIsSeeking(false);
+    },
+    [seek]
+  );
 
   /**
    * Handle close
@@ -378,9 +373,7 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
         >
           <Ionicons name="chevron-down" size={28} color={colors.text.primary} />
         </Pressable>
-        <Text style={styles.headerType}>
-          {getMeditationTypeLabel(meditation.type)}
-        </Text>
+        <Text style={styles.headerType}>{getMeditationTypeLabel(meditation.type)}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -413,11 +406,7 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
               ]}
             >
               {meditationImage ? (
-                <Image
-                  source={meditationImage}
-                  style={styles.artworkImage}
-                  resizeMode="cover"
-                />
+                <Image source={meditationImage} style={styles.artworkImage} resizeMode="cover" />
               ) : (
                 <Ionicons name={iconName} size={80} color={colors.dark.accentGold} />
               )}

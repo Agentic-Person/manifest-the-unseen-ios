@@ -51,7 +51,13 @@ const HomeScreen = ({ navigation }: Props) => {
   const TITLE_AREA_HEIGHT = 120;
   const NAV_CARDS_HEIGHT = 120;
   const BOTTOM_MARGIN = 70 + insets.bottom;
-  const spacerHeight = SCREEN_HEIGHT - TITLE_AREA_HEIGHT - NAV_CARDS_HEIGHT - BOTTOM_MARGIN - TAB_BAR_HEIGHT - insets.top;
+  const spacerHeight =
+    SCREEN_HEIGHT -
+    TITLE_AREA_HEIGHT -
+    NAV_CARDS_HEIGHT -
+    BOTTOM_MARGIN -
+    TAB_BAR_HEIGHT -
+    insets.top;
 
   return (
     <ImageBackground
@@ -80,10 +86,7 @@ const HomeScreen = ({ navigation }: Props) => {
         <View style={styles.navCardsContainer}>
           {/* Workbook Card */}
           <Pressable
-            style={({ pressed }) => [
-              styles.navCard,
-              pressed && styles.navCardPressed,
-            ]}
+            style={({ pressed }) => [styles.navCard, pressed && styles.navCardPressed]}
             onPress={() => handleNavPress('Workbook')}
             accessibilityRole="button"
             accessibilityLabel="Go to Workbook"
@@ -101,10 +104,7 @@ const HomeScreen = ({ navigation }: Props) => {
 
           {/* Meditate Card */}
           <Pressable
-            style={({ pressed }) => [
-              styles.navCard,
-              pressed && styles.navCardPressed,
-            ]}
+            style={({ pressed }) => [styles.navCard, pressed && styles.navCardPressed]}
             onPress={() => handleNavPress('Meditate')}
             accessibilityRole="button"
             accessibilityLabel="Go to Meditate"
@@ -125,10 +125,7 @@ const HomeScreen = ({ navigation }: Props) => {
         <View style={styles.navCardsContainer}>
           {/* Manuscript Card */}
           <Pressable
-            style={({ pressed }) => [
-              styles.navCard,
-              pressed && styles.navCardPressed,
-            ]}
+            style={({ pressed }) => [styles.navCard, pressed && styles.navCardPressed]}
             onPress={() => handleRootNavPress('Manuscript')}
             accessibilityRole="button"
             accessibilityLabel="Go to Manuscript"
@@ -143,10 +140,7 @@ const HomeScreen = ({ navigation }: Props) => {
 
           {/* Observable Science Card */}
           <Pressable
-            style={({ pressed }) => [
-              styles.navCard,
-              pressed && styles.navCardPressed,
-            ]}
+            style={({ pressed }) => [styles.navCard, pressed && styles.navCardPressed]}
             onPress={() => handleRootNavPress('ObservableScience')}
             accessibilityRole="button"
             accessibilityLabel="Go to Observable Science"
@@ -164,7 +158,8 @@ const HomeScreen = ({ navigation }: Props) => {
         <View style={styles.inspirationCard}>
           <Text style={styles.inspirationLabel}>Daily Inspiration</Text>
           <Text style={styles.quote}>
-            "If you want to find the secrets of the universe, think in terms of energy, frequency and vibration."
+            "If you want to find the secrets of the universe, think in terms of energy, frequency
+            and vibration."
           </Text>
           <Text style={styles.quoteAuthor}>- Nikola Tesla</Text>
         </View>

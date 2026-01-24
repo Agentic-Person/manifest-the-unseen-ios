@@ -74,34 +74,154 @@ const CATEGORIES: { key: AffirmationCategory | 'all' | 'favorites'; label: strin
  */
 const DEFAULT_AFFIRMATIONS: Omit<AffirmationData, 'isFavorite'>[] = [
   // Self-Worth
-  { id: 'sw1', text: 'I am worthy of love and belonging exactly as I am.', category: 'self-worth', isCustom: false, createdAt: '' },
-  { id: 'sw2', text: 'My worth is not determined by my productivity or achievements.', category: 'self-worth', isCustom: false, createdAt: '' },
-  { id: 'sw3', text: 'I deserve respect, kindness, and compassion from myself and others.', category: 'self-worth', isCustom: false, createdAt: '' },
-  { id: 'sw4', text: 'I am enough, just as I am, in this very moment.', category: 'self-worth', isCustom: false, createdAt: '' },
+  {
+    id: 'sw1',
+    text: 'I am worthy of love and belonging exactly as I am.',
+    category: 'self-worth',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'sw2',
+    text: 'My worth is not determined by my productivity or achievements.',
+    category: 'self-worth',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'sw3',
+    text: 'I deserve respect, kindness, and compassion from myself and others.',
+    category: 'self-worth',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'sw4',
+    text: 'I am enough, just as I am, in this very moment.',
+    category: 'self-worth',
+    isCustom: false,
+    createdAt: '',
+  },
 
   // Body Love
-  { id: 'bl1', text: 'My body is my home, and I treat it with love and gratitude.', category: 'body-love', isCustom: false, createdAt: '' },
-  { id: 'bl2', text: 'I am grateful for all that my body does for me every day.', category: 'body-love', isCustom: false, createdAt: '' },
-  { id: 'bl3', text: 'I release all negative thoughts about my body and embrace my unique beauty.', category: 'body-love', isCustom: false, createdAt: '' },
-  { id: 'bl4', text: 'My body deserves nourishment, rest, and gentle care.', category: 'body-love', isCustom: false, createdAt: '' },
+  {
+    id: 'bl1',
+    text: 'My body is my home, and I treat it with love and gratitude.',
+    category: 'body-love',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'bl2',
+    text: 'I am grateful for all that my body does for me every day.',
+    category: 'body-love',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'bl3',
+    text: 'I release all negative thoughts about my body and embrace my unique beauty.',
+    category: 'body-love',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'bl4',
+    text: 'My body deserves nourishment, rest, and gentle care.',
+    category: 'body-love',
+    isCustom: false,
+    createdAt: '',
+  },
 
   // Inner Peace
-  { id: 'ip1', text: 'I release what I cannot control and find peace in this moment.', category: 'inner-peace', isCustom: false, createdAt: '' },
-  { id: 'ip2', text: 'My inner calm is stronger than any external chaos.', category: 'inner-peace', isCustom: false, createdAt: '' },
-  { id: 'ip3', text: 'I breathe in peace, I breathe out tension.', category: 'inner-peace', isCustom: false, createdAt: '' },
-  { id: 'ip4', text: 'I choose serenity over stress, love over fear, peace over anxiety.', category: 'inner-peace', isCustom: false, createdAt: '' },
+  {
+    id: 'ip1',
+    text: 'I release what I cannot control and find peace in this moment.',
+    category: 'inner-peace',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'ip2',
+    text: 'My inner calm is stronger than any external chaos.',
+    category: 'inner-peace',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'ip3',
+    text: 'I breathe in peace, I breathe out tension.',
+    category: 'inner-peace',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'ip4',
+    text: 'I choose serenity over stress, love over fear, peace over anxiety.',
+    category: 'inner-peace',
+    isCustom: false,
+    createdAt: '',
+  },
 
   // Confidence
-  { id: 'cf1', text: 'I trust myself to make the right decisions for my life.', category: 'confidence', isCustom: false, createdAt: '' },
-  { id: 'cf2', text: 'My voice matters, and I speak my truth with confidence.', category: 'confidence', isCustom: false, createdAt: '' },
-  { id: 'cf3', text: 'I am capable of achieving everything I set my mind to.', category: 'confidence', isCustom: false, createdAt: '' },
-  { id: 'cf4', text: 'Every challenge I face is an opportunity to grow stronger.', category: 'confidence', isCustom: false, createdAt: '' },
+  {
+    id: 'cf1',
+    text: 'I trust myself to make the right decisions for my life.',
+    category: 'confidence',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'cf2',
+    text: 'My voice matters, and I speak my truth with confidence.',
+    category: 'confidence',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'cf3',
+    text: 'I am capable of achieving everything I set my mind to.',
+    category: 'confidence',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'cf4',
+    text: 'Every challenge I face is an opportunity to grow stronger.',
+    category: 'confidence',
+    isCustom: false,
+    createdAt: '',
+  },
 
   // Abundance
-  { id: 'ab1', text: 'I am open to receiving abundance in all forms.', category: 'abundance', isCustom: false, createdAt: '' },
-  { id: 'ab2', text: 'The universe supports my dreams and provides for my needs.', category: 'abundance', isCustom: false, createdAt: '' },
-  { id: 'ab3', text: 'I attract positive energy, opportunities, and loving people.', category: 'abundance', isCustom: false, createdAt: '' },
-  { id: 'ab4', text: 'Abundance flows freely to me and through me.', category: 'abundance', isCustom: false, createdAt: '' },
+  {
+    id: 'ab1',
+    text: 'I am open to receiving abundance in all forms.',
+    category: 'abundance',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'ab2',
+    text: 'The universe supports my dreams and provides for my needs.',
+    category: 'abundance',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'ab3',
+    text: 'I attract positive energy, opportunities, and loving people.',
+    category: 'abundance',
+    isCustom: false,
+    createdAt: '',
+  },
+  {
+    id: 'ab4',
+    text: 'Abundance flows freely to me and through me.',
+    category: 'abundance',
+    isCustom: false,
+    createdAt: '',
+  },
 ];
 
 /**
@@ -128,11 +248,14 @@ interface AffirmationsFormData {
 const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
   // State
   const [affirmations, setAffirmations] = useState<AffirmationData[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<AffirmationCategory | 'all' | 'favorites'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<
+    AffirmationCategory | 'all' | 'favorites'
+  >('all');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newAffirmationText, setNewAffirmationText] = useState('');
-  const [newAffirmationCategory, setNewAffirmationCategory] = useState<AffirmationCategory>('self-worth');
+  const [newAffirmationCategory, setNewAffirmationCategory] =
+    useState<AffirmationCategory>('self-worth');
   const [showMirrorTimer, setShowMirrorTimer] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(60);
   const [timerRunning, setTimerRunning] = useState(false);
@@ -144,14 +267,22 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
   const hasLoadedInitialData = useRef(false);
 
   // Supabase hooks
-  const { data: savedProgress, isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(5, WORKSHEET_IDS.SELF_LOVE_AFFIRMATIONS);
+  const {
+    data: savedProgress,
+    isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(5, WORKSHEET_IDS.SELF_LOVE_AFFIRMATIONS);
 
   // Prepare form data for auto-save
-  const formData: AffirmationsFormData = useMemo(() => ({
-    affirmations: affirmations,
-    favorites: affirmations.filter(a => a.isFavorite).map(a => a.id),
-    customAffirmations: affirmations.filter(a => a.isCustom),
-  }), [affirmations]);
+  const formData: AffirmationsFormData = useMemo(
+    () => ({
+      affirmations,
+      favorites: affirmations.filter((a) => a.isFavorite).map((a) => a.id),
+      customAffirmations: affirmations.filter((a) => a.isCustom),
+    }),
+    [affirmations]
+  );
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
     data: formData as unknown as Record<string, unknown>,
@@ -165,7 +296,9 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
   // This prevents race condition where save completion overwrites pending user changes
   useEffect(() => {
     // Only initialize once when loading completes
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     if (savedProgress?.data && !hasLoadedInitialData.current) {
       const data = savedProgress.data as unknown as AffirmationsFormData;
@@ -180,7 +313,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
       }));
 
       // Add custom affirmations
-      const customWithFavorites = customAffs.map(ca => ({
+      const customWithFavorites = customAffs.map((ca) => ({
         ...ca,
         isFavorite: favoriteIds.has(ca.id),
       }));
@@ -228,7 +361,6 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
    */
   const currentAffirmation = filteredAffirmations[currentIndex] || null;
 
-
   /**
    * Handle category change
    */
@@ -242,7 +374,9 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
    * Navigate to next affirmation with animation
    */
   const handleNext = useCallback(() => {
-    if (filteredAffirmations.length <= 1) return;
+    if (filteredAffirmations.length <= 1) {
+      return;
+    }
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -280,7 +414,9 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
    * Navigate to previous affirmation
    */
   const handlePrevious = useCallback(() => {
-    if (filteredAffirmations.length <= 1) return;
+    if (filteredAffirmations.length <= 1) {
+      return;
+    }
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -296,9 +432,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      setCurrentIndex((prev) =>
-        prev === 0 ? filteredAffirmations.length - 1 : prev - 1
-      );
+      setCurrentIndex((prev) => (prev === 0 ? filteredAffirmations.length - 1 : prev - 1));
       slideAnim.setValue(-50);
 
       Animated.parallel([
@@ -321,9 +455,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
    */
   const handleToggleFavorite = useCallback((id: string) => {
     setAffirmations((prev) =>
-      prev.map((a) =>
-        a.id === id ? { ...a, isFavorite: !a.isFavorite } : a
-      )
+      prev.map((a) => (a.id === id ? { ...a, isFavorite: !a.isFavorite } : a))
     );
   }, []);
 
@@ -464,7 +596,8 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
                   selectedCategory === cat.key && styles.categoryChipTextActive,
                 ]}
               >
-                {cat.key === 'favorites' ? '\u2665 ' : ''}{cat.label}
+                {cat.key === 'favorites' ? '\u2665 ' : ''}
+                {cat.label}
               </Text>
             </TouchableOpacity>
           ))}
@@ -555,14 +688,23 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
         {/* Tips Card */}
         <View style={styles.tipsCard}>
           <Text style={styles.tipsTitle}>Mirror Practice Guide</Text>
-          <Text style={styles.tipItem}>{'\u2022'} Stand before a mirror and look into your eyes</Text>
-          <Text style={styles.tipItem}>{'\u2022'} Speak the affirmation slowly and with feeling</Text>
+          <Text style={styles.tipItem}>
+            {'\u2022'} Stand before a mirror and look into your eyes
+          </Text>
+          <Text style={styles.tipItem}>
+            {'\u2022'} Speak the affirmation slowly and with feeling
+          </Text>
           <Text style={styles.tipItem}>{'\u2022'} Repeat 3-5 times, letting the words sink in</Text>
           <Text style={styles.tipItem}>{'\u2022'} Practice daily for best results</Text>
         </View>
 
         {/* Save Status */}
-        <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+        <SaveIndicator
+          isSaving={isSaving}
+          lastSaved={lastSaved}
+          isError={isLoadError}
+          onRetry={saveNow}
+        />
       </ExerciseScreenLayout>
 
       {/* Add Affirmation Modal */}
@@ -572,18 +714,10 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
         animationType="fade"
         onRequestClose={() => setShowAddModal(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setShowAddModal(false)}
-        >
-          <Pressable
-            style={styles.modalContent}
-            onPress={(e) => e.stopPropagation()}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowAddModal(false)}>
+          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
             <Text style={styles.modalTitle}>Create Your Affirmation</Text>
-            <Text style={styles.modalSubtitle}>
-              Write an affirmation that speaks to your heart
-            </Text>
+            <Text style={styles.modalSubtitle}>Write an affirmation that speaks to your heart</Text>
 
             <TextInput
               style={styles.affirmationInput}
@@ -661,14 +795,10 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.timerTitle}>Mirror Practice</Text>
 
             {currentAffirmation && (
-              <Text style={styles.timerAffirmation}>
-                "{currentAffirmation.text}"
-              </Text>
+              <Text style={styles.timerAffirmation}>"{currentAffirmation.text}"</Text>
             )}
 
-            <Text style={styles.timerDisplay}>
-              {formatTimer(timerSeconds)}
-            </Text>
+            <Text style={styles.timerDisplay}>{formatTimer(timerSeconds)}</Text>
 
             <Text style={styles.timerInstruction}>
               {timerRunning
@@ -683,9 +813,7 @@ const SelfLoveAffirmationsScreen: React.FC<Props> = ({ navigation }) => {
               accessibilityLabel={timerRunning ? 'Stop timer' : 'Close'}
               testID="stop-timer-button"
             >
-              <Text style={styles.timerStopText}>
-                {timerRunning ? 'Stop' : 'Close'}
-              </Text>
+              <Text style={styles.timerStopText}>{timerRunning ? 'Stop' : 'Close'}</Text>
             </TouchableOpacity>
           </View>
         </View>

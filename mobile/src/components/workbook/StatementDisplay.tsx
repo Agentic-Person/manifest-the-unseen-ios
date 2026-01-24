@@ -22,12 +22,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius, typography, fontWeights } from '../../theme';
 
@@ -111,9 +106,7 @@ export const StatementDisplay: React.FC<StatementDisplayProps> = ({
 
       {/* Inspirational footer */}
       <View style={styles.footerContainer}>
-        <Text style={styles.footerQuote}>
-          "When you know your purpose, you know your path."
-        </Text>
+        <Text style={styles.footerQuote}>"When you know your purpose, you know your path."</Text>
       </View>
     </View>
   );

@@ -7,13 +7,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button, Card, Text, TextInput } from '../../../components';
 import { colors, spacing, borderRadius, shadows } from '../../../theme';
 import type { WorkbookStackScreenProps } from '../../../types/navigation';
@@ -125,10 +119,12 @@ const PHASE_NUMBER = 1;
  * SWOT Analysis Screen Component
  */
 const SWOTScreen: React.FC<Props> = ({ navigation }) => {
-  const { data: savedProgress, isLoading: _isLoading, isError: isLoadError, error: loadError } = useWorkbookProgress(
-    PHASE_NUMBER,
-    WORKSHEET_IDS.SWOT_ANALYSIS
-  );
+  const {
+    data: savedProgress,
+    isLoading: _isLoading,
+    isError: isLoadError,
+    error: loadError,
+  } = useWorkbookProgress(PHASE_NUMBER, WORKSHEET_IDS.SWOT_ANALYSIS);
 
   const [swotData, setSWOTData] = useState<SWOTQuadrant[]>(getDefaultSWOTData());
   const [expandedQuadrant, setExpandedQuadrant] = useState<string | null>(null);
@@ -167,7 +163,9 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
    */
   const addItem = (quadrantId: string) => {
     const text = newItemText[quadrantId]?.trim();
-    if (!text) return;
+    if (!text) {
+      return;
+    }
 
     const newItem: SWOTItem = {
       id: `${quadrantId}-${Date.now()}`,
@@ -175,25 +173,23 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
       createdAt: new Date(),
     };
 
-    setSWOTData(prev =>
-      prev.map(quadrant =>
-        quadrant.id === quadrantId
-          ? { ...quadrant, items: [...quadrant.items, newItem] }
-          : quadrant
+    setSWOTData((prev) =>
+      prev.map((quadrant) =>
+        quadrant.id === quadrantId ? { ...quadrant, items: [...quadrant.items, newItem] } : quadrant
       )
     );
 
-    setNewItemText(prev => ({ ...prev, [quadrantId]: '' }));
+    setNewItemText((prev) => ({ ...prev, [quadrantId]: '' }));
   };
 
   /**
    * Remove item from a quadrant
    */
   const removeItem = (quadrantId: string, itemId: string) => {
-    setSWOTData(prev =>
-      prev.map(quadrant =>
+    setSWOTData((prev) =>
+      prev.map((quadrant) =>
         quadrant.id === quadrantId
-          ? { ...quadrant, items: quadrant.items.filter(item => item.id !== itemId) }
+          ? { ...quadrant, items: quadrant.items.filter((item) => item.id !== itemId) }
           : quadrant
       )
     );
@@ -203,7 +199,7 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
    * Toggle quadrant expansion
    */
   const toggleQuadrant = (quadrantId: string) => {
-    setExpandedQuadrant(prev => (prev === quadrantId ? null : quadrantId));
+    setExpandedQuadrant((prev) => (prev === quadrantId ? null : quadrantId));
   };
 
   /**
@@ -239,7 +235,7 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
         {/* Progress Summary */}
         <Card elevation="flat" style={styles.summaryCard}>
           <View style={styles.summaryRow}>
-            {swotData.map(quadrant => (
+            {swotData.map((quadrant) => (
               <View key={quadrant.id} style={styles.summaryItem}>
                 <View
                   style={[
@@ -262,7 +258,7 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* SWOT Quadrants */}
         <View style={styles.quadrantsContainer}>
-          {swotData.map(quadrant => (
+          {swotData.map((quadrant) => (
             <QuadrantCard
               key={quadrant.id}
               quadrant={quadrant}
@@ -270,7 +266,7 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
               onToggle={() => toggleQuadrant(quadrant.id)}
               newItemText={newItemText[quadrant.id] || ''}
               onNewItemTextChange={(text) =>
-                setNewItemText(prev => ({ ...prev, [quadrant.id]: text }))
+                setNewItemText((prev) => ({ ...prev, [quadrant.id]: text }))
               }
               onAddItem={() => addItem(quadrant.id)}
               onRemoveItem={(itemId) => removeItem(quadrant.id, itemId)}
@@ -289,7 +285,12 @@ const SWOTScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Save Status */}
         <View style={{ alignItems: 'center', marginVertical: 16 }}>
-          <SaveIndicator isSaving={isSaving} lastSaved={lastSaved} isError={isLoadError} onRetry={saveNow} />
+          <SaveIndicator
+            isSaving={isSaving}
+            lastSaved={lastSaved}
+            isError={isLoadError}
+            onRetry={saveNow}
+          />
         </View>
       </ExerciseScreenLayout>
     </KeyboardAvoidingView>
@@ -333,18 +334,11 @@ const QuadrantCard: React.FC<{
         accessibilityHint={isExpanded ? 'Tap to collapse' : 'Tap to expand'}
       >
         <View style={styles.quadrantTitleRow}>
-          <View
-            style={[
-              styles.quadrantBadge,
-              { backgroundColor: quadrant.color },
-            ]}
-          >
+          <View style={[styles.quadrantBadge, { backgroundColor: quadrant.color }]}>
             <Text style={styles.quadrantBadgeText}>{quadrant.shortTitle}</Text>
           </View>
           <View style={styles.quadrantTitleContainer}>
-            <Text style={[styles.quadrantTitle, { color: quadrant.color }]}>
-              {quadrant.title}
-            </Text>
+            <Text style={[styles.quadrantTitle, { color: quadrant.color }]}>{quadrant.title}</Text>
             <Text style={styles.quadrantDescription}>{quadrant.description}</Text>
           </View>
         </View>
@@ -372,7 +366,7 @@ const QuadrantCard: React.FC<{
           {/* Existing Items */}
           {quadrant.items.length > 0 && (
             <View style={styles.itemsList}>
-              {quadrant.items.map(item => (
+              {quadrant.items.map((item) => (
                 <View key={item.id} style={styles.itemRow}>
                   <Text style={styles.itemText}>{item.text}</Text>
                   <TouchableOpacity

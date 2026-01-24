@@ -19,14 +19,7 @@
  */
 
 import React, { useState, useCallback, useRef } from 'react';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  Keyboard,
-} from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Alert, Keyboard } from 'react-native';
 import { Text } from '../Text';
 import { colors, spacing, borderRadius } from '../../theme';
 
@@ -38,13 +31,16 @@ export type HabitCategory = 'positive' | 'negative' | 'neutral';
 /**
  * Category configuration with colors and labels
  */
-const CATEGORY_CONFIG: Record<HabitCategory, {
-  label: string;
-  icon: string;
-  color: string;
-  bgColor: string;
-  textColor: string;
-}> = {
+const CATEGORY_CONFIG: Record<
+  HabitCategory,
+  {
+    label: string;
+    icon: string;
+    color: string;
+    bgColor: string;
+    textColor: string;
+  }
+> = {
   positive: {
     label: 'Positive',
     icon: '+',
@@ -126,22 +122,18 @@ export const HabitEntry: React.FC<HabitEntryProps> = ({
       Keyboard.dismiss();
     } else {
       // If empty, show confirmation to delete
-      Alert.alert(
-        'Delete Habit?',
-        'This habit has no text. Would you like to delete it?',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => inputRef.current?.focus(),
-            style: 'cancel',
-          },
-          {
-            text: 'Delete',
-            onPress: onRemove,
-            style: 'destructive',
-          },
-        ]
-      );
+      Alert.alert('Delete Habit?', 'This habit has no text. Would you like to delete it?', [
+        {
+          text: 'Cancel',
+          onPress: () => inputRef.current?.focus(),
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: onRemove,
+          style: 'destructive',
+        },
+      ]);
     }
   }, [localText, onTextChange, onRemove]);
 
@@ -156,32 +148,25 @@ export const HabitEntry: React.FC<HabitEntryProps> = ({
   /**
    * Handle category button press
    */
-  const handleCategoryPress = useCallback((newCategory: HabitCategory) => {
-    onCategoryChange(newCategory);
-  }, [onCategoryChange]);
+  const handleCategoryPress = useCallback(
+    (newCategory: HabitCategory) => {
+      onCategoryChange(newCategory);
+    },
+    [onCategoryChange]
+  );
 
   /**
    * Handle remove with confirmation
    */
   const handleRemove = useCallback(() => {
-    Alert.alert(
-      'Delete Habit',
-      `Are you sure you want to delete "${habitText || 'this habit'}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', onPress: onRemove, style: 'destructive' },
-      ]
-    );
+    Alert.alert('Delete Habit', `Are you sure you want to delete "${habitText || 'this habit'}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', onPress: onRemove, style: 'destructive' },
+    ]);
   }, [habitText, onRemove]);
 
   return (
-    <View
-      style={[
-        styles.container,
-        { borderLeftColor: config.color },
-      ]}
-      testID={testID}
-    >
+    <View style={[styles.container, { borderLeftColor: config.color }]} testID={testID}>
       {/* Main Content Row */}
       <View style={styles.mainRow}>
         {/* Habit Text / Input */}
