@@ -4,7 +4,8 @@
   "description": "Upload meditation audio files to Supabase Storage",
   "main": "upload.js",
   "scripts": {
-    "upload": "node upload.js"
+    "upload": "node upload.js",
+    "sync-prayers": "node sync-prayers.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.0",
