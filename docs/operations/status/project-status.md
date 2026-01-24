@@ -1,14 +1,106 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-23 (Guru AI Feature Now Working!)
+**Last Updated**: 2026-01-24 (Build 57 - Pre-App Store Security Cleanup)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
-**Status**: 🟢 **Production Ready** - Build 56 on TestFlight.
+**Status**: 🟢 **Production Ready** - Build 57 on TestFlight.
 
 ---
 
-## ✅ Last Activity: Guru AI Feature Fixed and Working! 🎉 - January 23, 2026
+## ✅ Last Activity: Pre-App Store Security & Code Quality Cleanup - January 24, 2026
+
+### Summary
+Comprehensive pre-App Store review and cleanup. Fixed security issues, TypeScript errors, removed debug logs, and configured Sentry for crash reporting with source maps.
+
+### Security Improvements
+
+#### 1. API Keys Moved to EAS Secrets
+| Key | Status | Notes |
+|-----|--------|-------|
+| `EXPO_PUBLIC_SUPABASE_URL` | ✅ Moved to EAS | Removed from eas.json |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | ✅ Moved to EAS | Removed from eas.json |
+| `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | ✅ Moved to EAS | Removed from eas.json |
+| `EXPO_PUBLIC_SENTRY_DSN` | ✅ Moved to EAS | Removed from eas.json |
+| `SENTRY_AUTH_TOKEN` | ✅ Added to EAS | NEW - enables source map upload |
+
+#### 2. GitHub Repository Made Private
+- Repo was public, exposing eas.json with API keys
+- Changed to private at user's action
+- Keys are "public" client keys (protected by RLS) but still best practice
+
+#### 3. Documentation Updated
+- Added "API Keys & Secrets Management" section to `docs/guides/app-store-requirements-checklist.md`
+- Explains public vs secret keys, EAS Secrets usage, best practices
+
+### Code Quality Fixes
+
+#### TypeScript Errors Fixed (2)
+| File | Issue | Fix |
+|------|-------|-----|
+| `MainTabNavigator.tsx:16` | Unused import `ClickableHeaderLogo` | Removed |
+| `WorkbookNavigator.tsx:307` | React Navigation type inference issue | Added @ts-ignore (known limitation with 50+ screens) |
+
+#### Console Logs Removed (~35 statements)
+| File | Logs Removed |
+|------|--------------|
+| `completionDetection.ts` | 7 verbose `[detectCompletion]` debug logs |
+| `RootNavigator.tsx` | 2 auth event logs |
+| `MeditateScreen.tsx` | 2 render/hooks logs |
+| `MeditationPlayerScreen.tsx` | 1 loading audio log |
+| `trialStore.ts` | 3 trial status logs |
+| `MeditationTimer.tsx` | 2 meditation event logs |
+| `ActionPlanScreen.tsx` | 3 goal loading logs |
+| `PaywallScreen.tsx` | 4 paywall/promo logs |
+| `Phase1-10Dashboard.tsx` | 10 "Unknown exercise" logs |
+
+#### ESLint Auto-Fix
+- 15,794 formatting issues fixed (mostly CRLF → LF line endings)
+- 215 files modified for code style consistency
+
+### Sentry Crash Reporting Configured
+
+#### Before
+- SDK installed but no auth token
+- Source maps NOT uploading
+- Crash reports would have minified stack traces
+
+#### After
+- `SENTRY_AUTH_TOKEN` created and added to EAS Secrets
+- Source maps will upload automatically during builds
+- Crash reports will have readable stack traces
+- Dashboard: https://agentic-personnel-llc.sentry.io/issues/
+
+### Build 57 Created & Submitted
+| Step | Status | Details |
+|------|--------|---------|
+| Build created | ✅ | `eas build --platform ios --profile production` |
+| Uploaded to EAS | ✅ | 283 MB project archive |
+| Submitted to App Store Connect | ✅ | ASC App ID: 6756403109 |
+| Apple processing | ⏳ | ~5-10 minutes |
+
+**Build URL**: https://expo.dev/accounts/agentic-personnel/projects/manifest-the-unseen/builds/91d872ea-9dba-4a25-abdc-4f78539dc71b
+
+**TestFlight URL**: https://appstoreconnect.apple.com/apps/6756403109/testflight/ios
+
+### Files Changed
+- `mobile/eas.json` - Removed hardcoded API keys, removed empty TELEMETRYDECK entries
+- `mobile/app.json` - Build number 56 → 57
+- `mobile/src/navigation/MainTabNavigator.tsx` - Removed unused import
+- `mobile/src/navigation/WorkbookNavigator.tsx` - Fixed TS error
+- `docs/guides/app-store-requirements-checklist.md` - Added API Keys section
+- 215 files - ESLint formatting fixes
+- 20+ files - Console.log removals
+
+### Git Commits
+```
+599c3b3 build: increment iOS build number to 57
+9813959 chore: pre-App Store security & code quality cleanup
+```
+
+---
+
+## Previous Activity: Guru AI Feature Fixed and Working! 🎉 - January 23, 2026
 
 ### Summary
 Fixed critical issues preventing the Guru AI feature from working. The Guru now successfully analyzes completed workbook phases and provides personalized AI-guided wisdom!
