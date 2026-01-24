@@ -28,7 +28,7 @@ import KnowYourselfScreen from '../screens/workbook/Phase1/KnowYourselfScreen';
 import AbilitiesRatingScreen from '../screens/workbook/Phase1/AbilitiesRatingScreen';
 import ThoughtAwarenessScreen from '../screens/workbook/Phase1/ThoughtAwarenessScreen';
 // Phase 2: Values & Vision screens
-import { Phase2Dashboard, VisionBoardScreen, LifeMissionScreen } from '../screens/workbook/Phase2';
+import { Phase2Dashboard, VisionBoardScreen, LifeMissionScreen, PurposeStatementScreen } from '../screens/workbook/Phase2';
 // Phase 3: Goal Setting screens
 import { Phase3Dashboard, SMARTGoalsScreen, TimelineScreen, ActionPlanScreen } from '../screens/workbook/Phase3';
 // Phase 4: Facing Fears & Limiting Beliefs screens
@@ -261,6 +261,14 @@ export const WorkbookNavigator = () => {
         options={{
           ...darkChildScreenHeaderOptions,
           title: 'Vision Board',
+        }}
+      />
+      <Stack.Screen
+        name="PurposeStatement"
+        component={PurposeStatementScreen}
+        options={{
+          ...darkChildScreenHeaderOptions,
+          title: 'Purpose Statement',
         }}
       />
 

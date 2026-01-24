@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-23 (Workbook Crash Bug Fixes)
+**Last Updated**: 2026-01-23 (Phase 2 Purpose Statement Fix + Test Account)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
@@ -8,7 +8,117 @@
 
 ---
 
-## ✅ Last Activity: Workbook Crash Bug Fixes - January 23, 2026
+## ✅ Last Activity: Phase 2 Purpose Statement Wiring + Complete Test Account - January 23, 2026
+
+### Summary
+Two-part fix: (1) Wired the existing Purpose Statement exercise into Phase 2 Dashboard so it appears in the UI and navigation, (2) Created a comprehensive test account with ALL 38 worksheets completed for testing progress tracking and Guru AI functionality.
+
+### Part 1: Purpose Statement Exercise Wiring
+
+The Purpose Statement exercise existed (`PurposeStatementScreen.tsx`) but was not accessible from the Phase 2 Dashboard. Fixed by wiring it into the navigation and UI.
+
+#### Files Modified (4 files)
+
+| File | Change |
+|------|--------|
+| `mobile/src/screens/workbook/Phase2/index.ts` | Added export for `PurposeStatementScreen` |
+| `mobile/src/navigation/WorkbookNavigator.tsx` | Added import + Stack.Screen registration for `PurposeStatement` |
+| `mobile/src/screens/workbook/Phase2/Phase2Dashboard.tsx` | Added Purpose Statement to `PHASE2_EXERCISES` array + navigation handler |
+| `mobile/src/assets/index.ts` | Added `purposeStatement` image reference (uses lifeMission image as fallback) |
+
+#### Verification
+- Phase 2 now shows 3 exercises: Life Mission, Purpose Statement, Vision Board
+- Purpose Statement navigates correctly and saves progress
+- Progress tracking works for all 3 exercises
+
+### Part 2: Comprehensive Test Account Created
+
+Created a test account with ALL 38 worksheets fully completed with meaningful test data for:
+- Verifying all progress meters work correctly
+- Testing the Guru AI agent with real workbook data
+- Full end-to-end validation before App Store launch
+
+#### Test Account Credentials
+- **Email**: `mtu.test.complete.2026@test.com`
+- **Password**: `TestPass123!`
+- **User ID**: `f3a901e4-99da-49cd-863e-4f1814ade9c4`
+- **Status**: 100% complete (38/38 worksheets)
+
+#### Worksheets Completed by Phase
+
+| Phase | Worksheets | Count |
+|-------|------------|-------|
+| 1: Self-Evaluation | wheel-of-life, feel-wheel, swot-analysis, habits-audit, values-assessment, abc-model, strengths-weaknesses, comfort-zone, know-yourself, abilities-rating, thought-awareness | 11 |
+| 2: Values & Vision | life-mission, purpose-statement, vision-board | 3 |
+| 3: Goal Setting | smart-goals, timeline, action-plan | 3 |
+| 4: Facing Fears | fear-inventory, limiting-beliefs, fear-facing-plan | 3 |
+| 5: Self-Love & Care | self-love-affirmations, self-care-routine, inner-child | 3 |
+| 6: Manifestation | three-six-nine, scripting, woop | 3 |
+| 7: Gratitude | gratitude-journal, gratitude-letters, gratitude-meditation | 3 |
+| 8: Envy to Inspiration | envy-inventory, inspiration-reframe, role-models | 3 |
+| 9: Trust & Surrender | trust-assessment, surrender-practice, signs-tracking | 3 |
+| 10: Letting Go | journey-review, future-letter, graduation | 3 |
+| **TOTAL** | | **38** |
+
+#### Test Data Quality
+Each worksheet contains realistic, meaningful data that meets all completion criteria:
+- Long-form text responses (30-200+ characters where required)
+- Multiple entries where arrays are expected
+- All required fields populated
+- Data structured exactly as each screen saves it
+
+#### Screenshot
+- `/.playwright-mcp/phase2-complete-with-purpose-statement.png` - Shows Phase 2 with all 3 exercises at 100%
+
+### Risk Assessment
+| Change | Risk | Notes |
+|--------|------|-------|
+| Purpose Statement wiring | LOW | Exercise already existed and was tested |
+| Test data insertion | NONE | Only affects test account, no production impact |
+
+---
+
+## Previous Activity: Workbook Progress/Completion Tracking Fix - January 23, 2026
+
+### Summary
+Fixed critical bug where progress meters showed inconsistent values across UI levels. Phase 3 showed 0% on main Workbook screen while exercises appeared complete inside. Root cause: completion validators were checking for data fields that don't exist in the saved data structure.
+
+### Root Causes Identified
+
+| Issue | Severity | Description |
+|-------|----------|-------------|
+| Data structure mismatch | CRITICAL | Timeline validator looked for `entries` but screen saves `goals` |
+| Data structure mismatch | CRITICAL | ActionPlan validator looked for `plans` but screen saves `selectedGoalId` + `steps` |
+| Cache not invalidated | HIGH | Phase-specific cache key not invalidated after saves |
+| Long stale time | MEDIUM | 5-minute cache meant dashboard showed stale data |
+
+### Files Modified (2 files)
+
+#### `mobile/src/config/worksheetConfigs.ts`
+- **Timeline completion criteria (lines 307-323)**: Changed from checking `entries` array to `goals` array with proper validation (title, startDate, endDate)
+- **ActionPlan completion criteria (lines 325-340)**: Changed from checking `plans` array to `selectedGoalId` + `steps` array with proper validation
+
+#### `mobile/src/hooks/useWorkbook.ts`
+- **Cache invalidation (lines 208-210, 275-277)**: Added `workbookKeys.phase()` invalidation in both `useSaveWorkbook` and `useMarkComplete` onSuccess handlers
+- **Stale time (lines 69, 113, 147)**: Reduced from 5 minutes to 30 seconds for fresher data
+
+### Risk Assessment
+| Change | Risk | Notes |
+|--------|------|-------|
+| worksheetConfigs.ts | LOW | Only changes detection, not data storage |
+| Cache invalidation | LOW | More cache clearing = fresher data |
+| staleTime reduction | LOW | May increase API calls slightly |
+
+### Verification Steps
+1. Open Timeline screen, add 3+ goals with dates, save
+2. Navigate to Phase 3 dashboard - should show progress update immediately
+3. Open ActionPlan, select goal, add 3+ steps, save
+4. Dashboard should show progress immediately
+5. Main Workbook screen should reflect correct Phase 3 progress
+
+---
+
+## Previous Activity: Workbook Crash Bug Fixes - January 23, 2026
 
 ### Summary
 Comprehensive fix for potential crash-causing bugs across all 10 workbook phases. Fixed 6 TypeScript compilation errors and applied defensive programming patterns to 36 files to prevent runtime crashes when loading corrupted or malformed saved data from Supabase.

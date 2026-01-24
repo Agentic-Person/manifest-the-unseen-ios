@@ -66,7 +66,7 @@ export function useWorkbookProgress(phaseNumber: number, worksheetId: string) {
       return result;
     },
     enabled: !!user?.id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 30, // 30 seconds - shorter to ensure fresh data after saves
   });
 
   // Calculate progress on-the-fly (0%, 50%, or 100%)
@@ -205,7 +205,11 @@ export function useSaveWorkbook() {
         queryKey: workbookKeys.progress(user.id),
       });
 
-      logger.debug('[useSaveWorkbook] Cache invalidated, data will be refetched');
+      // Also invalidate phase-specific cache to ensure dashboard reflects changes immediately
+      const phaseKey = workbookKeys.phase(user.id, result.phase_number);
+      queryClient.invalidateQueries({ queryKey: phaseKey });
+
+      logger.debug('[useSaveWorkbook] Cache invalidated (worksheet, progress, phase), data will be refetched');
     },
     onError: (error, variables) => {
       // Log mutation errors for debugging
@@ -268,7 +272,11 @@ export function useMarkComplete() {
         queryKey: workbookKeys.progress(user.id),
       });
 
-      logger.debug('[useMarkComplete] Cache invalidated, progress will be refetched');
+      // Also invalidate phase-specific cache to ensure dashboard reflects changes immediately
+      const phaseKey = workbookKeys.phase(user.id, result.phase_number);
+      queryClient.invalidateQueries({ queryKey: phaseKey });
+
+      logger.debug('[useMarkComplete] Cache invalidated (worksheet, progress, phase), progress will be refetched');
     },
   });
 }

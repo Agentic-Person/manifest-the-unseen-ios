@@ -27,6 +27,14 @@ export const detectCompletion = (
   data: Record<string, unknown>,
   criteria: CompletionCriteria
 ): boolean => {
+  // DEBUG: Log incoming data for troubleshooting
+  if (__DEV__) {
+    console.log('[detectCompletion] Checking completion:', {
+      dataKeys: Object.keys(data),
+      criteria: JSON.stringify(criteria).slice(0, 200),
+    });
+  }
+
   // Count filled fields (non-null, non-undefined, non-empty)
   const filledFields = Object.values(data).filter((v) => v !== null && v !== undefined && v !== '');
 
@@ -46,25 +54,42 @@ export const detectCompletion = (
     const minChars = criteria.minCharsPerField ?? 0;
     const fieldResults: Record<string, { exists: boolean; length: number; passes: boolean }> = {};
 
+    if (__DEV__) {
+      console.log('[detectCompletion] Checking mandatory fields:', {
+        fields: criteria.mandatoryFields,
+        minChars,
+      });
+    }
+
     const allFilled = criteria.mandatoryFields.every((key) => {
       const value = data[key];
       // Field must exist and be a non-empty string
       if (!value || typeof value !== 'string') {
         fieldResults[key] = { exists: false, length: 0, passes: false };
+        if (__DEV__) {
+          console.log(`[detectCompletion] Field "${key}" missing or not string:`, { value: typeof value, actualValue: value });
+        }
         return false;
       }
       const trimmed = value.trim();
       const passes = trimmed.length > 0 && trimmed.length >= minChars;
       fieldResults[key] = { exists: true, length: trimmed.length, passes };
+      if (__DEV__) {
+        console.log(`[detectCompletion] Field "${key}": length=${trimmed.length}, minChars=${minChars}, passes=${passes}`);
+      }
       // Field must meet minimum character count if specified
       return passes;
     });
 
     if (!allFilled && __DEV__) {
-      console.log('[detectCompletion] Failed: mandatory fields not satisfied', {
+      console.log('[detectCompletion] FAILED: mandatory fields not satisfied', {
         minChars,
         fieldResults,
       });
+    }
+
+    if (allFilled && __DEV__) {
+      console.log('[detectCompletion] SUCCESS: all mandatory fields satisfied');
     }
 
     if (!allFilled) return false;

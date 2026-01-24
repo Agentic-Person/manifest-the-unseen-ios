@@ -146,9 +146,10 @@ export const Phase1ExerciseImages = {
 
 export type Phase1ExerciseImageKey = keyof typeof Phase1ExerciseImages;
 
-// Phase 2: Values & Vision (2 exercises)
+// Phase 2: Values & Vision (3 exercises)
 export const Phase2ExerciseImages = {
   lifeMission: require('./images-compressed/workbook/2-Values-Vision/values_life_mission.png'),
+  purposeStatement: require('./images-compressed/workbook/2-Values-Vision/values_life_mission.png'), // Uses life mission image as fallback
   visionBoard: require('./images-compressed/workbook/2-Values-Vision/values_vision_board.png'),
 } as const;
 

@@ -71,22 +71,23 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 1,
     completionCriteria: {
       customValidator: (data) => {
-        // Each SWOT category should have at least 2 items
-        // Data structure: { swotData: Array<{ id: string; items: Array<{ text: string }> }> }
-        interface SWOTQuadrant { id: string; items?: Array<{ text: string }> }
-        const swotWrapper = data as { swotData?: SWOTQuadrant[] };
-        const quadrants = swotWrapper.swotData ?? [];
-
-        const getCount = (id: string) => {
-          const quadrant = quadrants.find(q => q.id === id);
-          return quadrant?.items?.filter(i => i.text?.trim().length > 0)?.length ?? 0;
+        // SWOTAnalysisScreen saves: { strengths: string[], weaknesses: string[], opportunities: string[], threats: string[], updatedAt }
+        // Each SWOT category should have at least 2 non-empty items
+        const swotData = data as {
+          strengths?: string[];
+          weaknesses?: string[];
+          opportunities?: string[];
+          threats?: string[];
         };
 
+        const countValid = (arr?: string[]) =>
+          arr?.filter((s) => typeof s === 'string' && s.trim().length > 0)?.length ?? 0;
+
         return (
-          getCount('strengths') >= 2 &&
-          getCount('weaknesses') >= 2 &&
-          getCount('opportunities') >= 2 &&
-          getCount('threats') >= 2
+          countValid(swotData.strengths) >= 2 &&
+          countValid(swotData.weaknesses) >= 2 &&
+          countValid(swotData.opportunities) >= 2 &&
+          countValid(swotData.threats) >= 2
         );
       },
     },
@@ -263,9 +264,10 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 2,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have at least 5 images or items on the vision board
-        const visionData = data as { images?: Array<unknown> };
-        return (visionData.images?.length ?? 0) >= 5;
+        // VisionBoardScreen saves: { id, name, items: VisionBoardItem[], template, backgroundColor, ... }
+        // Should have at least 5 items on the vision board
+        const visionData = data as { items?: Array<unknown> };
+        return (visionData.items?.length ?? 0) >= 5;
       },
     },
   },
@@ -309,11 +311,15 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 3,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have timeline entries for at least 3 goals
+        // TimelineScreen saves: { goals, selectedView, updatedAt }
+        // Should have at least 3 goals with title and dates
         const timelineData = data as {
-          entries?: Array<{ goal: string; milestones: Array<unknown> }>;
+          goals?: Array<{ id: string; title: string; startDate: string; endDate: string; status: string }>;
         };
-        return (timelineData.entries?.length ?? 0) >= 3;
+        const validGoals = timelineData.goals?.filter(
+          (g) => g.title?.trim().length > 0 && g.startDate && g.endDate
+        );
+        return (validGoals?.length ?? 0) >= 3;
       },
     },
   },
@@ -323,10 +329,15 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 3,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have action plans for at least 2 goals with multiple steps
-        const planData = data as { plans?: Array<{ goal: string; steps: Array<unknown> }> };
-        const validPlans = planData.plans?.filter((p) => (p.steps?.length ?? 0) >= 3);
-        return (validPlans?.length ?? 0) >= 2;
+        // ActionPlanScreen saves: { selectedGoalId, steps, updatedAt }
+        // Should have a selected goal and at least 3 valid steps
+        const planData = data as {
+          selectedGoalId?: string | null;
+          steps?: Array<{ id: string; text: string; completed: boolean }>;
+        };
+        const hasGoal = !!planData.selectedGoalId;
+        const validSteps = planData.steps?.filter((s) => s.text?.trim().length > 0);
+        return hasGoal && (validSteps?.length ?? 0) >= 3;
       },
     },
   },
@@ -340,10 +351,11 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 4,
     completionCriteria: {
       customValidator: (data) => {
-        // Should list at least 5 fears with descriptions
-        const fearData = data as { fears?: Array<{ description: string; intensity: number }> };
+        // FearInventoryScreen saves: { fears: Fear[] } where Fear has { id, text, category, intensity, ... }
+        // Should list at least 5 fears with text descriptions
+        const fearData = data as { fears?: Array<{ text: string; intensity: number }> };
         const validFears = fearData.fears?.filter(
-          (f) => f.description?.trim().length >= 10 && f.intensity > 0
+          (f) => f.text?.trim().length >= 10 && f.intensity > 0
         );
         return (validFears?.length ?? 0) >= 5;
       },
@@ -541,17 +553,19 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 8,
     completionCriteria: {
       customValidator: (data) => {
-        // Should list at least 3 sources of envy
+        // EnvyInventoryScreen saves: { envyItems: EnvyItem[] }
+        // EnvyItem has: { id, whoWhat, trigger, category, intensity, reflection?, ... }
+        // Should list at least 3 sources of envy with meaningful content
         const envyData = data as {
-          entries?: Array<{ person: string; quality: string; reason: string }>;
+          envyItems?: Array<{ whoWhat: string; trigger: string; intensity: number }>;
         };
-        const validEntries = envyData.entries?.filter(
+        const validItems = envyData.envyItems?.filter(
           (e) =>
-            e.person?.trim().length > 0 &&
-            e.quality?.trim().length > 0 &&
-            e.reason?.trim().length >= 20
+            e.whoWhat?.trim().length > 0 &&
+            e.trigger?.trim().length >= 10 &&
+            e.intensity > 0
         );
-        return (validEntries?.length ?? 0) >= 3;
+        return (validItems?.length ?? 0) >= 3;
       },
     },
   },

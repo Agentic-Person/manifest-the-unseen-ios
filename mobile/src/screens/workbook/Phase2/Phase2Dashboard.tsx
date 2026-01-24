@@ -34,6 +34,13 @@ const PHASE2_EXERCISES: ExerciseConfig[] = [
     estimatedTime: '20 min',
   },
   {
+    id: 'purpose-statement',
+    name: 'Purpose Statement',
+    description: 'Discover and articulate your life purpose',
+    icon: Phase2ExerciseImages.purposeStatement,
+    estimatedTime: '25 min',
+  },
+  {
     id: 'vision-board',
     name: 'Vision Board',
     description: 'Create a visual representation of your goals',
@@ -129,6 +136,9 @@ const Phase2Dashboard: React.FC<Props> = ({ navigation }) => {
     switch (exerciseId) {
       case 'life-mission':
         (navigation.navigate as any)('LifeMission');
+        break;
+      case 'purpose-statement':
+        (navigation.navigate as any)('PurposeStatement');
         break;
       case 'vision-board':
         (navigation.navigate as any)('VisionBoard');

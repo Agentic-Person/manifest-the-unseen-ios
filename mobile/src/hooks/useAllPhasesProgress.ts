@@ -3,11 +3,18 @@
  *
  * Fetches progress for all 10 workbook phases efficiently in a single query.
  * Returns per-phase progress summaries and overall completion percentage.
+ *
+ * IMPORTANT: This hook runs completion detection on-the-fly using the actual
+ * worksheet data, not just the `completed` boolean in the database. This ensures
+ * progress is always calculated using the latest completion criteria.
  */
 
 import { useMemo } from 'react';
 import { useAllWorkbookProgress } from './useWorkbook';
 import { WORKSHEETS_PER_PHASE } from '../types/workbook';
+import { getWorksheetConfig } from '../config/worksheetConfigs';
+import { detectCompletion } from '../utils/completionDetection';
+import { logger } from '../utils/logger';
 
 /**
  * Summary for a single phase's progress
@@ -86,8 +93,36 @@ export function useAllPhasesProgress(): AllPhasesProgressResult {
         (entry) => entry.phase_number === phaseNumber
       ) || [];
 
-      // Count completed worksheets (marked as complete)
-      const completed = phaseEntries.filter((entry) => entry.completed).length;
+      // Count completed worksheets using ACTUAL completion detection
+      // This runs the completion criteria against the saved data, not just the boolean flag
+      // This ensures we always use the latest completion criteria
+      const completed = phaseEntries.filter((entry) => {
+        // First check the database boolean (fast path)
+        if (entry.completed) return true;
+
+        // If not marked complete, run completion detection on the actual data
+        // This catches worksheets saved before criteria were fixed
+        if (entry.data && typeof entry.data === 'object') {
+          try {
+            const config = getWorksheetConfig(entry.worksheet_id);
+            if (config?.completionCriteria) {
+              const isComplete = detectCompletion(
+                entry.data as Record<string, unknown>,
+                config.completionCriteria
+              );
+              if (isComplete) {
+                logger.debug(`[useAllPhasesProgress] Worksheet ${entry.worksheet_id} detected as complete via criteria (not marked in DB)`);
+              }
+              return isComplete;
+            }
+          } catch (err) {
+            // If detection fails, fall back to database boolean
+            logger.warn(`[useAllPhasesProgress] Completion detection failed for ${entry.worksheet_id}:`, err);
+          }
+        }
+
+        return false;
+      }).length;
       totalCompleted += completed;
 
       // Check if user has started this phase (has any data)
