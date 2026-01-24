@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-23 (Phase 2 Purpose Statement Fix + Test Account)
+**Last Updated**: 2026-01-23 (UI Overlaps, Guru Error, SafeAreaProvider Fixes)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
@@ -8,7 +8,104 @@
 
 ---
 
-## ✅ Last Activity: Phase 2 Purpose Statement Wiring + Complete Test Account - January 23, 2026
+## ✅ Last Activity: UI Overlaps, Guru Error Messages, and SafeAreaProvider Crash Fixes - January 23, 2026
+
+### Summary
+Fixed three bugs discovered during manual testing:
+1. **Overlaid graphics** - "MTU" and "Guru" badges appearing doubled at top-left of Guru screen
+2. **Guru Edge Function error** - Unhelpful "Edge Function returned a non-2xx status code" message
+3. **Blank white screen** - SafeAreaProvider context crash in workbook phases
+
+### Issue 1: Overlaid Header Graphics
+
+**Root Cause:** Double header rendering on Guru screen
+- `MainTabNavigator.tsx:151` set `headerLeft: () => <ClickableHeaderLogo />`
+- `GuruScreen.tsx` renders its OWN custom header with `<ClickableHeaderLogo />`
+- Result: Navigator header + custom screen header both render = doubled badges
+
+**Fix:** Added `headerShown: false` to Guru tab options, removed `headerLeft` prop
+
+| File | Change |
+|------|--------|
+| `mobile/src/navigation/MainTabNavigator.tsx` | Line 151: Changed `headerLeft` to `headerShown: false` |
+
+### Issue 2: Guru Edge Function Error
+
+**Root Cause:** Phase completion verification returned generic error without details
+- Edge Function returned 400 if phase not fully complete
+- Error message was generic: "Phase X must be fully completed before Guru analysis"
+- No indication of which worksheets were missing or incomplete
+
+**Fix:** Enhanced error response with detailed worksheet information
+
+| File | Change |
+|------|--------|
+| `supabase/functions/guru-analysis/index.ts` | Lines 1471-1519: Added detailed error with worksheet counts, names of incomplete worksheets, and structured `details` object |
+
+**New Error Response Format:**
+```json
+{
+  "error": "Phase 10 must be fully completed before Guru analysis. Found 2 of 3 required worksheets. Please complete all exercises in Phase 10 first.",
+  "code": "PHASE_INCOMPLETE",
+  "details": {
+    "phaseNumber": 10,
+    "expectedWorksheets": 3,
+    "foundWorksheets": 2,
+    "completedWorksheets": 2,
+    "incompleteWorksheets": ["graduation"]
+  }
+}
+```
+
+**Deployment:** Edge function deployed to Supabase (90.53kB)
+
+### Issue 3: Blank White Screen (SafeAreaProvider Crash)
+
+**Root Cause:** `useSafeAreaInsets()` crashes when SafeAreaProvider context not ready
+- `ExerciseScreenLayout.tsx:67` - `const insets = useSafeAreaInsets()`
+- `StickyCompletionButton.tsx:40` - same issue
+- Accessing `insets.bottom` directly crashes if insets undefined during initial render
+
+**Fix:** Added defensive fallbacks and initialMetrics to SafeAreaProvider
+
+| File | Change |
+|------|--------|
+| `mobile/App.tsx` | Line 9: Added `initialWindowMetrics` import |
+| `mobile/App.tsx` | Lines 155, 166: Added `initialMetrics={initialWindowMetrics}` to both SafeAreaProvider instances |
+| `mobile/src/components/workbook/ExerciseScreenLayout.tsx` | Lines 71-72: Added `const safeBottom = insets?.bottom ?? 0` |
+| `mobile/src/components/workbook/StickyCompletionButton.tsx` | Lines 42-43, 117: Added `safeBottom` fallback and updated usage |
+
+### Files Modified (5 files)
+
+| File | Lines Changed | Purpose |
+|------|---------------|---------|
+| `mobile/src/navigation/MainTabNavigator.tsx` | 1 | Disable navigator header for Guru tab |
+| `supabase/functions/guru-analysis/index.ts` | +39 | Detailed phase completion error messages |
+| `mobile/App.tsx` | 3 | Add initialMetrics to SafeAreaProvider |
+| `mobile/src/components/workbook/ExerciseScreenLayout.tsx` | 3 | Defensive insets fallback |
+| `mobile/src/components/workbook/StickyCompletionButton.tsx` | 4 | Defensive insets fallback |
+
+### Git Commit
+```
+44ebe14 fix: resolve UI overlaps, Guru error messages, and SafeAreaProvider crashes
+```
+
+### Risk Assessment
+| Change | Risk | Notes |
+|--------|------|-------|
+| Guru headerShown: false | LOW | GuruScreen already manages its own header |
+| Guru edge function error | LOW | Only changes error messages, not logic |
+| SafeAreaProvider initialMetrics | LOW | Standard React Native pattern for preventing context issues |
+| Insets defensive fallbacks | LOW | Only adds safety, doesn't change behavior |
+
+### Verification Steps
+1. **Overlaid graphics**: Navigate to Guru tab → should see single header with "Guru" title, no doubled MTU badges
+2. **Guru Edge Function**: Select incomplete Phase in Guru → should show helpful error with specific missing worksheets
+3. **Blank screen**: Navigate to Phase 3 SMART Goals → should render without crash or white screen
+
+---
+
+## Previous Activity: Phase 2 Purpose Statement Wiring + Complete Test Account - January 23, 2026
 
 ### Summary
 Two-part fix: (1) Wired the existing Purpose Statement exercise into Phase 2 Dashboard so it appears in the UI and navigation, (2) Created a comprehensive test account with ALL 38 worksheets completed for testing progress tracking and Guru AI functionality.
