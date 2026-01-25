@@ -124,44 +124,156 @@ function parseCSVRow(line) {
 }
 
 /**
+ * Check if row is a valid prayer (not meditation, not notes, etc.)
+ */
+function isValidPrayer(row) {
+  // Must have Type = "Prayer" (case-insensitive)
+  const type = (row.type || '').toLowerCase().trim();
+  if (type !== 'prayer') {
+    return false;
+  }
+
+  // Must have a title
+  if (!row.title || !row.title.trim()) {
+    return false;
+  }
+
+  // Must have script text (content)
+  if (!row.script_text || !row.script_text.trim()) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Strip metadata headers from script content
+ * Removes lines like "Theme:", "Type:", "Music Cue:", title headers, etc.
+ */
+function stripMetadataHeaders(content) {
+  if (!content) return '';
+
+  const lines = content.split('\n');
+  const cleanLines = [];
+  let foundActualContent = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // Skip empty lines at the start
+    if (!foundActualContent && !trimmed) continue;
+
+    // Skip metadata header lines
+    if (
+      trimmed.match(/^Theme:/i) ||
+      trimmed.match(/^Type:/i) ||
+      trimmed.match(/^Music Cue:/i) ||
+      trimmed.match(/^Duration:/i) ||
+      trimmed.match(/^Category:/i) ||
+      trimmed.match(/^Instructions:/i) ||
+      trimmed.match(/^Note:/i) ||
+      trimmed.match(/^Audio:/i) ||
+      // Skip title lines like "I SPEAK HEALING OVER MY BODY - Short Prayer (3-4 minutes)"
+      trimmed.match(/^[A-Z\s]+[-–]\s*(Short|Medium|Long|Extended)\s*(Prayer|Meditation|Breathing)/i) ||
+      // Skip lines that are just section markers
+      trimmed.match(/^[-=]{3,}$/) ||
+      // Skip lines like "(3-4 minutes)" or "(5-7 min)"
+      trimmed.match(/^\(\d+[-–]\d+\s*(min|minutes?)\)$/i)
+    ) {
+      continue;
+    }
+
+    // Found actual content
+    foundActualContent = true;
+    cleanLines.push(line);
+  }
+
+  // Trim trailing empty lines
+  while (cleanLines.length > 0 && !cleanLines[cleanLines.length - 1].trim()) {
+    cleanLines.pop();
+  }
+
+  return cleanLines.join('\n');
+}
+
+/**
  * Convert spreadsheet row to prayer object matching database schema
+ *
+ * Spreadsheet columns:
+ * - ID → order_index
+ * - Category → life_areas
+ * - Type → filter (Prayer only)
+ * - Short_Description → description
+ * - Title → title
+ * - Script_Text → content
  */
 function rowToPrayer(row) {
-  // Parse content - handle literal \n in cells
-  let content = row.content || '';
+  // Parse content from Script_Text column and strip metadata headers
+  let content = row.script_text || '';
+  // Handle literal \n in cells
   content = content.replace(/\\n/g, '\n');
+  // Strip metadata headers
+  content = stripMetadataHeaders(content);
 
-  // Parse arrays (comma-separated)
+  // Parse category into life_areas array
   const parseArray = (str) => {
     if (!str) return [];
     return str.split(',').map(s => s.trim()).filter(Boolean);
   };
 
-  // Map tier names to database values
-  const tierMap = {
-    'free': 'free',
-    'novice': 'novice',
-    'awakening': 'awakening',
-    'enlightenment': 'enlightenment'
+  // Map category to life_areas
+  // e.g., "Healing & Restoration" → ["health", "spirituality"]
+  const categoryToLifeAreas = (category) => {
+    if (!category) return [];
+    const cat = category.toLowerCase();
+    const areas = [];
+    if (cat.includes('healing') || cat.includes('restoration')) areas.push('health', 'spirituality');
+    if (cat.includes('abundance') || cat.includes('prosperity')) areas.push('finance', 'career');
+    if (cat.includes('peace') || cat.includes('anxiety')) areas.push('health', 'spirituality');
+    if (cat.includes('forgiveness') || cat.includes('release')) areas.push('relationships', 'spirituality');
+    if (cat.includes('gratitude')) areas.push('spirituality', 'personalGrowth');
+    if (cat.includes('purpose') || cat.includes('calling')) areas.push('career', 'personalGrowth');
+    if (cat.includes('love') || cat.includes('relationship')) areas.push('relationships', 'family');
+    if (cat.includes('identity') || cat.includes('worth')) areas.push('personalGrowth', 'spirituality');
+    if (cat.includes('surrender') || cat.includes('trust')) areas.push('spirituality');
+    if (cat.includes('divine') || cat.includes('spiritual')) areas.push('spirituality');
+    return [...new Set(areas)]; // Remove duplicates
   };
 
-  // Build audio URL from filename if provided
+  // Build audio URL from title (assuming filename pattern: XXX_Title.m4a)
+  // Only set if Script_Audio_Complete is marked
   let audioUrl = null;
-  if (row.audio_filename) {
-    // Assume files are stored in meditation-audio bucket, prayers folder
-    audioUrl = `prayers/${row.audio_filename}`;
+  const audioComplete = (row.script_audio_complete || '').toLowerCase();
+  if (audioComplete === 'yes' || audioComplete === 'true' || audioComplete === 'x' || audioComplete === '✓') {
+    // Derive filename from ID and Title
+    const id = (row.id || '').padStart(3, '0');
+    const title = row.title || '';
+    audioUrl = `prayers/${id}_${title}.m4a`;
   }
 
   return {
-    order_index: parseInt(row.order_index) || 0,
+    order_index: parseInt(row.id) || 0,
     title: row.title,
-    description: row.description || null,
+    description: row.short_description || null,
     content: content,
     audio_url: audioUrl,
-    tier_required: tierMap[row.tier_required?.toLowerCase()] || 'free',
-    life_areas: parseArray(row.life_areas),
-    tags: parseArray(row.tags)
+    tier_required: 'novice', // Default all to novice for now
+    life_areas: categoryToLifeAreas(row.category),
+    tags: parseArray(row.category) // Use category as tag
   };
+}
+
+/**
+ * Normalize title for comparison
+ * Converts underscores to spaces, normalizes case
+ */
+function normalizeTitle(title) {
+  if (!title) return '';
+  return title
+    .replace(/_/g, ' ')           // underscores → spaces
+    .replace(/\s+/g, ' ')         // collapse multiple spaces
+    .trim()
+    .toLowerCase();
 }
 
 /**
@@ -357,8 +469,12 @@ async function syncPrayers() {
     process.exit(0);
   }
 
+  // Filter to only prayers (not meditations, not notes)
+  const prayerRows = rows.filter(isValidPrayer);
+  console.log(`✓ Filtered to ${prayerRows.length} prayers (Type = "Prayer")\n`);
+
   // Convert to prayer objects
-  const sheetPrayers = rows.map(rowToPrayer).filter(p => p.title);
+  const sheetPrayers = prayerRows.map(rowToPrayer).filter(p => p.title);
 
   // Step 3: Fetch existing prayers from Supabase
   console.log('📊 Fetching existing prayers from Supabase...');
@@ -373,10 +489,10 @@ async function syncPrayers() {
 
   console.log(`✓ Found ${existingPrayers.length} existing prayers in database\n`);
 
-  // Create lookup by title
+  // Create lookup by normalized title
   const existingByTitle = {};
   existingPrayers.forEach(p => {
-    existingByTitle[p.title] = p;
+    existingByTitle[normalizeTitle(p.title)] = p;
   });
 
   // Step 4: Compare and categorize prayers
@@ -386,7 +502,7 @@ async function syncPrayers() {
   const needsTimingRegen = [];
 
   for (const prayer of sheetPrayers) {
-    const existing = existingByTitle[prayer.title];
+    const existing = existingByTitle[normalizeTitle(prayer.title)];
 
     if (!existing) {
       toInsert.push(prayer);
@@ -394,9 +510,19 @@ async function syncPrayers() {
         needsTimingRegen.push({ prayer, content: prayer.content, isNew: true });
       }
     } else if (prayerChanged(existing, prayer)) {
-      toUpdate.push({ ...prayer, id: existing.id });
-      if (prayer.audio_url && contentChanged(existing, prayer)) {
-        needsTimingRegen.push({ prayer: { ...prayer, id: existing.id }, content: prayer.content, isNew: false });
+      // Preserve existing audio_url and line_timings if not set in spreadsheet
+      const mergedPrayer = {
+        ...prayer,
+        id: existing.id,
+        audio_url: prayer.audio_url || existing.audio_url,  // Preserve existing
+      };
+      toUpdate.push(mergedPrayer);
+
+      // Check for timing regen using existing audio_url if spreadsheet doesn't set one
+      const effectiveAudioUrl = prayer.audio_url || existing.audio_url;
+      const contentDiff = contentChanged(existing, prayer);
+      if (effectiveAudioUrl && contentDiff) {
+        needsTimingRegen.push({ prayer: mergedPrayer, content: prayer.content, isNew: false });
       }
     } else {
       unchanged.push(prayer.title);
