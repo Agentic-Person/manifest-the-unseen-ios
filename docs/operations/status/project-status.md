@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-24 (Build 57 - Pre-App Store Security Cleanup)
+**Last Updated**: 2026-01-25 (Google Sheets → Supabase Prayer Sync Tool)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - READY)
@@ -8,7 +8,72 @@
 
 ---
 
-## ✅ Last Activity: Pre-App Store Security & Code Quality Cleanup - January 24, 2026
+## ✅ Last Activity: Google Sheets → Supabase Prayer Sync Tool - January 25, 2026
+
+### Summary
+Created a sync tool that pulls prayer/meditation content from a published Google Sheet CSV into Supabase. The tool intelligently detects changes, only updates modified content, and automatically regenerates Whisper line timings for prayers with audio when their content changes.
+
+### New Tool Created
+**Location**: `tools/meditation-upload/sync-prayers.js`
+
+**Features**:
+- Fetches published CSV from Google Sheets
+- Filters for Type = "Prayer" OR "Meditation" (scripted content only)
+- Strips metadata headers from Script_Text (Theme:, Type:, Music Cue:, etc.)
+- Normalizes titles for matching (underscores ↔ spaces)
+- Compares content with existing database records
+- Only upserts prayers that have actually changed
+- Preserves existing audio_url when spreadsheet doesn't set one
+- Regenerates Whisper line timings only for changed prayers with audio
+
+**Usage**:
+```bash
+cd tools/meditation-upload
+npm run sync-prayers
+```
+
+### Environment Setup
+Added `GOOGLE_SHEET_CSV_URL` to `.env.example` and `.env.local`:
+```
+GOOGLE_SHEET_CSV_URL=https://docs.google.com/spreadsheets/d/e/XXXX/pub?gid=XXX&single=true&output=csv
+```
+
+### Spreadsheet Column Mapping
+| Spreadsheet Column | Database Field | Notes |
+|-------------------|----------------|-------|
+| ID | order_index | Display order |
+| Title | title | Used for matching (normalized) |
+| Short_Description | description | Prayer description |
+| Script_Text | content | Auto-strips metadata headers |
+| Category | life_areas, tags | Mapped to wellness areas |
+
+### Database Updates
+- **51 total prayers/meditations** now in database
+- **8 prayers with audio** have line_timings for synchronized text display
+- **45 scripted items** imported from Google Sheet (20 prayers + 25 meditations)
+
+### Timing Regeneration
+When prayer content changes and the prayer has audio, the script:
+1. Reads local audio file from `meditation-audio/prayers/`
+2. Calls `whisper-transcribe` edge function
+3. Generates proportional line timings based on word count
+4. Updates `line_timings` JSONB in database
+
+### Git Commits
+```
+02a3636 feat: sync both prayers and meditations from Google Sheet
+49eced1 fix: improve prayer sync with metadata stripping and title normalization
+66b400a feat: add Google Sheets to Supabase prayer sync tool
+```
+
+### Files Changed
+- `tools/meditation-upload/sync-prayers.js` - NEW (500+ lines)
+- `tools/meditation-upload/package.json` - Added sync-prayers script
+- `.env.example` - Added GOOGLE_SHEET_CSV_URL documentation
+
+---
+
+## Previous Activity: Pre-App Store Security & Code Quality Cleanup - January 24, 2026
 
 ### Summary
 Comprehensive pre-App Store review and cleanup. Fixed security issues, TypeScript errors, removed debug logs, and configured Sentry for crash reporting with source maps.
