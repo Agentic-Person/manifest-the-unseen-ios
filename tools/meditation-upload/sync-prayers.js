@@ -124,12 +124,12 @@ function parseCSVRow(line) {
 }
 
 /**
- * Check if row is a valid prayer (not meditation, not notes, etc.)
+ * Check if row is valid scripted content (prayer or meditation with script)
  */
-function isValidPrayer(row) {
-  // Must have Type = "Prayer" (case-insensitive)
+function isValidScriptedContent(row) {
+  // Must have Type = "Prayer" or "Meditation" (case-insensitive)
   const type = (row.type || '').toLowerCase().trim();
-  if (type !== 'prayer') {
+  if (type !== 'prayer' && type !== 'meditation') {
     return false;
   }
 
@@ -469,12 +469,12 @@ async function syncPrayers() {
     process.exit(0);
   }
 
-  // Filter to only prayers (not meditations, not notes)
-  const prayerRows = rows.filter(isValidPrayer);
-  console.log(`✓ Filtered to ${prayerRows.length} prayers (Type = "Prayer")\n`);
+  // Filter to prayers and meditations with scripts (not notes, not empty rows)
+  const scriptedRows = rows.filter(isValidScriptedContent);
+  console.log(`✓ Filtered to ${scriptedRows.length} scripted items (Prayer + Meditation)\n`);
 
   // Convert to prayer objects
-  const sheetPrayers = prayerRows.map(rowToPrayer).filter(p => p.title);
+  const sheetPrayers = scriptedRows.map(rowToPrayer).filter(p => p.title);
 
   // Step 3: Fetch existing prayers from Supabase
   console.log('📊 Fetching existing prayers from Supabase...');
