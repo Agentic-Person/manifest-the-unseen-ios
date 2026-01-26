@@ -240,15 +240,20 @@ function rowToPrayer(row) {
     return [...new Set(areas)]; // Remove duplicates
   };
 
-  // Build audio URL from title (assuming filename pattern: XXX_Title.m4a)
+  // Build audio URL from title (filename pattern: XXX-title-words.m4a)
   // Only set if Script_Audio_Complete is marked
+  // Storage uses lowercase with hyphens: prayers/001-i-speak-healing.m4a
   let audioUrl = null;
   const audioComplete = (row.script_audio_complete || '').toLowerCase();
   if (audioComplete === 'yes' || audioComplete === 'true' || audioComplete === 'x' || audioComplete === '✓') {
     // Derive filename from ID and Title
+    // Convert to lowercase and replace spaces/underscores with hyphens
     const id = (row.id || '').padStart(3, '0');
-    const title = row.title || '';
-    audioUrl = `prayers/${id}_${title}.m4a`;
+    const title = (row.title || '')
+      .toLowerCase()
+      .replace(/[_\s]+/g, '-')  // Replace underscores and spaces with hyphens
+      .replace(/[^a-z0-9-]/g, '');  // Remove any other special chars
+    audioUrl = `prayers/${id}-${title}.m4a`;
   }
 
   return {
