@@ -1,17 +1,38 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-26 (Build 58 - App Store Readiness Audit)
+**Last Updated**: 2026-01-26 (Build 58 Submitted to App Store)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
-**Timeline**: Week 8 of 28 (App Store Submission - READY)
-**Status**: 🟢 **Production Ready** - Build 58 on TestFlight.
+**Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
+**Status**: 🟡 **Waiting for Review** - Build 58 submitted to App Store.
 
 ---
 
-## ✅ Last Activity: Build 58 - App Store Readiness Audit - January 26, 2026
+## ✅ Last Activity: Build 58 Submitted to App Store - January 26, 2026
 
 ### Summary
-Comprehensive App Store readiness audit using 6 parallel agents to verify security, App Store requirements, authentication, feature completeness, TypeScript/build status, and database migrations. All checks passed. Build 58 created and submitted to TestFlight.
+Comprehensive App Store readiness audit followed by Build 58 submission to the App Store. Verified all previous rejection issues (Guideline 4.0 Design + Guideline 2.1 Performance) were fixed. Build 58 is now **Waiting for Review**.
+
+### App Store Submission Details
+
+| Field | Value |
+|-------|-------|
+| **Build** | 1.0.0 (58) |
+| **Status** | 🟡 Waiting for Review |
+| **Date Submitted** | January 26, 2026 at 12:58 PM |
+| **Submitted By** | Jimmy Davidson |
+| **Submission ID** | 6f2c691d-e993-4ed2-ad15-639a416fe91b |
+
+### Previous Rejection Issues - RESOLVED
+
+The app was previously rejected on January 11, 2026 (Build 44) for two issues:
+
+| Guideline | Issue | Fix Applied | Status |
+|-----------|-------|-------------|--------|
+| **4.0 Design** | Sign in with Apple button lacks Apple logo | Replaced custom button with official `AppleAuthenticationButton` component | ✅ Fixed in Build 45 |
+| **2.1 Performance** | Error screen after Sign in with Apple on iPad | Fixed touch handling (hitSlop, minHeight), configured Supabase Apple provider | ✅ Fixed in Build 45-47 |
+
+### Audit Results (Pre-Submission)
 
 ### Audit Results
 
@@ -74,15 +95,19 @@ Comprehensive App Store readiness audit using 6 parallel agents to verify securi
 525aabf build: increment iOS build number to 58
 ```
 
-### Pre-Submission Checklist Status
+### Submission Checklist Status
 - ✅ Build 58 on TestFlight
 - ✅ All features working
-- ✅ Security audit passed
+- ✅ Security audit passed (6 parallel agents)
 - ✅ Privacy policy accessible
 - ✅ Terms of service accessible
 - ✅ Subscription disclosures in place
-- ⬜ Complete App Store Connect Privacy Questionnaire
-- ⬜ Submit for App Store review
+- ✅ Previous rejection issues fixed
+- ✅ **Submitted to App Store** - January 26, 2026 at 12:58 PM
+
+### What's Next
+- ⏳ **Waiting for Apple Review** (typically 24-48 hours)
+- App will auto-release upon approval (per release settings)
 
 ---
 
