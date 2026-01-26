@@ -398,6 +398,8 @@ const ComfortZoneScreen: React.FC<Props> = ({ navigation }) => {
           lastSaved={lastSaved}
           isError={isError}
           onRetry={saveNow}
+          showSyncButton
+          onSync={saveNow}
         />
       </View>
     </ExerciseScreenLayout>

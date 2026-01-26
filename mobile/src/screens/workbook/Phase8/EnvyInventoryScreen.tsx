@@ -296,6 +296,8 @@ const EnvyInventoryScreen: React.FC<Props> = () => {
           lastSaved={lastSaved}
           isError={isError}
           onRetry={saveNow}
+          showSyncButton
+          onSync={saveNow}
         />
       </View>
 

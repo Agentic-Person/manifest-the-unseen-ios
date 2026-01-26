@@ -3,11 +3,13 @@
  *
  * Visual indicator for save status (saving, saved, error).
  * Displays in a pill/badge format, suitable for header or content areas.
+ * Optionally includes a "Sync to Guru" button for explicit data sync.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { colors } from '../../theme/colors';
+import { SyncToGuruButton } from './SyncToGuruButton';
 
 // Maximum time to show "Saving..." before considering it stuck (15 seconds)
 // With retry logic (3 retries with exponential backoff), saves should complete within 15s
@@ -24,6 +26,10 @@ interface SaveIndicatorProps {
   isError: boolean;
   /** Callback to retry the save on error */
   onRetry?: () => void;
+  /** Whether to show the "Sync to Guru" button */
+  showSyncButton?: boolean;
+  /** Callback to trigger sync (usually the saveNow function) */
+  onSync?: () => Promise<void> | void;
 }
 
 /**
@@ -59,6 +65,8 @@ export const SaveIndicator: React.FC<SaveIndicatorProps> = ({
   lastSaved,
   isError,
   onRetry,
+  showSyncButton = false,
+  onSync,
 }) => {
   // Track how long we've been showing "Saving..."
   const [savingDuration, setSavingDuration] = useState(0);
@@ -105,71 +113,97 @@ export const SaveIndicator: React.FC<SaveIndicatorProps> = ({
   // Determine if the saving indicator is stuck
   const isSavingStuck = isSaving && savingDuration > MAX_SAVING_DISPLAY_MS;
 
-  // Fallback: if lastSaved is very recent and isSaving is stuck, show "Saved" instead
-  if (isSaving && isRecentlySaved && savingDuration > 3000) {
-    // isSaving is stuck but we have a recent save - show saved state
-    return (
-      <View style={styles.container}>
-        <Text style={styles.checkIcon}>✓</Text>
-        <Text style={styles.text}>Saved at {formatTime(lastSaved!)}</Text>
-      </View>
-    );
+  // Helper to render the status indicator content
+  const renderStatusIndicator = () => {
+    // Fallback: if lastSaved is very recent and isSaving is stuck, show "Saved" instead
+    if (isSaving && isRecentlySaved && savingDuration > 3000) {
+      return (
+        <View style={styles.statusContainer}>
+          <Text style={styles.checkIcon}>✓</Text>
+          <Text style={styles.text}>Saved at {formatTime(lastSaved!)}</Text>
+        </View>
+      );
+    }
+
+    // If saving is stuck for too long, show error/retry state
+    if (isSavingStuck) {
+      return (
+        <TouchableOpacity
+          style={[styles.statusContainer, styles.warningContainer]}
+          onPress={onRetry}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.warningIcon}>⏳</Text>
+          <Text style={[styles.text, styles.warningText]}>Save may have failed. Tap to retry.</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    // Normal saving state
+    if (isSaving) {
+      return (
+        <View style={styles.statusContainer}>
+          <ActivityIndicator size="small" color={colors.dark.textSecondary} style={styles.icon} />
+          <Text style={styles.text}>Saving...</Text>
+        </View>
+      );
+    }
+
+    // Error state
+    if (isError) {
+      return (
+        <TouchableOpacity
+          style={[styles.statusContainer, styles.errorContainer]}
+          onPress={onRetry}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.errorIcon}>⚠️</Text>
+          <Text style={[styles.text, styles.errorText]}>Error saving. Tap to retry.</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    // Saved state
+    if (lastSaved) {
+      return (
+        <View style={styles.statusContainer}>
+          <Text style={styles.checkIcon}>✓</Text>
+          <Text style={styles.text}>Saved at {formatTime(lastSaved)}</Text>
+        </View>
+      );
+    }
+
+    return null;
+  };
+
+  const statusIndicator = renderStatusIndicator();
+
+  // If no sync button and no status, return null
+  if (!showSyncButton && !statusIndicator) {
+    return null;
   }
 
-  // If saving is stuck for too long, show error/retry state
-  if (isSavingStuck) {
-    return (
-      <TouchableOpacity
-        style={[styles.container, styles.warningContainer]}
-        onPress={onRetry}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.warningIcon}>⏳</Text>
-        <Text style={[styles.text, styles.warningText]}>Save may have failed. Tap to retry.</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  // Normal saving state
-  if (isSaving) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="small" color={colors.dark.textSecondary} style={styles.icon} />
-        <Text style={styles.text}>Saving...</Text>
-      </View>
-    );
-  }
-
-  // Error state
-  if (isError) {
-    return (
-      <TouchableOpacity
-        style={[styles.container, styles.errorContainer]}
-        onPress={onRetry}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.errorIcon}>⚠️</Text>
-        <Text style={[styles.text, styles.errorText]}>Error saving. Tap to retry.</Text>
-      </TouchableOpacity>
-    );
-  }
-
-  // Saved state
-  if (lastSaved) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.checkIcon}>✓</Text>
-        <Text style={styles.text}>Saved at {formatTime(lastSaved)}</Text>
-      </View>
-    );
-  }
-
-  // No state to show
-  return null;
+  // Render with optional sync button
+  return (
+    <View style={styles.wrapper}>
+      {statusIndicator}
+      {showSyncButton && (
+        <SyncToGuruButton
+          onSave={onSync}
+          disabled={isSaving}
+          compact
+        />
+      )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  statusContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -178,7 +212,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     borderRadius: 16,
     alignSelf: 'center',
-    marginVertical: 8,
+    marginBottom: 4,
   },
   errorContainer: {
     backgroundColor: 'rgba(220, 38, 38, 0.2)',

@@ -480,7 +480,9 @@ const GratitudeJournalScreen: React.FC<Props> = ({ navigation }) => {
         lastSaved={lastSaved}
         isError={isLoadError}
         onRetry={saveNow}
-      />
+          showSyncButton
+          onSync={saveNow}
+        />
     </ExerciseScreenLayout>
   );
 };

@@ -134,7 +134,8 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
   } = useWorkbookProgress(7, WORKSHEET_IDS.GRATITUDE_LETTERS);
 
   const { isSaving, lastSaved, saveNow, isAutoCompleted, canComplete, markComplete } = useAutoSave({
-    data: letters as unknown as Record<string, unknown>,
+    // Wrap letters in object to match validator expectation: { letters: [...] }
+    data: { letters } as Record<string, unknown>,
     phaseNumber: 7,
     worksheetId: WORKSHEET_IDS.GRATITUDE_LETTERS,
     isCompleted: savedProgress?.completed || false,
@@ -156,8 +157,18 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    if (savedProgress?.data && Array.isArray(savedProgress.data)) {
-      setLetters(savedProgress.data as unknown as GratitudeLetter[]);
+    if (savedProgress?.data) {
+      // Support both old format (array) and new format (object with letters property)
+      if (Array.isArray(savedProgress.data)) {
+        setLetters(savedProgress.data as unknown as GratitudeLetter[]);
+      } else if (
+        typeof savedProgress.data === 'object' &&
+        Array.isArray((savedProgress.data as { letters?: unknown }).letters)
+      ) {
+        setLetters(
+          (savedProgress.data as { letters: GratitudeLetter[] }).letters
+        );
+      }
     }
   }, [savedProgress, isLoading]);
 
@@ -445,6 +456,8 @@ const GratitudeLettersScreen: React.FC<Props> = ({ navigation }) => {
           lastSaved={lastSaved}
           isError={isLoadError}
           onRetry={saveNow}
+          showSyncButton
+          onSync={saveNow}
         />
       </ExerciseScreenLayout>
 

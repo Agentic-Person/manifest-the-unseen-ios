@@ -140,6 +140,10 @@ export type { ConfettiCelebrationProps, ConfettiBurstProps } from './ConfettiCel
 export { SaveIndicator } from './SaveIndicator';
 export type { default as SaveIndicatorDefault } from './SaveIndicator';
 
+// Sync to Guru Button
+export { SyncToGuruButton } from './SyncToGuruButton';
+export type { default as SyncToGuruButtonDefault } from './SyncToGuruButton';
+
 // Dashboard Navigation Components
 export { PhaseCard } from './PhaseCard';
 export { ProgressBar } from './ProgressBar';

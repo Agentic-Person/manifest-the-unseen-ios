@@ -99,6 +99,7 @@ interface MeditationSession {
   completedAt: string;
   reflection: string;
   promptUsed: string;
+  completed: boolean; // Added to match validator expectation
 }
 
 // Session Stats
@@ -311,6 +312,7 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
       completedAt: new Date().toISOString(),
       reflection: reflectionText.trim(),
       promptUsed: currentPrompt.title,
+      completed: true, // Mark session as completed for validator
     };
 
     // Update local state
@@ -497,6 +499,8 @@ const GratitudeMeditationScreen: React.FC<Props> = ({ navigation }) => {
           lastSaved={lastSaved}
           isError={isLoadError}
           onRetry={saveNow}
+          showSyncButton
+          onSync={saveNow}
         />
       </ExerciseScreenLayout>
 

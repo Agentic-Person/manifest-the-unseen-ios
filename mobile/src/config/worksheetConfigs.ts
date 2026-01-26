@@ -453,7 +453,8 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 6,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have manifestation text and at least 3 days of practice
+        // Should have manifestation text and at least 1 day of practice
+        // Lowered threshold from 3 days to let users feel success on first day
         // Data structure: { practice: { manifestation: string; dailyProgress: Array } }
         interface PracticeData {
           manifestation?: string;
@@ -462,7 +463,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         const methodData = data as { practice?: PracticeData };
         const manifestation = methodData.practice?.manifestation ?? '';
         const dailyProgress = methodData.practice?.dailyProgress ?? [];
-        return manifestation.trim().length >= 10 && dailyProgress.length >= 3;
+        return manifestation.trim().length >= 10 && dailyProgress.length >= 1;
       },
     },
   },
@@ -515,7 +516,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 7,
     completionCriteria: {
       customValidator: (data) => {
-        // Should have at least 7 gratitude entries (one week)
+        // Should have at least 3 gratitude entries (lowered from 7 - one week was too long)
         // Data structure: Record<string, { dateKey: string; items: Array<{ text: string }>; ... }>
         // The data is keyed by date string, so we need to get the values
         interface GratitudeEntry {
@@ -530,7 +531,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
         const validEntries = entries.filter(
           (e) => (e.items?.filter((item) => item.text?.trim().length > 0)?.length ?? 0) >= 3
         );
-        return validEntries.length >= 7;
+        return validEntries.length >= 3;
       },
     },
   },
@@ -540,12 +541,24 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 7,
     completionCriteria: {
       customValidator: (data) => {
-        // Should write at least 2 gratitude letters
-        const lettersData = data as { letters?: Array<{ recipient: string; content: string }> };
-        const validLetters = lettersData.letters?.filter(
-          (l) => l.recipient?.trim().length > 0 && l.content?.trim().length >= 100
+        // Should write at least 1 gratitude letter (lowered from 2 to lower barrier)
+        // Support both array format (old) and object wrapper format (new)
+        let letters: Array<{ recipientName?: string; recipient?: string; content: string }>;
+        if (Array.isArray(data)) {
+          // Old format: data is directly an array of letters
+          letters = data;
+        } else {
+          // New format: data is { letters: [...] }
+          letters =
+            (data as { letters?: typeof letters }).letters ?? [];
+        }
+        // Support both recipientName (screen saves) and recipient (old validator expected)
+        const validLetters = letters.filter(
+          (l) =>
+            ((l.recipientName?.trim().length ?? 0) > 0 || (l.recipient?.trim().length ?? 0) > 0) &&
+            (l.content?.trim().length ?? 0) >= 50 // Lowered from 100 chars
         );
-        return (validLetters?.length ?? 0) >= 2;
+        return validLetters.length >= 1;
       },
     },
   },
@@ -555,10 +568,15 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     phaseNumber: 7,
     completionCriteria: {
       customValidator: (data) => {
-        // Should complete at least 5 meditation sessions
-        const meditationData = data as { sessions?: Array<{ completed: boolean }> };
-        const completedSessions = meditationData.sessions?.filter((s) => s.completed === true);
-        return (completedSessions?.length ?? 0) >= 5;
+        // Should complete at least 3 meditation sessions (lowered from 5 to be achievable in first week)
+        // Support both completed: boolean (new) and completedAt: string (screen saves)
+        const meditationData = data as {
+          sessions?: Array<{ completed?: boolean; completedAt?: string }>;
+        };
+        const completedSessions = meditationData.sessions?.filter(
+          (s) => s.completed === true || (s.completedAt && s.completedAt.length > 0)
+        );
+        return (completedSessions?.length ?? 0) >= 3;
       },
     },
   },
@@ -666,7 +684,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     completionCriteria: {
       customValidator: (data) => {
         // Screen saves: { entries: [{ controllingText, surrenderText, affirmation, isReleased, ... }], totalReleased }
-        // Should have at least 3 surrender entries with meaningful content
+        // Should have at least 2 surrender entries with meaningful content (lowered from 3 to lower barrier)
         const surrenderData = data as {
           entries?: Array<{
             controllingText?: string;
@@ -679,7 +697,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
             (e.controllingText?.trim()?.length ?? 0) >= 10 &&
             (e.surrenderText?.trim()?.length ?? 0) >= 10
         );
-        return (validEntries?.length ?? 0) >= 3;
+        return (validEntries?.length ?? 0) >= 2;
       },
     },
   },
@@ -690,7 +708,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
     completionCriteria: {
       customValidator: (data) => {
         // Screen saves: { entries: [{ whatHappened, possibleMeaning, howItFelt, category, ... }] }
-        // Should log at least 5 synchronicities or signs
+        // Should log at least 3 synchronicities or signs (lowered from 5 - users may not notice signs immediately)
         const signsData = data as {
           entries?: Array<{ whatHappened?: string; possibleMeaning?: string }>;
         };
@@ -699,7 +717,7 @@ export const WORKSHEET_CONFIGS: Record<string, WorksheetConfig> = {
             (e.whatHappened?.trim()?.length ?? 0) >= 20 &&
             (e.possibleMeaning?.trim()?.length ?? 0) >= 10
         );
-        return (validEntries?.length ?? 0) >= 5;
+        return (validEntries?.length ?? 0) >= 3;
       },
     },
   },
