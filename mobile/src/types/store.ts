@@ -30,6 +30,15 @@ export interface UserProfile {
 }
 
 /**
+ * Auth State Type
+ * Three-state authentication for App Store compliance (Guideline 5.1.1)
+ * - loading: Initial state while checking session
+ * - anonymous: No account, can browse and purchase without registration
+ * - authenticated: Logged in with Supabase account
+ */
+export type AuthStateType = 'loading' | 'anonymous' | 'authenticated';
+
+/**
  * Authentication State
  */
 export interface AuthState {
@@ -39,6 +48,7 @@ export interface AuthState {
   session: Session | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  authState: AuthStateType;
   error: string | null;
 
   // Actions
@@ -47,6 +57,7 @@ export interface AuthState {
   setSession: (session: Session | null) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
+  setAnonymous: () => void;
   initialize: () => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;

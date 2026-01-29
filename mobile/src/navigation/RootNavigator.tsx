@@ -12,8 +12,9 @@ import type { RootStackParamList } from '../types/navigation';
 
 // Import navigators and screens
 import { MainTabNavigator } from './MainTabNavigator';
-import { AuthNavigator } from './AuthNavigator';
+import { GuestNavigator } from './GuestNavigator';
 import { PaywallScreen } from '../screens/subscription/PaywallScreen';
+import { SplashScreen } from '../screens/SplashScreen';
 import ManuscriptScreen from '../screens/ManuscriptScreen';
 import ObservableScienceScreen from '../screens/ObservableScienceScreen';
 import { useAuthStore } from '../stores/authStore';
@@ -37,7 +38,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  */
 export const RootNavigator = () => {
   const {
-    isAuthenticated,
+    authState,
     isLoading: _isLoading,
     initialize,
     setUser,
@@ -135,12 +136,19 @@ export const RootNavigator = () => {
           animation: 'slide_from_right',
         }}
       >
-        {isAuthenticated ? (
-          // Authenticated: Show main app
+        {/* Three-state navigation for App Store Guideline 5.1.1 compliance */}
+        {authState === 'loading' && (
+          // Loading: Show splash while checking session
+          <Stack.Screen name="Splash" component={SplashScreen} />
+        )}
+        {authState === 'anonymous' && (
+          // Anonymous: Show GuestNavigator (paywall first, auth optional)
+          // Users can browse and purchase without registration
+          <Stack.Screen name="Guest" component={GuestNavigator} />
+        )}
+        {authState === 'authenticated' && (
+          // Authenticated: Show full app with all features
           <Stack.Screen name="Main" component={MainTabNavigator} />
-        ) : (
-          // Not authenticated: Show auth flow
-          <Stack.Screen name="Auth" component={AuthNavigator} />
         )}
 
         {/* Stack Screens - Accessible from HomeScreen */}

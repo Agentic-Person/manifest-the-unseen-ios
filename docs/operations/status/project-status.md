@@ -1,14 +1,89 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-29 (Vercel Deployment FIXED)
+**Last Updated**: 2026-01-29 (App Store Rejection Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
-**Status**: 🟡 **Waiting for Review** - Build 58 submitted to App Store.
+**Status**: 🟡 **Ready for Build 59** - Code fix complete for App Store rejection.
 
 ---
 
-## ✅ Last Activity: Vercel Website Deployment FIXED - January 29, 2026
+## 🔧 Last Activity: App Store Rejection Fix (Guideline 5.1.1) - January 29, 2026
+
+### Summary
+
+Implemented three-state navigation to fix App Store rejection for Guideline 5.1.1 (Registration Required Before Purchase). Build 58 was rejected because users couldn't access the subscription paywall without first logging in.
+
+### The Problem
+
+Build 58 rejected for two issues:
+1. **Guideline 2.3.2** - Promotional IAP images include price references (manual fix in App Store Connect)
+2. **Guideline 5.1.1** - App requires registration before purchasing subscriptions
+
+Root cause: Binary auth check in `RootNavigator.tsx` only showed `AuthNavigator` (login/signup) until authenticated. PaywallScreen was unreachable without logging in first.
+
+### The Solution: Three-State Navigation
+
+Replaced binary auth (`isAuthenticated` true/false) with three states:
+- `loading` - Initial state while checking session (shows SplashScreen)
+- `anonymous` - No account, shows GuestNavigator (paywall first, auth optional)
+- `authenticated` - Logged in, shows MainTabNavigator (full app)
+
+### Files Modified
+
+| File | Changes |
+|------|--------|
+| `mobile/src/types/store.ts` | Added `AuthStateType` and `authState` to `AuthState` interface |
+| `mobile/src/stores/authStore.ts` | Added `authState`, `setAnonymous()`, updated `setUser`/`setSession`/`initialize`/`signOut` |
+| `mobile/src/types/navigation.ts` | Added `GuestStackParamList` type, added `Guest`/`Splash` to `RootStackParamList` |
+| `mobile/src/navigation/GuestNavigator.tsx` | **NEW** - Stack with PaywallScreen as initial, plus auth screens |
+| `mobile/src/screens/SplashScreen.tsx` | **NEW** - Loading screen during auth check |
+| `mobile/src/navigation/RootNavigator.tsx` | Three-branch navigation: loading/anonymous/authenticated |
+| `mobile/src/screens/subscription/PaywallScreen.tsx` | Added "Sign In" link, post-purchase prompt for optional account |
+
+### User Flow After Fix
+
+1. **Fresh install** → See PaywallScreen immediately (no login required)
+2. **Purchase subscription** → RevenueCat processes (anonymous customer ID)
+3. **Post-purchase prompt** → "Create Account" / "Sign In" / "Continue as Guest"
+4. **Returning users** → Sign in to sync data across devices
+5. **Restore purchases** → Works for both anonymous and authenticated users
+
+### Key Implementation Details
+
+```typescript
+// New auth state type
+type AuthStateType = 'loading' | 'anonymous' | 'authenticated';
+
+// Three-branch navigation in RootNavigator
+{authState === 'loading' && <Stack.Screen name="Splash" component={SplashScreen} />}
+{authState === 'anonymous' && <Stack.Screen name="Guest" component={GuestNavigator} />}
+{authState === 'authenticated' && <Stack.Screen name="Main" component={MainTabNavigator} />}
+
+// Post-purchase prompt for anonymous users
+Alert.alert(
+  'Purchase Complete!',
+  'Create an account to sync across devices, or continue as a guest.',
+  [
+    { text: 'Create Account', onPress: () => navigation.navigate('GuestSignup') },
+    { text: 'Sign In', onPress: () => navigation.navigate('GuestLogin') },
+    { text: 'Continue as Guest', onPress: () => navigation.navigate('Main') },
+  ]
+);
+```
+
+### Next Steps
+
+1. ✅ Code changes complete - TypeScript compiles without errors
+2. ⏳ Update promotional images in App Store Connect (remove price references)
+3. ⏳ Increment build number in `mobile/app.json`
+4. ⏳ Commit and push changes
+5. ⏳ Create Build 59 for TestFlight
+6. ⏳ Resubmit to App Store Review
+
+---
+
+## ✅ Previous Activity: Vercel Website Deployment FIXED - January 29, 2026
 
 ### Summary
 After a 4+ hour debugging session, successfully fixed the Vercel deployment for the web companion site. The site is now live and building correctly.

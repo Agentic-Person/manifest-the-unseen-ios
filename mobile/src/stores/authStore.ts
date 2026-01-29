@@ -33,6 +33,7 @@ const initialState = {
   session: null,
   isLoading: true,
   isAuthenticated: false,
+  authState: 'loading' as const,
   error: null,
 };
 
@@ -48,6 +49,7 @@ export const useAuthStore = create<AuthState>()(
         set({
           user,
           isAuthenticated: !!user,
+          authState: user ? 'authenticated' : 'anonymous',
           error: null,
         });
       },
@@ -60,6 +62,7 @@ export const useAuthStore = create<AuthState>()(
         set({
           session,
           isAuthenticated: !!session,
+          authState: session ? 'authenticated' : 'anonymous',
         });
       },
 
@@ -71,9 +74,17 @@ export const useAuthStore = create<AuthState>()(
         set({ error });
       },
 
+      setAnonymous: () => {
+        set({
+          authState: 'anonymous',
+          isLoading: false,
+          isAuthenticated: false,
+        });
+      },
+
       initialize: async () => {
         try {
-          set({ isLoading: true });
+          set({ isLoading: true, authState: 'loading' });
 
           // Check for existing session with timeout protection
           const {
@@ -85,6 +96,7 @@ export const useAuthStore = create<AuthState>()(
               user: session.user,
               session,
               isAuthenticated: true,
+              authState: 'authenticated',
             });
 
             // Fetch profile with timeout protection
@@ -108,6 +120,13 @@ export const useAuthStore = create<AuthState>()(
               // Log and continue - user can still use the app
               console.warn('Failed to fetch profile during init:', profileError);
             }
+          } else {
+            // No session - set anonymous state for App Store compliance
+            // Users can browse and purchase without registration
+            set({
+              authState: 'anonymous',
+              isAuthenticated: false,
+            });
           }
 
           set({ isLoading: false });
@@ -116,12 +135,13 @@ export const useAuthStore = create<AuthState>()(
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           console.error('Failed to initialize auth:', errorMessage);
 
-          // Don't crash the app - treat as "not logged in" state
+          // Don't crash the app - set anonymous state
           set({
             user: null,
             session: null,
             profile: null,
             isAuthenticated: false,
+            authState: 'anonymous',
             isLoading: false,
           });
         }
@@ -137,9 +157,16 @@ export const useAuthStore = create<AuthState>()(
             throw error;
           }
 
+          // Set anonymous state instead of loading
+          // User returns to guest mode after signing out
           set({
-            ...initialState,
+            user: null,
+            profile: null,
+            session: null,
             isLoading: false,
+            isAuthenticated: false,
+            authState: 'anonymous',
+            error: null,
           });
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to sign out';
@@ -199,9 +226,11 @@ export const useSession = () => useAuthStore((state) => state.session);
 export const useIsAuthenticated = () => useAuthStore((state) => state.isAuthenticated);
 export const useAuthLoading = () => useAuthStore((state) => state.isLoading);
 export const useAuthError = () => useAuthStore((state) => state.error);
+export const useAuthState = () => useAuthStore((state) => state.authState);
 
 export const useSignOut = () => useAuthStore((state) => state.signOut);
 export const useRefreshProfile = () => useAuthStore((state) => state.refreshProfile);
+export const useSetAnonymous = () => useAuthStore((state) => state.setAnonymous);
 
 export const useSubscriptionTier = () =>
   useAuthStore((state) => state.profile?.subscriptionTier ?? 'free');

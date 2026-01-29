@@ -38,6 +38,7 @@ import {
   usePromoCodeState,
   useTestMode,
 } from '../../stores/subscriptionStore';
+import { useAuthStore } from '../../stores/authStore';
 import { PromoCodeInput } from '../../components/PromoCodeInput';
 import { recordPromoRedemption } from '../../services/promoService';
 import { getRevenueCatDebugState } from '../../services/subscriptionService';
@@ -449,6 +450,10 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
   const clearPromo = useSubscriptionStore((state) => state.clearPromo);
   const offeringsError = useSubscriptionStore((state) => state.error);
 
+  // Auth state for guest flow (App Store Guideline 5.1.1)
+  const authState = useAuthStore((state) => state.authState);
+  const isAnonymous = authState === 'anonymous';
+
   // Test mode for bypassing auto-subscription in TestFlight
   const { testModeEnabled, toggleTestMode } = useTestMode();
 
@@ -515,18 +520,44 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
           clearPromo();
         }
 
-        Alert.alert(
-          'Success!',
-          appliedPromoCode
-            ? 'Your discount has been applied! Welcome to your subscription.'
-            : 'Welcome to your free trial! Your subscription is now active.',
-          [
-            {
-              text: 'Get Started',
-              onPress: () => handleDismiss(),
-            },
-          ]
-        );
+        // Show different alert for anonymous vs authenticated users
+        if (isAnonymous) {
+          // Anonymous user: offer optional account creation (App Store Guideline 5.1.1)
+          Alert.alert(
+            'Purchase Complete!',
+            'Create an account to sync your progress across devices, or continue as a guest.',
+            [
+              {
+                text: 'Create Account',
+                onPress: () => navigation.navigate('GuestSignup'),
+              },
+              {
+                text: 'Sign In',
+                onPress: () => navigation.navigate('GuestLogin'),
+                style: 'default',
+              },
+              {
+                text: 'Continue as Guest',
+                onPress: () => navigation.navigate('Main'),
+                style: 'cancel',
+              },
+            ]
+          );
+        } else {
+          // Authenticated user: standard success message
+          Alert.alert(
+            'Success!',
+            appliedPromoCode
+              ? 'Your discount has been applied! Welcome to your subscription.'
+              : 'Welcome to your free trial! Your subscription is now active.',
+            [
+              {
+                text: 'Get Started',
+                onPress: () => handleDismiss(),
+              },
+            ]
+          );
+        }
       } else if (!result.userCancelled) {
         Alert.alert(
           'Purchase Failed',
@@ -689,6 +720,20 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
             </Pressable>
             <Text style={styles.subtitle}>Start your 7-day free trial. Cancel anytime.</Text>
           </View>
+
+          {/* Sign In Link for anonymous users (App Store Guideline 5.1.1) */}
+          {isAnonymous && (
+            <View style={styles.signInContainer}>
+              <Text style={styles.signInText}>Already have an account? </Text>
+              <Pressable
+                onPress={() => navigation.navigate('GuestLogin')}
+                accessibilityRole="button"
+                accessibilityLabel="Sign in to existing account"
+              >
+                <Text style={styles.signInLink}>Sign In</Text>
+              </Pressable>
+            </View>
+          )}
 
           {/* Debug Overlay - tap title 5x to show */}
           <DebugOverlay
@@ -1082,6 +1127,23 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     textAlign: 'center',
     lineHeight: 24,
+  },
+  signInContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  signInText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text.secondary,
+  },
+  signInLink: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.brand.gold,
+    textDecorationLine: 'underline',
   },
   lockedFeatureContainer: {
     marginHorizontal: spacing.lg,

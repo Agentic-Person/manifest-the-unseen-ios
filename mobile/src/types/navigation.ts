@@ -15,7 +15,9 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
  */
 export type RootStackParamList = {
   Auth: undefined;
+  Guest: undefined;
   Main: undefined;
+  Splash: undefined;
   Manuscript: undefined;
   ObservableScience: undefined;
   Paywall:
@@ -23,6 +25,20 @@ export type RootStackParamList = {
         lockedFeature?: string;
       }
     | undefined;
+};
+
+/**
+ * Guest Stack Navigator Param List
+ * Navigation for anonymous users - paywall first, auth optional
+ * Allows users to purchase subscriptions without registration (App Store Guideline 5.1.1)
+ */
+export type GuestStackParamList = {
+  GuestPaywall: {
+    lockedFeature?: string;
+  } | undefined;
+  GuestLogin: undefined;
+  GuestSignup: undefined;
+  GuestForgotPassword: undefined;
 };
 
 /**
@@ -179,6 +195,12 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeSta
 // Auth Stack Screen Props
 export type AuthStackScreenProps<T extends keyof AuthStackParamList> = NativeStackScreenProps<
   AuthStackParamList,
+  T
+>;
+
+// Guest Stack Screen Props
+export type GuestStackScreenProps<T extends keyof GuestStackParamList> = NativeStackScreenProps<
+  GuestStackParamList,
   T
 >;
 
