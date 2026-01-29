@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from './useAuth'
-import { WORKBOOK_PHASES, PHASE_WORKSHEETS, getTotalWorksheets, WorkbookPhase } from '@manifest/shared'
+import { WORKBOOK_PHASES, PHASE_WORKSHEETS, getTotalWorksheets, WorkbookPhase } from '@/lib/shared'
 
 interface PhaseProgress {
   phaseNumber: number

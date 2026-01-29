@@ -1,6 +1,6 @@
 'use client'
 
-import { WorkbookPhase } from '@manifest/shared'
+import { WorkbookPhase } from '@/lib/shared'
 import { PhaseCard } from './PhaseCard'
 
 interface PhaseGridProps {

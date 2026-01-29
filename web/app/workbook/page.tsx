@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useSubscription } from '@/hooks/useSubscription'
 import { useWorkbookProgress } from '@/hooks/useWorkbookProgress'
 import { useRouter } from 'next/navigation'
-import { WORKBOOK_PHASES, getFirstWorksheetSlug, WorkbookPhase } from '@manifest/shared'
+import { WORKBOOK_PHASES, getFirstWorksheetSlug, WorkbookPhase } from '@/lib/shared'
 import { OverallProgress } from '@/components/workbook/OverallProgress'
 import { PhaseGrid } from '@/components/workbook/PhaseGrid'
 
