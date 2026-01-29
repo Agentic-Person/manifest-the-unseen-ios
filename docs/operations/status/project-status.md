@@ -8,66 +8,85 @@
 
 ---
 
-## ✅ Last Activity: Vercel Website Build Fix - January 28, 2026
+## ✅ Last Activity: Website Fixes + Vercel Deployment Issues - January 28, 2026
 
 ### Summary
-Fixed the Vercel deployment for the landing page website (https://www.manifesttheunseen.app) which had been failing since January 23, 2026. The root cause was a React version conflict between the mobile app (React 19) and web app (React 18).
+Fixed multiple website issues and discovered critical Vercel deployment problem. Code changes are committed but **require manual redeploy** from Vercel dashboard.
 
-### Problem
-- **Error**: `TypeError: Cannot read properties of null (reading 'useContext')` in `styled-jsx`
-- **Cause**: During Vercel build, React 19 from the mobile app's shared package installation was being picked up instead of React 18 required by Next.js 14
-- **Effect**: All builds failing with errors on `/_error: /404` and `/_error: /500` pages
+### CRITICAL: Vercel Auto-Deploy Not Working
 
-### Solution Applied
+**The GitHub integration is NOT triggering automatic deployments.**
 
-#### 1. Updated `web/vercel.json`
-Added command to remove conflicting root-level React modules during build:
-```json
-{
-  "installCommand": "cd ../packages/shared && npm install && npm run build && cd ../../web && rm -rf ../node_modules/react ../node_modules/react-dom 2>/dev/null; npm install --legacy-peer-deps"
-}
+- Last successful deployment: **January 17, 2026** (11 days ago)
+- Vercel project: `manifest-the-unseen-ios` under `jimihacks-projects`
+- Domain: `www.manifesttheunseen.app`
+- Status in dashboard: "Ready Stale"
+
+**To deploy new changes:**
+1. Go to https://vercel.com/jimihacks-projects/manifest-the-unseen-ios
+2. Click the "..." menu next to "Visit" button
+3. Select "Redeploy"
+
+**Do NOT use Vercel CLI** - it deploys from local folder and fails because `packages/shared` isn't included. The GitHub integration deploys the whole repo correctly.
+
+---
+
+### Part 1: React Version Conflict Fix (Earlier Today)
+
+**Problem**: Builds failing since Jan 23 with `TypeError: Cannot read properties of null (reading 'useContext')` in `styled-jsx`
+
+**Cause**: React 19 (mobile) conflicting with React 18 (web/Next.js 14)
+
+**Solution**:
+1. `web/vercel.json` - Added `rm -rf ../node_modules/react ../node_modules/react-dom` to install command
+2. `web/package.json` - Added `overrides` to force React 18
+
+**Commit**: `b9cd08f fix(web): resolve React version conflict in Vercel builds`
+
+---
+
+### Part 2: Navbar + Icon Fixes
+
+**Issues Fixed**:
+1. Navbar hidden/non-interactive on Privacy/Terms pages
+2. Navbar buttons didn't navigate back to home from subpages
+3. Wrong favicon (meditation forest scene instead of lotus mandala)
+
+**Solution**:
+1. `web/components/Navbar.tsx` - Detect page with `usePathname()`, always show navbar on subpages, use `router.push('/#section')` for navigation
+2. `web/app/layout.tsx` - Enable icon metadata for favicon, OpenGraph, Twitter cards
+3. `web/app/privacy/page.tsx` - Remove redundant "Back to Home" header, add `pt-16` padding for fixed navbar
+4. `web/app/terms/page.tsx` - Same changes as privacy page
+5. `web/public/icon.png` - Replaced with correct lotus mandala icon (copied from `mobile/assets/icon.png`)
+6. `web/app/icon.png` - Added for Next.js favicon
+
+**Commit**: `61ed3e6 fix(web): navbar always visible on subpages + correct app icon`
+
+---
+
+### All Commits (Not Yet Deployed)
+
 ```
-
-#### 2. Added npm overrides to `web/package.json`
-Force React 18 resolution for all dependencies:
-```json
-{
-  "overrides": {
-    "react": "^18",
-    "react-dom": "^18"
-  }
-}
-```
-
-### Verification Results
-
-| Page | Status | Notes |
-|------|--------|-------|
-| https://www.manifesttheunseen.app | ✅ Working | Landing page with features, pricing, FAQ |
-| https://www.manifesttheunseen.app/privacy | ✅ Working | Privacy policy (Dec 10, 2025) |
-| https://www.manifesttheunseen.app/terms | ✅ Working | Terms of service (Dec 10, 2025) |
-
-### Files Modified
-- `web/vercel.json` - Added `rm -rf` command to remove conflicting React modules
-- `web/package.json` - Added `overrides` section to force React 18
-
-### Git Commit
-```
+61ed3e6 fix(web): navbar always visible on subpages + correct app icon
+bde4a72 docs: update project-status.md with Vercel website fix
 b9cd08f fix(web): resolve React version conflict in Vercel builds
 ```
 
-### Technical Details
-The monorepo has two React versions:
-- **Mobile app** (`mobile/package.json`): React 19.1.0 (for React Native)
-- **Web app** (`web/package.json`): React 18 (required for Next.js 14.2.18)
+### Files Modified
+| File | Change |
+|------|--------|
+| `web/vercel.json` | React module cleanup in install command |
+| `web/package.json` | Added npm overrides for React 18 |
+| `web/components/Navbar.tsx` | Always visible on subpages, proper navigation |
+| `web/app/layout.tsx` | Icon metadata enabled |
+| `web/app/privacy/page.tsx` | Removed header, added navbar padding |
+| `web/app/terms/page.tsx` | Removed header, added navbar padding |
+| `web/public/icon.png` | Correct lotus mandala icon |
+| `web/app/icon.png` | Next.js favicon |
 
-When Vercel builds the web app, it first installs the shared package which pulls in React 19 to the root `node_modules`. The web app's React 18 goes into `web/node_modules`, but `styled-jsx` (Next.js internal) loads React from the root, causing the version mismatch and `useContext` crash.
-
-### Risk Assessment
-| Change | Risk | Notes |
-|--------|------|-------|
-| vercel.json rm command | LOW | Only runs during build, removes conflicting deps |
-| package.json overrides | LOW | Standard npm feature for version resolution |
+### Next Steps
+1. **Redeploy from Vercel dashboard** to get these changes live
+2. Investigate why GitHub integration stopped auto-deploying (check webhook settings)
 
 ---
 
@@ -1520,6 +1539,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Vercel Website Build Fix)
+**Last Updated by**: Claude Code (Website Fixes + Vercel Deployment Discovery)
 **Session Date**: January 28, 2026
-**Document Version**: 2.17.0
+**Document Version**: 2.18.0
