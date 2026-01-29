@@ -7,8 +7,7 @@
   "license": "UNLICENSED",
   "workspaces": [
     "mobile",
-    "packages/*",
-    "web"
+    "packages/*"
   ],
   "scripts": {
     "web": "cd web && npm run dev",
