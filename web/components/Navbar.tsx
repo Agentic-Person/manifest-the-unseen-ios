@@ -1,11 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Navbar() {
   const [isVisible, setIsVisible] = useState(false)
   const [isHoveringTop, setIsHoveringTop] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
+
+  // Check if we're on the home page
+  const isHomePage = pathname === '/'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,18 +34,28 @@ export default function Navbar() {
     }
   }, [])
 
-  // Show navbar if scrolled OR hovering near top
-  const showNavbar = isVisible || isHoveringTop
+  // On home page: show navbar if scrolled OR hovering near top
+  // On other pages: always show navbar
+  const showNavbar = !isHomePage || isVisible || isHoveringTop
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+    if (isHomePage) {
+      const element = document.getElementById(id)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
+    } else {
+      // Navigate to home page with hash
+      router.push(`/#${id}`)
     }
   }
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  const handleLogoClick = () => {
+    if (isHomePage) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      router.push('/')
+    }
   }
 
   return (
@@ -56,21 +73,39 @@ export default function Navbar() {
       <div className="relative max-w-6xl mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
           {/* Logo - Left */}
-          <button
-            onClick={scrollToTop}
-            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-          >
-            <Image
-              src="/images/logo-mandala.png"
-              alt="Manifest the Unseen"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <span className="font-serif text-lg text-enlightened hidden sm:inline">
-              Manifest the Unseen
-            </span>
-          </button>
+          {isHomePage ? (
+            <button
+              onClick={handleLogoClick}
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
+              <Image
+                src="/icon.png"
+                alt="Manifest the Unseen"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <span className="font-serif text-lg text-enlightened hidden sm:inline">
+                Manifest the Unseen
+              </span>
+            </button>
+          ) : (
+            <Link
+              href="/"
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
+              <Image
+                src="/icon.png"
+                alt="Manifest the Unseen"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <span className="font-serif text-lg text-enlightened hidden sm:inline">
+                Manifest the Unseen
+              </span>
+            </Link>
+          )}
 
           {/* Nav Links - Center */}
           <div className="hidden md:flex items-center gap-8">

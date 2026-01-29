@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import Footer from '@/components/Footer'
 
 export const metadata = {
@@ -8,19 +7,7 @@ export const metadata = {
 
 export default function PrivacyPolicy() {
   return (
-    <main className="min-h-screen bg-deep-void">
-      {/* Header */}
-      <header className="border-b border-elevated">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Link href="/" className="inline-flex items-center gap-2 text-aged-gold hover:opacity-80 transition-opacity">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            <span>Back to Home</span>
-          </Link>
-        </div>
-      </header>
-
+    <main className="min-h-screen bg-deep-void pt-16">
       {/* Content */}
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="font-serif text-4xl sm:text-5xl font-bold text-enlightened mb-4">
