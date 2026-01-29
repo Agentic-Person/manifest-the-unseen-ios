@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-26 (Build 58 Submitted to App Store)
+**Last Updated**: 2026-01-28 (Vercel Website Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
@@ -8,7 +8,70 @@
 
 ---
 
-## ✅ Last Activity: Build 58 Submitted to App Store - January 26, 2026
+## ✅ Last Activity: Vercel Website Build Fix - January 28, 2026
+
+### Summary
+Fixed the Vercel deployment for the landing page website (https://www.manifesttheunseen.app) which had been failing since January 23, 2026. The root cause was a React version conflict between the mobile app (React 19) and web app (React 18).
+
+### Problem
+- **Error**: `TypeError: Cannot read properties of null (reading 'useContext')` in `styled-jsx`
+- **Cause**: During Vercel build, React 19 from the mobile app's shared package installation was being picked up instead of React 18 required by Next.js 14
+- **Effect**: All builds failing with errors on `/_error: /404` and `/_error: /500` pages
+
+### Solution Applied
+
+#### 1. Updated `web/vercel.json`
+Added command to remove conflicting root-level React modules during build:
+```json
+{
+  "installCommand": "cd ../packages/shared && npm install && npm run build && cd ../../web && rm -rf ../node_modules/react ../node_modules/react-dom 2>/dev/null; npm install --legacy-peer-deps"
+}
+```
+
+#### 2. Added npm overrides to `web/package.json`
+Force React 18 resolution for all dependencies:
+```json
+{
+  "overrides": {
+    "react": "^18",
+    "react-dom": "^18"
+  }
+}
+```
+
+### Verification Results
+
+| Page | Status | Notes |
+|------|--------|-------|
+| https://www.manifesttheunseen.app | ✅ Working | Landing page with features, pricing, FAQ |
+| https://www.manifesttheunseen.app/privacy | ✅ Working | Privacy policy (Dec 10, 2025) |
+| https://www.manifesttheunseen.app/terms | ✅ Working | Terms of service (Dec 10, 2025) |
+
+### Files Modified
+- `web/vercel.json` - Added `rm -rf` command to remove conflicting React modules
+- `web/package.json` - Added `overrides` section to force React 18
+
+### Git Commit
+```
+b9cd08f fix(web): resolve React version conflict in Vercel builds
+```
+
+### Technical Details
+The monorepo has two React versions:
+- **Mobile app** (`mobile/package.json`): React 19.1.0 (for React Native)
+- **Web app** (`web/package.json`): React 18 (required for Next.js 14.2.18)
+
+When Vercel builds the web app, it first installs the shared package which pulls in React 19 to the root `node_modules`. The web app's React 18 goes into `web/node_modules`, but `styled-jsx` (Next.js internal) loads React from the root, causing the version mismatch and `useContext` crash.
+
+### Risk Assessment
+| Change | Risk | Notes |
+|--------|------|-------|
+| vercel.json rm command | LOW | Only runs during build, removes conflicting deps |
+| package.json overrides | LOW | Standard npm feature for version resolution |
+
+---
+
+## ✅ Previous Activity: Build 58 Submitted to App Store - January 26, 2026
 
 ### Summary
 Comprehensive App Store readiness audit followed by Build 58 submission to the App Store. Verified all previous rejection issues (Guideline 4.0 Design + Guideline 2.1 Performance) were fixed. Build 58 is now **Waiting for Review**.
@@ -1457,6 +1520,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Build 44 Production Build for App Store)
-**Session Date**: January 9, 2026
-**Document Version**: 2.16.0
+**Last Updated by**: Claude Code (Vercel Website Build Fix)
+**Session Date**: January 28, 2026
+**Document Version**: 2.17.0
