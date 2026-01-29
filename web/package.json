@@ -19,6 +19,7 @@
     "@babel/core": "^7.28.6",
     "@babel/eslint-parser": "^7.28.6",
     "@hello-pangea/dnd": "^18.0.1",
+    "@manifest/shared": "file:../packages/shared",
     "@next/eslint-plugin-next": "^14.2.18",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",

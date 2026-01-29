@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-28 (Vercel Website Fix)
+**Last Updated**: 2026-01-28 (Vercel Root Directory Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
@@ -8,7 +8,58 @@
 
 ---
 
-## ✅ Last Activity: Website Fixes + Vercel Deployment Issues - January 28, 2026
+## ✅ Last Activity: Vercel Root Directory Fix - January 28, 2026
+
+### Summary
+Implementing a new approach to fix the React version conflict in Vercel deployment. The previous fix (removing node_modules/react) didn't work because Vercel still runs npm install at the root level first.
+
+### New Solution: Isolate Web Deployment
+
+**Root Cause**: npm workspaces hoists React 19 (from mobile) to root `node_modules/`. When Vercel builds, `styled-jsx` (used by Next.js) picks up the wrong React version.
+
+**Solution**: Configure Vercel to use `web/` as the root directory, which prevents it from running `npm install` at the monorepo root.
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `web/vercel.json` | Use `--prefix` instead of `cd` for shared package build |
+| `web/package.json` | Added `@manifest/shared` as file dependency |
+| `web/next.config.js` | Added `eslint.ignoreDuringBuilds: true` (parser conflict fix) |
+| `.npmrc` (root) | Created with `legacy-peer-deps=true` |
+
+### New `web/vercel.json`
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "npm install --prefix ../packages/shared && npm run build --prefix ../packages/shared && npm install --legacy-peer-deps",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next"
+}
+```
+
+### CRITICAL: Manual Vercel Dashboard Step Required
+
+**Before these code changes will work, you MUST:**
+
+1. Go to https://vercel.com/jimihacks-projects/manifest-the-unseen-ios/settings
+2. Under "General" → "Root Directory"
+3. Change from empty/root to: **`web`**
+4. Save changes
+5. Then redeploy
+
+This tells Vercel to start from the `web/` folder instead of the repo root, avoiding the npm workspace hoisting issue.
+
+### Next Steps
+1. **Commit and push these changes** to GitHub
+2. **Change Vercel Root Directory** to `web` (dashboard setting)
+3. **Redeploy from Vercel dashboard**
+4. Verify build succeeds without `styled-jsx` / `useContext` error
+
+---
+
+## ✅ Previous Activity: Website Fixes + Vercel Deployment Issues - January 28, 2026
 
 ### Summary
 Fixed multiple website issues and discovered critical Vercel deployment problem. Code changes are committed but **require manual redeploy** from Vercel dashboard.
@@ -83,10 +134,6 @@ b9cd08f fix(web): resolve React version conflict in Vercel builds
 | `web/app/terms/page.tsx` | Removed header, added navbar padding |
 | `web/public/icon.png` | Correct lotus mandala icon |
 | `web/app/icon.png` | Next.js favicon |
-
-### Next Steps
-1. **Redeploy from Vercel dashboard** to get these changes live
-2. Investigate why GitHub integration stopped auto-deploying (check webhook settings)
 
 ---
 
