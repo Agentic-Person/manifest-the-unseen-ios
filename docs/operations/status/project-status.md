@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-28 (Vercel Root Directory Fix)
+**Last Updated**: 2026-01-29 (Vercel Deployment FIXED)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
@@ -8,54 +8,78 @@
 
 ---
 
-## ✅ Last Activity: Vercel Root Directory Fix - January 28, 2026
+## ✅ Last Activity: Vercel Website Deployment FIXED - January 29, 2026
 
 ### Summary
-Implementing a new approach to fix the React version conflict in Vercel deployment. The previous fix (removing node_modules/react) didn't work because Vercel still runs npm install at the root level first.
+After a 4+ hour debugging session, successfully fixed the Vercel deployment for the web companion site. The site is now live and building correctly.
 
-### New Solution: Isolate Web Deployment
+**Website URL**: https://manifest-the-unseen-ios-web.vercel.app
 
-**Root Cause**: npm workspaces hoists React 19 (from mobile) to root `node_modules/`. When Vercel builds, `styled-jsx` (used by Next.js) picks up the wrong React version.
+### The Problem
 
-**Solution**: Configure Vercel to use `web/` as the root directory, which prevents it from running `npm install` at the monorepo root.
+React version conflict in monorepo:
+- `mobile/` uses React **19.1.0** (required by Expo SDK 54)
+- `web/` uses React **18** (required by Next.js 14)
+- npm workspaces hoisted React 19 to root `node_modules/`
+- `styled-jsx` (used by Next.js) picked up wrong React, causing `useContext` error
 
-### Files Modified
+**Error**: `TypeError: Cannot read properties of null (reading 'useContext')` at `styled-jsx`
+
+### The Solution (What Actually Worked)
+
+**Remove `web` from the root `workspaces` array** in `package.json`:
+
+```json
+// Before
+"workspaces": ["mobile", "packages/*", "web"]
+
+// After
+"workspaces": ["mobile", "packages/*"]
+```
+
+This fully decouples `web/` from the monorepo workspace structure, preventing npm from hoisting React 19.
+
+### Additional Changes Made
 
 | File | Change |
 |------|--------|
-| `web/vercel.json` | Use `--prefix` instead of `cd` for shared package build |
-| `web/package.json` | Added `@manifest/shared` as file dependency |
-| `web/next.config.js` | Added `eslint.ignoreDuringBuilds: true` (parser conflict fix) |
-| `.npmrc` (root) | Created with `legacy-peer-deps=true` |
+| `package.json` (root) | Removed `web` from workspaces, removed `postinstall` script |
+| `web/lib/shared/index.ts` | Created local copy of shared types/constants |
+| `web/app/workbook/page.tsx` | Import from `@/lib/shared` instead of `@manifest/shared` |
+| `web/hooks/useWorkbookProgress.ts` | Import from `@/lib/shared` |
+| `web/components/workbook/*.tsx` | Import from `@/lib/shared` |
+| `web/package.json` | Removed `@manifest/shared` dependency |
+| `web/vercel.json` | Simplified to just `npm install --legacy-peer-deps` |
+| `web/next.config.js` | Added `eslint.ignoreDuringBuilds: true` |
 
-### New `web/vercel.json`
-```json
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
-  "installCommand": "npm install --prefix ../packages/shared && npm run build --prefix ../packages/shared && npm install --legacy-peer-deps",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next"
-}
+### Vercel Project Setup
+
+- **New Project**: `manifest-the-unseen-ios-web` (created fresh)
+- **Root Directory**: `web`
+- **Include files outside root**: Disabled
+- **Build Command**: `next build --no-lint`
+- **Install Command**: `npm install --legacy-peer-deps`
+
+### What DIDN'T Work (For Future Reference)
+
+1. ❌ `rm -rf ../node_modules` in install command - Vercel recreates it
+2. ❌ `workspaces=false` in `.npmrc` - npm ignores it
+3. ❌ `--ignore-workspaces` flag - deprecated/not supported
+4. ❌ npm `overrides` for React 18 - didn't prevent hoisting
+5. ❌ Disabling "Include files outside root" alone - npm still found root package.json
+
+### Commits
+
 ```
-
-### CRITICAL: Manual Vercel Dashboard Step Required
-
-**Before these code changes will work, you MUST:**
-
-1. Go to https://vercel.com/jimihacks-projects/manifest-the-unseen-ios/settings
-2. Under "General" → "Root Directory"
-3. Change from empty/root to: **`web`**
-4. Save changes
-5. Then redeploy
-
-This tells Vercel to start from the `web/` folder instead of the repo root, avoiding the npm workspace hoisting issue.
-
-### Next Steps
-1. **Commit and push these changes** to GitHub
-2. **Change Vercel Root Directory** to `web` (dashboard setting)
-3. **Redeploy from Vercel dashboard**
-4. Verify build succeeds without `styled-jsx` / `useContext` error
+7ecb130 fix: remove web from workspaces to fully decouple from monorepo
+cf435b6 chore: trigger Vercel deployment with postinstall fix
+4cbbe02 fix: remove postinstall script that was triggering shared build on Vercel
+e58d803 fix(web): add --ignore-workspaces to prevent npm workspace hoisting
+e9804bc fix(web): disable npm workspaces + clean root node_modules
+6a15834 fix(web): use --no-lint flag to bypass ESLint during build
+6337327 fix(web): isolate web deployment to fix React version conflict
+6be9e8c fix(web): fully isolate from monorepo - copy shared code locally
+```
 
 ---
 
