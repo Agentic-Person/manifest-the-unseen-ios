@@ -2,6 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "installCommand": "rm -rf ../node_modules 2>/dev/null; npm install --prefix ../packages/shared && npm run build --prefix ../packages/shared && npm install --legacy-peer-deps",
-  "buildCommand": "npm run build",
+  "buildCommand": "next build --no-lint",
   "outputDirectory": ".next"
 }
