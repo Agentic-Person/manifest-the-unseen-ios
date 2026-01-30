@@ -120,6 +120,18 @@ const MeditationPlayerScreen: React.FC<Props> = ({ route, navigation }) => {
     error: prayerError,
   } = usePrayer(isPrayer ? meditationId : '');
 
+  // DEBUG: Log prayer data to check if line_timings is present
+  if (prayerData) {
+    console.log('[MeditationPlayerScreen] Prayer data:', {
+      id: prayerData.id,
+      title: prayerData.title,
+      hasLineTimings: !!prayerData.line_timings,
+      lineTimingsCount: prayerData.line_timings?.length || 0,
+      firstTiming: prayerData.line_timings?.[0],
+      audioUrl: prayerData.audio_url,
+    });
+  }
+
   // Use the appropriate data based on type
   const meditation = isPrayer
     ? prayerData

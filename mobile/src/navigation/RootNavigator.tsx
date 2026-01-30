@@ -18,6 +18,7 @@ import { SplashScreen } from '../screens/SplashScreen';
 import ManuscriptScreen from '../screens/ManuscriptScreen';
 import ObservableScienceScreen from '../screens/ObservableScienceScreen';
 import { useAuthStore } from '../stores/authStore';
+import { useSubscriptionStore } from '../stores/subscriptionStore';
 import { supabase } from '../services/supabase';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -45,6 +46,9 @@ export const RootNavigator = () => {
     setSession,
     setProfile,
   } = useAuthStore();
+
+  // Check subscription state - anonymous users with active subscription should see main app
+  const isSubscribed = useSubscriptionStore((state) => state.isSubscribed);
 
   // Debounce timer for TOKEN_REFRESHED events
   const tokenRefreshDebounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -141,13 +145,13 @@ export const RootNavigator = () => {
           // Loading: Show splash while checking session
           <Stack.Screen name="Splash" component={SplashScreen} />
         )}
-        {authState === 'anonymous' && (
-          // Anonymous: Show GuestNavigator (paywall first, auth optional)
+        {authState === 'anonymous' && !isSubscribed && (
+          // Anonymous without subscription: Show GuestNavigator (paywall first, auth optional)
           // Users can browse and purchase without registration
           <Stack.Screen name="Guest" component={GuestNavigator} />
         )}
-        {authState === 'authenticated' && (
-          // Authenticated: Show full app with all features
+        {(authState === 'authenticated' || isSubscribed) && (
+          // Authenticated OR subscribed (including dev/TestFlight): Show full app
           <Stack.Screen name="Main" component={MainTabNavigator} />
         )}
 

@@ -142,3 +142,6 @@ docs/REVENUECAT_IOS_SWIFT_SETUP.md
 # Private files with secrets
 .private/
 *.py
+
+.vercel
+.env*.local

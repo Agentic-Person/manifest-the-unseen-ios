@@ -42,6 +42,7 @@ export function PrayerTextDisplay({
   isPlaying,
   lineTimings,
 }: PrayerTextDisplayProps): React.JSX.Element {
+
   // Get current line based on playback position
   // Uses Whisper-generated timestamps when available for accurate sync
   const { currentLine, totalLines, currentIndex } = useCurrentPrayerLine(
@@ -50,6 +51,7 @@ export function PrayerTextDisplay({
     currentPositionMs,
     lineTimings
   );
+
 
   // Animation values - use two animated values for cross-fade effect
   const fadeAnim = useRef(new Animated.Value(1)).current;
