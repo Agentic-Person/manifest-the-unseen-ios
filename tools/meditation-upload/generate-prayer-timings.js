@@ -3,6 +3,27 @@
  *
  * Uses OpenAI Whisper API to transcribe prayer audio files
  * with word-level timestamps, then maps them to prayer lines.
+ *
+ * ╔══════════════════════════════════════════════════════════════════════════════╗
+ * ║  ⚠️  CRITICAL: DO NOT MODIFY THE TIMING ALGORITHM WITHOUT TESTING! ⚠️        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════╣
+ * ║                                                                              ║
+ * ║  This script uses ACTUAL Whisper word-level timestamps to sync text with    ║
+ * ║  audio. The algorithm in generateTimingsFromWhisperWords() is CORRECT and   ║
+ * ║  has been tested and verified to work.                                       ║
+ * ║                                                                              ║
+ * ║  WRONG APPROACH (causes drift):                                              ║
+ * ║  - Proportional distribution based on word count                             ║
+ * ║  - Only using speech start/end boundaries                                    ║
+ * ║                                                                              ║
+ * ║  CORRECT APPROACH (this file):                                               ║
+ * ║  - Consume words sequentially from Whisper's word array                      ║
+ * ║  - Use actual start/end timestamps from each word                            ║
+ * ║                                                                              ║
+ * ║  If you're adding new prayers, run: node whisper-regenerate-timings.js      ║
+ * ║  See README.md in this directory for the full process.                       ║
+ * ║                                                                              ║
+ * ╚══════════════════════════════════════════════════════════════════════════════╝
  */
 
 const fs = require('fs');
@@ -120,6 +141,12 @@ function getPrayerLines(prayerText) {
     .filter(line => line.length > 0);
 }
 
+// ============================================================================
+// ⚠️  CRITICAL FUNCTION - DO NOT MODIFY WITHOUT TESTING ⚠️
+// ============================================================================
+// This algorithm is CORRECT and TESTED. It uses actual Whisper timestamps.
+// DO NOT replace with proportional distribution - that causes sync drift!
+// ============================================================================
 /**
  * Generate timings using actual Whisper word-level timestamps
  *
@@ -131,6 +158,9 @@ function getPrayerLines(prayerText) {
  * 5. Use the last consumed word's `end` as line endMs
  *
  * This ensures text syncs accurately with when the narrator actually speaks each line.
+ *
+ * ❌ WRONG: lineDuration = (wordCount / totalWords) * totalDuration  // CAUSES DRIFT!
+ * ✅ RIGHT: Use whisperWords[i].start and whisperWords[i].end directly
  */
 function generateTimingsFromWhisperWords(whisperResult, prayerLines) {
   const whisperWords = whisperResult.words;

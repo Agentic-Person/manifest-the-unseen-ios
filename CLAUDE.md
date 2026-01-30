@@ -453,6 +453,30 @@ AI monk companion (Guru) trained on wisdom sources in `docs/content/wisdom-sourc
 5. **Don't hardcode tier limits** - Use RevenueCat entitlements as source of truth
 6. **Don't build web app first** - Mobile iOS is MVP priority
 7. **Don't use cloud vector databases** - pgvector is local to Supabase (cost savings)
+8. **Don't modify prayer timing algorithm** - See critical warning below
+
+## ⚠️ CRITICAL: Prayer Audio-Text Sync
+
+**DO NOT MODIFY the timing algorithm in `tools/meditation-upload/`!**
+
+The scripts `generate-prayer-timings.js` and `whisper-regenerate-timings.js` use a **specific algorithm** that has been tested and verified to work correctly.
+
+### The CORRECT algorithm (current):
+- Consume words sequentially from Whisper's word array
+- Use actual `start` and `end` timestamps from each word
+
+### The WRONG algorithm (causes sync drift):
+- Proportional distribution: `lineDuration = (wordCount / totalWords) * totalDuration`
+- Only using speech boundaries and distributing evenly
+
+### When adding new prayers:
+1. Add audio file to `meditation-audio/prayers/`
+2. Add prayer to database with content
+3. Update `LOCAL_FILE_MAP` in `whisper-regenerate-timings.js`
+4. Run: `node tools/meditation-upload/whisper-regenerate-timings.js`
+5. Test in app to verify sync
+
+See `tools/meditation-upload/README.md` for full documentation.
 
 ## Testing Strategy
 

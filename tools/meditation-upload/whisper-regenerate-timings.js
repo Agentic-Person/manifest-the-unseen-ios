@@ -3,6 +3,32 @@
  *
  * Runs OpenAI Whisper transcription on each prayer audio file to get
  * accurate word-level timestamps, then maps them to prayer lines.
+ *
+ * ╔══════════════════════════════════════════════════════════════════════════════╗
+ * ║  ⚠️  CRITICAL: DO NOT MODIFY THE TIMING ALGORITHM WITHOUT TESTING! ⚠️        ║
+ * ╠══════════════════════════════════════════════════════════════════════════════╣
+ * ║                                                                              ║
+ * ║  This script uses ACTUAL Whisper word-level timestamps to sync text with    ║
+ * ║  audio. The algorithm in generateLineTimingsFromWhisper() is CORRECT and    ║
+ * ║  has been tested and verified to work.                                       ║
+ * ║                                                                              ║
+ * ║  WRONG APPROACH (causes drift):                                              ║
+ * ║  - Proportional distribution based on word count                             ║
+ * ║  - Only using speech start/end boundaries                                    ║
+ * ║                                                                              ║
+ * ║  CORRECT APPROACH (this file):                                               ║
+ * ║  - Consume words sequentially from Whisper's word array                      ║
+ * ║  - Use actual start/end timestamps from each word                            ║
+ * ║                                                                              ║
+ * ║  HOW TO USE:                                                                 ║
+ * ║  1. Add new prayer audio files to meditation-audio/prayers/                  ║
+ * ║  2. Update LOCAL_FILE_MAP below with the new filename mapping                ║
+ * ║  3. Run: node whisper-regenerate-timings.js                                  ║
+ * ║  4. Test in app to verify sync                                               ║
+ * ║                                                                              ║
+ * ║  See README.md in this directory for the full process.                       ║
+ * ║                                                                              ║
+ * ╚══════════════════════════════════════════════════════════════════════════════╝
  */
 
 const { createClient } = require('@supabase/supabase-js');
@@ -48,6 +74,12 @@ function getPrayerLines(content) {
     .filter(line => line.length > 0);
 }
 
+// ============================================================================
+// ⚠️  CRITICAL FUNCTION - DO NOT MODIFY WITHOUT TESTING ⚠️
+// ============================================================================
+// This algorithm is CORRECT and TESTED. It uses actual Whisper timestamps.
+// DO NOT replace with proportional distribution - that causes sync drift!
+// ============================================================================
 /**
  * Generate line timings from Whisper word timestamps
  *
@@ -56,6 +88,9 @@ function getPrayerLines(content) {
  * 1. Count words in the line
  * 2. Consume that many words from Whisper's word array
  * 3. Use first word's start time and last word's end time
+ *
+ * ❌ WRONG: lineDuration = (wordCount / totalWords) * totalDuration  // CAUSES DRIFT!
+ * ✅ RIGHT: Use whisperWords[i].start and whisperWords[i].end directly
  */
 function generateLineTimingsFromWhisper(whisperResult, prayerLines) {
   const whisperWords = whisperResult.words || [];
