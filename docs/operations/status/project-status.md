@@ -1,17 +1,43 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-30 (Build 59 Submitted to TestFlight)
+**Last Updated**: 2026-01-30 (Build 59 + Promoted IAP Research)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
-**Status**: 🟡 **Build 59 on TestFlight** - Awaiting App Store Review resubmission.
+**Status**: 🟡 **Build 59 on TestFlight** - Ready to resubmit to App Store Review.
 
 ---
 
-## 🔧 Last Activity: Build 59 Submitted to TestFlight - January 30, 2026
+## 🔧 Last Activity: Build 59 + Promoted In-App Purchases Research - January 30, 2026
 
 ### Summary
-Built and submitted Build 59 to TestFlight. This build includes the fix for App Store Guideline 5.1.1 (registration required before purchase) and updated subscription promotional images.
+Built and submitted Build 59 to TestFlight. This build includes the fix for App Store Guideline 5.1.1 (registration required before purchase) and updated subscription promotional images. Also researched App Store Promoted In-App Purchases feature.
+
+### Promoted In-App Purchases (Future Enhancement)
+
+Researched Apple's Promoted IAP feature: https://developer.apple.com/app-store/promoting-in-app-purchases/
+
+This feature allows subscriptions to appear on the App Store product page and in search results. Users can even start a purchase *before* downloading the app.
+
+#### Requirements for Setup
+
+| Step | Action | Status |
+|------|--------|--------|
+| 1 | Create 1024x1024 promotional images (PNG/JPEG, NOT screenshots) | ⏳ Not started |
+| 2 | Upload images in App Store Connect → Monetization → Subscriptions | ⏳ Not started |
+| 3 | Set display order (up to 20 IAPs can be promoted) | ⏳ Not started |
+| 4 | RevenueCat handles code implementation automatically | ✅ Already using RevenueCat |
+
+#### Image Requirements
+- **Size**: 1024 x 1024 pixels
+- **Format**: PNG or high-quality JPEG
+- **Design**: NOT a screenshot, NOT the app icon
+- **Avoid**: Text overlay, important details in lower-left corner (Apple overlays app icon there)
+
+#### Suggested Promotional Images (to create)
+- **Novice Path** → Meditation/beginner concept imagery
+- **Awakening Path** → Spiritual growth/intermediate imagery
+- **Enlightenment Path** → Full transformation/premium imagery
 
 ### What's Included in Build 59
 
@@ -62,9 +88,10 @@ e3f2daf build: increment iOS build number to 59
 ### Next Steps
 
 1. ✅ Build 59 created and submitted to TestFlight
-2. ⏳ Apple processing (~5-10 minutes)
+2. ✅ Apple processing complete - Build 59 available on TestFlight
 3. ⏳ Test on device to verify anonymous purchase flow
 4. ⏳ Resubmit to App Store Review
+5. ⏳ (Optional) Set up Promoted In-App Purchases - create 1024x1024 images for each tier
 
 ---
 
