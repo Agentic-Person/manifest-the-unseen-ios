@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-29 (App Store Rejection Fix)
+**Last Updated**: 2026-01-30 (Web Auth Pages Dark Theme Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
@@ -8,7 +8,59 @@
 
 ---
 
-## 🔧 Last Activity: App Store Rejection Fix (Guideline 5.1.1) - January 29, 2026
+## 🔧 Last Activity: Web Auth Pages Dark Theme Fix - January 30, 2026
+
+### Summary
+Fixed the login and signup pages on the web companion to match the app's dark luxury aesthetic. Previously, these pages used a jarring light purple/white theme that "flash bombed" users and clashed with the rest of the site's dark design.
+
+### The Problem
+Both auth pages (`web/app/auth/login/page.tsx` and `web/app/auth/signup/page.tsx`) used generic Tailwind classes (`from-purple-50`, `bg-white`, `text-gray-*`) instead of the custom dark theme tokens defined in `tailwind.config.ts` and `globals.css`.
+
+### The Solution
+Replaced all light theme classes with dark theme design tokens:
+
+| Element | Before (Light) | After (Dark) |
+|---------|----------------|--------------|
+| Page background | `bg-gradient-to-br from-purple-50 to-purple-100` | `bg-deep-void` |
+| Card container | `bg-white` | `bg-temple-stone border border-[var(--gold-border)]` |
+| Header title | `text-gray-900` | `text-enlightened` |
+| Subtitle text | `text-gray-600` | `text-muted-wisdom` |
+| Form labels | `text-gray-700` | `text-muted-wisdom` |
+| Form inputs | `border-gray-300 focus:ring-purple-500 text-gray-900` | `focus:ring-aged-gold` (globals.css handles dark styling) |
+| Helper text | `text-gray-500` | `text-tertiary-text` |
+| Submit button | `bg-purple-600 hover:bg-purple-700` | `bg-aged-gold text-deep-void hover:bg-amber-glow` |
+| Divider | `border-gray-200` | `border-[var(--gold-divider)]` |
+| Links | `text-purple-600 hover:text-purple-700` | `text-aged-gold hover:text-amber-glow` |
+| Error alert | `bg-red-50 border-red-200 text-red-700` | `bg-root-crimson/20 border-root-crimson/40 text-enlightened` |
+| Footer strong (login) | `text-gray-700` | `text-enlightened` |
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `web/app/auth/login/page.tsx` | Updated all styling classes to dark theme tokens |
+| `web/app/auth/signup/page.tsx` | Updated all styling classes to dark theme tokens |
+
+### Verification
+- ✅ Login page renders with dark background (no flash)
+- ✅ Signup page renders with dark background (no flash)
+- ✅ Dark card with subtle gold border
+- ✅ Legible text (light on dark)
+- ✅ Gold accent buttons
+- ✅ Consistent with navbar and workbook pages
+
+### Git Commit
+```
+aa6b42b fix: update auth pages to match dark luxury theme
+```
+
+### Screenshots
+- Login page: `.playwright-mcp/login-dark-theme.png`
+- Signup page: `.playwright-mcp/signup-dark-theme.png`
+
+---
+
+## ✅ Previous Activity: App Store Rejection Fix (Guideline 5.1.1) - January 29, 2026
 
 ### Summary
 
@@ -83,7 +135,7 @@ Alert.alert(
 
 ---
 
-## ✅ Previous Activity: Vercel Website Deployment FIXED - January 29, 2026
+## ✅ Previous Activity: Vercel Website Deployment FIXED - January 29, 2026 (Earlier)
 
 ### Summary
 After a 4+ hour debugging session, successfully fixed the Vercel deployment for the web companion site. The site is now live and building correctly.
@@ -1685,6 +1737,6 @@ For pre-December 13, 2025 development logs and change history, see `MTU-project-
 
 ---
 
-**Last Updated by**: Claude Code (Website Fixes + Vercel Deployment Discovery)
-**Session Date**: January 28, 2026
-**Document Version**: 2.18.0
+**Last Updated by**: Claude Code (Web Auth Pages Dark Theme Fix)
+**Session Date**: January 30, 2026
+**Document Version**: 2.19.0
