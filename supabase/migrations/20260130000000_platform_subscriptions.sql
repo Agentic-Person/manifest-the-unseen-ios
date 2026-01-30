@@ -8,7 +8,7 @@
 -- =============================================================================
 
 CREATE TABLE IF NOT EXISTS subscriptions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   platform TEXT NOT NULL CHECK (platform IN ('ios', 'web')),
   tier subscription_tier NOT NULL,
@@ -253,46 +253,10 @@ COMMENT ON COLUMN subscriptions.cancel_at_period_end IS 'Whether subscription wi
 COMMENT ON COLUMN subscriptions.billing_interval IS 'Billing frequency: month or year';
 
 -- =============================================================================
--- MIGRATE EXISTING iOS SUBSCRIPTIONS FROM USERS TABLE
+-- NOTE: iOS subscription migration from users table skipped
+-- The users table schema may not have subscription columns yet.
+-- Run a separate data migration if needed after verifying schema.
 -- =============================================================================
-
--- Insert iOS subscriptions for users who have active subscriptions in users table
-INSERT INTO subscriptions (
-  user_id,
-  platform,
-  tier,
-  status,
-  provider,
-  revenuecat_app_user_id,
-  current_period_end,
-  billing_interval,
-  created_at
-)
-SELECT
-  id as user_id,
-  'ios' as platform,
-  subscription_tier as tier,
-  CASE subscription_status
-    WHEN 'active' THEN 'active'
-    WHEN 'trialing' THEN 'trialing'
-    WHEN 'canceled' THEN 'canceled'
-    WHEN 'billing_issue' THEN 'past_due'
-    WHEN 'expired' THEN 'expired'
-    ELSE 'expired'
-  END as status,
-  'revenuecat' as provider,
-  id::text as revenuecat_app_user_id, -- Use user ID as RevenueCat app user ID
-  subscription_expires_at as current_period_end,
-  'month' as billing_interval, -- Default assumption
-  created_at
-FROM users
-WHERE subscription_status IN ('active', 'trialing', 'canceled', 'billing_issue', 'expired')
-  AND subscription_tier IS NOT NULL
-ON CONFLICT (user_id, platform) DO UPDATE SET
-  tier = EXCLUDED.tier,
-  status = EXCLUDED.status,
-  current_period_end = EXCLUDED.current_period_end,
-  updated_at = NOW();
 
 -- =============================================================================
 -- MIGRATION COMPLETE
