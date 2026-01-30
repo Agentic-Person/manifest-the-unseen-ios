@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import WaitlistForm from './WaitlistForm'
 
 export default function Hero() {
   return (
@@ -31,21 +31,8 @@ export default function Hero() {
           Your journey from belief to realization begins here
         </p>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link
-            href="/auth/signup"
-            className="px-8 py-3 bg-aged-gold text-deep-void font-medium rounded-lg hover:bg-aged-gold/90 transition-colors shadow-lg hover:shadow-xl w-full sm:w-auto text-center"
-          >
-            Get Started
-          </Link>
-          <Link
-            href="/auth/login"
-            className="px-8 py-3 bg-transparent border-2 border-enlightened text-enlightened font-medium rounded-lg hover:bg-enlightened/10 transition-colors w-full sm:w-auto text-center"
-          >
-            Sign In
-          </Link>
-        </div>
+        {/* Waitlist Signup */}
+        <WaitlistForm />
       </div>
 
       {/* The Path section - bottom of hero */}
