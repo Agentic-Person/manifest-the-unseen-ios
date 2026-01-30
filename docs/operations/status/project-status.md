@@ -1,14 +1,74 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-30 (Web Auth Pages Dark Theme Fix)
+**Last Updated**: 2026-01-30 (Build 59 Submitted to TestFlight)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
-**Status**: 🟡 **Ready for Build 59** - Code fix complete for App Store rejection.
+**Status**: 🟡 **Build 59 on TestFlight** - Awaiting App Store Review resubmission.
 
 ---
 
-## 🔧 Last Activity: Web Auth Pages Dark Theme Fix - January 30, 2026
+## 🔧 Last Activity: Build 59 Submitted to TestFlight - January 30, 2026
+
+### Summary
+Built and submitted Build 59 to TestFlight. This build includes the fix for App Store Guideline 5.1.1 (registration required before purchase) and updated subscription promotional images.
+
+### What's Included in Build 59
+
+| Change | Description |
+|--------|-------------|
+| **Three-State Navigation** | Anonymous users can now purchase subscriptions without creating an account first |
+| **Updated Subscription Images** | Replaced PNG images with JPG versions that don't include price references (Guideline 2.3.2) |
+| **Prayer Display Improvements** | Fixed prayer text display and meditation player enhancements |
+| **RootNavigator Update** | Three-branch auth flow: loading → anonymous → authenticated |
+
+### Build Details
+
+| Field | Value |
+|-------|-------|
+| **Build Number** | 59 |
+| **App Version** | 1.0.0 |
+| **Build ID** | `40a38857-6e95-4f06-a398-ab522afc05cc` |
+| **Build Date** | January 30, 2026 at 12:37 PM |
+| **IPA** | https://expo.dev/artifacts/eas/8YX2uJKcer7aU5Qa2FhbXw.ipa |
+| **TestFlight** | https://appstoreconnect.apple.com/apps/6756403109/testflight/ios |
+
+### Git Commits
+
+```
+e3f2daf build: increment iOS build number to 59
+6abe0b1 fix: update subscription images + prayer display improvements
+```
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `mobile/app.json` | Build number 58 → 59 |
+| `mobile/assets/subscriptions/*.jpg` | New JPG images without price references |
+| `mobile/assets/subscriptions/*.png` | Deleted old PNG images |
+| `mobile/src/components/prayer/PrayerTextDisplay.tsx` | Prayer display improvements |
+| `mobile/src/navigation/RootNavigator.tsx` | Three-state auth flow |
+| `mobile/src/screens/meditation/MeditationPlayerScreen.tsx` | Meditation player fixes |
+| `docs/operations/prayer-sync-disaster-log.md` | New documentation |
+
+### App Store Rejection Issues Addressed
+
+| Guideline | Issue | Fix |
+|-----------|-------|-----|
+| **5.1.1** | Registration required before purchase | Three-state navigation allows anonymous purchases |
+| **2.3.2** | Promotional images include price references | Replaced subscription images (PNG → JPG without prices) |
+
+### Next Steps
+
+1. ✅ Build 59 created and submitted to TestFlight
+2. ⏳ Apple processing (~5-10 minutes)
+3. ⏳ Test on device to verify anonymous purchase flow
+4. ⏳ Resubmit to App Store Review
+
+---
+
+## ✅ Previous Activity: Web Auth Pages Dark Theme Fix - January 30, 2026
 
 ### Summary
 Fixed the login and signup pages on the web companion to match the app's dark luxury aesthetic. Previously, these pages used a jarring light purple/white theme that "flash bombed" users and clashed with the rest of the site's dark design.
@@ -127,10 +187,10 @@ Alert.alert(
 ### Next Steps
 
 1. ✅ Code changes complete - TypeScript compiles without errors
-2. ⏳ Update promotional images in App Store Connect (remove price references)
-3. ⏳ Increment build number in `mobile/app.json`
-4. ⏳ Commit and push changes
-5. ⏳ Create Build 59 for TestFlight
+2. ✅ Update promotional images in App Store Connect (remove price references)
+3. ✅ Increment build number in `mobile/app.json`
+4. ✅ Commit and push changes
+5. ✅ Create Build 59 for TestFlight
 6. ⏳ Resubmit to App Store Review
 
 ---
