@@ -39,9 +39,24 @@
 
 ---
 
-## Last Activity: Backend Deployment - January 30, 2026
+## Last Activity: Vercel Cleanup - January 30, 2026
 
 ### Summary
+
+Cleaned up duplicate Vercel projects. Consolidated to single project.
+
+**Deleted:**
+- `web` - Orphan project (not connected to git)
+- `manifest-the-unseen-ios` - Unused original project
+
+**Kept:**
+- `manifest-the-unseen-ios-web` - Active project with production domain
+
+**Production URL:** https://www.manifesttheunseen.app
+
+---
+
+## Previous Activity: Backend Deployment - January 30, 2026
 
 Deployed database migration and Stripe Edge Functions to production Supabase.
 
@@ -579,8 +594,11 @@ npx supabase secrets set WEB_APP_URL=https://manifesttheunseen.com
 
 ### Vercel Deployment
 
+**Project:** `manifest-the-unseen-ios-web`
+**URL:** https://www.manifesttheunseen.app
+
+- [x] Project configured and deploying ✅
 - [ ] Set environment variables in Vercel dashboard
-- [ ] Deploy (automatic via GitHub push)
 - [ ] Verify all routes work on production URL
 
 ---
@@ -611,6 +629,19 @@ Each phase is independent - resume from any phase without redoing previous work.
 ---
 
 ## Change Log
+
+### 2026-01-30 - Vercel Project Cleanup
+
+**Problem:** 3 Vercel projects existed for the same app
+**Solution:** Consolidated to single project
+
+| Action | Project |
+|--------|---------|
+| Deleted | `web` (orphan) |
+| Deleted | `manifest-the-unseen-ios` (unused) |
+| Kept | `manifest-the-unseen-ios-web` (has domain) |
+
+**Production:** https://www.manifesttheunseen.app
 
 ### 2026-01-30 - Backend Deployment to Supabase
 
