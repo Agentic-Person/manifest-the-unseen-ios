@@ -1,8 +1,8 @@
 # Web App Project Status
 
-**Last Updated**: 2026-01-30 (Route Testing Complete)
+**Last Updated**: 2026-01-30 (Database & Functions Deployed)
 **Project**: Manifest the Unseen Web App (Companion + Full Web Product)
-**Status**: ✅ **Implementation Complete, Routes Tested** - Ready for Stripe configuration & deployment
+**Status**: ✅ **Backend Deployed** - Needs Stripe secrets & product setup
 
 ---
 
@@ -14,7 +14,9 @@
 | TypeScript | ✅ Passing |
 | Build | ✅ Passing (61 pages) |
 | Routes Tested | 10/10 ✅ |
-| Blocking Items | Stripe setup (P0) |
+| Database Migration | ✅ Applied |
+| Edge Functions | ✅ Deployed (3) |
+| Blocking Items | Stripe secrets & products |
 
 ---
 
@@ -37,9 +39,28 @@
 
 ---
 
-## Last Activity: Route Testing Complete - January 30, 2026
+## Last Activity: Backend Deployment - January 30, 2026
 
 ### Summary
+
+Deployed database migration and Stripe Edge Functions to production Supabase.
+
+**Database Migration Applied:**
+- `subscriptions` table created with platform separation
+- RLS policies enabled
+- Sync triggers active
+- Helper functions deployed (`get_platform_subscription`, `get_best_subscription`)
+
+**Edge Functions Deployed:**
+- `stripe-checkout` - Creates Stripe Checkout sessions
+- `stripe-webhook` - Handles all Stripe webhook events
+- `stripe-portal` - Customer portal sessions
+
+**Webhook URL:** `https://zbyszxtwzoylyygtexdr.supabase.co/functions/v1/stripe-webhook`
+
+---
+
+## Previous Activity: Route Testing - January 30, 2026
 
 All routes tested via Playwright automation:
 
@@ -78,7 +99,7 @@ Six parallel agents completed full implementation:
 
 ## Detailed Implementation Status
 
-### Phase 1: Database Foundation ✅
+### Phase 1: Database Foundation ✅ DEPLOYED
 
 **Migration File:** `supabase/migrations/20260130000000_platform_subscriptions.sql`
 
@@ -86,17 +107,19 @@ Six parallel agents completed full implementation:
 - [x] RLS policies for user data isolation
 - [x] Sync triggers (subscription → users table)
 - [x] Indexes for performance
-- [ ] **TODO:** Apply migration to production Supabase
+- [x] **DEPLOYED** to production Supabase ✅
 
-### Phase 2: Stripe Backend ✅
+### Phase 2: Stripe Backend ✅ DEPLOYED
 
-**Edge Functions Created:**
+**Edge Functions Deployed:**
 
-| Function | File | Purpose |
-|----------|------|---------|
-| stripe-checkout | `supabase/functions/stripe-checkout/index.ts` | Create Stripe Checkout sessions |
-| stripe-webhook | `supabase/functions/stripe-webhook/index.ts` | Handle all Stripe events |
-| stripe-portal | `supabase/functions/stripe-portal/index.ts` | Customer portal sessions |
+| Function | Size | Status |
+|----------|------|--------|
+| stripe-checkout | 487.4kB | ✅ Deployed |
+| stripe-webhook | 489.4kB | ✅ Deployed |
+| stripe-portal | 486.4kB | ✅ Deployed |
+
+**Dashboard:** https://supabase.com/dashboard/project/zbyszxtwzoylyygtexdr/functions
 
 **Remaining Tasks:**
 - [ ] Deploy functions: `npx supabase functions deploy stripe-checkout stripe-webhook stripe-portal`
@@ -390,15 +413,28 @@ web/lib/shared/index.ts        # UPDATED - export journalLimits
 
 ### Critical (Before Launch)
 
-| Priority | Task | Blocking |
-|----------|------|----------|
-| P0 | Apply database migration to Supabase | All subscriptions |
-| P0 | Deploy 3 Stripe Edge Functions | Checkout flow |
-| P0 | Create 6 Stripe products/prices | Checkout flow |
-| P0 | Replace placeholder price IDs | Checkout flow |
-| P0 | Configure Stripe webhook endpoint | Subscription events |
-| P0 | Set Supabase secrets (STRIPE_SECRET_KEY, etc.) | Edge Functions |
-| P1 | Set web .env.local (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) | Client-side Stripe |
+| Priority | Task | Status |
+|----------|------|--------|
+| P0 | Apply database migration to Supabase | ✅ Done |
+| P0 | Deploy 3 Stripe Edge Functions | ✅ Done |
+| P0 | Create 6 Stripe products/prices | ⏳ Pending |
+| P0 | Replace placeholder price IDs in `web/types/subscription.ts` | ⏳ Pending |
+| P0 | Configure Stripe webhook endpoint | ⏳ Pending |
+| P0 | Set Supabase secrets (STRIPE_SECRET_KEY, etc.) | ⏳ Pending |
+| P1 | Set web .env.local (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) | ⏳ Pending |
+
+### Stripe Setup Commands (Ready to Run)
+
+```bash
+# Set Supabase secrets
+npx supabase secrets set STRIPE_SECRET_KEY=sk_live_xxx
+npx supabase secrets set STRIPE_WEBHOOK_SIGNING_SECRET=whsec_xxx
+npx supabase secrets set WEB_APP_URL=https://manifesttheunseen.com
+```
+
+**Webhook Configuration:**
+- URL: `https://zbyszxtwzoylyygtexdr.supabase.co/functions/v1/stripe-webhook`
+- Events: `checkout.session.completed`, `customer.subscription.*`, `invoice.*`
 
 ### Testing Required
 
@@ -509,25 +545,22 @@ export const STRIPE_PRICE_IDS = {
 - [x] All routes render correctly (Playwright tested 10 routes) ✅
 - [ ] Test checkout flow with Stripe test mode
 
-### Supabase Deployment
+### Supabase Deployment ✅ COMPLETE
 
 ```bash
-# Apply migration
-cd supabase
+# Apply migration - DONE ✅
 npx supabase db push
 
-# Deploy Edge Functions
-npx supabase functions deploy stripe-checkout
-npx supabase functions deploy stripe-webhook
-npx supabase functions deploy stripe-portal
+# Deploy Edge Functions - DONE ✅
+npx supabase functions deploy stripe-checkout stripe-webhook stripe-portal
 
-# Set secrets
+# Set secrets - PENDING ⏳
 npx supabase secrets set STRIPE_SECRET_KEY=sk_live_xxx
 npx supabase secrets set STRIPE_WEBHOOK_SIGNING_SECRET=whsec_xxx
 npx supabase secrets set WEB_APP_URL=https://manifesttheunseen.com
 ```
 
-### Stripe Configuration
+### Stripe Configuration ⏳ PENDING
 
 1. Create products in Stripe Dashboard:
    - Seeker (Novice): $7.99/mo, $69.99/yr
@@ -537,10 +570,12 @@ npx supabase secrets set WEB_APP_URL=https://manifesttheunseen.com
 2. Add metadata to each product: `tier: novice|awakening|enlightenment`
 
 3. Configure webhook endpoint:
-   - URL: `https://[project-ref].supabase.co/functions/v1/stripe-webhook`
+   - URL: `https://zbyszxtwzoylyygtexdr.supabase.co/functions/v1/stripe-webhook`
    - Events: `checkout.session.completed`, `customer.subscription.*`, `invoice.*`
 
 4. Copy webhook signing secret to Supabase secrets
+
+5. Update `web/types/subscription.ts` with real Stripe price IDs
 
 ### Vercel Deployment
 
@@ -576,6 +611,26 @@ Each phase is independent - resume from any phase without redoing previous work.
 ---
 
 ## Change Log
+
+### 2026-01-30 - Backend Deployment to Supabase
+
+**Database Migration Applied:**
+- `subscriptions` table created with platform separation (ios/web)
+- RLS policies enabled for user data isolation
+- Sync triggers active (subscription changes → users table)
+- Helper functions: `get_platform_subscription()`, `get_best_subscription()`
+- Fixed: `gen_random_uuid()` instead of `uuid_generate_v4()`
+
+**Edge Functions Deployed:**
+| Function | Size | Status |
+|----------|------|--------|
+| stripe-checkout | 487.4kB | ✅ Live |
+| stripe-webhook | 489.4kB | ✅ Live |
+| stripe-portal | 486.4kB | ✅ Live |
+
+**Commits:**
+- `8477812` - feat(web): implement full web app with Stripe subscriptions
+- `07bb6e3` - fix(db): update subscriptions migration for compatibility
 
 ### 2026-01-30 - Route Testing & iOS Pricing Page
 
