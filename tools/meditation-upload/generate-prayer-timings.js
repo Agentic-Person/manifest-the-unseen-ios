@@ -121,54 +121,65 @@ function getPrayerLines(prayerText) {
 }
 
 /**
- * Generate proportional timings using Whisper speech boundaries
+ * Generate timings using actual Whisper word-level timestamps
  *
- * Instead of trying to match words (fragile), this approach:
- * 1. Uses Whisper to detect when speech starts/ends
- * 2. Distributes timing proportionally across ALL content lines based on word count
+ * This approach uses the actual timestamps from Whisper's word array:
+ * 1. Process prayer lines sequentially
+ * 2. For each line, count its words
+ * 3. Consume that many words from Whisper's word array
+ * 4. Use the first consumed word's `start` as line startMs
+ * 5. Use the last consumed word's `end` as line endMs
  *
- * This ensures every content line gets a timing entry, regardless of
- * transcription variations or narrator differences.
+ * This ensures text syncs accurately with when the narrator actually speaks each line.
  */
-function generateProportionalTimings(whisperResult, prayerLines) {
-  const words = whisperResult.words;
-  if (!words || words.length === 0) {
+function generateTimingsFromWhisperWords(whisperResult, prayerLines) {
+  const whisperWords = whisperResult.words;
+  if (!whisperWords || whisperWords.length === 0) {
     console.log('  ⚠️  No words from Whisper, cannot generate timings');
     return null;
   }
 
-  // Get speech boundaries from Whisper
-  const speechStartMs = Math.round(words[0].start * 1000);
-  const speechEndMs = Math.round(words[words.length - 1].end * 1000);
-  const totalSpeechDurationMs = speechEndMs - speechStartMs;
-
-  console.log(`  Speech boundaries: ${(speechStartMs / 1000).toFixed(2)}s - ${(speechEndMs / 1000).toFixed(2)}s`);
-  console.log(`  Total speech duration: ${(totalSpeechDurationMs / 1000).toFixed(2)}s`);
-
-  // Count words per line
+  // Count words in each prayer line
   const lineWordCounts = prayerLines.map(line =>
     line.split(/\s+/).filter(w => w.length > 0).length
   );
-  const totalWords = lineWordCounts.reduce((sum, c) => sum + c, 0);
+  const totalPrayerWords = lineWordCounts.reduce((sum, c) => sum + c, 0);
 
-  console.log(`  Content: ${prayerLines.length} lines, ${totalWords} total words`);
+  console.log(`  Content: ${prayerLines.length} lines, ${totalPrayerWords} prayer words`);
+  console.log(`  Whisper detected: ${whisperWords.length} words`);
 
-  // Distribute timing proportionally based on word count per line
-  let currentTimeMs = speechStartMs;
-  const lineTimings = prayerLines.map((text, index) => {
-    const wordCount = lineWordCounts[index];
-    const lineDurationMs = (wordCount / totalWords) * totalSpeechDurationMs;
-    const startMs = currentTimeMs;
-    const endMs = startMs + lineDurationMs;
-    currentTimeMs = endMs;
+  // Track our position in Whisper words array
+  let whisperWordIndex = 0;
+
+  const lineTimings = prayerLines.map((text, lineIndex) => {
+    const wordsInLine = lineWordCounts[lineIndex];
+
+    // Get the Whisper words for this line
+    const startWordIndex = Math.min(whisperWordIndex, whisperWords.length - 1);
+    const endWordIndex = Math.min(
+      whisperWordIndex + wordsInLine - 1,
+      whisperWords.length - 1
+    );
+
+    // Get timestamps from actual Whisper words
+    const startMs = Math.round(whisperWords[startWordIndex].start * 1000);
+    const endMs = Math.round(whisperWords[endWordIndex].end * 1000);
+
+    // Advance position for next line
+    whisperWordIndex += wordsInLine;
 
     return {
-      line: index,
+      line: lineIndex,
       text,
-      startMs: Math.round(startMs),
-      endMs: Math.round(endMs)
+      startMs,
+      endMs
     };
   });
+
+  // Log timing info
+  const firstTiming = lineTimings[0];
+  const lastTiming = lineTimings[lineTimings.length - 1];
+  console.log(`  Timing range: ${(firstTiming.startMs / 1000).toFixed(2)}s - ${(lastTiming.endMs / 1000).toFixed(2)}s`);
 
   return lineTimings;
 }
@@ -228,9 +239,9 @@ async function processPrayers() {
 
       console.log(`  ✓ Transcribed (${whisperResult.words.length} words)`);
 
-      // Generate proportional timings using Whisper speech boundaries
+      // Generate timings using actual Whisper word timestamps
       const prayerLines = getPrayerLines(prayerContent[title]);
-      const lineTimings = generateProportionalTimings(whisperResult, prayerLines);
+      const lineTimings = generateTimingsFromWhisperWords(whisperResult, prayerLines);
 
       if (!lineTimings) {
         throw new Error('Failed to generate timings from Whisper result');

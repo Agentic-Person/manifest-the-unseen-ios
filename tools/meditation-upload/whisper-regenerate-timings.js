@@ -50,35 +50,49 @@ function getPrayerLines(content) {
 
 /**
  * Generate line timings from Whisper word timestamps
+ *
+ * Uses actual word-level timestamps from Whisper instead of proportional distribution.
+ * For each prayer line:
+ * 1. Count words in the line
+ * 2. Consume that many words from Whisper's word array
+ * 3. Use first word's start time and last word's end time
  */
 function generateLineTimingsFromWhisper(whisperResult, prayerLines) {
-  const words = whisperResult.words || [];
-  if (words.length === 0) return null;
+  const whisperWords = whisperResult.words || [];
+  if (whisperWords.length === 0) return null;
 
-  // Get total audio duration from last word
-  const audioDurationMs = Math.round((words[words.length - 1].end || 0) * 1000);
-  const speechStartMs = Math.round((words[0].start || 0) * 1000);
-  const totalSpeechDurationMs = audioDurationMs - speechStartMs;
-
-  // Calculate word count per line
+  // Count words in each prayer line
   const lineWordCounts = prayerLines.map(line =>
     line.split(/\s+/).filter(word => word.length > 0).length
   );
-  const totalWords = lineWordCounts.reduce((sum, count) => sum + count, 0);
+  const totalPrayerWords = lineWordCounts.reduce((sum, count) => sum + count, 0);
 
-  if (totalWords === 0) return null;
+  if (totalPrayerWords === 0) return null;
 
-  // Distribute time proportionally
-  let currentTimeMs = speechStartMs;
-  const lineTimings = prayerLines.map((text, index) => {
-    const wordCount = lineWordCounts[index];
-    const lineDurationMs = (wordCount / totalWords) * totalSpeechDurationMs;
-    const startMs = Math.round(currentTimeMs);
-    const endMs = Math.round(startMs + lineDurationMs);
-    currentTimeMs = endMs;
+  console.log(`    Prayer words: ${totalPrayerWords}, Whisper words: ${whisperWords.length}`);
+
+  // Track position in Whisper words array
+  let whisperWordIndex = 0;
+
+  const lineTimings = prayerLines.map((text, lineIndex) => {
+    const wordsInLine = lineWordCounts[lineIndex];
+
+    // Get the Whisper words for this line (clamped to available words)
+    const startWordIndex = Math.min(whisperWordIndex, whisperWords.length - 1);
+    const endWordIndex = Math.min(
+      whisperWordIndex + wordsInLine - 1,
+      whisperWords.length - 1
+    );
+
+    // Get timestamps from actual Whisper words
+    const startMs = Math.round(whisperWords[startWordIndex].start * 1000);
+    const endMs = Math.round(whisperWords[endWordIndex].end * 1000);
+
+    // Advance position for next line
+    whisperWordIndex += wordsInLine;
 
     return {
-      line: index,
+      line: lineIndex,
       text,
       startMs,
       endMs
