@@ -5,6 +5,9 @@
  * to avoid monorepo dependency issues in Vercel deployment.
  */
 
+// Re-export journal limit utilities
+export * from './journalLimits'
+
 export type SubscriptionTier = 'free' | 'novice' | 'awakening' | 'enlightenment';
 
 export interface WorkbookPhase {

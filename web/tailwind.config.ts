@@ -21,6 +21,7 @@ const config: Config = {
 
         // Text colors
         'enlightened': '#F5F0E6',
+        'ancient-script': '#F5F0E6', // alias for primary text in journal/content
         'muted-wisdom': '#A09080',
         'tertiary-text': '#6B6B80',
         'subtle': '#6B6B6B',
