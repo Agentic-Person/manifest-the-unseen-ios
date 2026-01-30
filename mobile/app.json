@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manifesttheunseen.app",
-      "buildNumber": "58",
+      "buildNumber": "59",
       "usesAppleSignIn": true,
       "config": {
         "privacyManifestAggregationEnabled": true
