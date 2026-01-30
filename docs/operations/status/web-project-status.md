@@ -39,9 +39,17 @@
 
 ---
 
-## Last Activity: Vercel Cleanup - January 30, 2026
+## Last Activity: Vercel Project Rename - January 30, 2026
 
 ### Summary
+
+Renamed Vercel project from `manifest-the-unseen-ios-web` → `manifest-the-unseen`
+
+**Production URL:** https://www.manifesttheunseen.app
+
+---
+
+## Previous Activity: Vercel Cleanup - January 30, 2026
 
 Cleaned up duplicate Vercel projects. Consolidated to single project.
 
@@ -50,9 +58,7 @@ Cleaned up duplicate Vercel projects. Consolidated to single project.
 - `manifest-the-unseen-ios` - Unused original project
 
 **Kept:**
-- `manifest-the-unseen-ios-web` - Active project with production domain
-
-**Production URL:** https://www.manifesttheunseen.app
+- `manifest-the-unseen` (renamed from `manifest-the-unseen-ios-web`)
 
 ---
 
@@ -594,7 +600,7 @@ npx supabase secrets set WEB_APP_URL=https://manifesttheunseen.com
 
 ### Vercel Deployment
 
-**Project:** `manifest-the-unseen-ios-web`
+**Project:** `manifest-the-unseen`
 **URL:** https://www.manifesttheunseen.app
 
 - [x] Project configured and deploying ✅
@@ -630,6 +636,10 @@ Each phase is independent - resume from any phase without redoing previous work.
 
 ## Change Log
 
+### 2026-01-30 - Vercel Project Rename
+
+Renamed project: `manifest-the-unseen-ios-web` → `manifest-the-unseen`
+
 ### 2026-01-30 - Vercel Project Cleanup
 
 **Problem:** 3 Vercel projects existed for the same app
@@ -639,7 +649,7 @@ Each phase is independent - resume from any phase without redoing previous work.
 |--------|---------|
 | Deleted | `web` (orphan) |
 | Deleted | `manifest-the-unseen-ios` (unused) |
-| Kept | `manifest-the-unseen-ios-web` (has domain) |
+| Kept | `manifest-the-unseen` (has domain) |
 
 **Production:** https://www.manifesttheunseen.app
 
