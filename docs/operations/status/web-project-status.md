@@ -444,18 +444,39 @@ web/lib/shared/index.ts        # UPDATED - export journalLimits
 | P0 | Set Supabase secrets (STRIPE_SECRET_KEY, etc.) | ⏳ Pending |
 | P1 | Set web .env.local (NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) | ⏳ Pending |
 
-### Stripe Setup Commands (Ready to Run)
+### Stripe Setup Instructions
 
+#### Step 1: Get API Keys (Test Mode)
+1. Go to Stripe Dashboard → **Developers** → **API Keys**
+2. Ensure "Test mode" toggle is ON (top right)
+3. Copy the **Secret key** (starts with `sk_test_`)
+
+#### Step 2: Create Webhook Endpoint
+1. Go to **Developers** → **Webhooks** → **Add endpoint**
+2. **Endpoint URL:** `https://zbyszxtwzoylyygtexdr.supabase.co/functions/v1/stripe-webhook`
+3. **Select events:**
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+   - `invoice.payment_succeeded`
+   - `invoice.payment_failed`
+4. Click **Add endpoint**
+5. Click **Reveal** on signing secret, copy it (starts with `whsec_`)
+
+#### Step 3: Set Supabase Secrets
 ```bash
-# Set Supabase secrets
-npx supabase secrets set STRIPE_SECRET_KEY=sk_live_xxx
+npx supabase secrets set STRIPE_SECRET_KEY=sk_test_xxx
 npx supabase secrets set STRIPE_WEBHOOK_SIGNING_SECRET=whsec_xxx
-npx supabase secrets set WEB_APP_URL=https://manifesttheunseen.com
+npx supabase secrets set WEB_APP_URL=https://www.manifesttheunseen.app
 ```
 
-**Webhook Configuration:**
-- URL: `https://zbyszxtwzoylyygtexdr.supabase.co/functions/v1/stripe-webhook`
-- Events: `checkout.session.completed`, `customer.subscription.*`, `invoice.*`
+#### Step 4: Set Vercel Environment Variables
+In Vercel Dashboard → Project Settings → Environment Variables:
+```
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+NEXT_PUBLIC_WEB_APP_URL=https://www.manifesttheunseen.app
+```
 
 ### Testing Required
 
