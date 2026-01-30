@@ -69,25 +69,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-purple-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-deep-void px-4">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-enlightened mb-2">
             Welcome Back
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-wisdom">
             Sign in to continue your manifestation journey
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-temple-stone rounded-2xl shadow-xl p-8 border border-[var(--gold-border)]">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error message */}
             {error && (
               <div
-                className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"
+                className="bg-root-crimson/20 border border-root-crimson/40 text-enlightened px-4 py-3 rounded-lg"
                 role="alert"
               >
                 <p className="text-sm">{error}</p>
@@ -98,7 +98,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-muted-wisdom mb-2"
               >
                 Email Address
               </label>
@@ -110,7 +110,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors text-gray-900"
+                className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-aged-gold focus:border-transparent transition-colors"
                 placeholder="you@example.com"
               />
             </div>
@@ -119,7 +119,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-muted-wisdom mb-2"
               >
                 Password
               </label>
@@ -131,7 +131,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors text-gray-900"
+                className="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-aged-gold focus:border-transparent transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -140,21 +140,21 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-aged-gold text-deep-void py-3 px-4 rounded-lg hover:bg-amber-glow transition-colors font-medium shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-aged-gold focus:ring-offset-2 focus:ring-offset-temple-stone disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="mt-6 mb-6 border-t border-gray-200" />
+          <div className="mt-6 mb-6 border-t border-[var(--gold-divider)]" />
 
           {/* Sign up link */}
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm text-muted-wisdom">
             Don&apos;t have an account?{' '}
             <Link
               href="/auth/signup"
-              className="text-purple-600 hover:text-purple-700 font-medium"
+              className="text-aged-gold hover:text-amber-glow font-medium"
             >
               Sign up
             </Link>
@@ -163,11 +163,11 @@ export default function LoginPage() {
 
         {/* Footer note */}
         <div className="mt-8 space-y-3">
-          <p className="text-center text-sm text-gray-600">
-            <strong className="text-gray-700">Existing mobile app users:</strong> Use the same email and password from your mobile app.
+          <p className="text-center text-sm text-muted-wisdom">
+            <strong className="text-enlightened">Existing mobile app users:</strong> Use the same email and password from your mobile app.
           </p>
-          <p className="text-center text-sm text-gray-600">
-            <strong className="text-gray-700">New users:</strong> Create an account to access the web workbook. Download the mobile app to unlock all features and subscribe.
+          <p className="text-center text-sm text-muted-wisdom">
+            <strong className="text-enlightened">New users:</strong> Create an account to access the web workbook. Download the mobile app to unlock all features and subscribe.
           </p>
         </div>
       </div>
