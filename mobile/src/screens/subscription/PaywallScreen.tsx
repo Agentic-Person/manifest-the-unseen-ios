@@ -647,13 +647,15 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
           </Pressable>
 
           <ScrollView contentContainerStyle={styles.errorScrollContent}>
-            {/* Debug Overlay - always visible in error state for debugging */}
-            <DebugOverlay
-              visible={true}
-              offeringsError={offeringsError}
-              testModeEnabled={testModeEnabled}
-              onToggleTestMode={toggleTestMode}
-            />
+            {/* Debug Overlay - only visible in development builds */}
+            {__DEV__ && (
+              <DebugOverlay
+                visible={true}
+                offeringsError={offeringsError}
+                testModeEnabled={testModeEnabled}
+                onToggleTestMode={toggleTestMode}
+              />
+            )}
 
             <View style={styles.errorContainer}>
               <Text style={styles.errorIcon}>⚠️</Text>
@@ -672,19 +674,21 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
                 <Text style={styles.retryButtonText}>Try Again</Text>
               </Pressable>
 
-              {/* Sandbox Account Info */}
-              <View style={styles.sandboxInfoContainer}>
-                <Text style={styles.sandboxInfoTitle}>📱 Sandbox Account Required</Text>
-                <Text style={styles.sandboxInfoText}>
-                  To test purchases on TestFlight, you need a Sandbox Apple ID:
-                </Text>
-                <Text style={styles.sandboxInfoStep}>1. Go to Settings → App Store</Text>
-                <Text style={styles.sandboxInfoStep}>2. Scroll down and tap "Sandbox Account"</Text>
-                <Text style={styles.sandboxInfoStep}>3. Sign in with a test Apple ID</Text>
-                <Text style={styles.sandboxInfoHint}>
-                  Create sandbox accounts at App Store Connect → Users and Access → Sandbox Testers
-                </Text>
-              </View>
+              {/* Sandbox Account Info - dev builds only */}
+              {__DEV__ && (
+                <View style={styles.sandboxInfoContainer}>
+                  <Text style={styles.sandboxInfoTitle}>📱 Sandbox Account Required</Text>
+                  <Text style={styles.sandboxInfoText}>
+                    To test purchases on TestFlight, you need a Sandbox Apple ID:
+                  </Text>
+                  <Text style={styles.sandboxInfoStep}>1. Go to Settings → App Store</Text>
+                  <Text style={styles.sandboxInfoStep}>2. Scroll down and tap "Sandbox Account"</Text>
+                  <Text style={styles.sandboxInfoStep}>3. Sign in with a test Apple ID</Text>
+                  <Text style={styles.sandboxInfoHint}>
+                    Create sandbox accounts at App Store Connect → Users and Access → Sandbox Testers
+                  </Text>
+                </View>
+              )}
             </View>
           </ScrollView>
         </LinearGradient>
@@ -735,13 +739,15 @@ export const PaywallScreen: React.FC<PaywallScreenProps> = ({ navigation, route 
             </View>
           )}
 
-          {/* Debug Overlay - tap title 5x to show */}
-          <DebugOverlay
-            visible={showDebug}
-            offeringsError={offeringsError}
-            testModeEnabled={testModeEnabled}
-            onToggleTestMode={toggleTestMode}
-          />
+          {/* Debug Overlay - tap title 5x to show (dev builds only) */}
+          {__DEV__ && (
+            <DebugOverlay
+              visible={showDebug}
+              offeringsError={offeringsError}
+              testModeEnabled={testModeEnabled}
+              onToggleTestMode={toggleTestMode}
+            />
+          )}
 
           {/* Sale Banner - shown when sale is active */}
           {saleConfig.isActive && !isSubscribed && (
