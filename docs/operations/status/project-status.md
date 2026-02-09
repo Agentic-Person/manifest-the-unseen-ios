@@ -1,14 +1,108 @@
 # MTU Project Status
 
-**Last Updated**: 2026-01-30 (Build 59 + Promoted IAP Research)
+**Last Updated**: 2026-02-08 (Build 60 - Subscription Image Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
-**Status**: 🟡 **Build 59 on TestFlight** - Ready to resubmit to App Store Review.
+**Status**: 🟡 **Build 60 on TestFlight** - Fixing Apple rejection issues (2.3.2 + 5.1.1), ready to resubmit.
 
 ---
 
-## 🔧 Last Activity: Build 59 + Promoted In-App Purchases Research - January 30, 2026
+## 🔧 Last Activity: Build 60 - Subscription Image Price Removal + Apple Rejection Fix - February 8, 2026
+
+### Summary
+Investigated and resolved Apple App Review rejection for Build 58 (Guideline 2.3.2 - Accurate Metadata and Guideline 5.1.1 - Data Collection and Storage). Used Playwright MCP to inspect App Store Connect and discovered that subscription promotional images contained price references ($7.99/month, $69.99/year, $18.99/month, $189.99/year, $29.99/month, $279/year) and "Save 17%" text. Replaced all 6 in-app subscription images with clean versions (features only, no prices). Also fixed filename typos caught during review. Built and submitted Build 60 to TestFlight.
+
+### Apple Rejection Details (Build 58, reviewed January 28, 2026)
+
+| Guideline | Issue | Status |
+|-----------|-------|--------|
+| **2.3.2 - Accurate Metadata** | Promotional images for all 6 subscriptions included price references | ✅ Fixed - replaced all images |
+| **5.1.1 - Data Collection & Storage** | App requires sign-in before purchasing subscriptions | ✅ Already fixed in Build 59 (three-state navigation) |
+
+### Key Discovery: Two Sets of Images
+
+The investigation revealed there were **two separate sets** of subscription images:
+
+1. **App Store Connect Promotional Images (1024x1024)** - Managed in ASC, used on App Store product page. These had been updated to remove dollar amounts but still had "Save 17%" on yearly plans.
+2. **In-App Bundled Images** - Located at `mobile/src/assets/images-compressed/subscription/`. These were the OLD images with hardcoded prices ($7.99/month, $69.99/year, etc.) still baked into every build. These are NOT pulled from ASC - they're compiled into the app binary.
+
+### Image Changes
+
+| Image File | Old Content | New Content |
+|------------|-------------|-------------|
+| `subscription-novice-monthly.png` | "$7.99/month" + features | Features only (no price) |
+| `subscription-novice-annual.png` | "$69.99/year" + "Save 17%" + features | Features only (no price, no savings) |
+| `subscription-awakening-monthly.png` | "$18.99/month" + features | Features only (no price) |
+| `subscription-awakening-annual.png` | "$189.99/year" + "Save 17%" + features | Features only (no price, no savings) |
+| `subscription-enlightenment-monthly.png` | "$29.99/month" + features | Features only (no price) |
+| `subscription-enlightenment-annual.png` | "$279/year" + features | Features only (no price) |
+
+### Filename Issues Fixed
+
+| Issue | Fix |
+|-------|-----|
+| `subscription-enlightenment-annualv.png` (extra "v") | Renamed to `subscription-enlightenment-annual.png` |
+| `subscription-novice-monthly-annual.png` (wrong name) | Renamed to `subscription-novice-annual.png` |
+| Stray `home.png` in subscription folder | Removed |
+
+### Build Details
+
+| Field | Value |
+|-------|-------|
+| **Build Number** | 60 |
+| **App Version** | 1.0.0 |
+| **Build ID** | `6d07b041-a978-4513-95c2-d977210c56f3` |
+| **Build Date** | February 8, 2026 |
+| **IPA** | https://expo.dev/artifacts/eas/esTc7j3W9HMLXLubdW5H1P.ipa |
+| **Submission ID** | `47196c84-568c-4212-9254-7e5f0acd5df3` |
+| **TestFlight** | https://appstoreconnect.apple.com/apps/6756403109/testflight/ios |
+
+### Git Commits
+
+```
+9acf13a build: increment iOS build number to 60
+04f0db0 fix: update subscription images to remove price references (Apple 2.3.2)
+```
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `mobile/app.json` | Build number 59 → 60 |
+| `mobile/src/assets/images-compressed/subscription/subscription-novice-monthly.png` | Replaced with price-free version |
+| `mobile/src/assets/images-compressed/subscription/subscription-novice-annual.png` | Replaced with price-free version |
+| `mobile/src/assets/images-compressed/subscription/subscription-awakening-monthly.png` | Replaced with price-free version |
+| `mobile/src/assets/images-compressed/subscription/subscription-awakening-annual.png` | Replaced with price-free version |
+| `mobile/src/assets/images-compressed/subscription/subscription-enlightenment-monthly.png` | Replaced with price-free version |
+| `mobile/src/assets/images-compressed/subscription/subscription-enlightenment-annual.png` | Replaced with price-free version (also fixed filename typo) |
+| `mobile/src/assets/images-compressed/backgrounds/home.png` | Updated |
+| `mobile/src/assets/images-compressed/backgrounds/home_FS.png` | Deleted (unused) |
+| `mobile/src/assets/images-compressed/backgrounds/meditate.png` | Updated |
+| `mobile/assets/subscriptions/subscription-novice-annual.png` | Added backup copy |
+| `mobile/assets/subscriptions/subscription-awakening-annual.png` | Added backup copy |
+| `mobile/assets/subscriptions/subscription-enlightenment-annual.png` | Added backup copy |
+
+### Guideline 5.1.1 Compliance Verification
+
+Verified that the existing code already handles 5.1.1 compliance:
+- `RootNavigator.tsx`: Three-state navigation (loading → anonymous → authenticated)
+- `GuestNavigator.tsx`: PaywallScreen is the default landing for anonymous users (no login required)
+- `PaywallScreen.tsx`: No auth check before purchase; anonymous users can buy directly
+- Post-purchase: Offers optional "Create Account" / "Sign In" / "Continue as Guest"
+- Code has explicit Guideline 5.1.1 compliance comments
+
+### Next Steps
+
+1. ✅ Build 60 created and submitted to TestFlight
+2. ⏳ Wait for Apple processing (5-10 minutes) → test on device
+3. ⏳ **Update ASC promotional images** - Remove "Save 17%" from Novice Yearly and Awakening Yearly in App Store Connect
+4. ⏳ Select Build 60 on the app version page in ASC
+5. ⏳ Resubmit for App Store Review
+
+---
+
+## ✅ Previous Activity: Build 59 + Promoted In-App Purchases Research - January 30, 2026
 
 ### Summary
 Built and submitted Build 59 to TestFlight. This build includes the fix for App Store Guideline 5.1.1 (registration required before purchase) and updated subscription promotional images. Also researched App Store Promoted In-App Purchases feature.
