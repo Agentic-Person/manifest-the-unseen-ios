@@ -1,14 +1,43 @@
 # MTU Project Status
 
-**Last Updated**: 2026-02-09 (PaywallScreen Debug UI Production Fix)
+**Last Updated**: 2026-02-09 (Build 61 - Submitted to App Store Connect)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
-**Status**: 🟡 **Build 60 on TestFlight** - Fixing Apple rejection issues (2.3.2 + 5.1.1), ready to resubmit.
+**Status**: 🟡 **Build 61 on TestFlight** - Resubmitting to Apple Review after fixing debug UI exposure + subscription image prices.
 
 ---
 
-## 🔧 Last Activity: Gate Debug UI Behind __DEV__ on PaywallScreen - February 9, 2026
+## 🔧 Last Activity: Build 61 - Debug UI Fix Build + Resubmission - February 9, 2026
+
+### Summary
+Built and submitted Build 61 to App Store Connect. This build gates all debug/developer UI behind `__DEV__` checks so production users see a clean paywall experience. Combined with Build 60's subscription image price removal, this addresses both Apple Review rejection guidelines (2.3.2 + 5.1.1).
+
+### Build Details
+
+| Field | Value |
+|-------|-------|
+| **Build Number** | 61 |
+| **App Version** | 1.0.0 |
+| **Build ID** | `0bea3b5a-6ad3-4d72-9124-d0fe06f5b1ac` |
+| **Build Date** | February 9, 2026 |
+| **IPA** | https://expo.dev/artifacts/eas/2tkurLVXyvApcXaCVCZKF3.ipa |
+| **Submission ID** | `4208240d-1dbb-4495-8b6f-2eca077408b8` |
+| **TestFlight** | https://appstoreconnect.apple.com/apps/6756403109/testflight/ios |
+
+### What's in Build 61 (cumulative since Build 58 rejection)
+- **Debug UI gated behind `__DEV__`** - DebugOverlay (error state), Sandbox Account Info, DebugOverlay (normal state 5-tap toggle) all hidden in production
+- **Subscription images updated** (from Build 60) - All 6 in-app images replaced to remove price references and "Save 17%" text
+- **Three-state navigation** (from Build 59) - Users can browse and purchase subscriptions without signing in first
+
+### Commits in this Build
+- `ff22b85` - `build: increment iOS build number to 61`
+- `28888de` - `docs: update project-status with PaywallScreen debug UI fix`
+- `46c0042` - `fix: gate debug UI behind __DEV__ on PaywallScreen (Apple Review)`
+
+---
+
+## 🔧 Previous Activity: Gate Debug UI Behind __DEV__ on PaywallScreen - February 9, 2026
 
 ### Summary
 Wrapped three debug/developer-only UI elements in PaywallScreen.tsx with `{__DEV__ && (...)}` guards so they are excluded from production builds. This ensures Apple Review sees a clean paywall experience with no debug panels, sandbox instructions, or test mode toggles.
