@@ -1,6 +1,6 @@
 # MTU Project Status
 
-**Last Updated**: 2026-02-08 (Build 60 - Subscription Image Fix)
+**Last Updated**: 2026-02-09 (PaywallScreen Debug UI Production Fix)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
@@ -8,7 +8,35 @@
 
 ---
 
-## 🔧 Last Activity: Build 60 - Subscription Image Price Removal + Apple Rejection Fix - February 8, 2026
+## 🔧 Last Activity: Gate Debug UI Behind __DEV__ on PaywallScreen - February 9, 2026
+
+### Summary
+Wrapped three debug/developer-only UI elements in PaywallScreen.tsx with `{__DEV__ && (...)}` guards so they are excluded from production builds. This ensures Apple Review sees a clean paywall experience with no debug panels, sandbox instructions, or test mode toggles.
+
+### Changes Made
+
+| Location | What Was Exposed | Fix |
+|----------|-----------------|-----|
+| Error state DebugOverlay (~line 651) | Full debug panel always visible when offerings fail to load | Wrapped with `{__DEV__ && (...)}` |
+| Sandbox Account Info (~line 677) | Developer testing instructions ("Sandbox Account Required") shown to all users | Wrapped with `{__DEV__ && (...)}` |
+| Normal state DebugOverlay (~line 742) | 5-tap debug toggle accessible in production | Wrapped with `{__DEV__ && (...)}` |
+
+### Already Correct (No Changes Needed)
+- `__DEV__` TEST MODE banner (~line 770) was already gated
+- RevenueCat log level already set to `ERROR` in production (`subscriptionService.ts` line 141)
+- `eas.json` production profile already has `EXPO_PUBLIC_TESTFLIGHT_FULL_ACCESS: "false"`
+
+### Production User Experience (After Fix)
+- **Error state**: Clean "Unable to Load Subscriptions" screen with error message + "Try Again" button only
+- **Normal state**: No debug panel, no test mode toggle, no sandbox instructions
+
+### Commit
+- `46c0042` - `fix: gate debug UI behind __DEV__ on PaywallScreen (Apple Review)`
+- File: `mobile/src/screens/subscription/PaywallScreen.tsx` (3 locations, +33/-27 lines)
+
+---
+
+## 🔧 Previous Activity: Build 60 - Subscription Image Price Removal + Apple Rejection Fix - February 8, 2026
 
 ### Summary
 Investigated and resolved Apple App Review rejection for Build 58 (Guideline 2.3.2 - Accurate Metadata and Guideline 5.1.1 - Data Collection and Storage). Used Playwright MCP to inspect App Store Connect and discovered that subscription promotional images contained price references ($7.99/month, $69.99/year, $18.99/month, $189.99/year, $29.99/month, $279/year) and "Save 17%" text. Replaced all 6 in-app subscription images with clean versions (features only, no prices). Also fixed filename typos caught during review. Built and submitted Build 60 to TestFlight.
