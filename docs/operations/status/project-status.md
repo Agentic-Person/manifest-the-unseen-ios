@@ -1,14 +1,39 @@
 # MTU Project Status
 
-**Last Updated**: 2026-02-09 (Build 61 - Submitted to App Store Connect)
+**Last Updated**: 2026-02-09 (Build 61 - Resubmitted to Apple Review)
 **Project**: Manifest the Unseen iOS App
 **Platform**: Mobile-First (iOS primary, Android future) + Web Companion
 **Timeline**: Week 8 of 28 (App Store Submission - COMPLETE)
-**Status**: 🟡 **Build 61 on TestFlight** - Resubmitting to Apple Review after fixing debug UI exposure + subscription image prices.
+**Status**: 🟡 **Build 61 - Waiting for Review** - Resubmitted to Apple Review, expect 24-48 hour review.
 
 ---
 
-## 🔧 Last Activity: Build 61 - Debug UI Fix Build + Resubmission - February 9, 2026
+## 🔧 Last Activity: Build 61 - Resubmitted to Apple App Review - February 9, 2026
+
+### Summary
+Build 61 resubmitted to Apple App Review via App Store Connect. Swapped the attached build from 58 (rejected) to 61, saved, and submitted. This build addresses both rejection guidelines from the January 28, 2026 review.
+
+### App Review Submission Details
+
+| Field | Value |
+|-------|-------|
+| **Submission Date** | February 9, 2026 at 8:25 PM |
+| **Submission ID** | `6f2c691d-e993-4ed2-ad15-639a416fe91b` |
+| **Build** | 1.0.0 (61) |
+| **Status** | Waiting for Review |
+| **App Store Connect** | https://appstoreconnect.apple.com/apps/6756403109/distribution/reviewsubmissions/details/6f2c691d-e993-4ed2-ad15-639a416fe91b |
+
+### Rejection Issues Addressed
+
+| Guideline | Issue | Fix | Build |
+|-----------|-------|-----|-------|
+| **2.3.2 - Accurate Metadata** | Subscription promotional images contained price references | Replaced all 6 in-app images with features-only versions (no prices, no "Save 17%") | Build 60 |
+| **5.1.1 - Data Collection & Storage** | App required sign-in before purchasing subscriptions | Three-state navigation allows browsing and purchasing without sign-in | Build 59 |
+| *(bonus)* | Debug UI visible in production | Gated DebugOverlay, Sandbox Info, and test mode toggle behind `__DEV__` | Build 61 |
+
+---
+
+## 🔧 Previous Activity: Build 61 - Debug UI Fix Build + Submission to App Store Connect - February 9, 2026
 
 ### Summary
 Built and submitted Build 61 to App Store Connect. This build gates all debug/developer UI behind `__DEV__` checks so production users see a clean paywall experience. Combined with Build 60's subscription image price removal, this addresses both Apple Review rejection guidelines (2.3.2 + 5.1.1).
